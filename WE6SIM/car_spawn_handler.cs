@@ -28,6 +28,7 @@ internal static class car_spawn_handler
 	*/
 
 	private static readonly Dictionary<TrainCar, unit_a_sim> _all_a_units = [];
+	private static readonly Dictionary<TrainCar, unit_b_sim> _all_b_units = [];
 
 	public static void Postfix(CarSpawner __instance)
 	{
@@ -53,7 +54,10 @@ internal static class car_spawn_handler
 		if (vehicle == null || !vehicle.IsLoco)
 			return;
 		Main.log("Spawn " + vehicle.ID + " " + vehicle.carLivery.id);
-		if (!string.Equals(vehicle.carLivery.id, "WE6981A", StringComparison.Ordinal))
+		bool is_unit_a = false;
+		if (string.Equals(vehicle.carLivery.id, "WE6981A", StringComparison.Ordinal))
+			is_unit_a = true;
+		else if (!string.Equals(vehicle.carLivery.id, "WE6981B", StringComparison.Ordinal))
 			return;
 
 		Dictionary<string, Fuse> all_fuses = [];
@@ -75,29 +79,35 @@ internal static class car_spawn_handler
 				continue;
 			Main.log($"{port.id} {port.type} {port.valueType}");
 			all_ports[port.id] = port;
-			switch (port.id)
+			if (is_unit_a)
 			{
-				case "diagnostics.DISPLAY":
-					if (Main.diagnostics == null)
-					{
-						Main.log($"Diagnostics display connected for {vehicle.ID}");
-						Main.diagnostics = port;
-					}
-					break;
+				switch (port.id)
+				{
+					case "diagnostics.DISPLAY":
+						if (Main.diagnostics == null)
+						{
+							Main.log($"Diagnostics display connected for {vehicle.ID}");
+							Main.diagnostics = port;
+						}
+						break;
 
-				case "diagnostics.DISPLAY2":
-					if (Main.diagnostics2 == null)
-					{
-						Main.log($"Diagnostics display 2 connected for {vehicle.ID}");
-						Main.diagnostics2 = port;
-					}
-					break;
+					case "diagnostics.DISPLAY2":
+						if (Main.diagnostics2 == null)
+						{
+							Main.log($"Diagnostics display 2 connected for {vehicle.ID}");
+							Main.diagnostics2 = port;
+						}
+						break;
+				}
 			}
 		}
 
 		//if (vehicle.gameObject != null)
 		//	print_hierarchy(vehicle.gameObject);
-		_all_a_units[vehicle] = new unit_a_sim(all_fuses, all_ports, vehicle);
+		if (is_unit_a)
+			_all_a_units[vehicle] = new unit_a_sim(all_fuses, all_ports, vehicle);
+		else
+			_all_b_units[vehicle] = new unit_b_sim(all_fuses, all_ports, vehicle);
 	}
 
 	/*
@@ -173,12 +183,18 @@ internal static class car_spawn_handler
 
 	private static void on_car_purged(TrainCar vehicle)
 	{
-		if (_all_a_units.TryGetValue(vehicle, out var disposed_unit_a))
+		if (_all_a_units.TryGetValue(vehicle, out unit_a_sim disposed_unit_a))
 		{
-			Main.log("Remove " + vehicle.ID + " " + vehicle.carLivery.id);
+			Main.log("Remove A " + vehicle.ID + " " + vehicle.carLivery.id);
 			disposed_unit_a.Dispose();
 			_all_a_units.Remove(vehicle);
 			Main.diagnostics = Main.diagnostics2 = null;
+		}
+		else if (_all_b_units.TryGetValue(vehicle, out unit_b_sim disposed_unit_b))
+		{
+			Main.log("Remove B " + vehicle.ID + " " + vehicle.carLivery.id);
+			disposed_unit_b.Dispose();
+			_all_b_units.Remove(vehicle);
 		}
 	}
 	/*

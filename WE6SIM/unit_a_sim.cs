@@ -12,6 +12,9 @@ using DV.Simulation.Cars;
 using LocoSim.Implementations;
 using WE6SIM.circuit_sim;
 
+using static WE6SIM.signal_cable;
+using static WE6SIM.utilities;
+
 namespace WE6SIM;
 
 internal partial class unit_a_sim: IDisposable
@@ -22,10 +25,13 @@ internal partial class unit_a_sim: IDisposable
 	private readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
 	private readonly Dictionary<string, float> _currents = [];
 
-	private readonly Fuse                 _appliances;
-	private readonly Port                 _throttle_handle, _reverser_handle, _torque_a, _torque_b, _wheel_RPM;
-	private readonly Port                 _front_pantograph_switch;
-	private readonly Port?                _switch;
+	private readonly Fuse _appliances;
+	private readonly Port _throttle_handle, _reverser_handle, _torque_a, _wheel_RPM;
+	private readonly Port _front_pantograph_switch;
+	private readonly Port? _switch;
+
+	private readonly Port _control_AB1, _torque_b;
+
 	private readonly SimController        _simulation;
 	private readonly throttle_controllers _throttle;
 	private readonly circuit              _circuit;
@@ -34,20 +40,6 @@ internal partial class unit_a_sim: IDisposable
 	private bool _traction_on = false;
 
 	private readonly TrainCar _unit;
-
-	private Fuse get_fuse(Dictionary<string, Fuse> fuses, string name)
-	{
-		if (!fuses.TryGetValue(name, out Fuse fuse))
-			throw new ArgumentException("No fuse " + name);
-		return fuse;
-	}
-
-	private Port get_port(Dictionary<string, Port> ports, string name)
-	{
-		if (!ports.TryGetValue(name, out Port port))
-			throw new ArgumentException("No port " + name);
-		return port;
-	}
 
 	public unit_a_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
 	{
@@ -62,9 +54,11 @@ internal partial class unit_a_sim: IDisposable
 		_front_pantograph_switch.ValueUpdatedInternally += toggle_pole;
 
 		_torque_a = get_port(ports, "traction.TORQUE_IN");
-		_torque_b = get_port(ports, "internal_MU.TM4-6");
 		_wheel_RPM = get_port(ports, "traction.WHEEL_RPM_EXT_IN");
 		//_switch = new_unit_a.traced_switch;
+
+		_torque_b = get_port(ports, "internal_MU.TM4-6");
+		_control_AB1 = get_port(ports, "internal_MU.CONTROL_AB1");
 
 		_test_pole_prefab = Main.catenary_parts.pole;
 
@@ -94,6 +88,7 @@ internal partial class unit_a_sim: IDisposable
 				Vector3 pole_position = _unit.FrontCouplerAnchor.TransformPoint(new Vector3(0.0f, Main.pole_height_offset - 1.125f, -5.5f));
 				_test_pole = GameObject.Instantiate<GameObject>(_test_pole_prefab, /*front_pos + offset*/ pole_position, front_rot);
 				_pantograph.set_target_height(6.0f + Main.pole_height_offset);
+				toggle_port_signal(_control_AB1, (int) AB1_signals.back_pantograph, true);
 			}
 		}
 		else if (_test_pole is not null)
@@ -101,6 +96,7 @@ internal partial class unit_a_sim: IDisposable
 			GameObject.Destroy(_test_pole);
 			_test_pole = null;
 			_pantograph.set_target_height(0.0f);
+			toggle_port_signal(_control_AB1, (int) AB1_signals.back_pantograph, false);
 		}
 	}
 
@@ -146,6 +142,7 @@ internal partial class unit_a_sim: IDisposable
 
 	public void Dispose()
 	{
-		_simulation.SimulationFlow.TickEvent -= simulate;
+		_simulation.SimulationFlow.TickEvent            -= simulate;
+		_front_pantograph_switch.ValueUpdatedInternally -= toggle_pole;
 	}
 }
