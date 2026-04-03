@@ -65,7 +65,7 @@ internal class camshaft_controller
 		_camshaft_in_motion            = _roll_over;
 	}
 
-	public async void roll_over(bool to_1)
+	public async void roll_over_move(bool to_1)
 	{
 		_roll_over = true;
 		if (_camshaft_in_motion)

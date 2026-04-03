@@ -46,7 +46,7 @@ internal class throttle_controllers
 		if (_roll_secondary_over)
 		{
 			_roll_secondary_over = false;
-			_secondary_throttle.roll_over(false);
+			_secondary_throttle.roll_over_move(false);
 		}
 		else if (_run_up)
 		{
@@ -107,7 +107,7 @@ internal class throttle_controllers
 			if (_secondary_throttle.current_notch == notches && _primary_throttle.current_notch < notches)
 			{
 				_notch_up_primary = true;
-				_secondary_throttle.roll_over(true);
+				_secondary_throttle.roll_over_move(true);
 				return true;
 			}
 		}
@@ -124,8 +124,8 @@ internal class throttle_controllers
 	{
 		_run_down = _run_up = false;
 		traction_toggle?.Invoke(false);
-		_primary_throttle.roll_over(true);
-		_secondary_throttle.roll_over(true);
+		_primary_throttle.roll_over_move(true);
+		_secondary_throttle.roll_over_move(true);
 	}
 
 	public void throttle_handler(int reverser, int throttle)
