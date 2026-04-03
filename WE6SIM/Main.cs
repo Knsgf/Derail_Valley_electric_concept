@@ -1,3 +1,5 @@
+// Distributed under terms and conditions of MIT licence. See LICENCE_MIT.txt for details.
+
 using HarmonyLib;
 using LocoSim.Implementations;
 using System;
