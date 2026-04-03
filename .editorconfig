@@ -1,0 +1,14 @@
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+
+# Using tabs allows each dev to choose the tab size that suits their preference
+indent_style = tab
+
+# Remove trailing whitespace in all files except markdown files
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false
