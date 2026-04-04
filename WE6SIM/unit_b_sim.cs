@@ -27,6 +27,8 @@ internal class unit_b_sim: IDisposable
 
 	private readonly Port _control_AB1, _control_BA1;
 
+	private int _secondary_camshaft_target_notch = 1;
+
 	public unit_b_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
 	{
 		SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
@@ -59,11 +61,13 @@ internal class unit_b_sim: IDisposable
 			_pantograph.set_target_height(6.0f + Main.pole_height_offset);
 		else
 			_pantograph.set_target_height(0.0f);
+		_secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_b_camshaft_notch, (int) AB1_shift.unit_b_camshaft_lsb);
 	}
 
 	private void simulate()
 	{
 		_pantograph.move();
+		_control_BA1.Value = _secondary_camshaft_target_notch;
 	}
 
 	public void Dispose()

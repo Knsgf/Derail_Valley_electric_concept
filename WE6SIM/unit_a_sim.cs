@@ -38,6 +38,7 @@ internal partial class unit_a_sim: IDisposable
 	private readonly pantograph           _pantograph;
 
 	private bool _traction_on = false;
+	private int  _reverser = 0, _throttle = 0;
 
 	private readonly TrainCar _unit;
 
@@ -49,6 +50,7 @@ internal partial class unit_a_sim: IDisposable
 
 		_reverser_handle = get_port(ports, "[Reverser].EXT_IN");
 		_throttle_handle = get_port(ports, "[Throttle].EXT_IN");
+		_throttle_handle.ValueUpdatedInternally += throttle_handler;
 
 		_front_pantograph_switch = get_port(ports, "[FrontPantographSwitch].EXT_IN");
 		_front_pantograph_switch.ValueUpdatedInternally += toggle_pole;
@@ -60,6 +62,7 @@ internal partial class unit_a_sim: IDisposable
 		_torque_b = get_port(ports, "internal_MU.TM4-6");
 		_control_AB1 = get_port(ports, "internal_MU.CONTROL_AB1");
 		_control_BA1 = get_port(ports, "internal_MU.CONTROL_BA1");
+		_control_BA1.ValueUpdatedInternally += MU_BA1_control;
 
 		_test_pole_prefab = Main.catenary_parts.pole;
 
@@ -111,6 +114,20 @@ internal partial class unit_a_sim: IDisposable
 	}
 	*/
 
+	private void throttle_handler(float normalised_throttle)
+	{
+		_throttle = Mathf.RoundToInt(normalised_throttle * 5.0f);
+		set_port_signal(_control_AB1, (int) AB1_signals.unit_b_camshaft_notch,
+			(int) AB1_shift.unit_b_camshaft_lsb, _throttle + 1);
+	}
+
+	private void MU_BA1_control(float BA1)
+	{
+		Main.diagnostics2?.Value = extract_signal_from_port_value(BA1, (int) BA1_signals.unit_b_camshaft_notch,
+			(int) BA1_shift.unit_b_camshaft_lsb) * 10;
+	}
+
+
 	private void traction_toggle(bool enable)
 	{
 		_traction_on = enable;
@@ -143,8 +160,8 @@ internal partial class unit_a_sim: IDisposable
 		_contactor_locations["CP4"].toggle_contactor("CP4", /*_traction_on &&*/ (throttle == 3 || throttle == 4 || throttle == 5));
 
 		_circuit.simulate();
-		Main.diagnostics?.Value = _reverser_handle.Value;
-		Main.diagnostics2?.Value = _throttle_handle.Value;
+		Main.diagnostics?.Value = _throttle;
+		//Main.diagnostics2?.Value = ;
 
 		float torque = 3.0f * torque_factor * (_currents["MA1"] / nb) * (min_flux + Mathf.Max(-flux_top, Mathf.Min(flux_top, _currents["MF1"] / nb)));
 		_torque_a.Value = _torque_b.Value = torque;
@@ -154,6 +171,8 @@ internal partial class unit_a_sim: IDisposable
 	{
 		//_disposed = true;
 		_simulation.SimulationFlow.TickEvent            -= simulate;
+		_throttle_handle.ValueUpdatedInternally         -= throttle_handler;
+		_control_BA1.ValueUpdatedInternally             -= MU_BA1_control;
 		_front_pantograph_switch.ValueUpdatedInternally -= toggle_pole;
 	}
 }
