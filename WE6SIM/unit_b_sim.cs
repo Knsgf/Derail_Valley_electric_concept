@@ -24,6 +24,7 @@ internal class unit_b_sim: IDisposable
 
 	private readonly TrainCar _unit;
 	private readonly SimController _simulation;
+	private readonly camshaft_controller _secondary_controller = new(7);
 
 	private readonly Port _control_AB1, _control_BA1;
 
@@ -61,13 +62,30 @@ internal class unit_b_sim: IDisposable
 			_pantograph.set_target_height(6.0f + Main.pole_height_offset);
 		else
 			_pantograph.set_target_height(0.0f);
+
 		_secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_b_camshaft_notch, (int) AB1_shift.unit_b_camshaft_lsb);
+		switch (_secondary_camshaft_target_notch)
+		{
+			case 8:
+				_secondary_controller.roll_over_move(to_1: true);
+				break;
+
+			case 9:
+				_secondary_controller.roll_over_move(to_1: false);
+				break;
+
+			default:
+				Debug.Assert(_secondary_camshaft_target_notch >= 1 && _secondary_camshaft_target_notch <= 7);
+				_secondary_controller.target_notch = _secondary_camshaft_target_notch;
+				break;
+		}
 	}
 
 	private void simulate()
 	{
 		_pantograph.move();
-		_control_BA1.Value = _secondary_camshaft_target_notch;
+		set_port_signal(_control_BA1, (int) BA1_signals.unit_b_camshaft_notch, (int) BA1_shift.unit_b_camshaft_lsb,
+			_secondary_controller.current_notch);
 	}
 
 	public void Dispose()

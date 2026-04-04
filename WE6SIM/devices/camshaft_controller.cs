@@ -17,7 +17,7 @@ internal class camshaft_controller
 	private readonly object _blocker = new();
 
 	private Task? _regular_movement;
-	private int _target_notch = 1;
+	private int  _target_notch = 1;
 	private bool _camshaft_in_motion = false, _finish_movement_at_next_notch = false, _single_notch_movement = false;
 	private bool _roll_over        = false;
 
@@ -31,20 +31,23 @@ internal class camshaft_controller
 				lock (_blocker)
 				{
 					_target_notch = Math.Max(1, Math.Min(_num_notches, value));
-					if (!_camshaft_in_motion)
+					if (!_camshaft_in_motion && (_regular_movement == null || _regular_movement.IsCompleted))
 						_regular_movement = regular_move();
 				}
 			}
 		}
 	}
 	public float current_position { get; private set; } = 1.0f;
-	public int current_notch => Mathf.RoundToInt(current_position);
+	public int current_notch => Mathf.RoundToInt(Mathf.Clamp(current_position, 1.0f, _num_notches));
 
 	public event Action<int>? switched;
 
 	public camshaft_controller(int notches)
 	{
 		_num_notches = notches;
+
+		current_position = UnityEngine.Random.value * (notches - 1) + 1.0f;
+		_target_notch = current_notch;
 	}
 
 	private async Task single_notch_motion(int target_notch)
@@ -101,6 +104,7 @@ internal class camshaft_controller
 		}
 
 		bool signal_completion = false;
+		int current_notch = Mathf.RoundToInt(current_position);
 		if (to_1 && current_notch != 1 || !to_1 && current_notch != _num_notches)
 		{
 			_camshaft_in_motion = true;
@@ -109,12 +113,12 @@ internal class camshaft_controller
 				target_notch = ((current_notch << 1) <= _num_notches + 2) ? 1 : (_num_notches + 1);
 			else
 				target_notch = ((current_notch << 1) <= _num_notches    ) ? 0 : (_num_notches    );
-			//_target_notch = target_notch;
+			_target_notch = target_notch;
 			do
 			{
 				await single_notch_motion(target_notch);
 			}
-			while (current_notch != target_notch);
+			while (Mathf.RoundToInt(current_position) != target_notch);
 			current_position = _target_notch = to_1 ? 1 : _num_notches;
 			if (target_notch != 1 && target_notch != _num_notches)
 				signal_completion = true;
@@ -122,6 +126,12 @@ internal class camshaft_controller
 		_roll_over = _camshaft_in_motion = false;
 		if (signal_completion)
 			switched?.Invoke(_target_notch);
+	}
+
+	public async Task finish_movement()
+	{
+		if (_camshaft_in_motion && _regular_movement != null && !_regular_movement.IsCompleted)
+			await _regular_movement;
 	}
 
 	public void run_down()
