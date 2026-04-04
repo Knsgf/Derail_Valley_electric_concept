@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 using LocoSim.Implementations;
 
-namespace WE6SIM;
+namespace WE6SIM.utilities;
 
 internal static class signal_cable
 {

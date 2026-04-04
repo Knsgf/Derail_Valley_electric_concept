@@ -13,8 +13,8 @@ using static UnityEngine.UI.CanvasScaler;
 using DV.Simulation.Cars;
 using LocoSim.Implementations;
 
-using static WE6SIM.signal_cable;
-using static WE6SIM.utilities;
+using static WE6SIM.utilities.signal_cable;
+using static WE6SIM.utilities.sensor_grabber;
 
 namespace WE6SIM;
 
@@ -25,7 +25,7 @@ internal class unit_b_sim: IDisposable
 	private readonly TrainCar _unit;
 	private readonly SimController _simulation;
 
-	private readonly Port _control_AB1;
+	private readonly Port _control_AB1, _control_BA1;
 
 	public unit_b_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
 	{
@@ -42,6 +42,7 @@ internal class unit_b_sim: IDisposable
 		//_torque_b = get_port(ports, "internal_MU.TM4-6");
 		_control_AB1 = get_port(ports, "internal_MU.CONTROL_AB1");
 		_control_AB1.ValueUpdatedInternally += MU_AB1_control;
+		_control_BA1 = get_port(ports, "internal_MU.CONTROL_BA1");
 
 		_unit = unit;
 		_simulation = simulation;

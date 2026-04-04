@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 using LocoSim.Implementations;
 
-namespace WE6SIM;
+namespace WE6SIM.utilities;
 
-internal static class utilities
+internal static class sensor_grabber
 {
 	public static Fuse get_fuse(Dictionary<string, Fuse> fuses, string name)
 	{

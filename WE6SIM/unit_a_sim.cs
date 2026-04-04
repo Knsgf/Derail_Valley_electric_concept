@@ -11,9 +11,10 @@ using UnityEngine;
 using DV.Simulation.Cars;
 using LocoSim.Implementations;
 using WE6SIM.circuit_sim;
+using WE6SIM.utilities;
 
-using static WE6SIM.signal_cable;
-using static WE6SIM.utilities;
+using static WE6SIM.utilities.signal_cable;
+using static WE6SIM.utilities.sensor_grabber;
 
 namespace WE6SIM;
 
@@ -30,10 +31,9 @@ internal partial class unit_a_sim: IDisposable
 	private readonly Port _front_pantograph_switch;
 	private readonly Port? _switch;
 
-	private readonly Port _control_AB1, _torque_b;
+	private readonly Port _control_AB1, _control_BA1, _torque_b;
 
 	private readonly SimController        _simulation;
-	private readonly throttle_controllers _throttle;
 	private readonly circuit              _circuit;
 	private readonly pantograph           _pantograph;
 
@@ -47,8 +47,8 @@ internal partial class unit_a_sim: IDisposable
 
 		_appliances = get_fuse(fuses, "fusebox.ELECTRICS_MAIN");
 
-		_throttle_handle = get_port(ports, "throttle.EXT_IN");
-		_reverser_handle = get_port(ports, "reverser.REVERSER");
+		_reverser_handle = get_port(ports, "[Reverser].EXT_IN");
+		_throttle_handle = get_port(ports, "[Throttle].EXT_IN");
 
 		_front_pantograph_switch = get_port(ports, "[FrontPantographSwitch].EXT_IN");
 		_front_pantograph_switch.ValueUpdatedInternally += toggle_pole;
@@ -59,6 +59,7 @@ internal partial class unit_a_sim: IDisposable
 
 		_torque_b = get_port(ports, "internal_MU.TM4-6");
 		_control_AB1 = get_port(ports, "internal_MU.CONTROL_AB1");
+		_control_BA1 = get_port(ports, "internal_MU.CONTROL_BA1");
 
 		_test_pole_prefab = Main.catenary_parts.pole;
 
@@ -70,9 +71,6 @@ internal partial class unit_a_sim: IDisposable
 		_simulation = simulation;
 		simulation.SimulationFlow.TickEvent += simulate;
 		_pantograph = new pantograph(unit.gameObject);
-
-		_throttle = new throttle_controllers();
-		_throttle.traction_toggle += traction_toggle;
 	}
 
 	private void toggle_pole(float port_value)
@@ -100,6 +98,19 @@ internal partial class unit_a_sim: IDisposable
 		}
 	}
 
+	/*
+	private bool _disposed = false;
+	public async void port_watch_test()
+	{
+		Main.log("port_watch_test() started");
+		while (!_disposed)
+		{
+			await port_value_change.watch(_reverser_handle);
+			Main.log($"port_watch_test() = {_reverser_handle.Value}");
+		}
+	}
+	*/
+
 	private void traction_toggle(bool enable)
 	{
 		_traction_on = enable;
@@ -109,8 +120,8 @@ internal partial class unit_a_sim: IDisposable
 	{
 		_pantograph.move();
 
-		int reverser = (_reverser_handle.Value >= 0.5f) ? 1 : ((_reverser_handle.Value <= -0.5f) ? -1 : 0);
-		int throttle = Mathf.RoundToInt(_throttle_handle.Value * 5.0f);
+		int reverser = 0 /*(_reverser_handle.Value >= 0.5f) ? 1 : ((_reverser_handle.Value <= -0.5f) ? -1 : 0)*/;
+		int throttle = 0 /*Mathf.RoundToInt(_throttle_handle.Value * 5.0f)*/;
 
 		//_throttle.throttle_handler(reverser, throttle);
 
@@ -132,9 +143,8 @@ internal partial class unit_a_sim: IDisposable
 		_contactor_locations["CP4"].toggle_contactor("CP4", /*_traction_on &&*/ (throttle == 3 || throttle == 4 || throttle == 5));
 
 		_circuit.simulate();
-		//Main.diagnostics?.Value = _currents["MA1"] / nb;
-		//Main.diagnostics2?.Value = _named_branches["MA1"].EMF / mb;
-		//Main.diagnostics2?.Value = _wheel_RPM.Value;
+		Main.diagnostics?.Value = _reverser_handle.Value;
+		Main.diagnostics2?.Value = _throttle_handle.Value;
 
 		float torque = 3.0f * torque_factor * (_currents["MA1"] / nb) * (min_flux + Mathf.Max(-flux_top, Mathf.Min(flux_top, _currents["MF1"] / nb)));
 		_torque_a.Value = _torque_b.Value = torque;
@@ -142,6 +152,7 @@ internal partial class unit_a_sim: IDisposable
 
 	public void Dispose()
 	{
+		//_disposed = true;
 		_simulation.SimulationFlow.TickEvent            -= simulate;
 		_front_pantograph_switch.ValueUpdatedInternally -= toggle_pole;
 	}
