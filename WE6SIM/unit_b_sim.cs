@@ -55,7 +55,7 @@ internal class unit_b_sim: electric_device
 		_unit = unit;
 		_simulation = simulation;
 		simulation.SimulationFlow.TickEvent += simulate;
-		_pantograph = new pantograph(unit.gameObject);
+		_pantograph = new pantograph(unit.gameObject, _appliances);
 
 		//_throttle = new throttle_controllers();
 		//_throttle.traction_toggle += traction_toggle;
@@ -106,6 +106,7 @@ internal class unit_b_sim: electric_device
 		{ 
 			base.Dispose();
 			_secondary_controller.Dispose();
+			_pantograph.Dispose();
 			_simulation.SimulationFlow.TickEvent -= simulate;
 			_control_AB1.ValueUpdatedInternally  -= MU_AB1_control;
 		}

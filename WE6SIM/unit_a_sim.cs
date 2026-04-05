@@ -79,7 +79,7 @@ internal partial class unit_a_sim: electric_device
 		foreach (string branch_name in _named_branches.Keys)
 			_currents[branch_name] = 0.0f;
 
-		_pantograph = new pantograph(unit.gameObject);
+		_pantograph = new pantograph(unit.gameObject, _appliances);
 		_primary_controller = new camshaft_motor(camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 
 		_unit = unit;
@@ -231,6 +231,7 @@ internal partial class unit_a_sim: electric_device
 		{
 			base.Dispose();
 			_primary_controller.Dispose();
+			_pantograph.Dispose();
 			_simulation.SimulationFlow.TickEvent            -= simulate;
 			_throttle_handle.ValueUpdatedInternally         -= throttle_handler;
 			_control_BA1.ValueUpdatedInternally             -= MU_BA1_control;

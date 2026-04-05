@@ -1,5 +1,6 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
+using LocoSim.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +10,17 @@ using UnityEngine;
 
 namespace WE6SIM;
 
-internal class pantograph
+internal class pantograph: electric_device
 {
-	const string pantograph_tag = "PantographBase", head_tag = "Head";
+	const string pantograph_tag        =  "PantographBase", head_tag              = "Head";
 	const string lower_front_frame_tag = "LowerFrontFrame", upper_front_frame_tag = "UpperFrontFrame";
-	const string lower_back_frame_tag = "LowerBackFrame", upper_back_frame_tag = "UpperBackFrame";
-	const string front_piston_tag = "FrontPiston", back_piston_tag = "BackPiston";
-	const string rollers_offset_tag = "RollersOffset", top_pivot_tag = "UpperFrameTopPivot", piston_lever_tag = "LeverTip";
+	const string lower_back_frame_tag  =  "LowerBackFrame", upper_back_frame_tag  = "UpperBackFrame";
+	const string front_piston_tag      =     "FrontPiston", back_piston_tag       = "BackPiston";
+	const string rollers_offset_tag    =   "RollersOffset", top_pivot_tag         = "UpperFrameTopPivot";
+	const string piston_lever_tag      =        "LeverTip";
 
 	const float maximum_head_height = 6.6f, frame_thickness = 0.085f, head_movement_speed = 0.1f;
-	const int max_iterations_before_sleep = 6;
+	const int   max_iterations_before_sleep = 6;
 
 	private Transform _base, _front_lower_frame, _front_upper_frame, _back_lower_frame, _back_upper_frame, _head;
 	private Transform _front_piston, _back_piston;
@@ -32,8 +34,8 @@ internal class pantograph
 	private readonly float _lower_frame_horizontal_offset, _lower_frame_horizontal_roller_offset, _piston_height;
 
 	private Vector2 _head_rollers_offset, _upper_pivot_offset;
-	private float _current_height, _target_height, _current_upper_frame_angle;
-	private int _interations_left = max_iterations_before_sleep;
+	private float   _current_height, _target_height, _current_upper_frame_angle;
+	private int     _interations_left = max_iterations_before_sleep;
 
 	private static GameObject? find_pantograph_base(GameObject entity)
 	{
@@ -103,7 +105,7 @@ internal class pantograph
 		}
 	}
 
-	public pantograph(GameObject unit)
+	public pantograph(GameObject unit, Fuse electric_supply): base("pantograph", electric_supply)
 	{
 		GameObject pantograph_base = find_pantograph_base(unit) ?? throw new Exception("Missing pantograph");
 		assign_parts(pantograph_base);
@@ -142,6 +144,9 @@ internal class pantograph
 
 	public void move()
 	{
+		check_if_disposed();
+		if (!is_powered)
+			_target_height = _initial_head_height;
 		if (_current_height < _target_height - 0.006f)
 		{
 			_current_height   = Mathf.Min(_current_height + head_movement_speed * Time.deltaTime, maximum_head_height);
@@ -194,6 +199,7 @@ internal class pantograph
 
 	public void set_target_height(float target_head_height)
 	{
-		_target_height = Mathf.Clamp(target_head_height, _initial_head_height, maximum_head_height);
+		check_if_disposed();
+		_target_height = !is_powered ? _initial_head_height : Mathf.Clamp(target_head_height, _initial_head_height, maximum_head_height);
 	}
 }
