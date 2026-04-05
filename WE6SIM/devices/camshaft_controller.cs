@@ -11,7 +11,8 @@ namespace WE6SIM;
 
 internal class camshaft_controller
 {
-	const int notch_change_time_ms = 500, notch_change_stages = 2;
+	const int notch_change_time_ms = 1000, notch_change_stages = 5;
+	const float notch_lock_threshold = 1.0f / (notch_change_stages * 5.0f);
 
 	private readonly int    _num_notches;
 	private readonly object _blocker = new();
@@ -80,7 +81,7 @@ internal class camshaft_controller
 			await single_notch_motion(_target_notch);
 			lock (_blocker)
 			{
-				if (_finish_movement_at_next_notch || current_notch == _target_notch)
+				if (_finish_movement_at_next_notch || Mathf.Abs(current_position - _target_notch) <= notch_lock_threshold)
 				{
 					_target_notch = current_notch;    // Ensure that current and target are the same
 												      // if movement was cancelled via _finish_movement_at_next_notch
@@ -113,12 +114,11 @@ internal class camshaft_controller
 				target_notch = ((current_notch << 1) <= _num_notches + 2) ? 1 : (_num_notches + 1);
 			else
 				target_notch = ((current_notch << 1) <= _num_notches    ) ? 0 : (_num_notches    );
-			_target_notch = target_notch;
 			do
 			{
 				await single_notch_motion(target_notch);
 			}
-			while (Mathf.RoundToInt(current_position) != target_notch);
+			while (Mathf.Abs(current_position - target_notch) > notch_lock_threshold);
 			current_position = _target_notch = to_1 ? 1 : _num_notches;
 			if (target_notch != 1 && target_notch != _num_notches)
 				signal_completion = true;

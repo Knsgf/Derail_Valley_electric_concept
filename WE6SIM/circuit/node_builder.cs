@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
+using WE6SIM.utilities;
+
 namespace WE6SIM.circuit_sim;
 
 internal partial class circuit_builder
@@ -41,12 +43,12 @@ internal partial class circuit_builder
                 throw new InvalidOperationException($"Not permitted to add branches after optimisation {_location}");
             if (is_outgoing_branch)
             {
-                //Debug.Assert(!incoming_branches.Contains(new_branch));
+                //assert.test(!incoming_branches.Contains(new_branch));
                 outgoing_branches.Add(new_branch);
             }
             else
             {
-                //Debug.Assert(!outgoing_branches.Contains(new_branch));
+                //assert.test(!outgoing_branches.Contains(new_branch));
                 incoming_branches.Add(new_branch);
             }
         }
@@ -67,7 +69,7 @@ internal partial class circuit_builder
                         if (current.incoming_branches.Contains(branch))
                         {
                             connected_node = current;
-                            Debug.Assert(connected_node != this);
+                            assert.test(connected_node != this);
                             goto loop_exit;
                         }
                     }
@@ -106,7 +108,7 @@ internal partial class circuit_builder
                 if (!node_builders[index].squished)
                     node_builders[index].squish_empty_branches();
             }
-            Debug.Assert(!__base_node.squished);
+            assert.test(!__base_node.squished);
         }
     }
 }

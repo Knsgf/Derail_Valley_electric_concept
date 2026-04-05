@@ -13,6 +13,8 @@ using HarmonyLib;
 using LocoSim.Implementations;
 using UnityEngine;
 
+using WE6SIM.utilities;
+
 namespace WE6SIM;
 
 [HarmonyPatch(typeof(CarSpawner), "Awake")]

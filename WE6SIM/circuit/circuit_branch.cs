@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
+using WE6SIM.utilities;
+
 namespace WE6SIM.circuit_sim;
 
 internal partial class circuit
@@ -85,7 +87,7 @@ internal partial class circuit
             _reversed_EMF = reverse_EMF;
 
             copy_dict(contactors, _contactors);
-            Debug.Assert(_contactors.Count <= 30);
+            assert.test(_contactors.Count <= 30);
             _contactors_off = (1 << _contactors.Count) - 1;
         }
 
@@ -102,7 +104,7 @@ internal partial class circuit
             bool contactor_present = _contactors.TryGetValue(contactor_designation, out int contactor_number);
             if (!contactor_present)
                 throw new ArgumentException($"Non-existent contactor {contactor_designation}");
-            Debug.Assert(contactor_number <= 30 && contactor_number < _contactors.Count);
+            assert.test(contactor_number <= 30 && contactor_number < _contactors.Count);
             bool branch_was_closed = _contactors_off == 0;
             int contactor_mask = 1 << contactor_number;
             if (!switch_on)

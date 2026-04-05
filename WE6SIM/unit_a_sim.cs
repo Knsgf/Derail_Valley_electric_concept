@@ -36,13 +36,15 @@ internal partial class unit_a_sim: IDisposable
 	private readonly SimController       _simulation;
 	private readonly circuit             _circuit;
 	private readonly pantograph          _pantograph;
-	private readonly camshaft_controller _primary_controller = new(7);
+	private readonly camshaft_controller _primary_controller = new(camshaft_notches);
+	private readonly throttle_controller _throttle_controller;
+	private readonly TrainCar            _unit;
 
 	private bool _traction_on = false, _camshaft_unlock = false;
 	private int  _reverser = 0, _throttle = 0, _secondary_camshaft_notch;
 	private Task? _single_notch_movement;
 
-	private readonly TrainCar _unit;
+	public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
 
 	public unit_a_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
 	{
@@ -52,6 +54,8 @@ internal partial class unit_a_sim: IDisposable
 		_appliances.StateUpdated += appliances_toggle;
 
 		_reverser_handle = get_port(ports, "[Reverser].EXT_IN");
+
+		_throttle_controller = new throttle_controller(this);
 		_throttle_handle = get_port(ports, "[Throttle].EXT_IN");
 		_throttle_handle.ValueUpdatedInternally += throttle_handler;
 
@@ -137,76 +141,6 @@ internal partial class unit_a_sim: IDisposable
 		}
 	}
 
-	private async Task finish_secondary_movement(int target_notch)
-	{
-		set_secondary_camshaft_target_notch(target_notch);
-		if (target_notch == 8)
-			target_notch = 1;
-		else if (target_notch == 9)
-			target_notch = 7;
-		while (get_secondary_camshaft_current_notch(_control_BA1.Value) != target_notch)
-			await Task.Delay(200);
-	}
-
-	private async Task notch_down()
-	{
-		bool secondary_at_1 = _secondary_camshaft_notch == 1;
-		int current_primary_notch = _primary_controller.current_notch;
-		if (!_camshaft_unlock || secondary_at_1 && current_primary_notch == 1)
-			return;
-		_camshaft_unlock = false;
-		if (!secondary_at_1)
-			await finish_secondary_movement(_secondary_camshaft_notch - 1);
-		else
-		{
-			_primary_controller.target_notch = current_primary_notch - 1;
-			await _primary_controller.finish_movement();
-			await finish_secondary_movement(9);
-		}
-	}
-
-	private async Task notch_up()
-	{
-		bool secondary_at_7 = _secondary_camshaft_notch == 7;
-		int current_primary_notch = _primary_controller.current_notch;
-		if (!_camshaft_unlock || secondary_at_7 && current_primary_notch == 7)
-			return;
-		_camshaft_unlock = false;
-		if (!secondary_at_7)
-			await finish_secondary_movement(_secondary_camshaft_notch + 1);
-		else
-		{
-			await finish_secondary_movement(8);
-			_primary_controller.target_notch = current_primary_notch + 1;
-			await _primary_controller.finish_movement();
-		}
-	}
-
-	private async Task unlock_camshafts(bool continuous_run)
-	{
-		if (_single_notch_movement != null && !_single_notch_movement.IsCompleted)
-			await _single_notch_movement;
-		if (continuous_run || _throttle == 3)
-			_camshaft_unlock = true;
-	}
-
-	private async void run_down()
-	{
-		while (_throttle == 1 && (_secondary_camshaft_notch > 1 || _primary_controller.current_notch > 1))
-		{
-			await unlock_camshafts(continuous_run: true);
-			_single_notch_movement = notch_down();
-		}
-	}
-
-	private async void run_up()
-	{
-		while (_throttle == 5 && (_secondary_camshaft_notch < 7 || _primary_controller.current_notch < 7))
-		{
-			await unlock_camshafts(continuous_run: true);
-			_single_notch_movement = notch_up();
-		}
-	}
 
 	private void throttle_handler(float normalised_throttle)
 	{
@@ -217,29 +151,29 @@ internal partial class unit_a_sim: IDisposable
 		{
 			case 0:
 				_primary_controller.roll_over_move(to_1: true);
-				set_secondary_camshaft_target_notch(8);
+				set_secondary_camshaft_target_notch(roll_over_to_1);
 				break;
 
 			case 1:
-				run_down();
+				_throttle_controller.run_down();
 				break;
 
 			case 2:
 				if (_single_notch_movement == null || _single_notch_movement.IsCompleted)
-					_single_notch_movement = notch_down();
+					_single_notch_movement = _throttle_controller.notch_down();
 				break;
 
 			case 3:
-				_ = unlock_camshafts(continuous_run: false);
+				_ = _throttle_controller.unlock_camshafts(continuous_run: false);
 				break;
 
 			case 4:
 				if (_single_notch_movement == null || _single_notch_movement.IsCompleted)
-					_single_notch_movement = notch_up();
+					_single_notch_movement = _throttle_controller.notch_up();
 				break;
 
 			case 5:
-				run_up();
+				_throttle_controller.run_up();
 				break;
 		}
 		//set_port_signal(_control_AB1, (int) AB1_signals.unit_b_camshaft_notch,

@@ -12,6 +12,7 @@ using static UnityEngine.UI.CanvasScaler;
 
 using DV.Simulation.Cars;
 using LocoSim.Implementations;
+using WE6SIM.utilities;
 
 using static WE6SIM.utilities.signal_cable;
 using static WE6SIM.utilities.sensor_grabber;
@@ -24,7 +25,7 @@ internal class unit_b_sim: IDisposable
 
 	private readonly TrainCar _unit;
 	private readonly SimController _simulation;
-	private readonly camshaft_controller _secondary_controller = new(7);
+	private readonly camshaft_controller _secondary_controller = new(unit_a_sim.camshaft_notches);
 
 	private readonly Port _control_AB1, _control_BA1;
 
@@ -66,16 +67,16 @@ internal class unit_b_sim: IDisposable
 		_secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_b_camshaft_notch, (int) AB1_shift.unit_b_camshaft_lsb);
 		switch (_secondary_camshaft_target_notch)
 		{
-			case 8:
+			case unit_a_sim.roll_over_to_1:
 				_secondary_controller.roll_over_move(to_1: true);
 				break;
 
-			case 9:
+			case unit_a_sim.roll_over_to_full:
 				_secondary_controller.roll_over_move(to_1: false);
 				break;
 
 			default:
-				Debug.Assert(_secondary_camshaft_target_notch >= 1 && _secondary_camshaft_target_notch <= 7);
+				assert.test(_secondary_camshaft_target_notch >= 1 && _secondary_camshaft_target_notch <= unit_a_sim.camshaft_notches);
 				_secondary_controller.target_notch = _secondary_camshaft_target_notch;
 				break;
 		}

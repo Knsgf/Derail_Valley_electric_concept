@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 
+using WE6SIM.utilities;
+
 using static WE6SIM.circuit_sim.circuit_builder;
 
 namespace WE6SIM.circuit_sim;
@@ -41,7 +43,7 @@ internal partial class circuit
         int index = 0;
         foreach (node_builder node_definition in circuit_info.all_nodes)
         {
-            Debug.Assert(!node_definition.squished);
+            assert.test(!node_definition.squished);
             if (node_definition.is_base_node)
                 base_node = node_definition;
             else
@@ -61,7 +63,7 @@ internal partial class circuit
         bool branch_built = __built_branches.TryGetValue(branch_definition, out branch? current_branch);
         if (branch_built)
         {
-            Debug.Assert(current_branch != null && __connected_terminals.ContainsKey(current_branch));
+            assert.test(current_branch != null && __connected_terminals.ContainsKey(current_branch));
             connection previous_status = __connected_terminals[current_branch];
             __connected_terminals[current_branch] |= connect_at_start ? connection.at_start : connection.at_end;
             if (__connected_terminals[current_branch] == previous_status)
@@ -108,7 +110,7 @@ internal partial class circuit
         Array.Sort(_branches, (branch left, branch right) => left.id - right.id);
 
         _last_active_node = _nodes.Length - 2;
-        Debug.Assert(_last_active_node >= 0);
+        assert.test(_last_active_node >= 0);
 
         _incidence = new(_last_active_node + 1, _branches.Length);
         for (int row = _last_active_node; row >= 0; --row)
@@ -160,7 +162,7 @@ internal partial class circuit
     {
         if (_refresh_branches)
             update_conductances();
-        Debug.Assert(_solver != null);
+        assert.test(_solver != null);
         _virtual_currents.multiply(_right, _EMFs);
         node[]  nodes           = _nodes;
         float[] node_potentials = _potentials;
