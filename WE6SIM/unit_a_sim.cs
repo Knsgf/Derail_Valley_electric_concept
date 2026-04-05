@@ -18,7 +18,7 @@ using static WE6SIM.utilities.sensor_grabber;
 
 namespace WE6SIM;
 
-internal partial class unit_a_sim: IDisposable
+internal partial class unit_a_sim: electric_device
 {
 	private readonly GameObject _test_pole_prefab;
 	private GameObject? _test_pole;
@@ -36,22 +36,24 @@ internal partial class unit_a_sim: IDisposable
 	private readonly SimController       _simulation;
 	private readonly circuit             _circuit;
 	private readonly pantograph          _pantograph;
-	private readonly camshaft_controller _primary_controller = new(camshaft_notches);
+	private readonly camshaft_motor      _primary_controller;
 	private readonly throttle_controller _throttle_controller;
 	private readonly TrainCar            _unit;
 
-	private bool _traction_on = false, _camshaft_unlock = false;
+	private bool _traction_on = false;
 	private int  _reverser = 0, _throttle = 0, _secondary_camshaft_notch;
 	private Task? _single_notch_movement;
 
 	public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
 
 	public unit_a_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
+		: base("unit_A_sim")
 	{
 		SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
 		_appliances = get_fuse(fuses, "fusebox.ELECTRICS_MAIN");
-		_appliances.StateUpdated += appliances_toggle;
+		set_up_fuses(_appliances);
+		power_supply_toggled += appliances_toggle;
 
 		_reverser_handle = get_port(ports, "[Reverser].EXT_IN");
 
@@ -77,15 +79,19 @@ internal partial class unit_a_sim: IDisposable
 		foreach (string branch_name in _named_branches.Keys)
 			_currents[branch_name] = 0.0f;
 
-		_unit       = unit;
+		_pantograph = new pantograph(unit.gameObject);
+		_primary_controller = new camshaft_motor(camshaft_notches, _appliances, drop_to_1_on_power_loss: false, secondary: false);
+
+		_unit = unit;
 		_simulation = simulation;
 		simulation.SimulationFlow.TickEvent += simulate;
-		_pantograph = new pantograph(unit.gameObject);
 	}
 
 	private void toggle_pole(float port_value)
 	{
 		//Main.log($"toggle_pole(): {_test != null}");
+		if (disposed)
+			return;
 		if (port_value >= 0.5f)
 		{
 			if (_test_pole is null)
@@ -108,19 +114,6 @@ internal partial class unit_a_sim: IDisposable
 		}
 	}
 
-	/*
-	private bool _disposed = false;
-	public async void port_watch_test()
-	{
-		Main.log("port_watch_test() started");
-		while (!_disposed)
-		{
-			await port_value_change.watch(_reverser_handle);
-			Main.log($"port_watch_test() = {_reverser_handle.Value}");
-		}
-	}
-	*/
-
 	private void set_secondary_camshaft_target_notch(int target_notch)
 	{
 		set_port_signal(_control_AB1, (int) AB1_signals.unit_b_camshaft_notch,
@@ -135,6 +128,8 @@ internal partial class unit_a_sim: IDisposable
 
 	private void appliances_toggle(bool turn_on)
 	{
+		check_if_disposed();
+		toggle_port_signal(_control_AB1, (int) AB1_signals.battery, turn_on);
 		if (turn_on)
 		{
 			throttle_handler(_throttle / 5.0f);
@@ -144,14 +139,16 @@ internal partial class unit_a_sim: IDisposable
 
 	private void throttle_handler(float normalised_throttle)
 	{
+		check_if_disposed();
 		_throttle = Mathf.RoundToInt(normalised_throttle * 5.0f);
-		if (!_appliances.State)
+		if (!is_powered)
 			return;
 		switch (_throttle)
 		{
 			case 0:
-				_primary_controller.roll_over_move(to_1: true);
-				set_secondary_camshaft_target_notch(roll_over_to_1);
+				//if (_single_notch_movement != null && !_single_notch_movement.IsCompleted)
+				//	_interrupt_single_notch_movement = true;
+				_throttle_controller.roll_camshafts_over();
 				break;
 
 			case 1:
@@ -182,6 +179,8 @@ internal partial class unit_a_sim: IDisposable
 
 	private void MU_BA1_control(float BA1)
 	{
+		if (disposed)
+			return;
 		Main.diagnostics2?.Value = _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
 	}
 
@@ -191,8 +190,9 @@ internal partial class unit_a_sim: IDisposable
 		_traction_on = enable;
 	}
 
-	public void simulate()
+	private void simulate()
 	{
+		check_if_disposed();
 		_pantograph.move();
 
 		int reverser = 0 /*(_reverser_handle.Value >= 0.5f) ? 1 : ((_reverser_handle.Value <= -0.5f) ? -1 : 0)*/;
@@ -212,10 +212,10 @@ internal partial class unit_a_sim: IDisposable
 		_contactor_locations["RR1.1"].toggle_contactor("RR1.1", reverser < 0);
 		_contactor_locations["RR1.2"].toggle_contactor("RR1.2", reverser < 0);
 
-		_contactor_locations["CP1"].toggle_contactor("CP1", /*_traction_on &&*/ (throttle == 0 || throttle == 1 || throttle == 2 || throttle == 5));
-		_contactor_locations["CP2"].toggle_contactor("CP2", /*_traction_on &&*/ (throttle == 1 || throttle == 2 || throttle == 4 || throttle == 5));
-		_contactor_locations["CP3"].toggle_contactor("CP3", /*_traction_on &&*/ (throttle == 2 || throttle == 3 || throttle == 4 || throttle == 5));
-		_contactor_locations["CP4"].toggle_contactor("CP4", /*_traction_on &&*/ (throttle == 3 || throttle == 4 || throttle == 5));
+		//_contactor_locations["CP1"].toggle_contactor("CP1", /*_traction_on &&*/ (throttle == 0 || throttle == 1 || throttle == 2 || throttle == 5));
+		//_contactor_locations["CP2"].toggle_contactor("CP2", /*_traction_on &&*/ (throttle == 1 || throttle == 2 || throttle == 4 || throttle == 5));
+		//_contactor_locations["CP3"].toggle_contactor("CP3", /*_traction_on &&*/ (throttle == 2 || throttle == 3 || throttle == 4 || throttle == 5));
+		//_contactor_locations["CP4"].toggle_contactor("CP4", /*_traction_on &&*/ (throttle == 3 || throttle == 4 || throttle == 5));
 
 		_circuit.simulate();
 		Main.diagnostics?.Value = _primary_controller.current_notch;
@@ -225,13 +225,16 @@ internal partial class unit_a_sim: IDisposable
 		_torque_a.Value = _torque_b.Value = torque;
 	}
 
-	public void Dispose()
+	public override void Dispose()
 	{
-		//_disposed = true;
-		_simulation.SimulationFlow.TickEvent            -= simulate;
-		_appliances.StateUpdated                        -= appliances_toggle;
-		_throttle_handle.ValueUpdatedInternally         -= throttle_handler;
-		_control_BA1.ValueUpdatedInternally             -= MU_BA1_control;
-		_front_pantograph_switch.ValueUpdatedInternally -= toggle_pole;
+		if (!disposed)
+		{
+			base.Dispose();
+			_primary_controller.Dispose();
+			_simulation.SimulationFlow.TickEvent            -= simulate;
+			_throttle_handle.ValueUpdatedInternally         -= throttle_handler;
+			_control_BA1.ValueUpdatedInternally             -= MU_BA1_control;
+			_front_pantograph_switch.ValueUpdatedInternally -= toggle_pole;
+		}
 	}
 }

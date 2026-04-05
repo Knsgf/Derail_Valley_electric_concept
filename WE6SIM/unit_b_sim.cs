@@ -19,23 +19,25 @@ using static WE6SIM.utilities.sensor_grabber;
 
 namespace WE6SIM;
 
-internal class unit_b_sim: IDisposable
+internal class unit_b_sim: electric_device
 {
 	private readonly pantograph _pantograph;
 
 	private readonly TrainCar _unit;
 	private readonly SimController _simulation;
-	private readonly camshaft_controller _secondary_controller = new(unit_a_sim.camshaft_notches);
+	private readonly camshaft_motor _secondary_controller;
 
+	private readonly Fuse _appliances;
 	private readonly Port _control_AB1, _control_BA1;
 
 	private int _secondary_camshaft_target_notch = 1;
 
 	public unit_b_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
+		: base("unit_B_sim")
 	{
 		SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-		//_appliances = get_fuse(fuses, "fusebox.ELECTRICS_MAIN");
+		_appliances = get_fuse(fuses, "fusebox.ELECTRICS_MAIN");
 
 		//_throttle_handle = get_port(ports, "throttle.EXT_IN");
 		//_reverser_handle = get_port(ports, "reverser.REVERSER");
@@ -48,6 +50,8 @@ internal class unit_b_sim: IDisposable
 		_control_AB1.ValueUpdatedInternally += MU_AB1_control;
 		_control_BA1 = get_port(ports, "internal_MU.CONTROL_BA1");
 
+		_secondary_controller = new camshaft_motor(unit_a_sim.camshaft_notches, _appliances, drop_to_1_on_power_loss: false, secondary: true);
+
 		_unit = unit;
 		_simulation = simulation;
 		simulation.SimulationFlow.TickEvent += simulate;
@@ -59,14 +63,20 @@ internal class unit_b_sim: IDisposable
 
 	private void MU_AB1_control(float AB1)
 	{
+		if (disposed)
+			return;
 		if (port_value_signal_active(AB1, (int) AB1_signals.back_pantograph))
 			_pantograph.set_target_height(6.0f + Main.pole_height_offset);
 		else
 			_pantograph.set_target_height(0.0f);
+		_appliances.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.battery));
 
 		_secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_b_camshaft_notch, (int) AB1_shift.unit_b_camshaft_lsb);
 		switch (_secondary_camshaft_target_notch)
 		{
+			case 0:
+				break;
+
 			case unit_a_sim.roll_over_to_1:
 				_secondary_controller.roll_over_move(to_1: true);
 				break;
@@ -84,15 +94,20 @@ internal class unit_b_sim: IDisposable
 
 	private void simulate()
 	{
+		check_if_disposed();
 		_pantograph.move();
 		set_port_signal(_control_BA1, (int) BA1_signals.unit_b_camshaft_notch, (int) BA1_shift.unit_b_camshaft_lsb,
 			_secondary_controller.current_notch);
 	}
 
-	public void Dispose()
+	public override void Dispose()
 	{
-		_simulation.SimulationFlow.TickEvent -= simulate;
-		_control_AB1.ValueUpdatedInternally  -= MU_AB1_control;
+		if (!disposed)
+		{ 
+			base.Dispose();
+			_secondary_controller.Dispose();
+			_simulation.SimulationFlow.TickEvent -= simulate;
+			_control_AB1.ValueUpdatedInternally  -= MU_AB1_control;
+		}
 	}
-
 }
