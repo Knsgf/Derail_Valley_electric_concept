@@ -50,7 +50,7 @@ internal class unit_b_sim: electric_device
 		_control_AB1.ValueUpdatedInternally += MU_AB1_control;
 		_control_BA1 = get_port(ports, "internal_MU.CONTROL_BA1");
 
-		_secondary_controller = new camshaft_motor(unit_a_sim.camshaft_notches, _appliances, drop_to_1_on_power_loss: false, secondary: true);
+		_secondary_controller = new camshaft_motor(unit_a_sim.camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 
 		_unit = unit;
 		_simulation = simulation;

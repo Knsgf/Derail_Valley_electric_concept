@@ -33,12 +33,22 @@ internal partial class unit_a_sim: IDisposable
 			_interrupt_movement = _roll_over = true;
 			host._primary_controller.roll_over_move(to_1: true);
 			host.set_secondary_camshaft_target_notch(roll_over_to_1);
-			while (host.is_powered && (host._primary_controller.current_notch != 1
-				|| host.get_secondary_camshaft_current_notch(host._control_BA1.Value) != 1
-				|| host._single_notch_movement != null && !host._single_notch_movement.IsCompleted))
+			while (host.is_powered)
 			{
 				await Task.Delay(300);
+				if (host._primary_controller.current_notch == 1)
+					break;
+				host._primary_controller.roll_over_move(to_1: true);	// restart if previous call terminated before a fuse turned on
 			}
+			while (host.is_powered)
+			{
+				await Task.Delay(300);
+				if (host.get_secondary_camshaft_current_notch(host._control_BA1.Value) == 1)
+					break;
+				host.set_secondary_camshaft_target_notch(roll_over_to_1);
+			}
+			while (host.is_powered && (host._single_notch_movement != null && !host._single_notch_movement.IsCompleted))
+				await Task.Delay(300);
 			_roll_over = _interrupt_movement = false;
 		}
 

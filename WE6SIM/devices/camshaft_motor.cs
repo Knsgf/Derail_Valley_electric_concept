@@ -51,7 +51,7 @@ internal class camshaft_motor: electric_device
 
 	public event Action<int>? notch_changed;
 
-	public camshaft_motor(int notches, Fuse power_supply, bool drop_to_1_on_power_loss) : base("camshaft_motor", power_supply)
+	public camshaft_motor(int notches, Fuse power_supply, bool drop_to_1_on_power_loss): base("camshaft_motor", power_supply)
 	{
 		_num_notches             = notches;
 		_drop_to_1_on_power_loss = drop_to_1_on_power_loss;
@@ -84,7 +84,7 @@ internal class camshaft_motor: electric_device
 			current_position += up_motion ? (1.0f / notch_change_stages) : (-1.0f / notch_change_stages);
 			await Task.Delay(notch_change_time_ms / notch_change_stages);
 		}
-		if (is_powered)
+		if (Mathf.Abs(current_position - next_target_notch) <= 0.5f / notch_change_stages)
 		{
 			current_position = next_target_notch;   // Eliminate round-off errors
 			if (next_target_notch >= 1 && next_target_notch <= _num_notches)
@@ -123,6 +123,8 @@ internal class camshaft_motor: electric_device
 	public async void roll_over_move(bool to_1)
 	{
 		check_if_disposed();
+		if (_roll_over)
+			return;
 		_roll_over = true;
 		if (_camshaft_in_motion)
 		{
@@ -142,7 +144,7 @@ internal class camshaft_motor: electric_device
 			to_1 = true;
 		}
 
-		bool signal_completion = false;
+		bool signal_on_completion = false;
 		int current_notch = Mathf.RoundToInt(current_position);
 		if (to_1 && current_notch != 1 || !to_1 && current_notch != _num_notches)
 		{
@@ -169,10 +171,10 @@ internal class camshaft_motor: electric_device
 			while (Mathf.Abs(current_position - target_notch) > notch_lock_threshold);
 			current_position = _target_notch = to_1 ? 1 : _num_notches;
 			if (target_notch != 1 && target_notch != _num_notches)
-				signal_completion = true;
+				signal_on_completion = true;
 		}
 		_roll_over = _camshaft_in_motion = false;
-		if (signal_completion)
+		if (signal_on_completion)
 			notch_changed?.Invoke(_target_notch);
 	}
 

@@ -80,7 +80,7 @@ internal partial class unit_a_sim: electric_device
 			_currents[branch_name] = 0.0f;
 
 		_pantograph = new pantograph(unit.gameObject);
-		_primary_controller = new camshaft_motor(camshaft_notches, _appliances, drop_to_1_on_power_loss: false, secondary: false);
+		_primary_controller = new camshaft_motor(camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 
 		_unit = unit;
 		_simulation = simulation;
