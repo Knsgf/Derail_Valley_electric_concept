@@ -93,6 +93,7 @@ internal class camshaft_contactor_set: electric_device
 		_contactor_locations = contactor_locations;
 		_drive               = drive;
 		drive.notch_changed += switch_contactors;
+		switch_contactors(drive.current_notch);
 	}
 
 	private camshaft_contactor_set(string[]? normally_open_contacts, string[]? normally_closed_contacts,
@@ -122,6 +123,7 @@ internal class camshaft_contactor_set: electric_device
 		_contactor_locations = contactor_locations;
 		_drive               = drive;
 		drive.notch_changed += switch_contactors;
+		switch_contactors(drive.current_notch);
 	}
 
 	public static camshaft_contactor_set on_off(string[]? normally_open_contacts, string[]? normally_closed_contacts,

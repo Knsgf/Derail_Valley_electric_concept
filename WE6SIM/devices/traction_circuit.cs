@@ -31,14 +31,15 @@ internal partial class unit_a_sim: IDisposable
 *--<EPS@------------------------------------------------*
 """;
 
+	const int nrb = 1;
 	private readonly Dictionary<string, float> _element_resistances = new()
 	{
-		["SR1"] = 0.44f,
-		["SR2"] = 0.45f,
-		["SR3"] = 1.33f,
-		["MA1"] = 0.033f * 0.65f,
-		["MF1"] = 0.033f * 0.35f,
-		["EPS"] = 0.3f,
+		["SR1"] = 3.6f / nrb,
+		["SR2"] = 1.1f / nrb,
+		["SR3"] = 1.1f / nrb,
+		["MA1"] = 0.21f * 0.65f,
+		["MF1"] = 0.21f * 0.35f,
+		["EPS"] = 0.1f,
 
 		["LC1"] = 0.0f,
 
@@ -53,15 +54,22 @@ internal partial class unit_a_sim: IDisposable
 		["RR1.2"] = 0.0f,
 	};
 
+	private static readonly string _reverser_toggles =
+"""
+#  RF1.1 RF1.2 RR1.1 RR1.2
+1 |===========|     |     |
+2 |     |     |===========|
+""";
+
 	private static readonly string _primary_contactor_toggles =
 """
 #  CR1 CR2 CR3 CR4
-1  ===
-2  =======
-3  ===========
-4          ===
-5          =======
-6      ===========
-7  ===============
+1 |===|   |   |   |
+2 |=======|   |   |
+3 |===========|   |
+4 |   |   |===|   |
+5 |   |   |=======|
+6 |   |===========|
+7 |===============|
 """;
 }

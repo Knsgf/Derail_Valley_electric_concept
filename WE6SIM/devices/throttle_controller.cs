@@ -30,7 +30,7 @@ internal partial class unit_a_sim: IDisposable
 			if (!host.is_powered)
 				return;
 
-			_interrupt_movement = _roll_over = true;
+            _interrupt_movement = _roll_over = true;
 			while (host.is_powered && host._line_contactor.engaged)
 			{
 				host._line_contactor.toggle(false);
@@ -45,7 +45,7 @@ internal partial class unit_a_sim: IDisposable
 					break;
 				host._primary_controller.roll_over_move(to_1: true);	// restart if previous call terminated before a fuse switched on
 			}
-			while (host.is_powered && host.get_secondary_camshaft_current_notch(host._control_BA1.Value) == 1)
+			while (host.is_powered && host.get_secondary_camshaft_current_notch(host._control_BA1.Value) != 1)
 				await Task.Delay(300);
 			while (host.is_powered && (host._single_notch_movement != null && !host._single_notch_movement.IsCompleted))
 				await Task.Delay(300);
@@ -75,17 +75,17 @@ internal partial class unit_a_sim: IDisposable
 			if (_interrupt_movement || !host.is_powered)
 				return;
 
-			bool secondary_at_1 = host._secondary_camshaft_notch == 1;
-			int current_primary_notch = host._primary_controller.current_notch;
-			assert.test(current_primary_notch >= 1 && _host._secondary_camshaft_notch >= 1);
+            int current_primary_notch = host._primary_controller.current_notch, current_secondary_notch = host._secondary_camshaft_notch;
+            bool secondary_at_1 = current_secondary_notch == 1;
+			assert.test(current_primary_notch >= 1 && current_secondary_notch >= 1);
 			if (!_camshaft_unlock || secondary_at_1 && current_primary_notch == 1)
 				return;
 			_camshaft_unlock = false;
 			if (!secondary_at_1)
-				await finish_secondary_movement(host._secondary_camshaft_notch - 1);
+				await finish_secondary_movement((current_secondary_notch == 4) ? 2 : (current_secondary_notch - 1));
 			else
 			{
-				host._primary_controller.target_notch = current_primary_notch - 1;
+				host._primary_controller.target_notch = (current_primary_notch == 4) ? 2 : (current_primary_notch - 1);
 				await host._primary_controller.finish_movement();
 				if (!_interrupt_movement)
 					await finish_secondary_movement(roll_over_to_full);
@@ -98,20 +98,20 @@ internal partial class unit_a_sim: IDisposable
 			if (_interrupt_movement || !host.is_powered)
 				return;
 
-			bool secondary_at_7 = host._secondary_camshaft_notch == camshaft_notches;
-			int current_primary_notch = host._primary_controller.current_notch;
-			assert.test(current_primary_notch <= camshaft_notches && _host._secondary_camshaft_notch <= camshaft_notches);
+            int current_primary_notch = host._primary_controller.current_notch, current_secondary_notch = host._secondary_camshaft_notch;
+            bool secondary_at_7 = current_secondary_notch == camshaft_notches;
+			assert.test(current_primary_notch <= camshaft_notches && current_secondary_notch <= camshaft_notches);
 			if (!_camshaft_unlock || secondary_at_7 && current_primary_notch == camshaft_notches)
 				return;
 			_camshaft_unlock = false;
 			if (!secondary_at_7)
-				await finish_secondary_movement(host._secondary_camshaft_notch + 1);
+				await finish_secondary_movement((current_secondary_notch == 2) ? 4 : (current_secondary_notch + 1));
 			else
 			{
 				await finish_secondary_movement(roll_over_to_1);
 				if (!_interrupt_movement)
 				{
-					host._primary_controller.target_notch = current_primary_notch + 1;
+					host._primary_controller.target_notch = (current_primary_notch == 2) ? 4 : (current_primary_notch + 1);
 					await host._primary_controller.finish_movement();
 				}
 			}
