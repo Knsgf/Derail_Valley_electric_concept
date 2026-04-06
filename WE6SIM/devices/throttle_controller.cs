@@ -31,22 +31,22 @@ internal partial class unit_a_sim: IDisposable
 				return;
 
 			_interrupt_movement = _roll_over = true;
-			host._primary_controller.roll_over_move(to_1: true);
+			while (host.is_powered && host._line_contactor.engaged)
+			{
+				host._line_contactor.toggle(false);
+                await Task.Delay(300);
+            }
+            host._primary_controller.roll_over_move(to_1: true);
 			host.set_secondary_camshaft_target_notch(roll_over_to_1);
-			while (host.is_powered)
+			while (host.is_powered && host._primary_controller.current_notch != 1)
 			{
 				await Task.Delay(300);
 				if (host._primary_controller.current_notch == 1)
 					break;
-				host._primary_controller.roll_over_move(to_1: true);	// restart if previous call terminated before a fuse turned on
+				host._primary_controller.roll_over_move(to_1: true);	// restart if previous call terminated before a fuse switched on
 			}
-			while (host.is_powered)
-			{
+			while (host.is_powered && host.get_secondary_camshaft_current_notch(host._control_BA1.Value) == 1)
 				await Task.Delay(300);
-				if (host.get_secondary_camshaft_current_notch(host._control_BA1.Value) == 1)
-					break;
-				host.set_secondary_camshaft_target_notch(roll_over_to_1);
-			}
 			while (host.is_powered && (host._single_notch_movement != null && !host._single_notch_movement.IsCompleted))
 				await Task.Delay(300);
 			_roll_over = _interrupt_movement = false;
@@ -120,10 +120,17 @@ internal partial class unit_a_sim: IDisposable
 		public async Task unlock_camshafts(bool continuous_run)
 		{
 			unit_a_sim host = _host;
-			if (_interrupt_movement || !host.is_powered)
-				return;
-
-			if (host._single_notch_movement != null && !host._single_notch_movement.IsCompleted)
+            if (!host.is_powered)
+                return;
+			while (host._throttle == 3 && !host._line_contactor.engaged)
+			{
+				host._line_contactor.toggle(true);
+				await Task.Delay(300);
+            }
+            
+			if (_interrupt_movement)
+                return;
+            if (host._single_notch_movement != null && !host._single_notch_movement.IsCompleted)
 				await host._single_notch_movement;
 			if ((continuous_run || host._throttle == 3) && _host.is_powered)
 				_camshaft_unlock = true;
@@ -141,7 +148,7 @@ internal partial class unit_a_sim: IDisposable
 				await host._single_notch_movement;
 				_interrupt_movement = _roll_over;
 			}
-			while (!_roll_over && host._throttle == 1 && _host.is_powered
+			while (!_interrupt_movement && host._throttle == 1 && _host.is_powered
 				&& (host._secondary_camshaft_notch > 1 || host._primary_controller.current_notch > 1))
 			{
 				await unlock_camshafts(continuous_run: true);
@@ -161,7 +168,7 @@ internal partial class unit_a_sim: IDisposable
 				await host._single_notch_movement;
 				_interrupt_movement = _roll_over;
 			}
-			while (!_roll_over && host._throttle == 5 && _host.is_powered
+			while (!_interrupt_movement && host._throttle == 5 && _host.is_powered
 				&& (host._secondary_camshaft_notch < camshaft_notches || host._primary_controller.current_notch < camshaft_notches))
 			{
 				await unlock_camshafts(continuous_run: true);

@@ -38,6 +38,7 @@ internal partial class unit_a_sim: electric_device
 	private readonly pantograph          _pantograph;
 	private readonly camshaft_motor      _primary_controller;
 	private readonly throttle_controller _throttle_controller;
+	private readonly contactor           _line_contactor;
 	private readonly TrainCar            _unit;
 
 	private bool _traction_on = false;
@@ -81,6 +82,7 @@ internal partial class unit_a_sim: electric_device
 
 		_pantograph = new pantograph(unit.gameObject, _appliances);
 		_primary_controller = new camshaft_motor(camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
+		_line_contactor = new contactor(["LC1"], null, _contactor_locations, _appliances);
 
 		_unit = unit;
 		_simulation = simulation;

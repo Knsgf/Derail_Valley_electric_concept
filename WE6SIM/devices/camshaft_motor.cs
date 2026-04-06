@@ -40,7 +40,7 @@ internal class camshaft_motor: electric_device
 				lock (_blocker)
 				{
 					_target_notch = Math.Max(1, Math.Min(_num_notches, value));
-					if (!_camshaft_in_motion && (_regular_movement == null || _regular_movement.IsCompleted))
+					if (!_camshaft_in_motion && _target_notch != current_notch)
 						_regular_movement = regular_move();
 				}
 			}
@@ -63,6 +63,8 @@ internal class camshaft_motor: electric_device
 
 	private void power_supply_changed(bool power_on)
 	{
+		if (disposed)
+			return;
 		if (power_on)
 			target_notch = (int) current_position;
 		else if (_drop_to_1_on_power_loss && !_roll_over)
@@ -77,14 +79,14 @@ internal class camshaft_motor: electric_device
 			++next_target_notch;
 		else if (down_motion)
 			--next_target_notch;
-		while ((power_loss_drop || is_powered)
+		while ((power_loss_drop || is_powered) && !disposed
 			&& ( up_motion && next_target_notch -  current_position >= 0.5f / notch_change_stages
 			|| down_motion && current_position  - next_target_notch >= 0.5f / notch_change_stages))
 		{
 			current_position += up_motion ? (1.0f / notch_change_stages) : (-1.0f / notch_change_stages);
 			await Task.Delay(notch_change_time_ms / notch_change_stages);
 		}
-		if (Mathf.Abs(current_position - next_target_notch) <= 0.5f / notch_change_stages)
+		if (!disposed && Mathf.Abs(current_position - next_target_notch) <= 0.5f / notch_change_stages)
 		{
 			current_position = next_target_notch;   // Eliminate round-off errors
 			if (next_target_notch >= 1 && next_target_notch <= _num_notches)
@@ -94,7 +96,7 @@ internal class camshaft_motor: electric_device
 
 	private async Task regular_move()
 	{
-		if (_camshaft_in_motion || _roll_over || !is_powered)
+		if (_camshaft_in_motion || _roll_over || !is_powered || disposed)
 			return;
 		_camshaft_in_motion = true;
 		while (true)
@@ -103,7 +105,7 @@ internal class camshaft_motor: electric_device
 			await single_notch_motion(_target_notch, power_loss_drop: false);
 			lock (_blocker)
 			{
-				if (!is_powered)
+				if (!is_powered || disposed)
 				{
 					_camshaft_in_motion = _finish_movement_at_next_notch = false;
 					break;
@@ -134,9 +136,9 @@ internal class camshaft_motor: electric_device
 			_finish_movement_at_next_notch = false;
 		}
 
-		if (!is_powered)
+		if (!is_powered || disposed)
 		{
-			if (!_drop_to_1_on_power_loss)
+			if (!_drop_to_1_on_power_loss || disposed)
 			{
 				_roll_over = _camshaft_in_motion = false;
 				return;
@@ -157,9 +159,9 @@ internal class camshaft_motor: electric_device
 			do
 			{
 				await single_notch_motion(target_notch, _drop_to_1_on_power_loss);
-				if (!is_powered)
+				if (!is_powered || disposed)
 				{
-					if (!_drop_to_1_on_power_loss)
+					if (!_drop_to_1_on_power_loss || disposed)
 					{
 						_roll_over = _camshaft_in_motion = false;
 						return;

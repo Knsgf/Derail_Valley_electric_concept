@@ -95,20 +95,28 @@ internal class camshaft_contactor_set: electric_device
 		drive.notch_changed += switch_contactors;
 	}
 
-	private camshaft_contactor_set(string[] normally_open_contacts, string[] normally_closed_contacts,
+	private camshaft_contactor_set(string[]? normally_open_contacts, string[]? normally_closed_contacts,
 		Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor drive): base("camshaft_contactor_set")
 	{
-		foreach (string open_contactor in normally_open_contacts)
+		if (normally_open_contacts != null)
 		{
-			if (!contactor_locations.ContainsKey(open_contactor))
-				throw new ArgumentException($"{open_contactor} not present on circuit diagram");
-			_contactor_notch_patterns[open_contactor] = 0x2;
+			foreach (string open_contactor in normally_open_contacts)
+			{
+				if (!contactor_locations.ContainsKey(open_contactor))
+					throw new ArgumentException($"{open_contactor} not present on circuit diagram");
+				_contactor_notch_patterns[open_contactor] = 0x2;
+			}
 		}
-		foreach (string closed_contactor in normally_closed_contacts)
+		if (normally_closed_contacts != null)
 		{
-			if (!contactor_locations.ContainsKey(closed_contactor))
-				throw new ArgumentException($"{closed_contactor} not present on circuit diagram");
-			_contactor_notch_patterns[closed_contactor] = 0x1;
+			foreach (string closed_contactor in normally_closed_contacts)
+			{
+				if (!contactor_locations.ContainsKey(closed_contactor))
+					throw new ArgumentException($"{closed_contactor} not present on circuit diagram");
+				if (_contactor_notch_patterns.ContainsKey(closed_contactor))
+					throw new ArgumentException($"{closed_contactor} cannot be both normally open and closed");
+				_contactor_notch_patterns[closed_contactor] = 0x1;
+			}
 		}
 
 		_contactor_locations = contactor_locations;
@@ -116,13 +124,21 @@ internal class camshaft_contactor_set: electric_device
 		drive.notch_changed += switch_contactors;
 	}
 
+	public static camshaft_contactor_set on_off(string[]? normally_open_contacts, string[]? normally_closed_contacts,
+		Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor drive)
+	{
+		return new camshaft_contactor_set(normally_open_contacts, normally_closed_contacts, contactor_locations, drive);
+	}
+
 	private void switch_contactors(int notch)
 	{
 		check_if_disposed();
+		Main.log($"N={notch}");
 		int closed_mask = 1 << (notch - 1);
 		foreach (KeyValuePair<string, int> contactor_close_pattern in _contactor_notch_patterns)
 		{
 			string contactor_name = contactor_close_pattern.Key;
+			Main.log($"{contactor_name} {(((contactor_close_pattern.Value & closed_mask) != 0) ? "on" : "off")}");
 			_contactor_locations[contactor_name].toggle_contactor(contactor_name, (contactor_close_pattern.Value & closed_mask) != 0);
 		}
 	}
