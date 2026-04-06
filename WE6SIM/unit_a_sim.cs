@@ -27,7 +27,8 @@ internal partial class unit_a_sim: electric_device
 	private readonly Dictionary<string, float> _currents = [];
 
 	private readonly Fuse _appliances;
-	private readonly Port _throttle_handle, _reverser_handle, _torque_a, _wheel_RPM;
+	private readonly Port _throttle_handle, _reverser_handle; 
+	private readonly Port _torque_a, _wheel_RPM, _traction_motor_load;
 	private readonly Port _front_pantograph_switch;
 	private readonly Port _primary_notch_hand, _secondary_notch_hand;
 	private readonly Port? _switch;
@@ -72,8 +73,9 @@ internal partial class unit_a_sim: electric_device
 		_primary_notch_hand   = get_port(ports, "[CustomSimulation].PRIMARY_NOTCH"  );
         _secondary_notch_hand = get_port(ports, "[CustomSimulation].SECONDARY_NOTCH");
 
-        _torque_a = get_port(ports, "traction.TORQUE_IN");
+        _torque_a  = get_port(ports, "traction.TORQUE_IN");
 		_wheel_RPM = get_port(ports, "traction.WHEEL_RPM_EXT_IN");
+		_traction_motor_load = get_port(ports, "[CustomSimulation].MOTOR_LOAD");
 
 		_torque_b = get_port(ports, "internal_MU.TM4-6");
 		_control_AB1 = get_port(ports, "internal_MU.CONTROL_AB1");
@@ -223,7 +225,7 @@ internal partial class unit_a_sim: electric_device
 
 		//_throttle.throttle_handler(reverser, throttle);
 
-		const int nb = 1, mb = 6 / nb;
+		const int nb = 3, mb = 6 / nb;
 		const float max_flux = 300.0f, min_flux = 1.0f, flux_top = max_flux - min_flux, torque_factor = 0.186f, EMF_factor = 0.0195f;
 		_named_branches["EPS"].EMF = 1500.0f;
 		foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
@@ -244,8 +246,8 @@ internal partial class unit_a_sim: electric_device
         //_contactor_locations["CP4"].toggle_contactor("CP4", /*_traction_on &&*/ (throttle == 3 || throttle == 4 || throttle == 5));
 
         _circuit.simulate();
-		Main.diagnostics?.Value = _currents["MA1"] / nb;
-		Main.diagnostics2?.Value = _named_branches["MA1"].EMF / mb;
+		Main.diagnostics?.Value = _traction_motor_load.Value = _currents["MA1"] / nb;
+		Main.diagnostics2?.Value = _named_branches["MA1"].EMF / (-mb);
 
 		float torque = 3.0f * torque_factor * (_currents["MA1"] / nb) * (min_flux + Mathf.Max(-flux_top, Mathf.Min(flux_top, _currents["MF1"] / nb)));
 		_torque_a.Value = _torque_b.Value = torque;

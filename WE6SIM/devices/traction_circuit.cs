@@ -31,7 +31,7 @@ internal partial class unit_a_sim: IDisposable
 *--<EPS@------------------------------------------------*
 """;
 
-	const int nrb = 1;
+	const int nrb = 3;
 	private readonly Dictionary<string, float> _element_resistances = new()
 	{
 		["SR1"] = 3.6f / nrb,
