@@ -57,7 +57,7 @@ internal class camshaft_motor: electric_device
 		_drop_to_1_on_power_loss = drop_to_1_on_power_loss;
 		power_supply_toggled    += power_supply_changed;
 
-		current_position = UnityEngine.Random.value * (notches - 1) + 1.0f;
+		current_position = drop_to_1_on_power_loss ? 1.0f : (UnityEngine.Random.value * (notches - 1) + 1.0f);
 		_target_notch = current_notch;
 	}
 

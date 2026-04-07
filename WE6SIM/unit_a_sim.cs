@@ -40,7 +40,7 @@ internal partial class unit_a_sim: electric_device
 
 	private readonly pantograph             _pantograph;
 	private readonly camshaft_motor         _reverser, _primary_controller;
-	private readonly camshaft_contactor_set _reverser_shaft, _primary_camshaft;
+	private readonly camshaft_contactor_set _reverser_shaft, _primary_camshaft, _secondary_camshaft;
 	private readonly throttle_controller    _throttle_controller;
 	private readonly contactor              _line_contactor;
 	private readonly TrainCar               _unit;
@@ -93,6 +93,7 @@ internal partial class unit_a_sim: electric_device
 		_pantograph = new pantograph(unit.gameObject, _appliances);
 		_primary_controller = new camshaft_motor(camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 		_primary_camshaft = new camshaft_contactor_set(_primary_contactor_toggles, _contactor_locations, _primary_controller);
+		_secondary_camshaft = new camshaft_contactor_set(_secondary_contactor_toggles, _contactor_locations, null);
 		_reverser = new camshaft_motor(2, _appliances, drop_to_1_on_power_loss: false);
 		_reverser_shaft = new camshaft_contactor_set(_reverser_toggles, _contactor_locations, _reverser);
 		_line_contactor = new contactor(["LC1"], null, _contactor_locations, _appliances);
@@ -207,6 +208,7 @@ internal partial class unit_a_sim: electric_device
 		if (disposed)
 			return;
 		/*Main.diagnostics2?.Value =*/ _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
+		_secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
 	}
 
 	private void traction_toggle(bool enable)
@@ -269,6 +271,7 @@ internal partial class unit_a_sim: electric_device
 			_pantograph.Dispose();
             _primary_controller.Dispose();
 			_primary_camshaft.Dispose();
+			_secondary_camshaft.Dispose();
 			_reverser.Dispose();
 			_reverser_shaft.Dispose();
             _line_contactor.Dispose();

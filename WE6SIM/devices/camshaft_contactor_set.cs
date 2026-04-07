@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using WE6SIM.circuit_sim;
 using WE6SIM.utilities;
+using static HarmonyLib.Code;
 
 namespace WE6SIM;
 
@@ -17,7 +18,7 @@ internal class camshaft_contactor_set: electric_device
 
 	private readonly Dictionary<string, int> _contactor_notch_patterns = [];
 	private readonly Dictionary<string, circuit.branch_user> _contactor_locations;
-	private readonly camshaft_motor _drive;
+	private readonly camshaft_motor? _drive;
 
 	private (string?, int, int) extract_token(string input, int starting_index)
 	{
@@ -39,8 +40,17 @@ internal class camshaft_contactor_set: electric_device
 		return (input.Substring(left_margin, right_margin - left_margin), left_margin, right_margin);
 	}
 
-	public camshaft_contactor_set(string contactor_on_table, Dictionary<string, circuit.branch_user> contactor_locations,
-		camshaft_motor drive): base("camshaft_contactor_set")
+	private void attach_shaft()
+	{
+		if (_drive != null)
+		{
+			_drive.notch_changed += switch_contactors;
+			switch_contactors(_drive.current_notch);
+		}
+    }
+
+    public camshaft_contactor_set(string contactor_on_table, Dictionary<string, circuit.branch_user> contactor_locations,
+		camshaft_motor? drive): base("camshaft_contactor_set")
 	{
 		string[] lines = contactor_on_table.Split('\n');
 		if (lines.Length < 2)
@@ -92,12 +102,11 @@ internal class camshaft_contactor_set: electric_device
 
 		_contactor_locations = contactor_locations;
 		_drive               = drive;
-		drive.notch_changed += switch_contactors;
-		switch_contactors(drive.current_notch);
+		attach_shaft();
 	}
 
 	private camshaft_contactor_set(string[]? normally_open_contacts, string[]? normally_closed_contacts,
-		Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor drive): base("camshaft_contactor_set")
+		Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor? drive): base("camshaft_contactor_set")
 	{
 		if (normally_open_contacts != null)
 		{
@@ -122,17 +131,16 @@ internal class camshaft_contactor_set: electric_device
 
 		_contactor_locations = contactor_locations;
 		_drive               = drive;
-		drive.notch_changed += switch_contactors;
-		switch_contactors(drive.current_notch);
-	}
+        attach_shaft();
+    }
 
-	public static camshaft_contactor_set on_off(string[]? normally_open_contacts, string[]? normally_closed_contacts,
-		Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor drive)
+    public static camshaft_contactor_set on_off(string[]? normally_open_contacts, string[]? normally_closed_contacts,
+		Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor? drive)
 	{
 		return new camshaft_contactor_set(normally_open_contacts, normally_closed_contacts, contactor_locations, drive);
 	}
 
-	private void switch_contactors(int notch)
+	public void switch_contactors(int notch)
 	{
 		check_if_disposed();
 		Main.log($"N={notch}");
@@ -150,8 +158,11 @@ internal class camshaft_contactor_set: electric_device
 		if (!disposed)
 		{
 			base.Dispose();
-			_drive.notch_changed -= switch_contactors;
-			_drive.Dispose();
+			if (_drive != null)
+			{
+				_drive.notch_changed -= switch_contactors;
+				_drive.Dispose();
+			}
 		}
 	}
 }
