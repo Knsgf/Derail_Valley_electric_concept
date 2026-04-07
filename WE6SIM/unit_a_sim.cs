@@ -31,7 +31,9 @@ internal partial class unit_a_sim: electric_device
 	private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
 	private readonly Port _front_pantograph_switch;
 	private readonly Port _primary_notch_hand, _secondary_notch_hand;
-	private readonly Port? _switch;
+	private readonly Port _supply_volts, _motor_volts;
+    private readonly Port[] _load_meter_groups, _field_meter_groups;
+    private readonly Port? _switch;
 
 	private readonly Port _control_AB1, _control_BA1, _torque_b;
 
@@ -98,7 +100,17 @@ internal partial class unit_a_sim: electric_device
 		_reverser_shaft = new camshaft_contactor_set(_reverser_toggles, _contactor_locations, _reverser);
 		_line_contactor = new contactor(["LC1"], null, _contactor_locations, _appliances);
 
-		_unit = unit;
+		_supply_volts = get_port(ports, "[CustomGauges].SUPPLY"            );
+		_motor_volts  = get_port(ports, "[CustomGauges].ALL_MOTOR_TERMINAL");
+        _load_meter_groups  = new Port[3];
+        _field_meter_groups = new Port[3];
+		for (int group = 1; group <= 3; ++group)
+		{
+			_load_meter_groups [group - 1] = get_port(ports, $"[CustomGauges].LOAD_GROUP{group}" );
+            _field_meter_groups[group - 1] = get_port(ports, $"[CustomGauges].FIELD_GROUP{group}");
+        }
+
+        _unit = unit;
 		_simulation = simulation;
 		simulation.SimulationFlow.TickEvent += simulate;
 	}
@@ -232,32 +244,23 @@ internal partial class unit_a_sim: electric_device
 		const int nb = 3, mb = 6 / nb;
 		const float max_flux = 300.0f, min_flux = 1.0f;
 		const float gear_ratio = 5.36f, torque_factor = 0.0347f, EMF_factor = 0.003634f;
-		_named_branches["EPS"].EMF = 1500.0f;
-		foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
+		_named_branches["EPS"].EMF = is_powered ? 1500.0f : 0.0f;
+		_supply_volts.Value = _named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"];
+        foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
 			_currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
 		float motor_RPM = _wheel_RPM.Value * gear_ratio;
 		float magnetic_flux = min_flux + Mathf.Clamp(Mathf.Abs(_currents["MF1"] / nb), 0.0f, max_flux - min_flux);
 		if (_currents["MF1"] < 0.0f)
 			magnetic_flux = -magnetic_flux;
         float EMF = mb * (-EMF_factor) * magnetic_flux * motor_RPM;
-		_named_branches["MA1"].EMF = _named_branches["MA1"].EMF * 0.7f + EMF * 0.3f;
-
-        /*
-		_contactor_locations["RF1.1"].toggle_contactor("RF1.1", reverser > 0);
-		_contactor_locations["RF1.2"].toggle_contactor("RF1.2", reverser > 0);
-		_contactor_locations["RR1.1"].toggle_contactor("RR1.1", reverser < 0);
-		_contactor_locations["RR1.2"].toggle_contactor("RR1.2", reverser < 0);
-		*/
-
-        //_contactor_locations["CP1"].toggle_contactor("CP1", /*_traction_on &&*/ (throttle == 0 || throttle == 1 || throttle == 2 || throttle == 5));
-        //_contactor_locations["CP2"].toggle_contactor("CP2", /*_traction_on &&*/ (throttle == 1 || throttle == 2 || throttle == 4 || throttle == 5));
-        //_contactor_locations["CP3"].toggle_contactor("CP3", /*_traction_on &&*/ (throttle == 2 || throttle == 3 || throttle == 4 || throttle == 5));
-        //_contactor_locations["CP4"].toggle_contactor("CP4", /*_traction_on &&*/ (throttle == 3 || throttle == 4 || throttle == 5));
+        _named_branches["MA1"].EMF = _named_branches["MA1"].EMF * 0.7f + EMF * 0.3f;
+		_motor_volts.Value = _currents["VM"] * _element_resistances["VM"];
 
         _circuit.simulate();
 		_traction_motor_RPM.Value = motor_RPM;
-		/*Main.diagnostics?.Value =*/ _traction_motor_load.Value = _currents["MA1"] / nb;
-		/*Main.diagnostics2?.Value =*/ _traction_motor_EMF.Value = _named_branches["MA1"].EMF / (-mb);
+		_traction_motor_load.Value = _load_meter_groups[0].Value = _currents["MA1"] / nb;
+		_field_meter_groups[0].Value = _currents["MF1"] / nb;
+		_traction_motor_EMF.Value = _named_branches["MA1"].EMF / (-mb);
 
 		float half_torque = (6.0f / 2.0f) * torque_factor * gear_ratio * (_currents["MA1"] / nb) * magnetic_flux;
 		_torque_a.Value = _torque_b.Value = half_torque;
