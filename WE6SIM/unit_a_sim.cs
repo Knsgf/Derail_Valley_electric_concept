@@ -28,7 +28,7 @@ internal partial class unit_a_sim: electric_device
 
 	private readonly Fuse _appliances;
 	private readonly Port _throttle_handle, _reverser_handle; 
-	private readonly Port _torque_a, _wheel_RPM, _traction_motor_load;
+	private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
 	private readonly Port _front_pantograph_switch;
 	private readonly Port _primary_notch_hand, _secondary_notch_hand;
 	private readonly Port? _switch;
@@ -75,9 +75,11 @@ internal partial class unit_a_sim: electric_device
 
         _torque_a  = get_port(ports, "traction.TORQUE_IN");
 		_wheel_RPM = get_port(ports, "traction.WHEEL_RPM_EXT_IN");
-		_traction_motor_load = get_port(ports, "[CustomSimulation].MOTOR_LOAD");
+        _traction_motor_load = get_port(ports, "[CustomSimulation].MOTOR_LOAD");
+        _traction_motor_RPM  = get_port(ports, "[CustomSimulation].MOTOR_RPM" );
+        _traction_motor_EMF  = get_port(ports, "[CustomSimulation].MOTOR_EMF" );
 
-		_torque_b = get_port(ports, "internal_MU.TM4-6");
+        _torque_b = get_port(ports, "internal_MU.TM4-6");
 		_control_AB1 = get_port(ports, "internal_MU.CONTROL_AB1");
 		_control_BA1 = get_port(ports, "internal_MU.CONTROL_BA1");
 		_control_BA1.ValueUpdatedInternally += MU_BA1_control;
@@ -226,11 +228,16 @@ internal partial class unit_a_sim: electric_device
 		//_throttle.throttle_handler(reverser, throttle);
 
 		const int nb = 3, mb = 6 / nb;
-		const float max_flux = 300.0f, min_flux = 1.0f, flux_top = max_flux - min_flux, torque_factor = 0.186f, EMF_factor = 0.0195f;
+		const float max_flux = 300.0f, min_flux = 1.0f;
+		const float gear_ratio = 5.36f, torque_factor = 0.0347f, EMF_factor = 0.003634f;
 		_named_branches["EPS"].EMF = 1500.0f;
 		foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
 			_currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
-		float EMF = mb * (-EMF_factor) * (min_flux + Mathf.Max(-flux_top, Mathf.Min(flux_top, _currents["MF1"] / nb))) * _wheel_RPM.Value;
+		float motor_RPM = _wheel_RPM.Value * gear_ratio;
+		float magnetic_flux = min_flux + Mathf.Clamp(Mathf.Abs(_currents["MF1"] / nb), 0.0f, max_flux - min_flux);
+		if (_currents["MF1"] < 0.0f)
+			magnetic_flux = -magnetic_flux;
+        float EMF = mb * (-EMF_factor) * magnetic_flux * motor_RPM;
 		_named_branches["MA1"].EMF = _named_branches["MA1"].EMF * 0.7f + EMF * 0.3f;
 
         /*
@@ -246,11 +253,12 @@ internal partial class unit_a_sim: electric_device
         //_contactor_locations["CP4"].toggle_contactor("CP4", /*_traction_on &&*/ (throttle == 3 || throttle == 4 || throttle == 5));
 
         _circuit.simulate();
-		Main.diagnostics?.Value = _traction_motor_load.Value = _currents["MA1"] / nb;
-		Main.diagnostics2?.Value = _named_branches["MA1"].EMF / (-mb);
+		_traction_motor_RPM.Value = motor_RPM;
+		/*Main.diagnostics?.Value =*/ _traction_motor_load.Value = _currents["MA1"] / nb;
+		/*Main.diagnostics2?.Value =*/ _traction_motor_EMF.Value = _named_branches["MA1"].EMF / (-mb);
 
-		float torque = 3.0f * torque_factor * (_currents["MA1"] / nb) * (min_flux + Mathf.Max(-flux_top, Mathf.Min(flux_top, _currents["MF1"] / nb)));
-		_torque_a.Value = _torque_b.Value = torque;
+		float half_torque = (6.0f / 2.0f) * torque_factor * gear_ratio * (_currents["MA1"] / nb) * magnetic_flux;
+		_torque_a.Value = _torque_b.Value = half_torque;
 	}
 
 	public override void Dispose()

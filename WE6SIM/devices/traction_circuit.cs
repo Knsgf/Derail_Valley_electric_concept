@@ -34,9 +34,9 @@ internal partial class unit_a_sim: IDisposable
 	const int nrb = 3;
 	private readonly Dictionary<string, float> _element_resistances = new()
 	{
-		["SR1"] = 3.6f / nrb,
+		["SR1"] = 1.1f / nrb,
 		["SR2"] = 1.1f / nrb,
-		["SR3"] = 1.1f / nrb,
+		["SR3"] = 3.6f / nrb,
 		["MA1"] = 0.21f * 0.65f,
 		["MF1"] = 0.21f * 0.35f,
 		["EPS"] = 0.1f,
