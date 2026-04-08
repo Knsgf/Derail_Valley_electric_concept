@@ -20,14 +20,17 @@ namespace WE6SIM;
 
 internal partial class unit_a_sim: electric_device
 {
-	private readonly GameObject _test_pole_prefab;
+    const int nb = 3, mb = 6 / nb;
+	const float supply_volts = 1650.0f, supply_r = 0.1f;
+
+    private readonly GameObject _test_pole_prefab;
 	private GameObject? _test_pole;
 
 	private readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
 	private readonly Dictionary<string, float> _currents = [];
 
 	private readonly Fuse _appliances;
-	private readonly Port _throttle_handle, _reverser_handle; 
+	private readonly Port _throttle_handle, _reverser_handle, _field_handle; 
 	private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
 	private readonly Port _front_pantograph_switch;
 	private readonly Port _primary_notch_hand, _secondary_notch_hand;
@@ -45,6 +48,7 @@ internal partial class unit_a_sim: electric_device
 	private readonly camshaft_contactor_set _reverser_shaft, _primary_camshaft, _secondary_camshaft;
 	private readonly throttle_controller    _throttle_controller;
 	private readonly contactor              _line_contactor;
+	private readonly contactor[]            _field_shunt_contactors;
 	private readonly TrainCar               _unit;
 
 	private bool _traction_on = false;
@@ -56,7 +60,8 @@ internal partial class unit_a_sim: electric_device
 	public unit_a_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
 		: base("unit_A_sim")
 	{
-		SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
+
+        SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
 		_appliances = get_fuse(fuses, "fusebox.ELECTRICS_MAIN");
 		set_up_fuses(_appliances);
@@ -64,10 +69,11 @@ internal partial class unit_a_sim: electric_device
 
 		_reverser_handle = get_port(ports, "[Reverser].EXT_IN");
 		_reverser_handle.ValueUpdatedInternally += reverser_handler;
-
 		_throttle_controller = new throttle_controller(this);
 		_throttle_handle = get_port(ports, "[Throttle].EXT_IN");
 		_throttle_handle.ValueUpdatedInternally += throttle_handler;
+		_field_handle = get_port(ports, "[FieldControl].EXT_IN");
+		_field_handle.ValueUpdatedInternally += field_control_handler;
 
 		_front_pantograph_switch = get_port(ports, "[FrontPantographSwitch].EXT_IN");
 		_front_pantograph_switch.ValueUpdatedInternally += toggle_pole;
@@ -99,8 +105,26 @@ internal partial class unit_a_sim: electric_device
 		_reverser = new camshaft_motor(2, _appliances, drop_to_1_on_power_loss: false);
 		_reverser_shaft = new camshaft_contactor_set(_reverser_toggles, _contactor_locations, _reverser);
 		_line_contactor = new contactor(["LC1"], null, _contactor_locations, _appliances);
+		_field_shunt_contactors = new contactor[6];
+		const int motors = 1;
+		for (int field_contactor = 1; field_contactor <= 6; ++field_contactor)
+		{
+			if (field_contactor == 3)
+				continue;
+			string[] contacts = new string[motors];
+			for (int motor = 1; motor <= motors; ++motor)
+				contacts[motor - 1] = $"FS{motor}.{field_contactor}";
+			_field_shunt_contactors[field_contactor - 1] = new contactor(contacts, null, _contactor_locations, _appliances);
+		}
+		string[] open_contacts = new string[motors], closed_contacts = new string[motors];
+		for (int motor = 1; motor <= motors; ++motor)
+		{
+            open_contacts[motor - 1] = $"FS{motor}.3o";
+            closed_contacts[motor - 1] = $"FS{motor}.3c";
+        }
+		_field_shunt_contactors[3 - 1] = new contactor(open_contacts, closed_contacts, _contactor_locations, _appliances);
 
-		_supply_volts = get_port(ports, "[CustomGauges].SUPPLY"            );
+        _supply_volts = get_port(ports, "[CustomGauges].SUPPLY"            );
 		_motor_volts  = get_port(ports, "[CustomGauges].ALL_MOTOR_TERMINAL");
         _load_meter_groups  = new Port[3];
         _field_meter_groups = new Port[3];
@@ -162,12 +186,13 @@ internal partial class unit_a_sim: electric_device
 		{
 			reverser_handler(_reverser_handle.Value);
 			throttle_handler(_throttle_handle.Value);
+			field_control_handler(_field_handle.Value);
 		}
 	}
 
 	private void reverser_handler(float raw_reverser)
 	{
-		if (!is_powered)
+		if (!is_powered || disposed)
 			return;
 		if (raw_reverser >= 0.7f)
 			_reverser.target_notch = 1;
@@ -177,9 +202,8 @@ internal partial class unit_a_sim: electric_device
 
 	private void throttle_handler(float normalised_throttle)
 	{
-		check_if_disposed();
 		_throttle = Mathf.RoundToInt(normalised_throttle * 5.0f);
-		if (!is_powered)
+		if (!is_powered || disposed)
 			return;
 		switch (_throttle)
 		{
@@ -215,7 +239,18 @@ internal partial class unit_a_sim: electric_device
 		//	(int) AB1_shift.unit_b_camshaft_lsb, _throttle + 1);
 	}
 
-	private void MU_BA1_control(float BA1)
+	private void field_control_handler(float raw_field_position)
+	{
+        if (!is_powered || disposed)
+            return;
+        int handle_postion = Mathf.RoundToInt(raw_field_position * 6.0f);
+        for (int field_contactor_on = 0; field_contactor_on < handle_postion; ++field_contactor_on)
+			_field_shunt_contactors[field_contactor_on].toggle(turn_on: true);
+        for (int field_contactor_off = handle_postion; field_contactor_off < 6; ++field_contactor_off)
+            _field_shunt_contactors[field_contactor_off].toggle(turn_on: false);
+    }
+
+    private void MU_BA1_control(float BA1)
 	{
 		if (disposed)
 			return;
@@ -241,16 +276,15 @@ internal partial class unit_a_sim: electric_device
 
 		//_throttle.throttle_handler(reverser, throttle);
 
-		const int nb = 3, mb = 6 / nb;
 		const float max_flux = 300.0f, min_flux = 1.0f;
 		const float gear_ratio = 5.36f, torque_factor = 0.0347f, EMF_factor = 0.003634f;
-		_named_branches["EPS"].EMF = is_powered ? 1500.0f : 0.0f;
+		_named_branches["EPS"].EMF = is_powered ? supply_volts : 0.0f;
 		_supply_volts.Value = _named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"];
         foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
 			_currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
 		float motor_RPM = _wheel_RPM.Value * gear_ratio;
-		float magnetic_flux = min_flux + Mathf.Clamp(Mathf.Abs(_currents["MF1"] / nb), 0.0f, max_flux - min_flux);
-		if (_currents["MF1"] < 0.0f)
+		float magnetic_flux = min_flux + Mathf.Clamp(Mathf.Abs((_currents["MF1a"] * (1.0f - 0.63f) + _currents["MF1b"] * 0.63f) / nb), 0.0f, max_flux - min_flux);
+		if (_currents["MF1b"] < 0.0f)
 			magnetic_flux = -magnetic_flux;
         float EMF = mb * (-EMF_factor) * magnetic_flux * motor_RPM;
         _named_branches["MA1"].EMF = _named_branches["MA1"].EMF * 0.7f + EMF * 0.3f;
@@ -259,10 +293,13 @@ internal partial class unit_a_sim: electric_device
         _circuit.simulate();
 		_traction_motor_RPM.Value = motor_RPM;
 		_traction_motor_load.Value = _load_meter_groups[0].Value = _currents["MA1"] / nb;
-		_field_meter_groups[0].Value = _currents["MF1"] / nb;
+		_field_meter_groups[0].Value = _currents["MF1b"] / nb;
 		_traction_motor_EMF.Value = _named_branches["MA1"].EMF / (-mb);
 
-		float half_torque = (6.0f / 2.0f) * torque_factor * gear_ratio * (_currents["MA1"] / nb) * magnetic_flux;
+		Main.diagnostics?.Value = _currents["MF1a"] / nb;
+        Main.diagnostics2?.Value = _currents["MF1b"] / nb;
+
+        float half_torque = (6.0f / 2.0f) * torque_factor * gear_ratio * (_currents["MA1"] / nb) * magnetic_flux;
 		_torque_a.Value = _torque_b.Value = half_torque;
 	}
 
@@ -278,10 +315,13 @@ internal partial class unit_a_sim: electric_device
 			_reverser.Dispose();
 			_reverser_shaft.Dispose();
             _line_contactor.Dispose();
+			for (int field_contactor = 0; field_contactor < 6; ++field_contactor)
+				_field_shunt_contactors[field_contactor].Dispose();
 			_simulation.SimulationFlow.TickEvent            -= simulate;
             _reverser_handle.ValueUpdatedInternally			-= reverser_handler;
             _throttle_handle.ValueUpdatedInternally         -= throttle_handler;
-			_control_BA1.ValueUpdatedInternally             -= MU_BA1_control;
+            _field_handle.ValueUpdatedInternally            -= field_control_handler;
+            _control_BA1.ValueUpdatedInternally             -= MU_BA1_control;
 			_front_pantograph_switch.ValueUpdatedInternally -= toggle_pole;
 		}
 	}

@@ -126,8 +126,8 @@ internal class circuit_compiler
 			name = search_part.Substring(termination_position + 1);
 		}
 
-		if (!elements.TryGetValue(name, out float resistance))
-            throw new ArgumentException($"Element {name} not listed");
+        if (element != element_type.contactor & !elements.TryGetValue(name, out float resistance))
+            throw new ArgumentException($"Element {name}'s resistance not specified");
         switch (element)
         {
             case element_type.untracked_resistor:
