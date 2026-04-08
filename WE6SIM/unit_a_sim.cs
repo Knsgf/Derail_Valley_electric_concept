@@ -20,8 +20,8 @@ namespace WE6SIM;
 
 internal partial class unit_a_sim: electric_device
 {
-    const int nb = 3, mb = 6 / nb;
-	const float supply_volts = 1650.0f, supply_r = 0.1f;
+    const int nb = 6, mb = 6 / nb;
+	const float supply_volts = 0.0f, supply_r = 0.0f;
 
     private readonly GameObject _test_pole_prefab;
 	private GameObject? _test_pole;
@@ -283,8 +283,10 @@ internal partial class unit_a_sim: electric_device
         foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
 			_currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
 		float motor_RPM = _wheel_RPM.Value * gear_ratio;
-		float magnetic_flux = min_flux + Mathf.Clamp(Mathf.Abs((_currents["MF1a"] * (1.0f - 0.63f) + _currents["MF1b"] * 0.63f) / nb), 0.0f, max_flux - min_flux);
-		if (_currents["MF1b"] < 0.0f)
+		float magnetic_flux1 = (min_flux + Mathf.Clamp(Mathf.Abs(_currents["MF1a"] / nb), 0.0f, max_flux - min_flux)) * (1.0f - 0.63f);
+        float magnetic_flux2 = (min_flux + Mathf.Clamp(Mathf.Abs(_currents["MF1b"] / nb), 0.0f, max_flux - min_flux)) * 0.63f;
+		float magnetic_flux = magnetic_flux1 + magnetic_flux2;
+        if (_currents["MF1b"] < 0.0f)
 			magnetic_flux = -magnetic_flux;
         float EMF = mb * (-EMF_factor) * magnetic_flux * motor_RPM;
         _named_branches["MA1"].EMF = _named_branches["MA1"].EMF * 0.7f + EMF * 0.3f;
