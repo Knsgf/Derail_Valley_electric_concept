@@ -21,7 +21,7 @@ namespace WE6SIM;
 internal partial class unit_a_sim: electric_device
 {
     const int nb = 6, mb = 6 / nb;
-	const float supply_volts = 0.0f, supply_r = 0.0f;
+	const float max_exciter_voltage = 120.0f, min_exciter_voltage = 10.0f;
 
     private readonly GameObject _test_pole_prefab;
 	private GameObject? _test_pole;
@@ -30,7 +30,7 @@ internal partial class unit_a_sim: electric_device
 	private readonly Dictionary<string, float> _currents = [];
 
 	private readonly Fuse _appliances;
-	private readonly Port _throttle_handle, _reverser_handle, _field_handle; 
+	private readonly Port _throttle_handle, _reverser_handle, _field_handle, _selector_handle; 
 	private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
 	private readonly Port _front_pantograph_switch;
 	private readonly Port _primary_notch_hand, _secondary_notch_hand;
@@ -47,13 +47,14 @@ internal partial class unit_a_sim: electric_device
 	private readonly camshaft_motor         _reverser, _primary_controller;
 	private readonly camshaft_contactor_set _reverser_shaft, _primary_camshaft, _secondary_camshaft;
 	private readonly throttle_controller    _throttle_controller;
-	private readonly contactor              _line_contactor;
+	private readonly contactor              _line_contactor, _dynamic_brake_contactor, _regenerative_contactor;
 	private readonly contactor[]            _field_shunt_contactors;
 	private readonly TrainCar               _unit;
 
 	private bool _traction_on = false;
-	private int  _throttle = 0, _secondary_camshaft_notch;
+	private int  _throttle = 0, _secondary_camshaft_notch, _selector = 3, _field_position = 0;
 	private Task? _single_notch_movement;
+	private float line_voltage = 1650.0f;
 
 	public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
 
@@ -74,8 +75,10 @@ internal partial class unit_a_sim: electric_device
 		_throttle_handle.ValueUpdatedInternally += throttle_handler;
 		_field_handle = get_port(ports, "[FieldControl].EXT_IN");
 		_field_handle.ValueUpdatedInternally += field_control_handler;
+		_selector_handle = get_port(ports, "[Selector].EXT_IN");
+		_selector_handle.ValueUpdatedInternally += selector_handler;
 
-		_front_pantograph_switch = get_port(ports, "[FrontPantographSwitch].EXT_IN");
+        _front_pantograph_switch = get_port(ports, "[FrontPantographSwitch].EXT_IN");
 		_front_pantograph_switch.ValueUpdatedInternally += toggle_pole;
 
 		_primary_notch_hand   = get_port(ports, "[CustomSimulation].PRIMARY_NOTCH"  );
@@ -123,6 +126,8 @@ internal partial class unit_a_sim: electric_device
             closed_contacts[motor - 1] = $"FS{motor}.3c";
         }
 		_field_shunt_contactors[3 - 1] = new contactor(open_contacts, closed_contacts, _contactor_locations, _appliances);
+		_dynamic_brake_contactor = new contactor(["DBo"], ["DBc"], _contactor_locations, _appliances);
+		_regenerative_contactor = new contactor(["RB1.3o"], ["RB1.1c", "RB1.2c"], _contactor_locations, _appliances);
 
         _supply_volts = get_port(ports, "[CustomGauges].SUPPLY"            );
 		_motor_volts  = get_port(ports, "[CustomGauges].ALL_MOTOR_TERMINAL");
@@ -244,10 +249,79 @@ internal partial class unit_a_sim: electric_device
         if (!is_powered || disposed)
             return;
         int handle_postion = Mathf.RoundToInt(raw_field_position * 6.0f);
-        for (int field_contactor_on = 0; field_contactor_on < handle_postion; ++field_contactor_on)
+		_field_position = handle_postion;
+		if (_selector < 2)
+			_named_branches["EXT"].EMF = min_exciter_voltage * (1.0f - raw_field_position) + max_exciter_voltage * raw_field_position;
+		else
+        {
+            _named_branches["EXT"].EMF = 0.0f;
+            for (int field_contactor_on = 0; field_contactor_on < handle_postion; ++field_contactor_on)
 			_field_shunt_contactors[field_contactor_on].toggle(turn_on: true);
-        for (int field_contactor_off = handle_postion; field_contactor_off < 6; ++field_contactor_off)
-            _field_shunt_contactors[field_contactor_off].toggle(turn_on: false);
+			for (int field_contactor_off = handle_postion; field_contactor_off < 6; ++field_contactor_off)
+				_field_shunt_contactors[field_contactor_off].toggle(turn_on: false);
+		}
+    }
+
+	private void selector_handler(float raw_selector_position)
+	{
+        if (!is_powered || disposed)
+            return;
+        int handle_postion = Mathf.RoundToInt(raw_selector_position * 5.0f);
+		_selector = handle_postion;
+		switch (handle_postion)
+		{
+			case 0:
+                line_voltage = 825.0f;
+                _dynamic_brake_contactor.toggle(turn_on: false);
+                _regenerative_contactor.toggle(turn_on: true);
+                _field_shunt_contactors[0].toggle(turn_on: true);
+                _field_shunt_contactors[1].toggle(turn_on: true);
+                _field_shunt_contactors[2].toggle(turn_on: false);
+                _field_shunt_contactors[3].toggle(turn_on: true);
+                _field_shunt_contactors[4].toggle(turn_on: true);
+                _field_shunt_contactors[5].toggle(turn_on: true);
+                break;
+
+            case 1:
+				line_voltage = 1650.0f;
+				_dynamic_brake_contactor.toggle(turn_on: false);
+				_regenerative_contactor.toggle(turn_on: true);
+				_field_shunt_contactors[0].toggle(turn_on: true);
+                _field_shunt_contactors[1].toggle(turn_on: true);
+                _field_shunt_contactors[2].toggle(turn_on: false);
+                _field_shunt_contactors[3].toggle(turn_on: true);
+                _field_shunt_contactors[4].toggle(turn_on: true);
+                _field_shunt_contactors[5].toggle(turn_on: true);
+                break;
+
+			case 2:
+                line_voltage = 0.0f;
+                _regenerative_contactor.toggle(turn_on: false);
+                _dynamic_brake_contactor.toggle(turn_on: true);
+				field_control_handler(_field_position);
+				break;
+
+			case 3:
+                line_voltage = 275.0f;
+                _regenerative_contactor.toggle(turn_on: false);
+                _dynamic_brake_contactor.toggle(turn_on: false);
+                field_control_handler(_field_position);
+				break;
+            
+			case 4:
+                line_voltage = 825.0f;
+                _regenerative_contactor.toggle(turn_on: false);
+                _dynamic_brake_contactor.toggle(turn_on: false);
+                field_control_handler(_field_position);
+                break;
+
+            case 5:
+                line_voltage = 1650.0f;
+                _regenerative_contactor.toggle(turn_on: false);
+                _dynamic_brake_contactor.toggle(turn_on: false);
+                field_control_handler(_field_position);
+                break;
+        }
     }
 
     private void MU_BA1_control(float BA1)
@@ -278,7 +352,7 @@ internal partial class unit_a_sim: electric_device
 
 		const float max_flux = 300.0f, min_flux = 1.0f;
 		const float gear_ratio = 5.36f, torque_factor = 0.0347f, EMF_factor = 0.003634f;
-		_named_branches["EPS"].EMF = is_powered ? supply_volts : 0.0f;
+		_named_branches["EPS"].EMF = is_powered ? line_voltage : 0.0f;
 		_supply_volts.Value = _named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"];
         foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
 			_currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
@@ -317,12 +391,15 @@ internal partial class unit_a_sim: electric_device
 			_reverser.Dispose();
 			_reverser_shaft.Dispose();
             _line_contactor.Dispose();
+			_dynamic_brake_contactor.Dispose();
+			_regenerative_contactor.Dispose();
 			for (int field_contactor = 0; field_contactor < 6; ++field_contactor)
 				_field_shunt_contactors[field_contactor].Dispose();
 			_simulation.SimulationFlow.TickEvent            -= simulate;
             _reverser_handle.ValueUpdatedInternally			-= reverser_handler;
             _throttle_handle.ValueUpdatedInternally         -= throttle_handler;
             _field_handle.ValueUpdatedInternally            -= field_control_handler;
+            _selector_handle.ValueUpdatedInternally			-= selector_handler;
             _control_BA1.ValueUpdatedInternally             -= MU_BA1_control;
 			_front_pantograph_switch.ValueUpdatedInternally -= toggle_pole;
 		}
