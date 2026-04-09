@@ -54,7 +54,7 @@ internal partial class unit_a_sim: electric_device
 	private bool _traction_on = false;
 	private int  _throttle = 0, _secondary_camshaft_notch, _selector = 3, _field_position = 0;
 	private Task? _single_notch_movement;
-	private float line_voltage = 1650.0f;
+	private float _line_voltage = 1650.0f, _reverser_position = 0.5f;
 
 	public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
 
@@ -199,15 +199,18 @@ internal partial class unit_a_sim: electric_device
 	{
 		if (!is_powered || disposed)
 			return;
+		_reverser_position = raw_reverser;
+		if (_selector == 2)
+			raw_reverser = 1.0f - raw_reverser;
 		if (raw_reverser >= 0.7f)
 			_reverser.target_notch = 1;
 		else if (raw_reverser <= 0.3f)
 			_reverser.target_notch = 2;
 	}
 
-	private void throttle_handler(float normalised_throttle)
+	private void throttle_handler(float raw_throttle)
 	{
-		_throttle = Mathf.RoundToInt(normalised_throttle * 5.0f);
+		_throttle = Mathf.RoundToInt(raw_throttle * 5.0f);
 		if (!is_powered || disposed)
 			return;
 		switch (_throttle)
@@ -271,7 +274,8 @@ internal partial class unit_a_sim: electric_device
 		switch (handle_postion)
 		{
 			case 0:
-                line_voltage = 825.0f;
+                _line_voltage = 825.0f;
+                reverser_handler(_reverser_position);
                 _dynamic_brake_contactor.toggle(turn_on: false);
                 _regenerative_contactor.toggle(turn_on: true);
                 _field_shunt_contactors[0].toggle(turn_on: true);
@@ -283,8 +287,9 @@ internal partial class unit_a_sim: electric_device
                 break;
 
             case 1:
-				line_voltage = 1650.0f;
-				_dynamic_brake_contactor.toggle(turn_on: false);
+				_line_voltage = 1650.0f;
+                reverser_handler(_reverser_position);
+                _dynamic_brake_contactor.toggle(turn_on: false);
 				_regenerative_contactor.toggle(turn_on: true);
 				_field_shunt_contactors[0].toggle(turn_on: true);
                 _field_shunt_contactors[1].toggle(turn_on: true);
@@ -295,28 +300,32 @@ internal partial class unit_a_sim: electric_device
                 break;
 
 			case 2:
-                line_voltage = 0.0f;
+                _line_voltage = 0.0f;
+                reverser_handler(_reverser_position);
                 _regenerative_contactor.toggle(turn_on: false);
                 _dynamic_brake_contactor.toggle(turn_on: true);
 				field_control_handler(_field_position);
 				break;
 
 			case 3:
-                line_voltage = 275.0f;
+                _line_voltage = 275.0f;
+                reverser_handler(_reverser_position);
                 _regenerative_contactor.toggle(turn_on: false);
                 _dynamic_brake_contactor.toggle(turn_on: false);
                 field_control_handler(_field_position);
 				break;
             
 			case 4:
-                line_voltage = 825.0f;
+                _line_voltage = 825.0f;
+                reverser_handler(_reverser_position);
                 _regenerative_contactor.toggle(turn_on: false);
                 _dynamic_brake_contactor.toggle(turn_on: false);
                 field_control_handler(_field_position);
                 break;
 
             case 5:
-                line_voltage = 1650.0f;
+                _line_voltage = 1650.0f;
+				reverser_handler(_reverser_position);
                 _regenerative_contactor.toggle(turn_on: false);
                 _dynamic_brake_contactor.toggle(turn_on: false);
                 field_control_handler(_field_position);
@@ -352,7 +361,10 @@ internal partial class unit_a_sim: electric_device
 
 		const float max_flux = 300.0f, min_flux = 1.0f;
 		const float gear_ratio = 5.36f, torque_factor = 0.0347f, EMF_factor = 0.003634f;
-		_named_branches["EPS"].EMF = is_powered ? line_voltage : 0.0f;
+		float voltage = is_powered ? _line_voltage : 0.0f;
+		if (_currents["EPS"] < 0.0f)
+			voltage += _currents["EPS"] * _element_resistances["EPS"];
+        _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
 		_supply_volts.Value = _named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"];
         foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
 			_currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
@@ -372,8 +384,8 @@ internal partial class unit_a_sim: electric_device
 		_field_meter_groups[0].Value = _currents["MF1b"] / nb;
 		_traction_motor_EMF.Value = _named_branches["MA1"].EMF / (-mb);
 
-		Main.diagnostics?.Value = _currents["MF1a"] / nb;
-        Main.diagnostics2?.Value = _currents["MF1b"] / nb;
+		Main.diagnostics?.Value = _named_branches["EPS"].EMF;
+        //Main.diagnostics2?.Value = _currents["MF1b"] / nb;
 
         float half_torque = (6.0f / 2.0f) * torque_factor * gear_ratio * (_currents["MA1"] / nb) * magnetic_flux;
 		_torque_a.Value = _torque_b.Value = half_torque;
