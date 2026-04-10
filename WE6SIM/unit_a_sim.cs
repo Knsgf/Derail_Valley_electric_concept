@@ -36,6 +36,7 @@ internal partial class unit_a_sim: electric_device
 	private readonly Port _primary_notch_hand, _secondary_notch_hand;
 	private readonly Port _supply_volts, _motor_volts;
     private readonly Port[] _load_meter_groups, _field_meter_groups;
+	private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port? _switch;
 
 	private readonly Port _control_AB1, _control_BA1, _torque_b;
@@ -102,14 +103,16 @@ internal partial class unit_a_sim: electric_device
 		foreach (string branch_name in _named_branches.Keys)
 			_currents[branch_name] = 0.0f;
 
-		_pantograph = new pantograph(unit.gameObject, _appliances);
-		_blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"));
+        _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
+        _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
+        _pantograph = new pantograph(unit.gameObject, _appliances);
+		_blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
 		_primary_controller = new camshaft_motor(camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
-		_primary_camshaft = new camshaft_contactor_set(_primary_contactor_toggles, _contactor_locations, _primary_controller);
-		_secondary_camshaft = new camshaft_contactor_set(_secondary_contactor_toggles, _contactor_locations, null);
+		_primary_camshaft = new camshaft_contactor_set(_primary_contactor_toggles, _contactor_locations, _primary_controller, _contactor_on_sound, _contactor_off_sound);
+		_secondary_camshaft = new camshaft_contactor_set(_secondary_contactor_toggles, _contactor_locations, null, _contactor_on_sound, _contactor_off_sound);
 		_reverser = new camshaft_motor(2, _appliances, drop_to_1_on_power_loss: false);
-		_reverser_shaft = new camshaft_contactor_set(_reverser_toggles, _contactor_locations, _reverser);
-		_line_contactor = new contactor(["LC1"], null, _contactor_locations, _appliances);
+		_reverser_shaft = new camshaft_contactor_set(_reverser_toggles, _contactor_locations, _reverser, _contactor_on_sound, _contactor_off_sound);
+		_line_contactor = new contactor(["LC1"], null, _contactor_locations, _contactor_on_sound, _contactor_off_sound, _appliances);
 		_field_shunt_contactors = new contactor[6];
 		const int motors = 1;
 		for (int field_contactor = 1; field_contactor <= 6; ++field_contactor)
@@ -119,7 +122,7 @@ internal partial class unit_a_sim: electric_device
 			string[] contacts = new string[motors];
 			for (int motor = 1; motor <= motors; ++motor)
 				contacts[motor - 1] = $"FS{motor}.{field_contactor}";
-			_field_shunt_contactors[field_contactor - 1] = new contactor(contacts, null, _contactor_locations, _appliances);
+			_field_shunt_contactors[field_contactor - 1] = new contactor(contacts, null, _contactor_locations, _contactor_on_sound, _contactor_off_sound, _appliances);
 		}
 		string[] open_contacts = new string[motors], closed_contacts = new string[motors];
 		for (int motor = 1; motor <= motors; ++motor)
@@ -127,9 +130,9 @@ internal partial class unit_a_sim: electric_device
             open_contacts[motor - 1] = $"FS{motor}.3o";
             closed_contacts[motor - 1] = $"FS{motor}.3c";
         }
-		_field_shunt_contactors[3 - 1] = new contactor(open_contacts, closed_contacts, _contactor_locations, _appliances);
-		_dynamic_brake_contactor = new contactor(["DBo"], ["DBc"], _contactor_locations, _appliances);
-		_regenerative_contactor = new contactor(["RB1.3o"], ["RB1.1c", "RB1.2c"], _contactor_locations, _appliances);
+		_field_shunt_contactors[3 - 1] = new contactor(open_contacts, closed_contacts, _contactor_locations, _contactor_on_sound, _contactor_off_sound, _appliances);
+		_dynamic_brake_contactor = new contactor(["DBo"], ["DBc"], _contactor_locations, _contactor_on_sound, _contactor_off_sound, _appliances);
+		_regenerative_contactor = new contactor(["RB1.3o"], ["RB1.1c", "RB1.2c"], _contactor_locations, _contactor_on_sound, _contactor_off_sound, _appliances);
 
         _supply_volts = grab_port(ports, "[CustomGauges].SUPPLY"            );
 		_motor_volts  = grab_port(ports, "[CustomGauges].ALL_MOTOR_TERMINAL");
@@ -352,6 +355,7 @@ internal partial class unit_a_sim: electric_device
 	{
 		check_if_disposed();
 		_pantograph.move();
+		_contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
 
 		_primary_notch_hand.Value   = _primary_controller.current_position;
 		_secondary_notch_hand.Value = _secondary_camshaft_notch;
@@ -380,7 +384,7 @@ internal partial class unit_a_sim: electric_device
         _named_branches["MA1"].EMF = _named_branches["MA1"].EMF * 0.7f + EMF * 0.3f;
 		_motor_volts.Value = _currents["VM"] * _element_resistances["VM"];
 		_blowers.active = _selector == 2 || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
-		_blowers.full_speed_mode = true;
+		//_blowers.full_speed_mode = true;
 		
         _circuit.simulate();
 		_blowers.simulate((_selector == 2) ? _motor_volts.Value : (1650.0f - _currents["EPS"] * _element_resistances["EPS"]), _currents["MA1"] / nb);

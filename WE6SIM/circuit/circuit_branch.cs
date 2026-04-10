@@ -17,9 +17,10 @@ internal partial class circuit
         float current     { get; }
         float EMF         { get; set; }
         void toggle_contactor(string designation, bool switch_on);
+        bool is_contactor_on(string designation);
     }
 
-    private class branch : branch_user
+    private class branch: branch_user
     {
         const float min_branch_resistance = 1.0E-4f;
 
@@ -114,6 +115,16 @@ internal partial class circuit
             bool branch_is_now_closed = _contactors_off == 0;
             if (branch_is_now_closed != branch_was_closed)
                 contactor_toggled?.Invoke(this);
+        }
+
+        public bool is_contactor_on(string contactor_designation)
+        {
+            bool contactor_present = _contactors.TryGetValue(contactor_designation, out int contactor_number);
+            if (!contactor_present)
+                throw new ArgumentException($"Non-existent contactor {contactor_designation}");
+            assert.test(contactor_number <= 30 && contactor_number < _contactors.Count);
+            int contactor_mask = 1 << contactor_number;
+            return (_contactors_off & contactor_mask) == 0;
         }
 
         public static void circuit_setup_finished()
