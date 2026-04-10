@@ -11,59 +11,59 @@ using WE6SIM.utilities;
 
 namespace WE6SIM;
 
-internal partial class unit_a_sim: IDisposable
+internal partial class unit_a_sim
 {
 	private class throttle_controller
 	{
-		private readonly unit_a_sim _host;
+		private readonly unit_a_sim _unit;
 
 		private bool _camshaft_unlock = false, _interrupt_movement = false, _roll_over = false;
 
-		public throttle_controller(unit_a_sim host)
+		public throttle_controller(unit_a_sim unit)
 		{
-			_host = host;
+			_unit = unit;
 		}
 
 		public async void roll_camshafts_over()
 		{
-			unit_a_sim host = _host;
-			if (!host.is_powered)
+			unit_a_sim unit = _unit;
+			if (!unit.is_powered)
 				return;
 
             _interrupt_movement = _roll_over = true;
-			while (host.is_powered && host._line_contactor.engaged)
+			while (unit.is_powered && unit._line_contactor.engaged)
 			{
-				host._line_contactor.toggle(false);
+				unit._line_contactor.toggle(false);
                 await Task.Delay(300);
             }
-            host._primary_controller.roll_over_move(to_1: true);
-			host.set_secondary_camshaft_target_notch(roll_over_to_1);
-			while (host.is_powered && host._primary_controller.current_notch != 1)
+            unit._primary_controller.roll_over_move(to_1: true);
+			unit.set_secondary_camshaft_target_notch(roll_over_to_1);
+			while (unit.is_powered && unit._primary_controller.current_notch != 1)
 			{
 				await Task.Delay(300);
-				if (host._primary_controller.current_notch == 1)
+				if (unit._primary_controller.current_notch == 1)
 					break;
-				host._primary_controller.roll_over_move(to_1: true);	// restart if previous call terminated before a fuse switched on
+				unit._primary_controller.roll_over_move(to_1: true);	// restart if previous call terminated before a fuse switched on
 			}
-			while (host.is_powered && host.get_secondary_camshaft_current_notch(host._control_BA1.Value) != 1)
+			while (unit.is_powered && unit.get_secondary_camshaft_current_notch(unit._control_BA1.Value) != 1)
 				await Task.Delay(300);
-			while (host.is_powered && (host._single_notch_movement != null && !host._single_notch_movement.IsCompleted))
+			while (unit.is_powered && (unit._single_notch_movement != null && !unit._single_notch_movement.IsCompleted))
 				await Task.Delay(300);
 			_roll_over = _interrupt_movement = false;
 		}
 
 		public async Task finish_secondary_movement(int target_notch)
 		{
-			unit_a_sim host = _host;
+			unit_a_sim unit = _unit;
 
 			assert.test(target_notch >= 1 && target_notch <= roll_over_to_full);
-			host.set_secondary_camshaft_target_notch(target_notch);
+			unit.set_secondary_camshaft_target_notch(target_notch);
 			if (target_notch == roll_over_to_1)
 				target_notch = 1;
 			else if (target_notch == roll_over_to_full)
 				target_notch = camshaft_notches;
-			while (!_interrupt_movement && host.is_powered
-				&& host.get_secondary_camshaft_current_notch(host._control_BA1.Value) != target_notch)
+			while (!_interrupt_movement && unit.is_powered
+				&& unit.get_secondary_camshaft_current_notch(unit._control_BA1.Value) != target_notch)
 			{
 				await Task.Delay(300);
 			}
@@ -71,11 +71,11 @@ internal partial class unit_a_sim: IDisposable
 
 		public async Task notch_down()
 		{
-			unit_a_sim host = _host;
-			if (_interrupt_movement || !host.is_powered)
+			unit_a_sim unit = _unit;
+			if (_interrupt_movement || !unit.is_powered)
 				return;
 
-            int current_primary_notch = host._primary_controller.current_notch, current_secondary_notch = host._secondary_camshaft_notch;
+            int current_primary_notch = unit._primary_controller.current_notch, current_secondary_notch = unit._secondary_camshaft_notch;
             bool secondary_at_1 = current_secondary_notch == 1;
 			assert.test(current_primary_notch >= 1 && current_secondary_notch >= 1);
 			if (!_camshaft_unlock || secondary_at_1 && current_primary_notch == 1)
@@ -85,8 +85,8 @@ internal partial class unit_a_sim: IDisposable
 				await finish_secondary_movement((current_secondary_notch == 4) ? 2 : (current_secondary_notch - 1));
 			else
 			{
-				host._primary_controller.target_notch = (current_primary_notch == 4) ? 2 : (current_primary_notch - 1);
-				await host._primary_controller.finish_movement();
+				unit._primary_controller.target_notch = (current_primary_notch == 4) ? 2 : (current_primary_notch - 1);
+				await unit._primary_controller.finish_movement();
 				if (!_interrupt_movement)
 					await finish_secondary_movement(roll_over_to_full);
 			}
@@ -94,11 +94,11 @@ internal partial class unit_a_sim: IDisposable
 
 		public async Task notch_up()
 		{
-			unit_a_sim host = _host;
-			if (_interrupt_movement || !host.is_powered)
+			unit_a_sim unit = _unit;
+			if (_interrupt_movement || !unit.is_powered)
 				return;
 
-            int current_primary_notch = host._primary_controller.current_notch, current_secondary_notch = host._secondary_camshaft_notch;
+            int current_primary_notch = unit._primary_controller.current_notch, current_secondary_notch = unit._secondary_camshaft_notch;
             bool secondary_at_7 = current_secondary_notch == camshaft_notches;
 			assert.test(current_primary_notch <= camshaft_notches && current_secondary_notch <= camshaft_notches);
 			if (!_camshaft_unlock || secondary_at_7 && current_primary_notch == camshaft_notches)
@@ -111,68 +111,80 @@ internal partial class unit_a_sim: IDisposable
 				await finish_secondary_movement(roll_over_to_1);
 				if (!_interrupt_movement)
 				{
-					host._primary_controller.target_notch = (current_primary_notch == 2) ? 4 : (current_primary_notch + 1);
-					await host._primary_controller.finish_movement();
+					unit._primary_controller.target_notch = (current_primary_notch == 2) ? 4 : (current_primary_notch + 1);
+					await unit._primary_controller.finish_movement();
 				}
 			}
 		}
 
 		public async Task unlock_camshafts(bool continuous_run)
 		{
-			unit_a_sim host = _host;
-            if (!host.is_powered)
+			unit_a_sim unit = _unit;
+            if (!unit.is_powered || _roll_over)
                 return;
-			while (host._throttle == 3 && !host._line_contactor.engaged)
+
+			if (!unit._line_contactor.engaged)
 			{
-				host._line_contactor.toggle(true);
-				await Task.Delay(300);
+				int primary_target_notch = (unit._selector > 2) ? 1 : 5;
+                while (unit._throttle == 3 && !unit._line_contactor.engaged)
+                {
+                    if (unit._primary_controller.current_notch == primary_target_notch && unit._secondary_camshaft_notch == 1)
+                        unit._line_contactor.toggle(true);
+                    else
+                    {
+                        unit._primary_controller.target_notch = primary_target_notch;
+                        unit.set_secondary_camshaft_target_notch(1);
+                    }
+                    await Task.Delay(300);
+                    primary_target_notch = (unit._selector > 2) ? 1 : 5;
+                }
             }
             
 			if (_interrupt_movement)
                 return;
-            if (host._single_notch_movement != null && !host._single_notch_movement.IsCompleted)
-				await host._single_notch_movement;
-			if ((continuous_run || host._throttle == 3) && _host.is_powered)
+            if (unit._single_notch_movement != null && !unit._single_notch_movement.IsCompleted)
+				await unit._single_notch_movement;
+			if ((continuous_run || unit._throttle == 3) && _unit.is_powered)
 				_camshaft_unlock = true;
 		}
 
 		public async void run_down()
 		{
-			unit_a_sim host = _host;
-			if (!host.is_powered)
+			unit_a_sim unit = _unit;
+			if (!unit.is_powered)
 				return;
 
-			if (host._single_notch_movement != null && !host._single_notch_movement.IsCompleted)
+			if (unit._single_notch_movement != null && !unit._single_notch_movement.IsCompleted)
 			{
 				_interrupt_movement = true;
-				await host._single_notch_movement;
+				await unit._single_notch_movement;
 				_interrupt_movement = _roll_over;
 			}
-			while (!_interrupt_movement && host._throttle == 1 && _host.is_powered
-				&& (host._secondary_camshaft_notch > 1 || host._primary_controller.current_notch > 1))
+			while (!_interrupt_movement && unit._throttle == 1 && _unit.is_powered
+				&& (unit._secondary_camshaft_notch > 1 || unit._primary_controller.current_notch > 1))
 			{
 				await unlock_camshafts(continuous_run: true);
-				host._single_notch_movement = notch_down();
+				unit._single_notch_movement = notch_down();
 			}
 		}
 
 		public async void run_up()
 		{
-			unit_a_sim host = _host;
-			if (!host.is_powered)
+			unit_a_sim unit = _unit;
+			if (!unit.is_powered)
 				return;
 
-			if (host._single_notch_movement != null && !host._single_notch_movement.IsCompleted)
+			if (unit._single_notch_movement != null && !unit._single_notch_movement.IsCompleted)
 			{
 				_interrupt_movement = true;
-				await host._single_notch_movement;
+				await unit._single_notch_movement;
 				_interrupt_movement = _roll_over;
 			}
-			while (!_interrupt_movement && host._throttle == 5 && _host.is_powered
-				&& (host._secondary_camshaft_notch < camshaft_notches || host._primary_controller.current_notch < camshaft_notches))
+			while (!_interrupt_movement && unit._throttle == 5 && _unit.is_powered
+				&& (unit._secondary_camshaft_notch < camshaft_notches || unit._primary_controller.current_notch < camshaft_notches))
 			{
 				await unlock_camshafts(continuous_run: true);
-				host._single_notch_movement = notch_up();
+				unit._single_notch_movement = notch_up();
 			}
 		}
 	}

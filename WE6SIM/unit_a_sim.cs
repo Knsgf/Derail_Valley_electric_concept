@@ -44,6 +44,7 @@ internal partial class unit_a_sim: electric_device
 	private readonly circuit       _circuit;
 
 	private readonly pantograph             _pantograph;
+	private readonly blower_controller      _blowers;
 	private readonly camshaft_motor         _reverser, _primary_controller;
 	private readonly camshaft_contactor_set _reverser_shaft, _primary_camshaft, _secondary_camshaft;
 	private readonly throttle_controller    _throttle_controller;
@@ -64,35 +65,35 @@ internal partial class unit_a_sim: electric_device
 
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-		_appliances = get_fuse(fuses, "fusebox.ELECTRICS_MAIN");
+		_appliances = grab_fuse(fuses, "fusebox.ELECTRICS_MAIN");
 		set_up_fuses(_appliances);
 		power_supply_toggled += appliances_toggle;
 
-		_reverser_handle = get_port(ports, "[Reverser].EXT_IN");
+		_reverser_handle = grab_port(ports, "[Reverser].EXT_IN");
 		_reverser_handle.ValueUpdatedInternally += reverser_handler;
 		_throttle_controller = new throttle_controller(this);
-		_throttle_handle = get_port(ports, "[Throttle].EXT_IN");
+		_throttle_handle = grab_port(ports, "[Throttle].EXT_IN");
 		_throttle_handle.ValueUpdatedInternally += throttle_handler;
-		_field_handle = get_port(ports, "[FieldControl].EXT_IN");
+		_field_handle = grab_port(ports, "[FieldControl].EXT_IN");
 		_field_handle.ValueUpdatedInternally += field_control_handler;
-		_selector_handle = get_port(ports, "[Selector].EXT_IN");
+		_selector_handle = grab_port(ports, "[Selector].EXT_IN");
 		_selector_handle.ValueUpdatedInternally += selector_handler;
 
-        _front_pantograph_switch = get_port(ports, "[FrontPantographSwitch].EXT_IN");
+        _front_pantograph_switch = grab_port(ports, "[FrontPantographSwitch].EXT_IN");
 		_front_pantograph_switch.ValueUpdatedInternally += toggle_pole;
 
-		_primary_notch_hand   = get_port(ports, "[CustomSimulation].PRIMARY_NOTCH"  );
-        _secondary_notch_hand = get_port(ports, "[CustomSimulation].SECONDARY_NOTCH");
+		_primary_notch_hand   = grab_port(ports, "[CustomSimulation].PRIMARY_NOTCH"  );
+        _secondary_notch_hand = grab_port(ports, "[CustomSimulation].SECONDARY_NOTCH");
 
-        _torque_a  = get_port(ports, "traction.TORQUE_IN");
-		_wheel_RPM = get_port(ports, "traction.WHEEL_RPM_EXT_IN");
-        _traction_motor_load = get_port(ports, "[CustomSimulation].MOTOR_LOAD");
-        _traction_motor_RPM  = get_port(ports, "[CustomSimulation].MOTOR_RPM" );
-        _traction_motor_EMF  = get_port(ports, "[CustomSimulation].MOTOR_EMF" );
+        _torque_a  = grab_port(ports, "traction.TORQUE_IN");
+		_wheel_RPM = grab_port(ports, "traction.WHEEL_RPM_EXT_IN");
+        _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD");
+        _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM" );
+        _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF" );
 
-        _torque_b = get_port(ports, "internal_MU.TM4-6");
-		_control_AB1 = get_port(ports, "internal_MU.CONTROL_AB1");
-		_control_BA1 = get_port(ports, "internal_MU.CONTROL_BA1");
+        _torque_b = grab_port(ports, "internal_MU.TM4-6");
+		_control_AB1 = grab_port(ports, "internal_MU.CONTROL_AB1");
+		_control_BA1 = grab_port(ports, "internal_MU.CONTROL_BA1");
 		_control_BA1.ValueUpdatedInternally += MU_BA1_control;
 
 		_test_pole_prefab = Main.catenary_parts.pole;
@@ -102,6 +103,7 @@ internal partial class unit_a_sim: electric_device
 			_currents[branch_name] = 0.0f;
 
 		_pantograph = new pantograph(unit.gameObject, _appliances);
+		_blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"));
 		_primary_controller = new camshaft_motor(camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 		_primary_camshaft = new camshaft_contactor_set(_primary_contactor_toggles, _contactor_locations, _primary_controller);
 		_secondary_camshaft = new camshaft_contactor_set(_secondary_contactor_toggles, _contactor_locations, null);
@@ -129,14 +131,14 @@ internal partial class unit_a_sim: electric_device
 		_dynamic_brake_contactor = new contactor(["DBo"], ["DBc"], _contactor_locations, _appliances);
 		_regenerative_contactor = new contactor(["RB1.3o"], ["RB1.1c", "RB1.2c"], _contactor_locations, _appliances);
 
-        _supply_volts = get_port(ports, "[CustomGauges].SUPPLY"            );
-		_motor_volts  = get_port(ports, "[CustomGauges].ALL_MOTOR_TERMINAL");
+        _supply_volts = grab_port(ports, "[CustomGauges].SUPPLY"            );
+		_motor_volts  = grab_port(ports, "[CustomGauges].ALL_MOTOR_TERMINAL");
         _load_meter_groups  = new Port[3];
         _field_meter_groups = new Port[3];
 		for (int group = 1; group <= 3; ++group)
 		{
-			_load_meter_groups [group - 1] = get_port(ports, $"[CustomGauges].LOAD_GROUP{group}" );
-            _field_meter_groups[group - 1] = get_port(ports, $"[CustomGauges].FIELD_GROUP{group}");
+			_load_meter_groups [group - 1] = grab_port(ports, $"[CustomGauges].LOAD_GROUP{group}" );
+            _field_meter_groups[group - 1] = grab_port(ports, $"[CustomGauges].FIELD_GROUP{group}");
         }
 
         _unit = unit;
@@ -377,9 +379,13 @@ internal partial class unit_a_sim: electric_device
         float EMF = mb * (-EMF_factor) * magnetic_flux * motor_RPM;
         _named_branches["MA1"].EMF = _named_branches["MA1"].EMF * 0.7f + EMF * 0.3f;
 		_motor_volts.Value = _currents["VM"] * _element_resistances["VM"];
-
+		_blowers.active = _selector == 2 || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
+		_blowers.full_speed_mode = true;
+		
         _circuit.simulate();
-		_traction_motor_RPM.Value = motor_RPM;
+		_blowers.simulate((_selector == 2) ? _motor_volts.Value : (1650.0f - _currents["EPS"] * _element_resistances["EPS"]), _currents["MA1"] / nb);
+
+        _traction_motor_RPM.Value = motor_RPM;
 		_traction_motor_load.Value = _load_meter_groups[0].Value = _currents["MA1"] / nb;
 		_field_meter_groups[0].Value = _currents["MF1b"] / nb;
 		_traction_motor_EMF.Value = _named_branches["MA1"].EMF / (-mb);
@@ -397,6 +403,7 @@ internal partial class unit_a_sim: electric_device
 		{
 			base.Dispose();
 			_pantograph.Dispose();
+			_blowers.Dispose();
             _primary_controller.Dispose();
 			_primary_camshaft.Dispose();
 			_secondary_camshaft.Dispose();

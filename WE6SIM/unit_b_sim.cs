@@ -37,7 +37,7 @@ internal class unit_b_sim: electric_device
 	{
 		SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-		_appliances = get_fuse(fuses, "fusebox.ELECTRICS_MAIN");
+		_appliances = grab_fuse(fuses, "fusebox.ELECTRICS_MAIN");
 
 		//_throttle_handle = get_port(ports, "throttle.EXT_IN");
 		//_reverser_handle = get_port(ports, "reverser.REVERSER");
@@ -46,9 +46,9 @@ internal class unit_b_sim: electric_device
 		//_front_pantograph_switch.ValueUpdatedInternally += toggle_pole;
 
 		//_torque_b = get_port(ports, "internal_MU.TM4-6");
-		_control_AB1 = get_port(ports, "internal_MU.CONTROL_AB1");
+		_control_AB1 = grab_port(ports, "internal_MU.CONTROL_AB1");
 		_control_AB1.ValueUpdatedInternally += MU_AB1_control;
-		_control_BA1 = get_port(ports, "internal_MU.CONTROL_BA1");
+		_control_BA1 = grab_port(ports, "internal_MU.CONTROL_BA1");
 
 		_secondary_controller = new camshaft_motor(unit_a_sim.camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 
