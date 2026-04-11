@@ -1,3 +1,5 @@
+// Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,10 +57,10 @@ internal class blower_controller: electric_device
     {
         check_if_disposed();
         _line_voltage = line_voltage;
-        float motor_voltage;
+        float fan_motor_voltage;
         if (!is_powered || !active || _reconfiguration)
         {
-            motor_voltage = 0.0f;
+            fan_motor_voltage = 0.0f;
             if (_previously_active)
                 _contactor_off_sound.Value = 1.0f;
             _previously_active = false;
@@ -68,12 +70,16 @@ internal class blower_controller: electric_device
             if (!_previously_active)
                 _contactor_on_sound.Value = 1.0f;
             _previously_active = true;
-            motor_voltage = line_voltage * _line_voltage_multiplier;
-            if (motor_voltage <= 650.0f || motor_voltage >= 700.0f)
+            fan_motor_voltage = line_voltage * _line_voltage_multiplier;
+            if (fan_motor_voltage <= 650.0f || fan_motor_voltage >= 700.0f
+                || motor_current >= 300.0f && _line_voltage_multiplier == series_6
+                || motor_current <= 250.0f && _line_voltage_multiplier == series_3_parallel_2)
+            {
                 switch_configuration();
+            }
         }
 
-        float final_relative_speed = motor_voltage / 500.0f;
+        float final_relative_speed = fan_motor_voltage / 500.0f;
         if (_relative_speed <= final_relative_speed)
             _relative_speed = acceleration_ratio * _relative_speed + (1.0f - acceleration_ratio) * final_relative_speed;
         else

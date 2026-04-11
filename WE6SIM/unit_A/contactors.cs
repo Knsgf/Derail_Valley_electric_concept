@@ -1,9 +1,12 @@
-using LocoSim.Implementations;
+// Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using LocoSim.Implementations;
 using WE6SIM.circuit_sim;
 
 namespace WE6SIM;
@@ -53,7 +56,6 @@ internal partial class unit_a_sim
             switch (selector)
             {
                 case 0:
-                    _line_voltage = 825.0f;
                     _dynamic_brake_contactor.toggle(turn_on: false);
                     _regenerative_contactor.toggle(turn_on: true);
                     _field_shunt_contactors[0].toggle(turn_on: true);
@@ -65,7 +67,6 @@ internal partial class unit_a_sim
                     break;
 
                 case 1:
-                    _line_voltage = 1650.0f;
                     _dynamic_brake_contactor.toggle(turn_on: false);
                     _regenerative_contactor.toggle(turn_on: true);
                     _field_shunt_contactors[0].toggle(turn_on: true);
@@ -77,25 +78,21 @@ internal partial class unit_a_sim
                     break;
 
                 case 2:
-                    _line_voltage = 0.0f;
                     _regenerative_contactor.toggle(turn_on: false);
                     _dynamic_brake_contactor.toggle(turn_on: true);
                     break;
 
                 case 3:
-                    _line_voltage = 275.0f;
                     _regenerative_contactor.toggle(turn_on: false);
                     _dynamic_brake_contactor.toggle(turn_on: false);
                     break;
 
                 case 4:
-                    _line_voltage = 825.0f;
                     _regenerative_contactor.toggle(turn_on: false);
                     _dynamic_brake_contactor.toggle(turn_on: false);
                     break;
 
                 case 5:
-                    _line_voltage = 1650.0f;
                     _regenerative_contactor.toggle(turn_on: false);
                     _dynamic_brake_contactor.toggle(turn_on: false);
                     break;
