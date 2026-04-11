@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 using WE6SIM.utilities;
 
@@ -69,7 +70,14 @@ internal partial class unit_a_sim
 			}
 		}
 
-		public async Task notch_down()
+		private static int next_down_notch(int notch)
+		{
+			if (notch == 4)
+				return 2;
+			return (notch > 1) ? (notch - 1) : 1;
+		}
+
+        public async Task notch_down()
 		{
 			unit_a_sim unit = _unit;
 			if (_interrupt_movement || !unit.is_powered)
@@ -81,18 +89,30 @@ internal partial class unit_a_sim
 			if (!_camshaft_unlock || secondary_at_1 && current_primary_notch == 1)
 				return;
 			_camshaft_unlock = false;
-			if (!secondary_at_1)
-				await finish_secondary_movement((current_secondary_notch == 4) ? 2 : (current_secondary_notch - 1));
+			if (unit._fast_notching_switch.Value > 0.5f)
+			{
+                unit._primary_controller.target_notch = next_down_notch(current_primary_notch);
+                await finish_secondary_movement(next_down_notch(current_secondary_notch));
+            }
+            else if (!secondary_at_1)
+				await finish_secondary_movement(next_down_notch(current_secondary_notch));
 			else
 			{
-				unit._primary_controller.target_notch = (current_primary_notch == 4) ? 2 : (current_primary_notch - 1);
+				unit._primary_controller.target_notch = next_down_notch(current_primary_notch);
 				await unit._primary_controller.finish_movement();
 				if (!_interrupt_movement)
 					await finish_secondary_movement(roll_over_to_full);
 			}
 		}
 
-		public async Task notch_up()
+        private static int next_up_notch(int notch)
+        {
+            if (notch == 2)
+                return 4;
+            return (notch < camshaft_notches) ? (notch + 1) : camshaft_notches;
+        }
+
+        public async Task notch_up()
 		{
 			unit_a_sim unit = _unit;
 			if (_interrupt_movement || !unit.is_powered)
@@ -104,14 +124,19 @@ internal partial class unit_a_sim
 			if (!_camshaft_unlock || secondary_at_7 && current_primary_notch == camshaft_notches)
 				return;
 			_camshaft_unlock = false;
-			if (!secondary_at_7)
-				await finish_secondary_movement((current_secondary_notch == 2) ? 4 : (current_secondary_notch + 1));
+            if (unit._fast_notching_switch.Value > 0.5f && Mathf.Abs(unit._traction_motor_load.Value) < 200.0f)
+            {
+                unit._primary_controller.target_notch = next_up_notch(current_primary_notch);
+                await finish_secondary_movement(next_up_notch(current_secondary_notch));
+            }
+            else if (!secondary_at_7)
+				await finish_secondary_movement(next_up_notch(current_secondary_notch));
 			else
 			{
 				await finish_secondary_movement(roll_over_to_1);
 				if (!_interrupt_movement)
 				{
-					unit._primary_controller.target_notch = (current_primary_notch == 2) ? 4 : (current_primary_notch + 1);
+					unit._primary_controller.target_notch = next_up_notch(current_primary_notch);
 					await unit._primary_controller.finish_movement();
 				}
 			}

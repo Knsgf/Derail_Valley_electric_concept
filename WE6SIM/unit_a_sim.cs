@@ -32,7 +32,7 @@ internal partial class unit_a_sim: electric_device
 	private readonly Fuse _appliances;
 	private readonly Port _throttle_handle, _reverser_handle, _field_handle, _selector_handle; 
 	private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
-	private readonly Port _front_pantograph_switch;
+	private readonly Port _front_pantograph_switch, _fast_notching_switch;
 	private readonly Port _primary_notch_hand, _secondary_notch_hand;
 	private readonly Port _supply_volts, _motor_volts;
     private readonly Port[] _load_meter_groups, _field_meter_groups;
@@ -82,6 +82,7 @@ internal partial class unit_a_sim: electric_device
 
         _front_pantograph_switch = grab_port(ports, "[FrontPantographSwitch].EXT_IN");
 		_front_pantograph_switch.ValueUpdatedInternally += toggle_pole;
+		_fast_notching_switch = grab_port(ports, "[FastNotchingSwitch].EXT_IN");
 
 		_primary_notch_hand   = grab_port(ports, "[CustomSimulation].PRIMARY_NOTCH"  );
         _secondary_notch_hand = grab_port(ports, "[CustomSimulation].SECONDARY_NOTCH");
@@ -252,19 +253,28 @@ internal partial class unit_a_sim: electric_device
 		//	(int) AB1_shift.unit_b_camshaft_lsb, _throttle + 1);
 	}
 
-	private void field_control_handler(float raw_field_position)
+	private void set_exciter_voltage(int field_handle_postion)
+	{
+		float raw_field_position = field_handle_postion / 6.0f;
+		_named_branches["EXT"].EMF = min_exciter_voltage * (1.0f - raw_field_position) + max_exciter_voltage * raw_field_position;
+		//if (!_line_contactor.engaged)
+		float voltage_adjust = (1.0f - _motor_volts.Value / _line_voltage) * max_exciter_voltage;
+        _named_branches["EXT"].EMF = Mathf.Clamp(_named_branches["EXT"].EMF + voltage_adjust, min_exciter_voltage, max_exciter_voltage);
+    }
+
+    private void field_control_handler(float raw_field_position)
 	{
         if (!is_powered || disposed)
             return;
         int handle_postion = Mathf.RoundToInt(raw_field_position * 6.0f);
 		_field_position = handle_postion;
 		if (_selector < 2)
-			_named_branches["EXT"].EMF = min_exciter_voltage * (1.0f - raw_field_position) + max_exciter_voltage * raw_field_position;
-		else
-        {
-            _named_branches["EXT"].EMF = 0.0f;
-            for (int field_contactor_on = 0; field_contactor_on < handle_postion; ++field_contactor_on)
-			_field_shunt_contactors[field_contactor_on].toggle(turn_on: true);
+			set_exciter_voltage(handle_postion);
+        else
+		{
+			_named_branches["EXT"].EMF = 0.0f;
+			for (int field_contactor_on = 0; field_contactor_on < handle_postion; ++field_contactor_on)
+				_field_shunt_contactors[field_contactor_on].toggle(turn_on: true);
 			for (int field_contactor_off = handle_postion; field_contactor_off < 6; ++field_contactor_off)
 				_field_shunt_contactors[field_contactor_off].toggle(turn_on: false);
 		}
@@ -276,7 +286,8 @@ internal partial class unit_a_sim: electric_device
             return;
         int handle_postion = Mathf.RoundToInt(raw_selector_position * 5.0f);
 		_selector = handle_postion;
-		switch (handle_postion)
+        float raw_field_position = _field_position / 6.0f;
+        switch (handle_postion)
 		{
 			case 0:
                 _line_voltage = 825.0f;
@@ -289,6 +300,7 @@ internal partial class unit_a_sim: electric_device
                 _field_shunt_contactors[3].toggle(turn_on: true);
                 _field_shunt_contactors[4].toggle(turn_on: true);
                 _field_shunt_contactors[5].toggle(turn_on: true);
+                field_control_handler(raw_field_position);
                 break;
 
             case 1:
@@ -302,6 +314,7 @@ internal partial class unit_a_sim: electric_device
                 _field_shunt_contactors[3].toggle(turn_on: true);
                 _field_shunt_contactors[4].toggle(turn_on: true);
                 _field_shunt_contactors[5].toggle(turn_on: true);
+                field_control_handler(raw_field_position);
                 break;
 
 			case 2:
@@ -309,7 +322,7 @@ internal partial class unit_a_sim: electric_device
                 reverser_handler(_reverser_position);
                 _regenerative_contactor.toggle(turn_on: false);
                 _dynamic_brake_contactor.toggle(turn_on: true);
-				field_control_handler(_field_position);
+				field_control_handler(raw_field_position);
 				break;
 
 			case 3:
@@ -317,7 +330,7 @@ internal partial class unit_a_sim: electric_device
                 reverser_handler(_reverser_position);
                 _regenerative_contactor.toggle(turn_on: false);
                 _dynamic_brake_contactor.toggle(turn_on: false);
-                field_control_handler(_field_position);
+                field_control_handler(raw_field_position);
 				break;
             
 			case 4:
@@ -325,7 +338,7 @@ internal partial class unit_a_sim: electric_device
                 reverser_handler(_reverser_position);
                 _regenerative_contactor.toggle(turn_on: false);
                 _dynamic_brake_contactor.toggle(turn_on: false);
-                field_control_handler(_field_position);
+                field_control_handler(raw_field_position);
                 break;
 
             case 5:
@@ -333,7 +346,7 @@ internal partial class unit_a_sim: electric_device
 				reverser_handler(_reverser_position);
                 _regenerative_contactor.toggle(turn_on: false);
                 _dynamic_brake_contactor.toggle(turn_on: false);
-                field_control_handler(_field_position);
+                field_control_handler(raw_field_position);
                 break;
         }
     }
@@ -359,13 +372,15 @@ internal partial class unit_a_sim: electric_device
 
 		_primary_notch_hand.Value   = _primary_controller.current_position;
 		_secondary_notch_hand.Value = _secondary_camshaft_notch;
+        if (_selector < 2)
+            set_exciter_voltage(_field_position);
 
-		//int reverser = 0 /*(_reverser_handle.Value >= 0.5f) ? 1 : ((_reverser_handle.Value <= -0.5f) ? -1 : 0)*/;
-		//int throttle = 0 /*Mathf.RoundToInt(_throttle_handle.Value * 5.0f)*/;
+        //int reverser = 0 /*(_reverser_handle.Value >= 0.5f) ? 1 : ((_reverser_handle.Value <= -0.5f) ? -1 : 0)*/;
+        //int throttle = 0 /*Mathf.RoundToInt(_throttle_handle.Value * 5.0f)*/;
 
-		//_throttle.throttle_handler(reverser, throttle);
+        //_throttle.throttle_handler(reverser, throttle);
 
-		const float max_flux = 300.0f, min_flux = 1.0f;
+        const float max_flux = 300.0f, min_flux = 1.0f;
 		const float gear_ratio = 5.36f, torque_factor = 0.0347f, EMF_factor = 0.003634f;
 		float voltage = is_powered ? _line_voltage : 0.0f;
 		if (_currents["EPS"] < 0.0f)
@@ -395,7 +410,7 @@ internal partial class unit_a_sim: electric_device
 		_traction_motor_EMF.Value = _named_branches["MA1"].EMF / (-mb);
 
 		Main.diagnostics?.Value = _named_branches["EPS"].EMF;
-        //Main.diagnostics2?.Value = _currents["MF1b"] / nb;
+        Main.diagnostics2?.Value = _named_branches["EXT"].EMF;
 
         float half_torque = (6.0f / 2.0f) * torque_factor * gear_ratio * (_currents["MA1"] / nb) * magnetic_flux;
 		_torque_a.Value = _torque_b.Value = half_torque;
