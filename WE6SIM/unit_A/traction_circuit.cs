@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace WE6SIM;
 
-internal partial class unit_a_sim: IDisposable
+internal partial class unit_a_sim
 {
 	private static readonly string circuit_diagram =
 """
