@@ -21,8 +21,9 @@ namespace WE6SIM;
 
 internal partial class unit_a_sim: electric_device
 {
-    const int nb = 6, mb = 6 / nb;
-	const float max_exciter_voltage = 120.0f, min_exciter_voltage = 10.0f;
+    const int nb = 3/*, mb = 6 / nb*/;
+    const int motors = 2;
+    const float max_exciter_voltage = 120.0f, min_exciter_voltage = 10.0f;
 
 	private readonly GameObject _test_pole_prefab;
 	private GameObject? _test_pole;
@@ -111,8 +112,8 @@ internal partial class unit_a_sim: electric_device
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
 		_contactors = new contactors(_appliances, _contactor_locations, _contactor_on_sound, _contactor_off_sound);
         _pantograph = new pantograph(unit.gameObject, _appliances);
-		_traction_motors = new traction_motor[1];
-		for (int motor_number = 1; motor_number <= _traction_motors.Length; ++motor_number)
+		_traction_motors = new traction_motor[motors];
+		for (int motor_number = 1; motor_number <= motors; ++motor_number)
 			_traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
 		_blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
 
@@ -239,10 +240,7 @@ internal partial class unit_a_sim: electric_device
         else
 		{
 			_named_branches["EXT"].EMF = 0.0f;
-			for (int field_contactor_on = 0; field_contactor_on < handle_postion; ++field_contactor_on)
-				_contactors._field_shunt_contactors[field_contactor_on].toggle(turn_on: true);
-			for (int field_contactor_off = handle_postion; field_contactor_off < 6; ++field_contactor_off)
-				_contactors._field_shunt_contactors[field_contactor_off].toggle(turn_on: false);
+			_contactors.switch_field_contactors(handle_postion);
 		}
     }
 
@@ -257,7 +255,7 @@ internal partial class unit_a_sim: electric_device
 		switch (handle_postion)
         {
             case 0:
-                _line_voltage = 825.0f;
+                _line_voltage = 1650.0f;
                 break;
 
             case 1:
@@ -266,18 +264,22 @@ internal partial class unit_a_sim: electric_device
 
             case 2:
                 _line_voltage = 0.0f;
+				_contactors.switch_field_contactors(_field_position);
                 break;
 
             case 3:
-                _line_voltage = 275.0f;
+                _line_voltage = 825.0f;
+                _contactors.switch_field_contactors(_field_position);
                 break;
 
             case 4:
-                _line_voltage = 825.0f;
+                _line_voltage = 1650.0f;
+                _contactors.switch_field_contactors(_field_position);
                 break;
 
             case 5:
                 _line_voltage = 1650.0f;
+                _contactors.switch_field_contactors(_field_position);
                 break;
         }
     }
@@ -313,16 +315,16 @@ internal partial class unit_a_sim: electric_device
         //_blowers.full_speed_mode = true;
 
         traction_motor[] traction_motors = _traction_motors;
-        for (int motor_index = 0; motor_index < traction_motors.Length; ++motor_index)
+        for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
             traction_motors[motor_index].simulate(_selector == 2, _currents, _named_branches);
         _circuit.simulate();
         _motors_volts = _currents["VM"] * _element_resistances["VM"];
 		set_motors_volts(_motors_volts);
         float average_RPM = 0.0f, average_load = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
-		for (int motor_index = 0; motor_index < traction_motors.Length; ++motor_index)
-		{
-			traction_motor motor = traction_motors[motor_index];
-			total_torque += motor.torque;
+        for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
+        {
+            traction_motor motor = traction_motors[motor_index];
+			total_torque += motor.wheel_torque;
 			average_RPM  += motor.RPM;
 			average_load += motor.load_current;
 			average_EMF  += motor.EMF;
@@ -332,8 +334,11 @@ internal partial class unit_a_sim: electric_device
 		average_load /= traction_motors.Length;
 		_traction_motor_RPM.Value  = average_RPM;
 		_traction_motor_load.Value = average_load;
-		set_motor_group_load [0](                    average_load);
-		set_motor_group_field[0](traction_motors[0].field_current);
+		for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
+		{
+			set_motor_group_load [motor_index](traction_motors[motor_index].load_current );
+			set_motor_group_field[motor_index](traction_motors[motor_index].field_current);
+		}
 		_traction_motor_EMF.Value = average_EMF;
         _blowers.simulate((_selector == 2) ? _motors_volts : (1650.0f - _currents["EPS"] * _element_resistances["EPS"]), average_load);
 

@@ -15,7 +15,7 @@ namespace WE6SIM.devices;
 
 internal class traction_motor
 {
-    const int nm = 6;
+    const int nm = 3;
     
     const float max_flux = 300.0f, min_flux = 1.0f, field_partitioning = 0.63f;
     const float gear_ratio = 5.36f, torque_factor = 0.0347f, EMF_factor = 0.003634f;
@@ -24,7 +24,7 @@ internal class traction_motor
     private readonly string _armature_name, _field_name1, _field_name2;
 
     public float RPM           { get; private set; }
-    public float torque        { get; private set; }
+    public float wheel_torque  { get; private set; }
     public float load_current  { get; private set; }
     public float field_current { get; private set; }
     public float EMF           { get; private set; }
@@ -55,6 +55,6 @@ internal class traction_motor
         EMF          = named_branches[armature_name].EMF = named_branches[armature_name].EMF * 0.7f + motor_EMF * 0.3f;
         RPM          = motor_RPM;
         load_current = currents[armature_name] / nm;
-        torque       = (torque_factor * gear_ratio) * load_current * magnetic_flux * nm;
+        wheel_torque = (torque_factor * gear_ratio) * load_current * magnetic_flux * nm;
     }
 }
