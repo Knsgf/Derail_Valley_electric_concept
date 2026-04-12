@@ -33,7 +33,7 @@ internal class pantograph: electric_device
 	private readonly float _lower_frame_length, _lower_frame_length2, _double_lower_frame_length;
 	private readonly float _lower_frame_horizontal_offset, _lower_frame_horizontal_roller_offset, _piston_height;
 
-	private Vector2 _head_rollers_offset, _upper_pivot_offset;
+	private Vector2 _head_rollers_offset;
 	private float   _current_height, _target_height, _current_upper_frame_angle;
 	private int     _interations_left = max_iterations_before_sleep;
 
@@ -176,7 +176,7 @@ internal class pantograph: electric_device
 			/ (_double_lower_frame_length * head_roller_distance_from_bottom_pivot));
 		float lower_frame_angle = Mathf.PI - (angle_to_head_roller + angle_between_lower_frame_and_distance_to_head_roller);
 		_current_upper_frame_angle = angle_between_frames - lower_frame_angle;
-		Main.log((Mathf.Rad2Deg * _current_upper_frame_angle).ToString());
+		//Main.log((Mathf.Rad2Deg * _current_upper_frame_angle).ToString());
 
 		Vector3 frame_lever_tip_position_relative_to_base = _base.InverseTransformPoint(_piston_lever_tip.TransformPoint(Vector3.zero));
 		frame_lever_tip_position_relative_to_base.z -= _lower_frame_horizontal_offset;

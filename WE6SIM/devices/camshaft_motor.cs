@@ -63,8 +63,6 @@ internal class camshaft_motor: electric_device
 
 	private void power_supply_changed(bool power_on)
 	{
-		if (disposed)
-			return;
 		if (power_on)
 			target_notch = (int) current_position;
 		else if (_drop_to_1_on_power_loss && !_roll_over)
@@ -74,11 +72,13 @@ internal class camshaft_motor: electric_device
 	private async Task single_notch_motion(int target_notch, bool power_loss_drop)
 	{
 		bool up_motion        = target_notch > current_position, down_motion = target_notch < current_position;
-		int next_target_notch = Mathf.RoundToInt(current_position);
+		int next_target_notch;
 		if (up_motion)
-			++next_target_notch;
+			next_target_notch = Mathf.FloorToInt(current_position + 1.0f);
 		else if (down_motion)
-			--next_target_notch;
+			next_target_notch = Mathf.CeilToInt(current_position - 1.0f);
+		else
+			next_target_notch = Mathf.RoundToInt(current_position);
 		while ((power_loss_drop || is_powered) && !disposed
 			&& ( up_motion && next_target_notch -  current_position >= 0.5f / notch_change_stages
 			|| down_motion && current_position  - next_target_notch >= 0.5f / notch_change_stages))
@@ -147,8 +147,8 @@ internal class camshaft_motor: electric_device
 		}
 
 		bool signal_on_completion = false;
-		int current_notch = Mathf.RoundToInt(current_position);
-		if (to_1 && current_notch != 1 || !to_1 && current_notch != _num_notches)
+		if (    to_1 && Mathf.Abs(current_position -         1.0f) > notch_lock_threshold 
+			|| !to_1 && Mathf.Abs(current_position - _num_notches) > notch_lock_threshold)
 		{
 			_camshaft_in_motion = true;
 			int target_notch;

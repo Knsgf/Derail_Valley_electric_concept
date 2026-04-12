@@ -83,15 +83,7 @@ internal partial class unit_a_sim
                     break;
 
                 case 3:
-                    _regenerative_contactor.toggle(turn_on: false);
-                    _dynamic_brake_contactor.toggle(turn_on: false);
-                    break;
-
                 case 4:
-                    _regenerative_contactor.toggle(turn_on: false);
-                    _dynamic_brake_contactor.toggle(turn_on: false);
-                    break;
-
                 case 5:
                     _regenerative_contactor.toggle(turn_on: false);
                     _dynamic_brake_contactor.toggle(turn_on: false);

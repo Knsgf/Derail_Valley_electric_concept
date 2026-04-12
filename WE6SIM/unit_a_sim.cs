@@ -33,7 +33,6 @@ internal partial class unit_a_sim: electric_device
 	private readonly Fuse   _appliances;
 	private readonly Port   _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
 	private readonly Port   _contactor_on_sound, _contactor_off_sound;
-    //private readonly Port? _switch;
 
 	private readonly Port _control_AB1, _control_BA1, _torque_b;
 
@@ -44,14 +43,18 @@ internal partial class unit_a_sim: electric_device
 	private readonly traction_motor[]       _traction_motors;
 	private readonly blower_controller      _blowers;
 	private readonly throttle_controller    _throttle_controller;
+	private readonly control_stand          _control_stand;
 	private readonly TrainCar               _unit;
+
+	private readonly Action<float> set_primary_notch, set_seconday_notch, set_supply_volts, set_motors_volts;
+	private readonly Action<float>[] set_motor_group_load, set_motor_group_field;
 
 	private contactors _contactors;
 
-	private bool _traction_on = false;
+	private bool _fast_notching_enabled = false;
 	private int  _throttle = 0, _secondary_camshaft_notch, _selector = 3, _field_position = 0;
 	private Task? _single_notch_movement;
-	private float _line_voltage = 1650.0f, _reverser_position = 0.5f;
+	private float _line_voltage = 1650.0f, _reverser_position = 0.5f, _motors_volts;
 
 	public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
 
@@ -65,30 +68,35 @@ internal partial class unit_a_sim: electric_device
 		set_up_fuses(_appliances);
 		power_supply_toggled += appliances_toggle;
 
-		_reverser_handle = grab_port(ports, "[Reverser].EXT_IN");
-		_reverser_handle.ValueUpdatedInternally += reverser_handler;
-		_throttle_controller = new throttle_controller(this);
-		_throttle_handle = grab_port(ports, "[Throttle].EXT_IN");
-		_throttle_handle.ValueUpdatedInternally += throttle_handler;
-		_field_handle = grab_port(ports, "[FieldControl].EXT_IN");
-		_field_handle.ValueUpdatedInternally += field_control_handler;
-		_selector_handle = grab_port(ports, "[Selector].EXT_IN");
-		_selector_handle.ValueUpdatedInternally += selector_handler;
+		_control_stand       = new control_stand(_appliances, ports);
+        _throttle_controller = new throttle_controller(this);
+        _control_stand.register_handler("reverser_handle",      reverser_handler);
+		_control_stand.register_handler("throttle_handle",      throttle_handler);
+		_control_stand.register_handler(   "field_handle", field_control_handler);
+        _control_stand.register_handler("selector_handle",      selector_handler);
 
-        _front_pantograph_switch = grab_port(ports, "[FrontPantographSwitch].EXT_IN");
-		_front_pantograph_switch.ValueUpdatedInternally += toggle_pole;
-		_fast_notching_switch = grab_port(ports, "[FastNotchingSwitch].EXT_IN");
+		_control_stand.register_handler("front_pantograph_switch", toggle_pole);
+        _control_stand.register_handler("fast_notching_switch", fast_notching_toggle);
 
-		_primary_notch_hand   = grab_port(ports, "[CustomSimulation].PRIMARY_NOTCH"  );
-        _secondary_notch_hand = grab_port(ports, "[CustomSimulation].SECONDARY_NOTCH");
+		set_supply_volts   = _control_stand.create_setter(        "supply_volts");
+        set_motors_volts   = _control_stand.create_setter(        "motors_volts");
+        set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
+        set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
+		set_motor_group_load  = new Action<float>[3];
+		set_motor_group_field = new Action<float>[3];
+        for (int group = 1; group <= 3; ++group)
+        {
+            set_motor_group_load [group - 1] = _control_stand.create_setter( $"load_meter_{group}");
+            set_motor_group_field[group - 1] = _control_stand.create_setter($"field_meter_{group}");
+        }
 
-        _torque_a  = grab_port(ports, "traction.TORQUE_IN");
-		_wheel_RPM = grab_port(ports, "traction.WHEEL_RPM_EXT_IN");
+        _torque_a            = grab_port(ports, "traction.TORQUE_IN");
+		_wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN");
         _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD");
         _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM" );
         _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF" );
 
-        _torque_b = grab_port(ports, "internal_MU.TM4-6");
+        _torque_b    = grab_port(ports, "internal_MU.TM4-6");
 		_control_AB1 = grab_port(ports, "internal_MU.CONTROL_AB1");
 		_control_BA1 = grab_port(ports, "internal_MU.CONTROL_BA1");
 		_control_BA1.ValueUpdatedInternally += MU_BA1_control;
@@ -107,16 +115,6 @@ internal partial class unit_a_sim: electric_device
 		for (int motor_number = 1; motor_number <= _traction_motors.Length; ++motor_number)
 			_traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
 		_blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
-
-        _supply_volts = grab_port(ports, "[CustomGauges].SUPPLY"            );
-		_motor_volts  = grab_port(ports, "[CustomGauges].ALL_MOTOR_TERMINAL");
-        _load_meter_groups  = new Port[3];
-        _field_meter_groups = new Port[3];
-		for (int group = 1; group <= 3; ++group)
-		{
-			_load_meter_groups [group - 1] = grab_port(ports, $"[CustomGauges].LOAD_GROUP{group}" );
-            _field_meter_groups[group - 1] = grab_port(ports, $"[CustomGauges].FIELD_GROUP{group}");
-        }
 
         _unit = unit;
 		_simulation = simulation;
@@ -150,6 +148,11 @@ internal partial class unit_a_sim: electric_device
 		}
 	}
 
+	private void fast_notching_toggle(float port_value)
+	{
+		_fast_notching_enabled = port_value >= 0.5f;
+	}
+
 	private void set_secondary_camshaft_target_notch(int target_notch)
 	{
 		set_port_signal(_control_AB1, (int) AB1_signals.unit_b_camshaft_notch,
@@ -164,14 +167,7 @@ internal partial class unit_a_sim: electric_device
 
 	private void appliances_toggle(bool turn_on)
 	{
-		check_if_disposed();
 		toggle_port_signal(_control_AB1, (int) AB1_signals.battery, turn_on);
-		if (turn_on)
-		{
-			reverser_handler(_reverser_handle.Value);
-			throttle_handler(_throttle_handle.Value);
-			field_control_handler(_field_handle.Value);
-		}
 	}
 
 	private void reverser_handler(float raw_reverser)
@@ -228,7 +224,7 @@ internal partial class unit_a_sim: electric_device
 	{
 		float raw_field_position = field_handle_postion / 6.0f;
 		_named_branches["EXT"].EMF = min_exciter_voltage * (1.0f - raw_field_position) + max_exciter_voltage * raw_field_position;
-		float voltage_adjust = (1.0f - _motor_volts.Value / _line_voltage) * max_exciter_voltage;
+		float voltage_adjust = (1.0f - _motors_volts / _line_voltage) * max_exciter_voltage;
         _named_branches["EXT"].EMF = Mathf.Clamp(_named_branches["EXT"].EMF + voltage_adjust, min_exciter_voltage, max_exciter_voltage);
     }
 
@@ -294,72 +290,60 @@ internal partial class unit_a_sim: electric_device
 		_contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
 	}
 
-	private void traction_toggle(bool enable)
-	{
-		_traction_on = enable;
-	}
-
 	private void simulate()
 	{
 		check_if_disposed();
 		_pantograph.move();
 		_contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
 
-		_primary_notch_hand.Value   = _contactors._primary_controller.current_position;
-		_secondary_notch_hand.Value = _secondary_camshaft_notch;
+        set_primary_notch(_contactors._primary_controller.current_position);
+		set_seconday_notch(_secondary_camshaft_notch);
         if (_selector < 2)
             set_exciter_voltage(_field_position);
 
-		float voltage = is_powered ? _line_voltage : 0.0f;
+        float voltage = is_powered ? _line_voltage : 0.0f;
 		if (_currents["EPS"] < 0.0f)
 			voltage += _currents["EPS"] * _element_resistances["EPS"];
         _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
-		_supply_volts.Value = _named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"];
+		set_supply_volts(_named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"]);
         foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
 			_currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
 
-		/*
-		float motor_RPM = _wheel_RPM.Value * gear_ratio;
-		float magnetic_flux1 = (min_flux + Mathf.Clamp(Mathf.Abs(_currents["MF1a"] / nb), 0.0f, max_flux - min_flux)) * (1.0f - 0.63f);
-        float magnetic_flux2 = (min_flux + Mathf.Clamp(Mathf.Abs(_currents["MF1b"] / nb), 0.0f, max_flux - min_flux)) * 0.63f;
-		float magnetic_flux = magnetic_flux1 + magnetic_flux2;
-        if (_currents["MF1b"] < 0.0f)
-			magnetic_flux = -magnetic_flux;
-        float EMF = mb * (-EMF_factor) * magnetic_flux * motor_RPM;
-        _named_branches["MA1"].EMF = _named_branches["MA1"].EMF * 0.7f + EMF * 0.3f;
-		*/
-		_motor_volts.Value = _currents["VM"] * _element_resistances["VM"];
 		_blowers.active = _selector == 2 || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
-		//_blowers.full_speed_mode = true;
-		
-		
-        _circuit.simulate();
-		_blowers.simulate((_selector == 2) ? _motor_volts.Value : (1650.0f - _currents["EPS"] * _element_resistances["EPS"]), _currents["MA1"] / nb);
+        //_blowers.full_speed_mode = true;
+
         traction_motor[] traction_motors = _traction_motors;
+        for (int motor_index = 0; motor_index < traction_motors.Length; ++motor_index)
+            traction_motors[motor_index].simulate(_selector == 2, _currents, _named_branches);
+        _circuit.simulate();
+        _motors_volts = _currents["VM"] * _element_resistances["VM"];
+		set_motors_volts(_motors_volts);
         float average_RPM = 0.0f, average_load = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
 		for (int motor_index = 0; motor_index < traction_motors.Length; ++motor_index)
 		{
 			traction_motor motor = traction_motors[motor_index];
-			total_torque += motor.simulate_torque(_selector == 2, _currents, _named_branches);
+			total_torque += motor.torque;
 			average_RPM  += motor.RPM;
 			average_load += motor.load_current;
 			average_EMF  += motor.EMF;
 		}
-		average_RPM  /= traction_motors.Length;
+        average_RPM /= traction_motors.Length;
 		average_EMF  /= traction_motors.Length;
 		average_load /= traction_motors.Length;
-		_traction_motor_RPM.Value = average_RPM;
-		_traction_motor_load.Value = _load_meter_groups[0].Value = average_load;
-		_field_meter_groups[0].Value = traction_motors[0].field_current;
+		_traction_motor_RPM.Value  = average_RPM;
+		_traction_motor_load.Value = average_load;
+		set_motor_group_load [0](                    average_load);
+		set_motor_group_field[0](traction_motors[0].field_current);
 		_traction_motor_EMF.Value = average_EMF;
+        _blowers.simulate((_selector == 2) ? _motors_volts : (1650.0f - _currents["EPS"] * _element_resistances["EPS"]), average_load);
 
-		Main.diagnostics?.Value = _named_branches["EPS"].EMF;
-        Main.diagnostics2?.Value = _named_branches["EXT"].EMF;
+        //Main.diagnostics?.Value = _named_branches["EPS"].EMF;
+        //Main.diagnostics2?.Value = _named_branches["EXT"].EMF;
 
 		_torque_a.Value = _torque_b.Value = total_torque / 2.0f;
-	}
+    }
 
-	public override void Dispose()
+    public override void Dispose()
 	{
 		if (!disposed)
 		{
@@ -367,13 +351,9 @@ internal partial class unit_a_sim: electric_device
 			_pantograph.Dispose();
 			_blowers.Dispose();
 			_contactors.Dispose();
-			_simulation.SimulationFlow.TickEvent            -= simulate;
-            _reverser_handle.ValueUpdatedInternally			-= reverser_handler;
-            _throttle_handle.ValueUpdatedInternally         -= throttle_handler;
-            _field_handle.ValueUpdatedInternally            -= field_control_handler;
-            _selector_handle.ValueUpdatedInternally			-= selector_handler;
-            _control_BA1.ValueUpdatedInternally             -= MU_BA1_control;
-			_front_pantograph_switch.ValueUpdatedInternally -= toggle_pole;
+			_control_stand.Dispose();
+			_simulation.SimulationFlow.TickEvent -= simulate;
+            _control_BA1.ValueUpdatedInternally  -= MU_BA1_control;
 		}
 	}
 }

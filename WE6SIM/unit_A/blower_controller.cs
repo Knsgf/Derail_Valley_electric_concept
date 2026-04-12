@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using LocoSim.Implementations;
+using UnityEngine;
 
 namespace WE6SIM;
 
@@ -34,11 +35,11 @@ internal class blower_controller: electric_device
 
     private float voltage_divider()
     {
-        if (_line_voltage <= 675.0f)
+        if (_line_voltage <= 525.0f)
             return parallel_6;
-        if (_line_voltage <= 1350.0f)
+        if (_line_voltage <= 1050.0f)
             return series_2_parallel_3;
-		return (full_speed_mode || _motor_current >= 300.0f) ? series_3_parallel_2 : series_6;
+		return (full_speed_mode || _motor_current >= 275.0f) ? series_3_parallel_2 : series_6;
 	}
 
 	private async void switch_configuration()
@@ -53,10 +54,11 @@ internal class blower_controller: electric_device
         _reconfiguration = false;
     }
     
-    public void simulate(float line_voltage, float motor_current)
+    public void simulate(float line_voltage, float traction_motor_current)
     {
         check_if_disposed();
-        _line_voltage = line_voltage;
+        _line_voltage  = line_voltage           = Mathf.Abs(          line_voltage);
+        _motor_current = traction_motor_current = Mathf.Abs(traction_motor_current);
         float fan_motor_voltage;
         if (!is_powered || !active || _reconfiguration)
         {
@@ -71,19 +73,21 @@ internal class blower_controller: electric_device
                 _contactor_on_sound.Value = 1.0f;
             _previously_active = true;
             fan_motor_voltage = line_voltage * _line_voltage_multiplier;
-            if (fan_motor_voltage <= 650.0f || fan_motor_voltage >= 700.0f
-                || motor_current >= 300.0f && _line_voltage_multiplier == series_6
-                || motor_current <= 250.0f && _line_voltage_multiplier == series_3_parallel_2)
+            Main.diagnostics?.Value = fan_motor_voltage;
+            if (fan_motor_voltage <= 450.0f || fan_motor_voltage >= 600.0f
+                || (traction_motor_current >= 300.0f ||  full_speed_mode)
+                ||  traction_motor_current <= 250.0f && !full_speed_mode)
             {
                 switch_configuration();
             }
         }
 
-        float final_relative_speed = fan_motor_voltage / 500.0f;
+        float final_relative_speed = fan_motor_voltage / 750.0f;
         if (_relative_speed <= final_relative_speed)
             _relative_speed = acceleration_ratio * _relative_speed + (1.0f - acceleration_ratio) * final_relative_speed;
         else
-            _relative_speed = slowdown_ratio * _relative_speed + (1.0f - slowdown_ratio) * final_relative_speed;
+            _relative_speed =     slowdown_ratio * _relative_speed + (1.0f -     slowdown_ratio) * final_relative_speed;
+        Main.diagnostics2?.Value = _relative_speed;
         _blower_audio.Value = _relative_speed;
     }
 }
