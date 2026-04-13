@@ -15,13 +15,15 @@ namespace WE6SIM.devices;
 
 internal class traction_motor
 {
-    const int nm = 3;
+    //const int nm = 3;
     
-    const float max_flux = 300.0f, min_flux = 1.0f, field_partitioning = 0.63f;
+    const float max_flux = 300.0f, min_flux = 1.0f;
     const float gear_ratio = 5.36f, torque_factor = 0.0347f, EMF_factor = 0.003634f;
 
     private readonly Port   _wheel_RPM;
     private readonly string _armature_name, _field_name1, _field_name2;
+
+    public const float field_partitioning = 0.63f;
 
     public float RPM           { get; private set; }
     public float wheel_torque  { get; private set; }
@@ -41,9 +43,9 @@ internal class traction_motor
     public void simulate(bool rheostatic_braking, Dictionary<string, float> currents, Dictionary<string, circuit.branch_user> named_branches)
     {
         float motor_RPM      = _wheel_RPM.Value * gear_ratio;
-        field_current        = currents[_field_name2] / nm;
-        float magnetic_flux1 = (min_flux + Mathf.Clamp(Mathf.Abs(currents[_field_name1] / nm), 0.0f, max_flux - min_flux)) * (1.0f - field_partitioning);
-        float magnetic_flux2 = (min_flux + Mathf.Clamp(Mathf.Abs(              field_current), 0.0f, max_flux - min_flux)) *         field_partitioning;
+        field_current        = currents[_field_name2];
+        float magnetic_flux1 = (min_flux + Mathf.Clamp(Mathf.Abs(currents[_field_name1]), 0.0f, max_flux - min_flux)) * (1.0f - field_partitioning);
+        float magnetic_flux2 = (min_flux + Mathf.Clamp(Mathf.Abs(         field_current), 0.0f, max_flux - min_flux)) *         field_partitioning;
         float magnetic_flux  = magnetic_flux1 + magnetic_flux2;
         if (field_current < 0.0f)
         {
@@ -54,7 +56,7 @@ internal class traction_motor
         string armature_name = _armature_name;
         EMF          = named_branches[armature_name].EMF = named_branches[armature_name].EMF * 0.7f + motor_EMF * 0.3f;
         RPM          = motor_RPM;
-        load_current = currents[armature_name] / nm;
-        wheel_torque = (torque_factor * gear_ratio) * load_current * magnetic_flux * nm;
+        load_current = currents[armature_name];
+        wheel_torque = (torque_factor * gear_ratio) * load_current * magnetic_flux;
     }
 }

@@ -21,8 +21,8 @@ namespace WE6SIM;
 
 internal partial class unit_a_sim: electric_device
 {
-    const int nb = 3/*, mb = 6 / nb*/;
-    const int motors = 2;
+    //const int nb = 3/*, mb = 6 / nb*/;
+    const int motors = 6;
 	const float max_exciter_voltage = 120.0f, min_exciter_voltage = 10.0f, max_exciter_current = 2000.0f;
 	const float max_exciter_power = max_exciter_voltage * max_exciter_current;
 
@@ -117,6 +117,11 @@ internal partial class unit_a_sim: electric_device
 		for (int motor_number = 1; motor_number <= motors; ++motor_number)
 			_traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
 		_blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
+
+        reverser_handler(0.5f);
+        throttle_handler(0.0f);
+        field_control_handler(0.0f);
+        selector_handler(0.6f);
 
         _unit = unit;
 		_simulation = simulation;
@@ -260,9 +265,6 @@ internal partial class unit_a_sim: electric_device
 		switch (handle_postion)
         {
             case 0:
-                _line_voltage = 1650.0f;
-                break;
-
             case 1:
                 _line_voltage = 1650.0f;
                 break;
@@ -273,15 +275,7 @@ internal partial class unit_a_sim: electric_device
                 break;
 
             case 3:
-                _line_voltage = 825.0f;
-                _contactors.switch_field_contactors(_field_position);
-                break;
-
             case 4:
-                _line_voltage = 1650.0f;
-                _contactors.switch_field_contactors(_field_position);
-                break;
-
             case 5:
                 _line_voltage = 1650.0f;
                 _contactors.switch_field_contactors(_field_position);
@@ -303,7 +297,7 @@ internal partial class unit_a_sim: electric_device
 		_pantograph.move();
 		_contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
 
-        set_primary_notch(_contactors._primary_controller.current_position);
+		set_primary_notch(_contactors._primary_controller.current_position);
 		set_seconday_notch(_secondary_camshaft_notch);
 
 		lock (_currents)
@@ -311,46 +305,46 @@ internal partial class unit_a_sim: electric_device
 			foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
 				_currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
 		}
-        float voltage = is_powered ? _line_voltage : 0.0f;
-        if (_currents["EPS"] < 0.0f)
-            voltage += _currents["EPS"] * _element_resistances["EPS"];
-        _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
-        if (_selector < 2)
-            set_exciter_voltage(_field_position);
-        traction_motor[] traction_motors = _traction_motors;
-        for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
-            traction_motors[motor_index].simulate(_selector == 2, _currents, _named_branches);
-        _circuit.simulate();	// Must be called after all EMFs have been set
+		float voltage = is_powered ? _line_voltage : 0.0f;
+		if (_currents["EPS"] < 0.0f)
+			voltage += _currents["EPS"] * _element_resistances["EPS"];
+		_named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
+		if (_selector < 2)
+			set_exciter_voltage(_field_position);
+		traction_motor[] traction_motors = _traction_motors;
+		for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
+			traction_motors[motor_index].simulate(_selector == 2, _currents, _named_branches);
+		_circuit.simulate();    // Must be called after all EMFs have been set
 
 		set_supply_volts(_named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"]);
-        _motors_volts = _currents["VM"] * _element_resistances["VM"];
+		_motors_volts = _currents["VM"] * _element_resistances["VM"];
 		set_motors_volts(_motors_volts);
-        float average_RPM = 0.0f, average_load = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
-        for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
-        {
-            traction_motor motor = traction_motors[motor_index];
-			total_torque += motor.wheel_torque;
-			average_RPM  += motor.RPM;
-			average_load += motor.load_current;
-			average_EMF  += motor.EMF;
-		}
-        average_RPM  /= traction_motors.Length;
-		average_EMF  /= traction_motors.Length;
-		average_load /= traction_motors.Length;
-		_traction_motor_RPM.Value  = average_RPM;
-		_traction_motor_load.Value = average_load;
+		float average_RPM = 0.0f, average_load = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
 		for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
 		{
-			set_motor_group_load [motor_index](traction_motors[motor_index].load_current );
-			set_motor_group_field[motor_index](traction_motors[motor_index].field_current);
+			traction_motor motor = traction_motors[motor_index];
+			total_torque += motor.wheel_torque;
+			average_RPM += motor.RPM;
+			average_load += motor.load_current;
+			average_EMF += motor.EMF;
+		}
+		average_RPM /= traction_motors.Length;
+		average_EMF /= traction_motors.Length;
+		average_load /= traction_motors.Length;
+		_traction_motor_RPM.Value = average_RPM;
+		_traction_motor_load.Value = average_load;
+		for (int group_index = 2; group_index >= 0; --group_index)
+		{
+			set_motor_group_load[group_index](traction_motors[group_index << 1].load_current);
+			set_motor_group_field[group_index](traction_motors[group_index << 1].field_current);
 		}
 		_traction_motor_EMF.Value = average_EMF;
-        _blowers.active = _selector == 2 || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
-        //_blowers.full_speed_mode = true;
-        _blowers.simulate((_selector == 2) ? _motors_volts : (1650.0f - _currents["EPS"] * _element_resistances["EPS"]), average_load);
+		_blowers.active = _selector == 2 || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
+		//_blowers.full_speed_mode = true;
+		_blowers.simulate((_selector == 2) ? _motors_volts : (1650.0f - _currents["EPS"] * _element_resistances["EPS"]), average_load);
 
-        //Main.diagnostics?.Value = _named_branches["EPS"].EMF;
-        //Main.diagnostics2?.Value = _named_branches["EXT"].EMF;
+		Main.diagnostics?.Value = _currents["MA5"];
+        Main.diagnostics2?.Value = _currents["MA6"];
 
         _torque_a.Value = _torque_b.Value = total_torque / 2.0f;
     }

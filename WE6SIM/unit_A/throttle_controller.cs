@@ -34,9 +34,10 @@ internal partial class unit_a_sim
 				return;
 
             _interrupt_movement = _roll_over = true;
-			while (unit.is_powered && unit._contactors._line_contactor.engaged)
+			while (unit.is_powered && (unit._contactors._line_contactor.engaged || unit._contactors._line_contactor2.engaged))
 			{
 				unit._contactors._line_contactor.toggle(false);
+                unit._contactors._line_contactor2.toggle(false);
                 await Task.Delay(300);
             }
             unit._contactors._primary_controller.roll_over_move(to_1: true);
@@ -158,17 +159,21 @@ internal partial class unit_a_sim
             if (!unit.is_powered || _roll_over || unit._reverser_position > 0.3f && unit._reverser_position < 0.7f)
                 return;
 
-            if (!unit._contactors._line_contactor.engaged)
+			bool enable_line_contactor2 = unit._selector != 3;
+			if (!unit._contactors._line_contactor.engaged || enable_line_contactor2 && !!unit._contactors._line_contactor2.engaged)
 			{
 				int primary_target_notch = (unit._selector != 2) ? 1 : 5;
-                while (unit._throttle == 3 && !unit._contactors._line_contactor.engaged)
+                while (unit._throttle == 3 && !unit._contactors._line_contactor.engaged 
+					|| enable_line_contactor2 && !unit._contactors._line_contactor2.engaged)
                 {
 					if (unit._contactors._primary_controller.current_notch == primary_target_notch
 						&& unit.get_secondary_camshaft_current_notch(unit._control_BA1.Value) == 1)
 					{
 						unit._contactors._line_contactor.toggle(true);
-					}
-					else
+						if (enable_line_contactor2)
+                            unit._contactors._line_contactor2.toggle(true);
+                    }
+                    else
 					{
 						unit._contactors._primary_controller.target_notch = primary_target_notch;
 						unit.set_secondary_camshaft_target_notch(1);

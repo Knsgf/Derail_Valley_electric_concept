@@ -73,7 +73,6 @@ internal class blower_controller: electric_device
                 _contactor_on_sound.Value = 1.0f;
             _previously_active = true;
             fan_motor_voltage = line_voltage * _line_voltage_multiplier;
-            Main.diagnostics?.Value = fan_motor_voltage;
             if (fan_motor_voltage <= 450.0f || fan_motor_voltage >= 600.0f
                 || (traction_motor_current >= 300.0f ||  full_speed_mode)
                 ||  traction_motor_current <= 250.0f && !full_speed_mode)
@@ -87,7 +86,6 @@ internal class blower_controller: electric_device
             _relative_speed = acceleration_ratio * _relative_speed + (1.0f - acceleration_ratio) * final_relative_speed;
         else
             _relative_speed =     slowdown_ratio * _relative_speed + (1.0f -     slowdown_ratio) * final_relative_speed;
-        Main.diagnostics2?.Value = _relative_speed;
         _blower_audio.Value = _relative_speed;
     }
 }
