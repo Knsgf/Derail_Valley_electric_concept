@@ -12,7 +12,7 @@ internal partial class sparse_matrix
 {
     const float EPSILON = 5.0E-5f;
 
-    private static readonly HashSet<int> __indices_set = [];
+    private readonly HashSet<int> _indices_set = [];
 
     private Dictionary<int, float>[] _contents = [];
     private int _num_rows = 0, _num_columns = 0, _last_row = -1;
@@ -125,7 +125,7 @@ internal partial class sparse_matrix
                 }
             }
 
-            HashSet<int> indices = __indices_set;
+            HashSet<int> indices = _indices_set;
             indices.Clear();
             foreach (KeyValuePair<int, float> row_item in row_ref)
             {

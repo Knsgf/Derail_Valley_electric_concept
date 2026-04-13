@@ -30,11 +30,11 @@ internal partial class circuit_builder
     }
 
     public circuit set_up_simulation(out Dictionary<string, circuit.branch_user> named_branches,
-        out Dictionary<string, circuit.branch_user> contactor_locations)
+        out Dictionary<string, circuit.branch_user> contactor_locations, object thread_blocker)
     {
         named_branches      = [];
         contactor_locations = [];
-        circuit simulation = new(this, named_branches, contactor_locations);
+        circuit simulation = new(this, named_branches, contactor_locations, thread_blocker);
         assert.test(__setup_done && __all_nodes.Count == 0 && __branch_count == 0 && __base_node == null);
         return simulation;
     }
