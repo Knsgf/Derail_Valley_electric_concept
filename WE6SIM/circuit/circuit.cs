@@ -120,6 +120,7 @@ internal partial class circuit
         assert.test(_last_active_node >= 0);
 
         _incidence = new(_last_active_node + 1, _branches.Length);
+        _right     = new(_last_active_node + 1, _branches.Length);
         for (int row = _last_active_node; row >= 0; --row)
             _nodes[row].fill_connections_row(_incidence);
         _transposed_incidence = new sparse_matrix().transpose_from(_incidence);
