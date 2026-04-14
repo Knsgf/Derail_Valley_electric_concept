@@ -112,7 +112,7 @@ internal partial class unit_a_sim
     *-----------<EPS@-------------------------------------------------------------------------------------------------------------------------------------------------------------------*---------------------------*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*
 """;
 
-    private static readonly Dictionary<string, float> _element_resistances = new()
+    private static readonly Dictionary<string, float> _base_element_resistances = new()
     {
         ["EPS"] = 0.1f,
         ["EXT"] = 0.01f,
@@ -123,25 +123,25 @@ internal partial class unit_a_sim
     {
         for (int resistor_branch = 1; resistor_branch <= 3; ++resistor_branch)
         {
-            _element_resistances[$"SR{resistor_branch}.1"] = 1.1f;
-            _element_resistances[$"SR{resistor_branch}.2"] = 1.1f;
-            _element_resistances[$"SR{resistor_branch}.3"] = 3.6f;
-            _element_resistances[$"SR{resistor_branch}.4"] = 0.2f;
-            _element_resistances[$"SR{resistor_branch}.5"] = 0.2f;
-            _element_resistances[$"SR{resistor_branch}.6"] = 0.4f;
+            _base_element_resistances[$"SR{resistor_branch}.1"] = 1.1f;
+            _base_element_resistances[$"SR{resistor_branch}.2"] = 1.1f;
+            _base_element_resistances[$"SR{resistor_branch}.3"] = 3.6f;
+            _base_element_resistances[$"SR{resistor_branch}.4"] = 0.2f;
+            _base_element_resistances[$"SR{resistor_branch}.5"] = 0.2f;
+            _base_element_resistances[$"SR{resistor_branch}.6"] = 0.4f;
         }
         for (int motor_branch = 1; motor_branch <= motors; ++motor_branch)
         {
-            _element_resistances[$"MA{motor_branch}"  ] = 0.21f * 0.65f;
-            _element_resistances[$"MF{motor_branch}a" ] = 0.21f * 0.35f * (1.0f - traction_motor.field_partitioning);
-            _element_resistances[$"MF{motor_branch}b" ] = 0.21f * 0.35f * (       traction_motor.field_partitioning);
+            _base_element_resistances[$"MA{motor_branch}"  ] = 0.21f * 0.65f;
+            _base_element_resistances[$"MF{motor_branch}a" ] = 0.21f * 0.35f * (1.0f - traction_motor.field_partitioning);
+            _base_element_resistances[$"MF{motor_branch}b" ] = 0.21f * 0.35f * (       traction_motor.field_partitioning);
 
-            _element_resistances[$"RT{motor_branch}"  ] = 3.0f;
-            _element_resistances[$"FR{motor_branch}.1"] = 0.0332f;
-            _element_resistances[$"FR{motor_branch}.2"] = 0.0115f;
-            _element_resistances[$"FR{motor_branch}.4"] = 0.222f;
-            _element_resistances[$"FR{motor_branch}.5"] = 0.0555f;
-            _element_resistances[$"FR{motor_branch}.6"] = 0.0805f;
+            _base_element_resistances[$"RT{motor_branch}"  ] = 3.0f;
+            _base_element_resistances[$"FR{motor_branch}.1"] = 0.0332f;
+            _base_element_resistances[$"FR{motor_branch}.2"] = 0.0115f;
+            _base_element_resistances[$"FR{motor_branch}.4"] = 0.222f;
+            _base_element_resistances[$"FR{motor_branch}.5"] = 0.0555f;
+            _base_element_resistances[$"FR{motor_branch}.6"] = 0.0805f;
         }
     }
 

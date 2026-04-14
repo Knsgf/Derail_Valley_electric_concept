@@ -30,7 +30,7 @@ internal partial class unit_a_sim: electric_device
 	private GameObject? _test_pole;
 
 	private readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
-	private readonly Dictionary<string, float> _currents = [];
+	private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
 	private readonly Fuse   _appliances;
 	private readonly Port   _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
@@ -82,7 +82,13 @@ internal partial class unit_a_sim: electric_device
 
 		_test_pole_prefab = Main.catenary_parts.pole;
 
-		_circuit = circuit_compiler.trace(_element_resistances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations, _currents);
+		const float variation = 0.1f;
+		UnityEngine.Random.State old_state = UnityEngine.Random.state;
+		UnityEngine.Random.InitState(80);
+		foreach (KeyValuePair<string, float> element in _base_element_resistances)
+			_element_resistances[element.Key] = element.Value * UnityEngine.Random.Range(1.0f - variation, 1.0f + variation);
+		UnityEngine.Random.state = old_state;
+        _circuit = circuit_compiler.trace(_element_resistances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations, _currents);
 		foreach (string branch_name in _named_branches.Keys)
 			_currents[branch_name] = 0.0f;
 
