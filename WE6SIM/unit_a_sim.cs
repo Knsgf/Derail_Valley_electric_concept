@@ -63,34 +63,11 @@ internal partial class unit_a_sim: electric_device
 	public unit_a_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
 		: base("unit_A_sim")
 	{
-
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
 		_appliances = grab_fuse(fuses, "fusebox.ELECTRICS_MAIN");
 		set_up_fuses(_appliances);
 		power_supply_toggled += appliances_toggle;
-
-		_control_stand       = new control_stand(_appliances, ports);
-        _throttle_controller = new throttle_controller(this);
-        _control_stand.register_handler("reverser_handle",      reverser_handler);
-		_control_stand.register_handler("throttle_handle",      throttle_handler);
-		_control_stand.register_handler(   "field_handle", field_control_handler);
-        _control_stand.register_handler("selector_handle",      selector_handler);
-
-		_control_stand.register_handler("front_pantograph_switch", toggle_pole);
-        _control_stand.register_handler("fast_notching_switch", fast_notching_toggle);
-
-		set_supply_volts   = _control_stand.create_setter(        "supply_volts");
-        set_motors_volts   = _control_stand.create_setter(        "motors_volts");
-        set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
-        set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
-		set_motor_group_load  = new Action<float>[3];
-		set_motor_group_field = new Action<float>[3];
-        for (int group = 1; group <= 3; ++group)
-        {
-            set_motor_group_load [group - 1] = _control_stand.create_setter( $"load_meter_{group}");
-            set_motor_group_field[group - 1] = _control_stand.create_setter($"field_meter_{group}");
-        }
 
         _torque_a            = grab_port(ports, "traction.TORQUE_IN");
 		_wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN");
@@ -118,10 +95,27 @@ internal partial class unit_a_sim: electric_device
 			_traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
 		_blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
 
-        reverser_handler(0.5f);
-        throttle_handler(0.0f);
-        field_control_handler(0.0f);
-        selector_handler(0.6f);
+		_control_stand       = new control_stand(_appliances, ports);
+        _throttle_controller = new throttle_controller(this);
+        _control_stand.register_handler("reverser_handle",      reverser_handler);
+		_control_stand.register_handler("throttle_handle",      throttle_handler);
+		_control_stand.register_handler(   "field_handle", field_control_handler);
+        _control_stand.register_handler("selector_handle",      selector_handler);
+
+		_control_stand.register_handler("front_pantograph_switch", toggle_pole);
+        _control_stand.register_handler("fast_notching_switch", fast_notching_toggle);
+
+		set_supply_volts   = _control_stand.create_setter(        "supply_volts");
+        set_motors_volts   = _control_stand.create_setter(        "motors_volts");
+        set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
+        set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
+		set_motor_group_load  = new Action<float>[3];
+		set_motor_group_field = new Action<float>[3];
+        for (int group = 1; group <= 3; ++group)
+        {
+            set_motor_group_load [group - 1] = _control_stand.create_setter( $"load_meter_{group}");
+            set_motor_group_field[group - 1] = _control_stand.create_setter($"field_meter_{group}");
+        }
 
         _unit = unit;
 		_simulation = simulation;
@@ -179,7 +173,7 @@ internal partial class unit_a_sim: electric_device
 
 	private void reverser_handler(float raw_reverser)
 	{
-		if (!is_powered || disposed)
+		if (disposed)
 			return;
 		_reverser_position = raw_reverser;
 		if (_selector == 2)
@@ -193,7 +187,7 @@ internal partial class unit_a_sim: electric_device
 	private void throttle_handler(float raw_throttle)
 	{
 		_throttle = Mathf.RoundToInt(raw_throttle * 5.0f);
-		if (!is_powered || disposed)
+		if (disposed)
 			return;
 		switch (_throttle)
 		{
@@ -241,7 +235,7 @@ internal partial class unit_a_sim: electric_device
 
     private void field_control_handler(float raw_field_position)
 	{
-        if (!is_powered || disposed)
+        if (disposed)
             return;
         int handle_postion = Mathf.RoundToInt(raw_field_position * 6.0f);
 		_field_position = handle_postion;
@@ -256,7 +250,7 @@ internal partial class unit_a_sim: electric_device
 
 	private void selector_handler(float raw_selector_position)
 	{
-        if (!is_powered || disposed)
+        if (disposed)
             return;
         int handle_postion = Mathf.RoundToInt(raw_selector_position * 5.0f);
 		_selector = handle_postion;

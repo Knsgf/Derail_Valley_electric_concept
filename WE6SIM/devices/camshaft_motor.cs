@@ -35,13 +35,18 @@ internal class camshaft_motor: electric_device
 		set
 		{
 			check_if_disposed();
-			if (!_roll_over && is_powered)
+			if (!_roll_over)
 			{
-				lock (_blocker)
+				if (!is_powered)
+					notch_changed?.Invoke(current_notch);
+				else
 				{
-					_target_notch = Math.Max(1, Math.Min(_num_notches, value));
-					if (!_camshaft_in_motion && _target_notch != current_notch)
-						_regular_movement = regular_move();
+					lock (_blocker)
+					{
+						_target_notch = Math.Max(1, Math.Min(_num_notches, value));
+						if (!_camshaft_in_motion && _target_notch != current_notch)
+							_regular_movement = regular_move();
+					}
 				}
 			}
 		}

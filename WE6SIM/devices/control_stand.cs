@@ -70,6 +70,7 @@ internal class control_stand: electric_device
         };
         _port_handlers[device]              = new_handler;
         hooked_port.ValueUpdatedInternally += new_handler;
+        handler(hooked_port.Value);
     }
 
     public Action<float> create_setter(string device)
