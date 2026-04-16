@@ -1,13 +1,14 @@
 // Distributed under terms and conditions of MIT licence. See LICENCE_MIT.txt for details.
 
-using HarmonyLib;
-using LocoSim.Implementations;
 using System;
 using System.IO;
 using System.Reflection;
+using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
 using static UnityModManagerNet.UnityModManager;
+
+using LocoSim.Implementations;
 
 namespace WE6SIM;
 
@@ -51,7 +52,7 @@ public static class Main
 			string[] all_assets = catenary_assets.GetAllAssetNames();
 			foreach (string name in all_assets)
 				log(name);
-			_catenary_parts.pole = catenary_assets.LoadAsset<GameObject>("assets/_ccl_cars/catenary/poleinner.prefab")
+			_catenary_parts.pole = catenary_assets.LoadAsset<GameObject>("Assets/Catenary/PoleInner.prefab")
 				?? throw new FileNotFoundException("No pole prefab");
 
 			_settings = test_settings.Load<test_settings>(mod);

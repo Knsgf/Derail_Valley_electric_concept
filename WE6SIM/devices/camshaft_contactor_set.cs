@@ -2,16 +2,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using LocoSim.Implementations;
 using WE6SIM.circuit_sim;
 using WE6SIM.utilities;
-using static HarmonyLib.Code;
 
-namespace WE6SIM;
+namespace WE6SIM.devices;
 
 internal class camshaft_contactor_set: electric_device
 {

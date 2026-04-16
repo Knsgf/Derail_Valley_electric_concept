@@ -2,22 +2,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
 using DV.Simulation.Cars;
 using LocoSim.Implementations;
 using WE6SIM.circuit_sim;
-using WE6SIM.utilities;
+using WE6SIM.devices;
 
 using static WE6SIM.utilities.signal_cable;
 using static WE6SIM.utilities.sensor_grabber;
-using WE6SIM.devices;
 
-namespace WE6SIM;
+namespace WE6SIM.unit_A;
 
 internal partial class unit_a_sim: electric_device
 {
@@ -60,7 +56,7 @@ internal partial class unit_a_sim: electric_device
 
 	public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
 
-	public unit_a_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
+	public unit_a_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit, int random_seed)
 		: base("unit_A_sim")
 	{
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
@@ -84,7 +80,7 @@ internal partial class unit_a_sim: electric_device
 
 		const float variation = 0.1f;
 		UnityEngine.Random.State old_state = UnityEngine.Random.state;
-		UnityEngine.Random.InitState(80);
+		UnityEngine.Random.InitState(random_seed);
 		foreach (KeyValuePair<string, float> element in _base_element_resistances)
 			_element_resistances[element.Key] = element.Value * UnityEngine.Random.Range(1.0f - variation, 1.0f + variation);
 		UnityEngine.Random.state = old_state;
@@ -319,19 +315,20 @@ internal partial class unit_a_sim: electric_device
 		set_supply_volts(_named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"]);
 		_motors_volts = _currents["VM"] * _element_resistances["VM"];
 		set_motors_volts(_motors_volts);
-		float average_RPM = 0.0f, average_load = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
+		float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
 		for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
 		{
 			traction_motor motor = traction_motors[motor_index];
 			total_torque += motor.wheel_torque;
-			average_RPM += motor.RPM;
+			average_RPM  += motor.RPM;
 			average_load += motor.load_current;
-			average_EMF += motor.EMF;
+			maximum_load  = Mathf.Max(maximum_load, Mathf.Abs(motor.load_current));
+			average_EMF  += motor.EMF;
 		}
-		average_RPM /= traction_motors.Length;
-		average_EMF /= traction_motors.Length;
+		average_RPM  /= traction_motors.Length;
+		average_EMF  /= traction_motors.Length;
 		average_load /= traction_motors.Length;
-		_traction_motor_RPM.Value = average_RPM;
+		_traction_motor_RPM.Value  = average_RPM;
 		_traction_motor_load.Value = average_load;
 		for (int group_index = 2; group_index >= 0; --group_index)
 		{
@@ -341,7 +338,7 @@ internal partial class unit_a_sim: electric_device
 		_traction_motor_EMF.Value = average_EMF;
 		_blowers.active = _selector == 2 || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
 		//_blowers.full_speed_mode = true;
-		_blowers.simulate((_selector == 2) ? _motors_volts : (1650.0f - _currents["EPS"] * _element_resistances["EPS"]), average_load);
+		_blowers.simulate((_selector == 2) ? _motors_volts : (1650.0f - _currents["EPS"] * _element_resistances["EPS"]), maximum_load);
 
 		Main.diagnostics?.Value = _currents["MA5"];
         Main.diagnostics2?.Value = _currents["MA6"];

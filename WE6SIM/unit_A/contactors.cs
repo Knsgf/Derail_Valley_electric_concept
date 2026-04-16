@@ -2,14 +2,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using LocoSim.Implementations;
 using WE6SIM.circuit_sim;
+using WE6SIM.devices;
 
-namespace WE6SIM;
+namespace WE6SIM.unit_A;
 
 internal partial class unit_a_sim
 {

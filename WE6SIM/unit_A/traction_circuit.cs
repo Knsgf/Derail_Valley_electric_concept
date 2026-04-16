@@ -1,13 +1,10 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using WE6SIM.devices;
 
-namespace WE6SIM;
+namespace WE6SIM.unit_A;
 
 internal partial class unit_a_sim
 {

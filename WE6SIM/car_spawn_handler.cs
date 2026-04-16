@@ -2,18 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using DV.OriginShift;
-using DV.ThingTypes;
-using DV.Utils;
 using HarmonyLib;
-using LocoSim.Implementations;
 using UnityEngine;
 
-using WE6SIM.utilities;
+using LocoSim.Implementations;
+using WE6SIM.unit_A;
 
 namespace WE6SIM;
 
@@ -57,8 +50,14 @@ internal static class car_spawn_handler
 			return;
 		Main.log("Spawn " + vehicle.ID + " " + vehicle.carLivery.id);
 		bool is_unit_a = false;
+		int  random_seed = 0;
+		
 		if (string.Equals(vehicle.carLivery.id, "WE6981A", StringComparison.Ordinal))
+		{
 			is_unit_a = true;
+			for (int letter_index = 0; letter_index < vehicle.ID.Length; ++letter_index)
+				random_seed += vehicle.ID[letter_index] << (letter_index & 0x7);
+		}
 		else if (!string.Equals(vehicle.carLivery.id, "WE6981B", StringComparison.Ordinal))
 			return;
 
@@ -107,7 +106,7 @@ internal static class car_spawn_handler
 		//if (vehicle.gameObject != null)
 		//	print_hierarchy(vehicle.gameObject);
 		if (is_unit_a)
-			_all_a_units[vehicle] = new unit_a_sim(all_fuses, all_ports, vehicle);
+			_all_a_units[vehicle] = new unit_a_sim(all_fuses, all_ports, vehicle, random_seed);
 		else
 			_all_b_units[vehicle] = new unit_b_sim(all_fuses, all_ports, vehicle);
 	}

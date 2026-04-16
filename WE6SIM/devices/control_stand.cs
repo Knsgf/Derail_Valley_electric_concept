@@ -2,14 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using LocoSim.Implementations;
 using WE6SIM.utilities;
 
-namespace WE6SIM;
+namespace WE6SIM.devices;
 
 internal class control_stand: electric_device
 {

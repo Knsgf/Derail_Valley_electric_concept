@@ -2,16 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using UnityEngine;
-using WE6SIM.circuit_sim;
-using static UnityEngine.UI.CanvasScaler;
 
 using DV.Simulation.Cars;
 using LocoSim.Implementations;
+using WE6SIM.devices;
+using WE6SIM.unit_A;
 using WE6SIM.utilities;
 
 using static WE6SIM.utilities.signal_cable;

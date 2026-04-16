@@ -1,15 +1,12 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
-using LocoSim.Implementations;
 using UnityEngine;
 
-namespace WE6SIM;
+using LocoSim.Implementations;
+using WE6SIM.devices;
+
+namespace WE6SIM.unit_A;
 
 internal class blower_controller: electric_device
 {
