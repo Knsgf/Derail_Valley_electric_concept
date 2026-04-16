@@ -8,6 +8,10 @@ using UnityEngine;
 using LocoSim.Implementations;
 using WE6SIM.unit_A;
 
+#if DEBUG
+using WE6SIM.catenary_editor;
+#endif
+
 namespace WE6SIM;
 
 [HarmonyPatch(typeof(CarSpawner), "Awake")]
@@ -24,6 +28,11 @@ internal static class car_spawn_handler
 
 	private static readonly Dictionary<TrainCar, unit_a_sim> _all_a_units = [];
 	private static readonly Dictionary<TrainCar, unit_b_sim> _all_b_units = [];
+
+#if DEBUG
+    private static TrainCar?     _mow_vehicle = null;
+	private static mow_follower? _mow_tracker = null;
+#endif
 
 	public static void Postfix(CarSpawner __instance)
 	{
@@ -49,16 +58,26 @@ internal static class car_spawn_handler
 		if (vehicle == null || !vehicle.IsLoco)
 			return;
 		Main.log("Spawn " + vehicle.ID + " " + vehicle.carLivery.id);
-		bool is_unit_a = false;
-		int  random_seed = 0;
-		
-		if (string.Equals(vehicle.carLivery.id, "WE6981A", StringComparison.Ordinal))
+
+#if DEBUG
+		if (vehicle.carType == DV.ThingTypes.TrainCarType.LocoDM1U && _mow_tracker == null)
+		{
+			Main.log($"MOW vehicle {vehicle.ID}");
+			_mow_vehicle = vehicle;
+			_mow_tracker = new mow_follower(vehicle);
+			return;
+		}
+#endif
+
+		bool is_unit_a   = false;
+        int  random_seed = 0;
+        if (string.Equals(vehicle.carLivery.id.Substring(0, "WE6981A".Length), "WE6981A", StringComparison.Ordinal))
 		{
 			is_unit_a = true;
 			for (int letter_index = 0; letter_index < vehicle.ID.Length; ++letter_index)
 				random_seed += vehicle.ID[letter_index] << (letter_index & 0x7);
 		}
-		else if (!string.Equals(vehicle.carLivery.id, "WE6981B", StringComparison.Ordinal))
+		else if (!string.Equals(vehicle.carLivery.id.Substring(0, "WE6981B".Length), "WE6981B", StringComparison.Ordinal))
 			return;
 
 		Dictionary<string, Fuse> all_fuses = [];
@@ -184,6 +203,16 @@ internal static class car_spawn_handler
 
 	private static void on_car_purged(TrainCar vehicle)
 	{
+#if DEBUG
+		if (_mow_vehicle == vehicle)
+		{
+            Main.log("Remove MOW " + vehicle.ID);
+			_mow_tracker?.Dispose();
+			_mow_vehicle = null;
+			_mow_tracker = null;
+        }
+#endif
+
 		if (_all_a_units.TryGetValue(vehicle, out unit_a_sim disposed_unit_a))
 		{
 			Main.log("Remove A " + vehicle.ID + " " + vehicle.carLivery.id);

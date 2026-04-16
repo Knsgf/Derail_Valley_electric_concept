@@ -8,16 +8,39 @@ using System.Threading.Tasks;
 
 using UnityModManagerNet;
 
+using WE6SIM.catenary_editor;
+
 namespace WE6SIM;
 
 internal class test_settings: UnityModManager.ModSettings, IDrawable
 {
 	[Draw("Pole vertical offset")]
-	private float height_offset = 0.0f;
+	private float _height_offset = 0.0f;
 
+	[Draw("Pole placement")]
+	private editor.placement _pole_placement = editor.placement.left;
+
+	[Draw("Automatic poles")]
+	private bool _automatic_pole_placement = false;
+
+	[Draw("Distance")]
+	private float _pole_distance = 40.0f;
+
+	[Draw("Sweep")]
+	private float _sweep = 0.3f;
+
+	public test_settings()
+	{
+		Main.log("Settings set");
+		OnChange();
+	}
+	
 	public void OnChange()
 	{
-		Main.log($"Height offset = {height_offset}");
-		Main.pole_height_offset = height_offset;
+		editor.pole_height_offset     = _height_offset;
+		editor.pole_placement         = _pole_placement;
+		editor.auto_pole_placement    = _automatic_pole_placement;
+		editor.distance_between_poles = _pole_distance;
+		editor.maximum_sweep          = _sweep;
 	}
 }

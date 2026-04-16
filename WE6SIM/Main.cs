@@ -9,13 +9,9 @@ using UnityModManagerNet;
 using static UnityModManagerNet.UnityModManager;
 
 using LocoSim.Implementations;
+using WE6SIM.catenary_editor;
 
 namespace WE6SIM;
-
-public struct catenary_objects
-{
-	public GameObject pole;
-}
 
 public static class Main
 {
@@ -23,11 +19,9 @@ public static class Main
 
 	private static ModEntry.ModLogger? _logger;
 	private static test_settings?      _settings;
-	private static catenary_objects _catenary_parts;
-
+	
 	public static Port? diagnostics { get; set; }
 	public static Port? diagnostics2 { get; set; }
-	public static catenary_objects catenary_parts => _catenary_parts;
 	public static float pole_height_offset { get; set; }
 
 	public static void log(string message)
@@ -35,7 +29,7 @@ public static class Main
 		_logger?.Log(message);
 	}
 
-	private static bool Load(ModEntry mod)
+	public static bool Load(ModEntry mod)
 	{
 		Harmony? code_injector = null;
 
@@ -47,14 +41,7 @@ public static class Main
 
 			// Other plugin startup logic
 
-			AssetBundle catenary_assets = AssetBundle.LoadFromFile(Path.Combine(mod.Path, "catenary"))
-				?? throw new FileNotFoundException("Not found " + Path.Combine(mod.Path, "catenary"));
-			string[] all_assets = catenary_assets.GetAllAssetNames();
-			foreach (string name in all_assets)
-				log(name);
-			_catenary_parts.pole = catenary_assets.LoadAsset<GameObject>("Assets/Catenary/PoleInner.prefab")
-				?? throw new FileNotFoundException("No pole prefab");
-
+			editor.load_assets(mod);
 			_settings = test_settings.Load<test_settings>(mod);
 			mod.OnGUI = show_test_configuration;
 

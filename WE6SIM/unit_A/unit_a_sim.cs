@@ -22,9 +22,6 @@ internal partial class unit_a_sim: electric_device
 	const float max_exciter_voltage = 120.0f, min_exciter_voltage = 10.0f, max_exciter_current = 2000.0f;
 	const float max_exciter_power = max_exciter_voltage * max_exciter_current;
 
-	private readonly GameObject _test_pole_prefab;
-	private GameObject? _test_pole;
-
 	private readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
 	private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
@@ -76,8 +73,6 @@ internal partial class unit_a_sim: electric_device
 		_control_BA1 = grab_port(ports, "internal_MU.CONTROL_BA1");
 		_control_BA1.ValueUpdatedInternally += MU_BA1_control;
 
-		_test_pole_prefab = Main.catenary_parts.pole;
-
 		const float variation = 0.1f;
 		UnityEngine.Random.State old_state = UnityEngine.Random.state;
 		UnityEngine.Random.InitState(random_seed);
@@ -104,7 +99,7 @@ internal partial class unit_a_sim: electric_device
 		_control_stand.register_handler(   "field_handle", field_control_handler);
         _control_stand.register_handler("selector_handle",      selector_handler);
 
-		_control_stand.register_handler("front_pantograph_switch", toggle_pole);
+		//_control_stand.register_handler("front_pantograph_switch", toggle_pole);
         _control_stand.register_handler("fast_notching_switch", fast_notching_toggle);
 
 		set_supply_volts   = _control_stand.create_setter(        "supply_volts");
@@ -124,6 +119,7 @@ internal partial class unit_a_sim: electric_device
 		simulation.SimulationFlow.TickEvent += simulate;
 	}
 
+	/*
 	private void toggle_pole(float port_value)
 	{
 		//Main.log($"toggle_pole(): {_test != null}");
@@ -137,7 +133,7 @@ internal partial class unit_a_sim: electric_device
 				Quaternion front_rot = _unit.FrontCouplerAnchor.rotation;
 				//Vector3 offset = _unit.FrontCouplerAnchor.TransformDirection(new Vector3(0.0f, -1.125f, -5.5f));
 				Vector3 pole_position = _unit.FrontCouplerAnchor.TransformPoint(new Vector3(0.0f, Main.pole_height_offset - 1.125f, -5.5f));
-				_test_pole = GameObject.Instantiate<GameObject>(_test_pole_prefab, /*front_pos + offset*/ pole_position, front_rot);
+				_test_pole = GameObject.Instantiate<GameObject>(_test_pole_prefab, front_pos + offset pole_position, front_rot);
 				_pantograph.set_target_height(6.0f + Main.pole_height_offset);
 				toggle_port_signal(_control_AB1, (int) AB1_signals.back_pantograph, true);
 			}
@@ -150,6 +146,7 @@ internal partial class unit_a_sim: electric_device
 			toggle_port_signal(_control_AB1, (int) AB1_signals.back_pantograph, false);
 		}
 	}
+		*/
 
 	private void fast_notching_toggle(float port_value)
 	{
