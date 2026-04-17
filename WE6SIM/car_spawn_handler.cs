@@ -7,6 +7,8 @@ using UnityEngine;
 
 using LocoSim.Implementations;
 using WE6SIM.unit_A;
+using DV.Utils;
+
 
 #if DEBUG
 using WE6SIM.catenary_editor;
@@ -58,9 +60,12 @@ internal static class car_spawn_handler
 		if (vehicle == null || !vehicle.IsLoco)
 			return;
 		Main.log("Spawn " + vehicle.ID + " " + vehicle.carLivery.id);
+        var uw = SingletonBehaviour<UnloadWatcher>.Instance;
+        if (uw != null)
+            Main.log("uw");
 
 #if DEBUG
-		if (vehicle.carType == DV.ThingTypes.TrainCarType.LocoDM1U && _mow_tracker == null)
+        if (vehicle.carType == DV.ThingTypes.TrainCarType.LocoDM1U && _mow_tracker == null)
 		{
 			Main.log($"MOW vehicle {vehicle.ID}");
 			_mow_vehicle = vehicle;
