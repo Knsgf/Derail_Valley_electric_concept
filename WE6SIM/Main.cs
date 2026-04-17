@@ -9,7 +9,7 @@ using UnityModManagerNet;
 using static UnityModManagerNet.UnityModManager;
 
 using LocoSim.Implementations;
-using WE6SIM.catenary_editor;
+using WE6SIM.catenary;
 
 namespace WE6SIM;
 
@@ -41,7 +41,7 @@ public static class Main
 
 			// Other plugin startup logic
 
-			editor.load_assets(mod);
+			catenary_visual.load_assets(mod);
 			_settings = test_settings.Load<test_settings>(mod);
 			mod.OnGUI = show_test_configuration;
 

@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+using WE6SIM.catenary;
+
 using static WE6SIM.utilities.world_position;
 
 namespace WE6SIM.catenary_editor;
@@ -21,7 +23,7 @@ internal class mow_follower: IDisposable
     {
         _mow_vehicle = mow_vehicle;
         mow_vehicle.SimController.SimulationFlow.TickEvent += track_movement;
-        editor.set_up_floating_origin();
+        catenary_visual.set_up();
     }
 
     private void track_movement()
@@ -29,13 +31,14 @@ internal class mow_follower: IDisposable
         Transform front_location = _mow_vehicle.FrontCouplerAnchor;
         Vector3 relative_position = front_location.position;
         (int front_x, int front_z) = get_absolute_position(relative_position);
+        catenary_visual.handle_scenery_visibility(front_x, front_z);
         editor.process_location(front_x, front_z, relative_position.y, front_location.rotation);
     }
 
     public void Dispose()
     {
         _mow_vehicle.SimController.SimulationFlow.TickEvent -= track_movement;
-        editor.remove_all_scenery();
+        catenary_visual.remove_all_scenery();
     }
 }
 
