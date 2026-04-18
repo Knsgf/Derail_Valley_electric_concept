@@ -38,7 +38,7 @@ internal class mow_follower: IDisposable
     public void Dispose()
     {
         _mow_vehicle.SimController.SimulationFlow.TickEvent -= track_movement;
-        catenary_visual.remove_all_scenery();
+        catenary_visual.store_scenery();
     }
 }
 

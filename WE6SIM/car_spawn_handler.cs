@@ -8,6 +8,8 @@ using UnityEngine;
 using LocoSim.Implementations;
 using WE6SIM.unit_A;
 using DV.Utils;
+using WE6SIM.catenary;
+
 
 
 #if DEBUG
@@ -39,12 +41,14 @@ internal static class car_spawn_handler
 	public static void Postfix(CarSpawner __instance)
 	{
 		Main.log("car_spawn_handler.Postfix");
-		__instance.CarSpawned -= on_car_spawned;
+        catenary_visual.set_up();
+        __instance.CarSpawned -= on_car_spawned;
 		__instance.CarSpawned += on_car_spawned;
 		__instance.CarAboutToBeDeleted -= on_car_purged;
 		__instance.CarAboutToBeDeleted += on_car_purged;
 	}
 
+#if DEBUG   
 	private static void print_hierarchy(GameObject entity, int indent = 0)
 	{
 		if (indent <= 0)
@@ -54,15 +58,13 @@ internal static class car_spawn_handler
 		foreach (Transform child in entity.transform)
 			print_hierarchy(child.gameObject, indent + 4);
 	}
+#endif
 
 	private static void on_car_spawned(TrainCar vehicle)
 	{
 		if (vehicle == null || !vehicle.IsLoco)
 			return;
 		Main.log("Spawn " + vehicle.ID + " " + vehicle.carLivery.id);
-        var uw = SingletonBehaviour<UnloadWatcher>.Instance;
-        if (uw != null)
-            Main.log("uw");
 
 #if DEBUG
         if (vehicle.carType == DV.ThingTypes.TrainCarType.LocoDM1U && _mow_tracker == null)

@@ -86,9 +86,9 @@ internal static partial class catenary_visual
         {
             foreach (scenery_object current_object in current_node.remaining_objects)
             {
-                if (current_object.x >= left && current_object.x <= right && current_object.z >= top && current_object.z <= bottom)
+                //if (current_object.x >= left && current_object.x <= right && current_object.z >= top && current_object.z <= bottom)
                 {
-                    current_object.is_visible = true;
+                    //current_object.is_visible = true;
                     found_objects.Add(current_object);
                 }
             }
@@ -100,7 +100,7 @@ internal static partial class catenary_visual
                 if (   division_object.x >= left && division_object.x <= right
                     && division_object.z >=  top && division_object.z <= bottom)
                 {
-                    division_object.is_visible = true;
+                    //division_object.is_visible = true;
                     found_objects.Add(division_object);
                 }
                 if (left <= division_object.x)

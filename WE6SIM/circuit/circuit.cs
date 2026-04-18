@@ -79,7 +79,7 @@ internal partial class circuit
         current_branch = new(branch_definition.resistances, branch_definition.reversed_EMF, branch_definition.contactors);
         if (!string.IsNullOrWhiteSpace(branch_definition.branch_name))
         {
-            if (named_branches.ContainsKey(branch_definition.branch_name))
+            if (named_branches.ContainsKey(branch_definition.branch_name))  //  Someone forgot to tag that IsNullOrWhiteSpace() always returns true if argument is null
                 throw new MalformedCircuitException($"Duplicate branch {branch_definition.branch_name}");
             named_branches[branch_definition.branch_name] = current_branch;
         }
