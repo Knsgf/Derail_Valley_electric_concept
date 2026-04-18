@@ -30,9 +30,9 @@ internal class mow_follower: IDisposable
     {
         Transform front_location = _mow_vehicle.FrontCouplerAnchor;
         Vector3 relative_position = front_location.position;
-        (int front_x, int front_z) = get_absolute_position(relative_position);
-        catenary_visual.handle_scenery_visibility(front_x, front_z);
-        editor.process_location(front_x, front_z, relative_position.y, front_location.rotation);
+        if (PlayerManager.Car == _mow_vehicle)
+            catenary_visual.handle_scenery_visibility(relative_position);
+        editor.process_location(relative_position, front_location.rotation);
     }
 
     public void Dispose()

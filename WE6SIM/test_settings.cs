@@ -20,14 +20,17 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 	[Draw("Pole placement")]
 	private editor.placement _pole_placement = editor.placement.left;
 
-	[Draw("Automatic poles")]
-	private bool _automatic_pole_placement = false;
+	[Draw("Skip first pole")]
+	private bool _skip_first = false;
 
 	[Draw("Distance")]
 	private float _pole_distance = 40.0f;
 
 	[Draw("Sweep")]
 	private float _sweep = 0.3f;
+
+	[Draw("Eraser")]
+	private bool _erase_scenery = false;
 
 	public test_settings()
 	{
@@ -37,10 +40,16 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 	
 	public void OnChange()
 	{
+		if (_erase_scenery && _pole_placement != editor.placement.disabled)
+		{
+			_erase_scenery  = false;
+			_pole_placement = editor.placement.disabled;
+		}
 		editor.pole_height_offset     = _height_offset;
 		editor.pole_placement         = _pole_placement;
-		editor.auto_pole_placement    = _automatic_pole_placement;
+		editor.skip_first             = _skip_first;
 		editor.distance_between_poles = _pole_distance;
 		editor.maximum_sweep          = _sweep;
+		editor.erase_scenery          = _erase_scenery;
 	}
 }

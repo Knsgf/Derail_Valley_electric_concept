@@ -68,7 +68,7 @@ internal static partial class catenary_visual
 
     private static int  _last_x, _last_z;
     //private static float _remaining_time = 1.0f;
-    private static bool _singleton_handlers_set = false, _scenery_changed = true;
+    private static bool _singleton_handlers_set = false, _scenery_changed = true, _store_scenery = false;
 
     private static string? file_path;
     private static readonly List<scenery_object> _freshly_added_objects = [];
@@ -140,7 +140,19 @@ internal static partial class catenary_visual
         }
     }
 
-    public static void handle_scenery_visibility(int x, int z)
+    private static void find_objects_within_region(List<scenery_object> found_objects, quad_tree? all_objects, 
+        bool do_bounds_check, int left, int top, int right, int bottom)
+    {
+        found_objects.Clear();
+        all_objects?.find_objects(found_objects, do_bounds_check, left, top, right, bottom);
+        foreach (scenery_object current_object in _freshly_added_objects)
+        {
+            if (current_object.x >= left && current_object.x <= right && current_object.z >= top && current_object.z <= bottom)
+                found_objects.Add(current_object);
+        }
+    }
+
+    public static void handle_scenery_visibility(Vector3 relative_postion)
     {
         const float visible_distance       = 100.0f;
         const int   visible_distance_fixed = (int) (visible_distance * fixed_multiplier);
@@ -151,7 +163,8 @@ internal static partial class catenary_visual
             return;
         _remaining_time = 1.0f;
         */
-        
+
+        (int x, int z) = get_absolute_position(relative_postion);
         if (!_scenery_changed && Math.Abs(x - _last_x) + Math.Abs(z - _last_z) <= visible_distance_fixed >> 3)
             return;
         _last_x = x;
@@ -163,6 +176,7 @@ internal static partial class catenary_visual
         for (int object_index = visible_objects.Count - 1; object_index >= 0; --object_index)
             visible_objects[object_index].is_visible = false;
         visible_objects = _currently_visible_objects;
+        /*
         visible_objects.Clear();
         object_tree?.find_objects(visible_objects, x - visible_distance_fixed, z - visible_distance_fixed,
                                                    x + visible_distance_fixed, z + visible_distance_fixed);
@@ -174,7 +188,9 @@ internal static partial class catenary_visual
                 visible_objects.Add(current_object);
             }
         }
-        
+        */
+        find_objects_within_region(visible_objects, object_tree, do_bounds_check: false,
+            x - visible_distance_fixed, z - visible_distance_fixed,x + visible_distance_fixed, z + visible_distance_fixed);
         for (int object_index = visible_objects.Count - 1; object_index >= 0; --object_index)
         {
             scenery_object current_object = visible_objects[object_index];
@@ -208,6 +224,11 @@ internal static partial class catenary_visual
             visible_objects[index].entity!.transform.position -= shift;
     }
 
+    private static void track_player_movement()
+    {
+        handle_scenery_visibility(PlayerManager.PlayerTransform.position);
+    }
+
     public static void set_up()
     {
         Main.log("catenary_visual.set_up()");
@@ -216,8 +237,9 @@ internal static partial class catenary_visual
             WorldMover floating_origin = SingletonBehaviour<WorldMover>.Instance;
             if (floating_origin != null)
             {
-                floating_origin.WorldMoved    += floating_origin_shift;
-                UnloadWatcher.UnloadRequested += remove_all_scenery;
+                floating_origin.WorldMoved           += floating_origin_shift;
+                UnloadWatcher.UnloadRequested        += remove_all_scenery;
+                PlayerManager.PlayerTeleportFinished += track_player_movement;
                 _singleton_handlers_set = true;
             }
         }
@@ -226,10 +248,11 @@ internal static partial class catenary_visual
     public static void remove_all_scenery()
     {
         Main.log("catenary_visual.remove_all_scenery()");
-        WorldMover floating_origin     = SingletonBehaviour<WorldMover>.Instance;
-        floating_origin?.WorldMoved   -= floating_origin_shift;
-        UnloadWatcher.UnloadRequested -= remove_all_scenery;
-        _singleton_handlers_set        = false;
+        WorldMover floating_origin            = SingletonBehaviour<WorldMover>.Instance;
+        floating_origin?.WorldMoved          -= floating_origin_shift;
+        UnloadWatcher.UnloadRequested        -= remove_all_scenery;
+        PlayerManager.PlayerTeleportFinished -= track_player_movement;
+        _singleton_handlers_set = false;
         for (int index = _currently_visible_objects.Count - 1; index >= 0; --index)
         {
             scenery_object current_object = _currently_visible_objects[index];
@@ -237,23 +260,7 @@ internal static partial class catenary_visual
             GameObject.Destroy(current_object.entity);
             current_object.entity = null;
         }
-    }
-    
-    public static void add_scenery_object(int item_index, int x, int z, float y, Quaternion orientation)
-    {
-        scenery_object new_object = new(item_index, x, z, y - 1.05f, orientation);
-        _all_objects.Add(new_object);
-        _freshly_added_objects.Add(new_object);
-        Main.log($"x={x / fixed_multiplier} z={z / fixed_multiplier} y={y} c={_all_objects.Count}");
-        _scenery_changed = true;
-    }
-
-    public static void store_scenery()
-    {
-        if (file_path != null)
-        {
-            string raw_scenery = JsonConvert.SerializeObject(_all_objects);
-            File.WriteAllText(Path.Combine(file_path, "scenery.json"), raw_scenery);
-        }
+        _currently_visible_objects.Clear();
+        _previously_visible_objects.Clear();
     }
 }

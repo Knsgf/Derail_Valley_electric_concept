@@ -1,3 +1,5 @@
+// Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -82,14 +84,24 @@ internal static partial class catenary_visual
             divide_node(_root);
         }
 
-        private void search_node(tree_node current_node, List<scenery_object> found_objects, int left, int top, int right, int bottom)
+        private void search_node(tree_node current_node, List<scenery_object> found_objects, bool do_bounds_check, 
+            int left, int top, int right, int bottom)
         {
-            foreach (scenery_object current_object in current_node.remaining_objects)
+            if (!do_bounds_check)
             {
-                //if (current_object.x >= left && current_object.x <= right && current_object.z >= top && current_object.z <= bottom)
+                foreach (scenery_object current_object in current_node.remaining_objects)
                 {
-                    //current_object.is_visible = true;
                     found_objects.Add(current_object);
+                }
+            }
+            else
+            {
+                foreach (scenery_object current_object in current_node.remaining_objects)
+                {
+                    if (current_object.x >= left && current_object.x <= right && current_object.z >= top && current_object.z <= bottom)
+                    {
+                        found_objects.Add(current_object);
+                    }
                 }
             }
 
@@ -106,23 +118,23 @@ internal static partial class catenary_visual
                 if (left <= division_object.x)
                 {
                     if (top <= division_object.z)
-                        search_node(quadrants[0], found_objects, left, top, right, bottom);
+                        search_node(quadrants[0], found_objects, do_bounds_check, left, top, right, bottom);
                     if (bottom > division_object.z)
-                        search_node(quadrants[2], found_objects, left, top, right, bottom);
+                        search_node(quadrants[2], found_objects, do_bounds_check, left, top, right, bottom);
                 }
                 if (right > division_object.x)
                 {
                     if (top <= division_object.z)
-                        search_node(quadrants[1], found_objects, left, top, right, bottom);
+                        search_node(quadrants[1], found_objects, do_bounds_check, left, top, right, bottom);
                     if (bottom > division_object.z)
-                        search_node(quadrants[3], found_objects, left, top, right, bottom);
+                        search_node(quadrants[3], found_objects, do_bounds_check, left, top, right, bottom);
                 }
             }
         }
 
-        public void find_objects(List<scenery_object> found_objects, int left, int top, int right, int bottom)
+        public void find_objects(List<scenery_object> found_objects, bool do_bounds_check, int left, int top, int right, int bottom)
         {
-            search_node(_root, found_objects, left, top, right, bottom);
+            search_node(_root, found_objects, do_bounds_check, left, top, right, bottom);
         }
     }
 }
