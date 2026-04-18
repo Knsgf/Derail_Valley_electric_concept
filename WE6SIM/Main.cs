@@ -61,4 +61,9 @@ public static class Main
 	{
 		_settings.Draw(mod);
 	}
+
+	public static void reset_placement_mode()
+	{
+		_settings?.reset_placement_mode();
+	}
 }

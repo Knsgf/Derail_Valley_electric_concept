@@ -18,7 +18,7 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 	private float _height_offset = 0.0f;
 
 	[Draw("Pole placement")]
-	private editor.placement _pole_placement = editor.placement.left;
+	private editor.placement _pole_placement = editor.placement.Disabled;
 
 	[Draw("Skip first pole")]
 	private bool _skip_first = false;
@@ -40,10 +40,10 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 	
 	public void OnChange()
 	{
-		if (_erase_scenery && _pole_placement != editor.placement.disabled)
+		if (_erase_scenery && _pole_placement != editor.placement.Disabled)
 		{
 			_erase_scenery  = false;
-			_pole_placement = editor.placement.disabled;
+			_pole_placement = editor.placement.Disabled;
 		}
 		editor.pole_height_offset     = _height_offset;
 		editor.pole_placement         = _pole_placement;
@@ -51,5 +51,10 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 		editor.distance_between_poles = _pole_distance;
 		editor.maximum_sweep          = _sweep;
 		editor.erase_scenery          = _erase_scenery;
+	}
+
+	public void reset_placement_mode()
+	{
+		_pole_placement = editor.pole_placement = editor.placement.Disabled;
 	}
 }

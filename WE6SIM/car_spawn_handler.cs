@@ -6,11 +6,10 @@ using HarmonyLib;
 using UnityEngine;
 
 using LocoSim.Implementations;
-using WE6SIM.unit_A;
+using DV.ThingTypes;
 using DV.Utils;
 using WE6SIM.catenary;
-
-
+using WE6SIM.unit_A;
 
 #if DEBUG
 using WE6SIM.catenary_editor;
@@ -67,7 +66,7 @@ internal static class car_spawn_handler
 		Main.log("Spawn " + vehicle.ID + " " + vehicle.carLivery.id);
 
 #if DEBUG
-        if (vehicle.carType == DV.ThingTypes.TrainCarType.LocoDM1U && _mow_tracker == null)
+        if ((vehicle.carType == TrainCarType.LocoDM1U || vehicle.carType == TrainCarType.LocoMicroshunter) && _mow_tracker == null)
 		{
 			Main.log($"MOW vehicle {vehicle.ID}");
 			_mow_vehicle = vehicle;
