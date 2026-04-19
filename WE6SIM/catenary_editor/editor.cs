@@ -22,7 +22,7 @@ internal static class editor
 {
     public enum placement { Disabled, Left, Right, Gantry2, Gantry3, Gantry4 };
 
-    private static readonly Quaternion flip_horizontal = Quaternion.AngleAxis(180.0f, Vector3.up);
+    private static readonly Quaternion flip_around_vertical = Quaternion.AngleAxis(180.0f, Vector3.up);
 
     private static int  _last_pole_x, _last_pole_z;
     //private static float _remaining_time = 1.0f;
@@ -30,23 +30,24 @@ internal static class editor
     private static Quaternion _last_pole_orientation = Quaternion.identity;
     
     public static float pole_height_offset { get; set; }
-    public static placement pole_placement { get; set; }
+    public static catenary_visual.pole_kind pole_type { get; set; }
+    public static placement part_placement { get; set; }
     public static bool skip_first { get; set; }
     public static float distance_between_poles { get; set; }
     public static float maximum_sweep { get; set; }
     public static bool erase_scenery { get; set; }
 
-    private static void place_pole(Vector3 relative_position, Quaternion orientation)
+    public static void place_pole(Vector3 relative_position, Quaternion orientation)
     {
         (_last_pole_x, _last_pole_z) = get_absolute_position(relative_position);
         _last_pole_orientation       = orientation;
-        if (pole_placement == placement.Left)
-            orientation *= flip_horizontal;
-        catenary_visual.add_scenery_object(11, relative_position, orientation);
-        catenary_visual.add_scenery_object(10, relative_position, orientation);
+        if (part_placement == placement.Left)
+            orientation *= flip_around_vertical;
+        catenary_visual.add_pole(pole_type, relative_position, orientation);
+        //catenary_visual.add_scenery_object(10, relative_position, orientation);
     }
 
-    private static void place_many_poles_in_a_row(Vector3 relative_position, Quaternion orientation)
+    private static void place_many_poles_in_succession(Vector3 relative_position, Quaternion orientation)
     {
         relative_position -= 1.05f * Vector3.up;
         if (_first_pole)
@@ -67,17 +68,21 @@ internal static class editor
         }
     }
 
-    private static GameObject? get_closest(List<GameObject> objects, Vector3 position)
+    private static _type_? get_closest<_type_>(List<catenary_object_user> objects, Vector3 position) 
+        where _type_: catenary_object_user
     {
-        GameObject? closest_object = null;
+        _type_? closest_object = default;
         float minimum_distance_squared = float.MaxValue;
-        foreach (GameObject current_object in objects)
+        foreach (catenary_object_user current_object in objects)
         {
-            float distance_squared = (position - current_object.transform.position).sqrMagnitude;
-            if (minimum_distance_squared > distance_squared)
+            if (current_object is _type_ object_of_right_type)
             {
-                minimum_distance_squared = distance_squared;
-                closest_object = current_object;
+                float distance_squared = (position - current_object.get_relative_position()).sqrMagnitude;
+                if (minimum_distance_squared > distance_squared)
+                {
+                    minimum_distance_squared = distance_squared;
+                    closest_object           = object_of_right_type;
+                }
             }
         }
         return closest_object;
@@ -85,28 +90,25 @@ internal static class editor
 
     private static void place_gantry(Vector3 relative_position)
     {
-        List<GameObject> poles = [];
-        catenary_visual.get_objects_of_type(poles, 10, relative_position, (int) (5.0f * fixed_multiplier));
-        GameObject? closest_pole = get_closest(poles, relative_position);
+        List<catenary_object_user> poles = [];
+        catenary_visual.get_objects_in_area(poles, relative_position, 5.0f);
+        pole_user? closest_pole = get_closest<pole_user>(poles, relative_position);
         if (closest_pole != null)
         {
-            int   object_type        = 1;
-            float second_pole_offset = 8.86f;
+            /*
+            int object_type = 1;
             if (pole_placement == placement.Gantry3)
-            {
-                object_type        = 2;
-                second_pole_offset = 13.26f;
-            }
+                object_type = 2;
             else if (pole_placement == placement.Gantry4)
-            { 
-                object_type        = 3;
-                second_pole_offset = 17.56f;
-            }
+                object_type = 3;
+            */
             Main.reset_placement_mode();
+            /*
             Transform closest_pole_location = closest_pole.transform;
-            place_pole(closest_pole_location.position - closest_pole_location.right * second_pole_offset,
+            place_pole(closest_pole_location.position - closest_pole_location.right * _gantry_lengths[object_type - 1],
                 closest_pole_location.rotation);
             catenary_visual.add_scenery_object(object_type, closest_pole_location.position, closest_pole_location.rotation);
+            */
         }
     }
 
@@ -118,7 +120,7 @@ internal static class editor
             return;
         }
 
-        switch (pole_placement)
+        switch (part_placement)
         {
             case placement.Disabled:
                 _first_pole = true;
@@ -126,7 +128,7 @@ internal static class editor
 
             case placement.Left:
             case placement.Right:
-                place_many_poles_in_a_row(relative_position, orientation);
+                place_many_poles_in_succession(relative_position, orientation);
                 break;
 
             case placement.Gantry2:

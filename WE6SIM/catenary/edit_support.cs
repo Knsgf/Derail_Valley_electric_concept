@@ -9,20 +9,25 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+using WE6SIM.catenary_editor;
 using static WE6SIM.utilities.world_position;
 
 namespace WE6SIM.catenary;
 
 internal static partial class catenary_visual
 {
-    public static void add_scenery_object(int item_index, Vector3 relative_position, Quaternion orientation)
+    private static void add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
+        Vector3 relative_position, Quaternion orientation)
+        where _type_: catenary_object
     {
         (int x, int z) = get_absolute_position(relative_position);
-        scenery_object new_object = new(item_index, x, z, relative_position.y, orientation);
-        _all_objects.Add(new_object);
-        _freshly_added_objects.Add(new_object);
-        Main.log($"x={x / fixed_multiplier} z={z / fixed_multiplier} y={relative_position.y} c={_all_objects.Count}");
-        _scenery_changed = _store_scenery = true;
+        add_scenery_object(constructor, x, z, relative_position.y, orientation);
+    }
+
+    public static void add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation)
+    {
+		add_scenery_object((int x, int z, float y, Quaternion orientation) => new pole(pole_type, x, z, relative_position.y, orientation),
+            relative_position, orientation);
     }
 
     public static void erase_nearby_objects(Vector3 relative_position)
@@ -30,10 +35,10 @@ internal static partial class catenary_visual
         const int erase_region_half_width = (int) (2.5f * fixed_multiplier);
 
         (int x, int z) = get_absolute_position(relative_position);
-        List<scenery_object> objects_to_remove = [];
+        List<catenary_object> objects_to_remove = [];
         find_objects_within_region(objects_to_remove, object_tree, do_bounds_check: true, 
             x - erase_region_half_width, z - erase_region_half_width, x + erase_region_half_width, z + erase_region_half_width);
-        foreach (scenery_object current_object in objects_to_remove)
+        foreach (catenary_object current_object in objects_to_remove)
         {
             if (current_object.entity is not null)
             {
@@ -50,25 +55,29 @@ internal static partial class catenary_visual
         }
     }
 
-    public static void get_objects_of_type(List<GameObject> objects, int type, Vector3 relative_position, int area_half_size)
+    public static void get_objects_in_area(List<catenary_object_user> objects, Vector3 relative_position, float area_half_size)
     {
         (int x, int z) = get_absolute_position(relative_position);
-        List<scenery_object> found_objects = [];
+        List<catenary_object> found_objects = [];
+        int area_half_size_fixed = (int) (area_half_size * fixed_multiplier);
         find_objects_within_region(found_objects, object_tree, do_bounds_check: true,
-            x - area_half_size, z - area_half_size, x + area_half_size, z + area_half_size);
-        foreach (scenery_object current_object in found_objects)
-        {
-            if (current_object.template_index == type && current_object.entity is not null)
-                objects.Add(current_object.entity);
-        }
+            x - area_half_size_fixed, z - area_half_size_fixed, x + area_half_size_fixed, z + area_half_size_fixed);
+        objects.AddRange(found_objects);
     }
 
     public static void store_scenery()
     {
-        if (_store_scenery && file_path != null)
+        if (_store_scenery && _file_path != null)
         {
-            string raw_scenery = JsonConvert.SerializeObject(_all_objects);
-            File.WriteAllText(Path.Combine(file_path, "scenery.json"), raw_scenery);
+            List<catenary_object> objects_to_store = [];
+            foreach (catenary_object current_object in _all_objects)
+            {
+                if (!current_object.do_not_store /*&& current_object.template_index != 11*/)
+                    objects_to_store.Add(current_object);
+            }
+            string raw_scenery = JsonConvert.SerializeObject(objects_to_store, 
+                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+            File.WriteAllText(Path.Combine(_file_path, "scenery.json"), raw_scenery);
             _store_scenery = false;
         }
     }

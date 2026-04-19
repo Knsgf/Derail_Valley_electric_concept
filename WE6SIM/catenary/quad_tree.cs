@@ -19,21 +19,21 @@ internal static partial class catenary_visual
         private class tree_node
         {
             public tree_node[]?         quadrants         = null;
-            public scenery_object?      division_object   = null;
-            public List<scenery_object> remaining_objects = [];
+            public catenary_object?      division_object   = null;
+            public List<catenary_object> remaining_objects = [];
         }
 
         private readonly tree_node _root = new();
 
         private void divide_node(tree_node node)
         {
-            List<scenery_object> remaining_objects       = node.remaining_objects;
+            List<catenary_object> remaining_objects       = node.remaining_objects;
             int                  remaining_objects_count = remaining_objects.Count;
 
             if (remaining_objects_count <= node_objects_limit)
                 return;
             long sum_x = 0, sum_z = 0;
-            foreach (scenery_object current_object in remaining_objects)
+            foreach (catenary_object current_object in remaining_objects)
             {
                 sum_x += current_object.x;
                 sum_z += current_object.z;
@@ -52,18 +52,18 @@ internal static partial class catenary_visual
                     closest_object = object_index;
                 }
             }
-            scenery_object division_object = remaining_objects[closest_object];
+            catenary_object division_object = remaining_objects[closest_object];
             node.division_object           = division_object;
             remaining_objects.FastRemoveAt(closest_object);
 
             tree_node           [] quadrants      = node.quadrants = new tree_node[4];
-            List<scenery_object>[] quadrant_lists = new List<scenery_object>[4];
+            List<catenary_object>[] quadrant_lists = new List<catenary_object>[4];
             for (int quadrant_index = 3; quadrant_index >= 0; --quadrant_index)
             {
                 quadrants     [quadrant_index] = new();
                 quadrant_lists[quadrant_index] = quadrants[quadrant_index].remaining_objects;
             }
-            foreach (scenery_object current_object in remaining_objects)
+            foreach (catenary_object current_object in remaining_objects)
             {
                 int quadrant_index = 0;
                 if (current_object.x > division_object.x)
@@ -78,25 +78,25 @@ internal static partial class catenary_visual
                 divide_node(quadrants[quadrant_index]);
         }
 
-        public quad_tree(List<scenery_object> objects)
+        public quad_tree(List<catenary_object> objects)
         {
             _root.remaining_objects.AddRange(objects);
             divide_node(_root);
         }
 
-        private void search_node(tree_node current_node, List<scenery_object> found_objects, bool do_bounds_check, 
+        private void search_node(tree_node current_node, List<catenary_object> found_objects, bool do_bounds_check, 
             int left, int top, int right, int bottom)
         {
             if (!do_bounds_check)
             {
-                foreach (scenery_object current_object in current_node.remaining_objects)
+                foreach (catenary_object current_object in current_node.remaining_objects)
                 {
                     found_objects.Add(current_object);
                 }
             }
             else
             {
-                foreach (scenery_object current_object in current_node.remaining_objects)
+                foreach (catenary_object current_object in current_node.remaining_objects)
                 {
                     if (current_object.x >= left && current_object.x <= right && current_object.z >= top && current_object.z <= bottom)
                     {
@@ -106,7 +106,7 @@ internal static partial class catenary_visual
             }
 
             tree_node[]?    quadrants       = current_node.quadrants;
-            scenery_object? division_object = current_node.division_object;
+            catenary_object? division_object = current_node.division_object;
             if (division_object != null && quadrants != null)
             {
                 if (   division_object.x >= left && division_object.x <= right
@@ -132,7 +132,7 @@ internal static partial class catenary_visual
             }
         }
 
-        public void find_objects(List<scenery_object> found_objects, bool do_bounds_check, int left, int top, int right, int bottom)
+        public void find_objects(List<catenary_object> found_objects, bool do_bounds_check, int left, int top, int right, int bottom)
         {
             search_node(_root, found_objects, do_bounds_check, left, top, right, bottom);
         }
