@@ -37,14 +37,18 @@ internal static class editor
     public static float maximum_sweep { get; set; }
     public static bool erase_scenery { get; set; }
 
-    public static void place_pole(Vector3 relative_position, Quaternion orientation)
+    private static void store_last_pole_location(Vector3 relative_position, Quaternion orientation)
     {
         (_last_pole_x, _last_pole_z) = get_absolute_position(relative_position);
         _last_pole_orientation       = orientation;
+    }
+    
+    public static void place_pole(Vector3 relative_position, Quaternion orientation)
+    {
+        store_last_pole_location(relative_position, orientation);
         if (part_placement == placement.Left)
             orientation *= flip_around_vertical;
         catenary_visual.add_pole(pole_type, relative_position, orientation);
-        //catenary_visual.add_scenery_object(10, relative_position, orientation);
     }
 
     private static void place_many_poles_in_succession(Vector3 relative_position, Quaternion orientation)
@@ -55,6 +59,8 @@ internal static class editor
             _first_pole = false;
             if (!skip_first)
                 place_pole(relative_position, orientation);
+            else
+                store_last_pole_location(relative_position, orientation);
         }
         else
         {
@@ -95,20 +101,15 @@ internal static class editor
         pole_user? closest_pole = get_closest<pole_user>(poles, relative_position);
         if (closest_pole != null)
         {
-            /*
-            int object_type = 1;
-            if (pole_placement == placement.Gantry3)
-                object_type = 2;
-            else if (pole_placement == placement.Gantry4)
-                object_type = 3;
-            */
+            int tracks = part_placement switch
+            {
+                placement.Gantry2 => 2,
+                placement.Gantry3 => 3,
+                placement.Gantry4 => 4,
+                _ => throw new InvalidOperationException($"Gantry placement routine called in {part_placement} mode")
+            };
             Main.reset_placement_mode();
-            /*
-            Transform closest_pole_location = closest_pole.transform;
-            place_pole(closest_pole_location.position - closest_pole_location.right * _gantry_lengths[object_type - 1],
-                closest_pole_location.rotation);
-            catenary_visual.add_scenery_object(object_type, closest_pole_location.position, closest_pole_location.rotation);
-            */
+            catenary_visual.add_gantry(tracks, closest_pole.get_relative_position(), closest_pole.get_orientation());
         }
     }
 
@@ -134,7 +135,7 @@ internal static class editor
             case placement.Gantry2:
             case placement.Gantry3:
             case placement.Gantry4:
-                place_gantry(relative_position);
+                place_gantry(PlayerManager.PlayerTransform.position);
                 break;
         }
     }

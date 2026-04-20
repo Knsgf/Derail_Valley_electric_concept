@@ -26,7 +26,13 @@ internal static partial class catenary_visual
 
     public static void add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation)
     {
-		add_scenery_object((int x, int z, float y, Quaternion orientation) => new pole(pole_type, x, z, relative_position.y, orientation),
+		add_scenery_object((int x, int z, float y, Quaternion orientation) => new pole(pole_type, x, z, y, orientation),
+            relative_position, orientation);
+    }
+
+    public static void add_gantry(int tracks, Vector3 relative_position, Quaternion orientation)
+    {
+        add_scenery_object((int x, int z, float y, Quaternion orientation) => new gantry(tracks, x, z, y, orientation),
             relative_position, orientation);
     }
 
