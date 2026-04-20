@@ -113,7 +113,7 @@ internal static class editor
         }
     }
 
-    public static void process_location(Vector3 relative_position, Quaternion orientation)
+    public static void process_location(Vector3 relative_position, Vector3 forward_direction)
     {
         if (erase_scenery)
         {
@@ -129,6 +129,7 @@ internal static class editor
 
             case placement.Left:
             case placement.Right:
+                Quaternion orientation = Quaternion.FromToRotation(Vector3.forward, new Vector3(forward_direction.x, 0.0f, forward_direction.z));
                 place_many_poles_in_succession(relative_position, orientation);
                 break;
 
