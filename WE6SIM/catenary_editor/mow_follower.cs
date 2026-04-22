@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+using DV.ThingTypes;
 using WE6SIM.catenary;
 
 using static WE6SIM.utilities.world_position;
@@ -17,11 +18,13 @@ namespace WE6SIM.catenary_editor;
 
 internal class mow_follower: IDisposable
 {
+    
     private readonly TrainCar _mow_vehicle;
 
     public mow_follower(TrainCar mow_vehicle)
     {
         _mow_vehicle = mow_vehicle;
+        editor.use_DM1U = mow_vehicle.carType == TrainCarType.LocoDM1U;
         mow_vehicle.SimController.SimulationFlow.TickEvent += track_movement;
         catenary_visual.set_up();
     }

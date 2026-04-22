@@ -21,12 +21,12 @@ namespace WE6SIM.catenary_editor;
 internal static class editor
 {
     public enum placement { Disabled, Left, Right, Gantry2, Gantry3, Gantry4 };
+    const float mow_vehicle_length = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
 
     private static readonly Quaternion flip_around_vertical = Quaternion.AngleAxis(180.0f, Vector3.up);
 
-    private static int  _last_pole_x, _last_pole_z;
-    //private static float _remaining_time = 1.0f;
-    private static bool _first_pole = true;
+    private static int        _last_pole_x, _last_pole_z;
+    private static bool       _first_pole            = true;
     private static Quaternion _last_pole_orientation = Quaternion.identity;
     
     public static float pole_height_offset { get; set; }
@@ -36,6 +36,7 @@ internal static class editor
     public static float distance_between_poles { get; set; }
     public static float maximum_sweep { get; set; }
     public static bool erase_scenery { get; set; }
+    public static bool use_DM1U { get; set; }
 
     private static void store_last_pole_location(Vector3 relative_position, Quaternion orientation)
     {
@@ -67,10 +68,29 @@ internal static class editor
             (int x, int z)     = get_absolute_position(relative_position);
             float half_angle   = (Mathf.Deg2Rad / 2.0f) * Quaternion.Angle(orientation, _last_pole_orientation);
             float chord_length = Mathf.Sqrt(get_distance_squared(x, z, _last_pole_x, _last_pole_z));
-            float arc_radius   = (chord_length / 2.0f) / Mathf.Sin(half_angle);
-            float chord_offset = arc_radius * (1.0f - Mathf.Cos(half_angle));
+            
+            float arc_radius, chord_offset;
+            if (half_angle == 0.0f)
+                arc_radius = chord_offset = 0.0f;
+            else
+            {
+                arc_radius   = (chord_length / 2.0f) / Mathf.Sin(half_angle);
+                chord_offset = arc_radius * (1.0f - Mathf.Cos(half_angle));
+            }
             if (chord_length >= distance_between_poles || chord_offset >= maximum_sweep)
-                place_pole(relative_position, orientation);
+            {
+                Vector3 lateral_offset = Vector3.zero;
+                if (use_DM1U && arc_radius >= mow_vehicle_length / 2.0f)
+                {
+                    float arc_radius_squared         = arc_radius * arc_radius;
+                    float distance_to_vehicle_centre =                              Mathf.Sqrt(arc_radius_squared -          wheelbase *          wheelbase / 4.0f);
+                    float overhang_shift             = distance_to_vehicle_centre - Mathf.Sqrt(arc_radius_squared - mow_vehicle_length * mow_vehicle_length / 4.0f);
+                    Vector3 previous_forward = _last_pole_orientation * Vector3.forward, current_forward = orientation * Vector3.forward;
+                    Vector3 arc_axis = Vector3.Cross(previous_forward, current_forward);
+                    lateral_offset   = Vector3.Cross(        arc_axis, current_forward).normalized * overhang_shift;
+                }
+                place_pole(relative_position + lateral_offset, orientation);
+            }
         }
     }
 
