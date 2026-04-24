@@ -15,12 +15,13 @@ using WE6SIM.utilities;
 
 using static UnityModManagerNet.UnityModManager;
 using static WE6SIM.utilities.world_position;
+using WE6SIM.catenary_editor;
 
 namespace WE6SIM.catenary;
 
 internal static partial class catenary_visual
 {
-    public enum pole_kind { Ground, Bridge, Tunnel };
+    public enum pole_kind { Ground, Bridge, Tunnel, Bracket };
 
     private static int  _last_x, _last_z;
     //private static float _remaining_time = 1.0f;
@@ -32,8 +33,7 @@ internal static partial class catenary_visual
     private static quad_tree? object_tree;
     private static readonly GameObject[] _templates;
     
-    
-    
+     
     
     private static readonly string[] _template_names =
     {

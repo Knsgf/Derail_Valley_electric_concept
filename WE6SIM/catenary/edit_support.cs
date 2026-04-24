@@ -65,7 +65,7 @@ internal static partial class catenary_visual
     {
         (int x, int z) = get_absolute_position(relative_position);
         List<catenary_object> found_objects = [];
-        int area_half_size_fixed = (int) (area_half_size * fixed_multiplier);
+        int area_half_size_fixed = float_to_fixed(area_half_size);
         find_objects_within_region(found_objects, object_tree, do_bounds_check: true,
             x - area_half_size_fixed, z - area_half_size_fixed, x + area_half_size_fixed, z + area_half_size_fixed);
         objects.AddRange(found_objects);
@@ -75,12 +75,12 @@ internal static partial class catenary_visual
     {
         if (_store_scenery && _file_path != null)
         {
-            List<catenary_object> objects_to_store = [];
-            foreach (catenary_object current_object in _all_objects)
-            {
-                if (!current_object.do_not_store /*&& current_object.template_index != 11*/)
-                    objects_to_store.Add(current_object);
-            }
+            List<catenary_object> objects_to_store =
+			[..
+                from   current_object in _all_objects
+                where !current_object.placed_procedurally
+                select current_object
+            ];
             string raw_scenery = JsonConvert.SerializeObject(objects_to_store, 
                 new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
             File.WriteAllText(Path.Combine(_file_path, "scenery.json"), raw_scenery);

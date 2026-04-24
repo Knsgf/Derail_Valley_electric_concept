@@ -23,7 +23,7 @@ internal class mow_follower: IDisposable
 
     public mow_follower(TrainCar mow_vehicle)
     {
-        _mow_vehicle = mow_vehicle;
+        _mow_vehicle    = mow_vehicle;
         editor.use_DM1U = mow_vehicle.carType == TrainCarType.LocoDM1U;
         mow_vehicle.SimController.SimulationFlow.TickEvent += track_movement;
         catenary_visual.set_up();
@@ -41,6 +41,7 @@ internal class mow_follower: IDisposable
     public void Dispose()
     {
         _mow_vehicle.SimController.SimulationFlow.TickEvent -= track_movement;
+        editor.use_DM1U = false;
         catenary_visual.store_scenery();
     }
 }

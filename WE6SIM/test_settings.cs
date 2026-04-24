@@ -26,14 +26,17 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
     [Draw("Skip first pole")]
 	private bool _skip_first = false;
 
-	[Draw("Distance")]
-	private float _pole_distance = 40.0f;
+	[Draw("Distance (m)")]
+	private int _pole_distance = 40;
 
-	[Draw("Sweep")]
-	private float _sweep = 0.3f;
+	[Draw("Sweep (mm)")]
+	private int _sweep = 300;
 
 	[Draw("Eraser")]
 	private bool _erase_scenery = false;
+
+	[Draw("Gantry stretch %")]
+	private int _gantry_stretch = 100;
 
 	public test_settings()
 	{
@@ -48,13 +51,16 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 			_erase_scenery  = false;
 			_part_placement = editor.placement.Disabled;
 		}
+		if (_part_placement == editor.placement.Bracket)
+			_pole_type = catenary_visual.pole_kind.Bracket;
 		editor.pole_height_offset     = _height_offset;
 		editor.pole_type			  = _pole_type;
 		editor.part_placement         = _part_placement;
 		editor.skip_first             = _skip_first;
 		editor.distance_between_poles = _pole_distance;
-		editor.maximum_sweep          = _sweep;
+		editor.maximum_sweep          = _sweep / 1000.0f;
 		editor.erase_scenery          = _erase_scenery;
+		editor.gantry_stretch         = _gantry_stretch / 100.0f;
 	}
 
 	public void reset_placement_mode()

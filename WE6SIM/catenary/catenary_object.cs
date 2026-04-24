@@ -32,7 +32,7 @@ internal static partial class catenary_visual
         [JsonIgnore]
         public GameObject? entity = null;
         [JsonIgnore]
-        public bool is_visible = false, do_not_store = false;
+        public bool is_visible = false, placed_procedurally = false;
 
         [JsonProperty]
         public Quaternion orientation = Quaternion.identity;

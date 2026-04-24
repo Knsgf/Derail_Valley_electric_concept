@@ -15,7 +15,7 @@ internal static class world_position
 {
     public const float fixed_multiplier = 1000.0f;
     
-    private static int float_to_fixed(float value)
+    public static int float_to_fixed(float value)
     {
         return Mathf.RoundToInt(value * fixed_multiplier);
     }
