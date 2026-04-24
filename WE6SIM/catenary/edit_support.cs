@@ -36,6 +36,11 @@ internal static partial class catenary_visual
             relative_position, orientation);
     }
 
+    public static void add_cantilever(Vector3 relative_position, Quaternion orientation)
+    {
+
+    }
+
     public static void erase_nearby_objects(Vector3 relative_position)
     {
         const int erase_region_half_width = (int) (2.5f * fixed_multiplier);

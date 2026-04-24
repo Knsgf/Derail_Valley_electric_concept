@@ -78,7 +78,7 @@ internal static partial class catenary_visual
             entity   ??= GameObject.Instantiate(template, world_position.get_relative_position(x, z, y), orientation);
         }
 
-        public void hide_if_out_of_view()
+        public void hide_when_out_of_view()
         {
             if (!is_visible && entity is not null)
             {

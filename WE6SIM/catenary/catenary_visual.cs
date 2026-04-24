@@ -170,7 +170,7 @@ internal static partial class catenary_visual
         visible_objects = _previously_visible_objects;
         for (int object_index = visible_objects.Count - 1; object_index >= 0; --object_index)
         {
-            visible_objects[object_index].hide_if_out_of_view();
+            visible_objects[object_index].hide_when_out_of_view();
             /*
             catenary_object current_object = visible_objects[object_index];
             if (!current_object.is_visible && current_object.entity is not null)

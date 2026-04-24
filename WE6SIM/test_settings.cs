@@ -53,6 +53,9 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 		}
 		if (_part_placement == editor.placement.Bracket)
 			_pole_type = catenary_visual.pole_kind.Bracket;
+		else if (_pole_type == catenary_visual.pole_kind.Bracket)
+			_pole_type = catenary_visual.pole_kind.Ground;
+
 		editor.pole_height_offset     = _height_offset;
 		editor.pole_type			  = _pole_type;
 		editor.part_placement         = _part_placement;

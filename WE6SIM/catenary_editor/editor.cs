@@ -26,6 +26,7 @@ internal static class editor
     const float half_wheelbase_squared      =          wheelbase *          wheelbase / 4.0f;
 
     private static readonly Quaternion flip_around_vertical = Quaternion.AngleAxis(180.0f, Vector3.up);
+    private static readonly List<catenary_object_user> _nearby_objects = [];
 
     private static int        _last_pole_x, _last_pole_z, _last_x, _last_z;
     private static bool       _first_pole            = true;
@@ -97,14 +98,15 @@ internal static class editor
         }
     }
 
-    private static _type_? get_closest<_type_>(List<catenary_object_user> objects, Vector3 position) 
+    private static _type_? get_closest<_type_>(List<catenary_object_user> objects, Vector3 position, Func<_type_, bool>? filter = null)
         where _type_: catenary_object_user
     {
         _type_? closest_object           = default;
         float   minimum_distance_squared = float.MaxValue;
+        filter ??= (_) => true;
         foreach (catenary_object_user current_object in objects)
         {
-            if (current_object is _type_ object_of_specified_type)
+            if (current_object is _type_ object_of_specified_type && filter(object_of_specified_type))
             {
                 float distance_squared = (position - current_object.get_relative_position()).sqrMagnitude;
                 if (minimum_distance_squared > distance_squared)
@@ -117,18 +119,24 @@ internal static class editor
         return closest_object;
     }
 
+    private static void grab_nearby_objects(Vector3 relative_position, float area_half_size, bool clear_list = true)
+    {
+        if (clear_list)
+            _nearby_objects.Clear();
+        catenary_visual.get_objects_in_area(_nearby_objects, relative_position, area_half_size);
+    }
+
     private static void place_gantry(Vector3 relative_position)
     {
-        List<catenary_object_user> entities = [];
-        catenary_visual.get_objects_in_area(entities, relative_position, 25.0f);
+        grab_nearby_objects(relative_position, 25.0f);
         if (part_placement == placement.GantryStretch)
         {
-            gantry_user? closest_gantry = get_closest<gantry_user>(entities, relative_position);
+            gantry_user? closest_gantry = get_closest<gantry_user>(_nearby_objects, relative_position);
             closest_gantry?.stretch = gantry_stretch;
         }
         else
         {
-            pole_user? closest_pole = get_closest<pole_user>(entities, relative_position);
+            pole_user? closest_pole = get_closest<pole_user>(_nearby_objects, relative_position);
             if (closest_pole != null)
             {
                 int tracks = part_placement switch
@@ -141,6 +149,44 @@ internal static class editor
                 Main.reset_placement_mode();
                 catenary_visual.add_gantry(tracks, closest_pole.get_relative_position(), closest_pole.get_orientation());
             }
+        }
+        _nearby_objects.Clear();
+    }
+
+    private static void place_gantry_braket(Vector3 relative_position)
+    {
+        Vector3 last_relative_position = get_relative_position(_last_x, _last_z, relative_position.y);
+        grab_nearby_objects(relative_position, 25.0f);
+        foreach (catenary_object_user current_object in _nearby_objects)
+        {
+            if (current_object is gantry_user gantry)
+            {
+                Vector3? bracket_position = gantry.cross_point(last_relative_position, relative_position - last_relative_position);
+                if (bracket_position == null)
+                    continue;
+                pole_user? closest_pole          = get_closest<pole_user>(_nearby_objects, (Vector3) bracket_position);
+                Vector3?   closest_pole_position = closest_pole?.get_relative_position();
+                if (   closest_pole          == null || closest_pole.pole_type != catenary_visual.pole_kind.Bracket
+                    || closest_pole_position == null || ((Vector3) closest_pole_position - (Vector3) bracket_position).sqrMagnitude > 0.01f)
+                {
+                    place_pole((Vector3) bracket_position, gantry.get_orientation());
+                }
+            }
+        }
+        _nearby_objects.Clear();
+    }
+
+    private static void place_cantilever(Vector3 relative_position)
+    {
+        grab_nearby_objects(relative_position, 10.0f);
+        pole_user? closest_pole = get_closest<pole_user>(_nearby_objects, relative_position, 
+            (pole_user pole) => pole.pole_type == catenary_visual.pole_kind.Bracket);
+        bool attach_to_front = true;
+        if (closest_pole != null)
+        {
+            Vector3 offset_to_pole = closest_pole.get_relative_position() - relative_position;
+            if (Vector3.Angle(offset_to_pole, closest_pole.get_orientation() * Vector3.left) > 135.0f)
+                attach_to_front = false;
         }
     }
 
@@ -172,26 +218,7 @@ internal static class editor
                 break;
 
             case placement.Bracket:
-                Vector3 last_relative_position = get_relative_position(_last_x, _last_z, relative_position.y);
-                List<catenary_object_user> entities = [];
-                catenary_visual.get_objects_in_area(entities, relative_position, 25.0f);
-                foreach (catenary_object_user current_object in entities)
-                {
-                    if (current_object is gantry_user gantry)
-                    {
-                        Vector3? bracket_position = gantry.cross_point(last_relative_position, relative_position - last_relative_position);
-                        if (bracket_position != null)
-                        {
-                            pole_user? closest_pole = get_closest<pole_user>(entities, (Vector3) bracket_position);
-                            Vector3? closest_pole_position = closest_pole?.get_relative_position();
-                            if (closest_pole == null || closest_pole.pole_type != catenary_visual.pole_kind.Bracket
-                                || closest_pole_position == null || ((Vector3) closest_pole_position - (Vector3) bracket_position).sqrMagnitude > 0.01f)
-                            {
-                                place_pole((Vector3) bracket_position, gantry.get_orientation());
-                            }
-                        }
-                    }
-                }
+                place_gantry_braket(relative_position);
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);
