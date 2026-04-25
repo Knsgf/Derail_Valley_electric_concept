@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using UnityEngine;
 
 using WE6SIM.catenary;
@@ -20,10 +21,11 @@ namespace WE6SIM.catenary_editor;
 
 internal static class editor
 {
-    public enum placement { Disabled, Left, Right, Gantry2, Gantry3, Gantry4, GantryStretch, Bracket };
+    public enum placement { Disabled, Left, Right, Gantry2, Gantry3, Gantry4, GantryStretch, Bracket, Cantilever };
     const float mow_vehicle_length = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
     const float vehicle_half_length_squared = mow_vehicle_length * mow_vehicle_length / 4.0f;
     const float half_wheelbase_squared      =          wheelbase *          wheelbase / 4.0f;
+    const float default_pole_offset         = 2.2f;
 
     private static readonly Quaternion flip_around_vertical = Quaternion.AngleAxis(180.0f, Vector3.up);
     private static readonly List<catenary_object_user> _nearby_objects = [];
@@ -176,17 +178,47 @@ internal static class editor
         _nearby_objects.Clear();
     }
 
+    private static (pole_user?, Vector3) get_nearest_pole_position(Vector3 relative_position, bool look_for_brackets)
+    {
+        pole_user? closest_pole = get_closest<pole_user>(_nearby_objects, relative_position, 
+            look_for_brackets
+            ? ((pole_user pole) => pole.pole_type == catenary_visual.pole_kind.Bracket)
+            : ((pole_user pole) => pole.pole_type != catenary_visual.pole_kind.Bracket));
+        if (closest_pole == null)
+            return (null, Vector3.zero);
+        return (closest_pole, closest_pole.get_relative_position() 
+            + (look_for_brackets ? Vector3.left : Vector3.right) * default_pole_offset);
+    }
+    
     private static void place_cantilever(Vector3 relative_position)
     {
         grab_nearby_objects(relative_position, 10.0f);
-        pole_user? closest_pole = get_closest<pole_user>(_nearby_objects, relative_position, 
-            (pole_user pole) => pole.pole_type == catenary_visual.pole_kind.Bracket);
-        bool attach_to_front = true;
-        if (closest_pole != null)
+        (pole_user? bracket, Vector3 bracket_position) = get_nearest_pole_position(relative_position, look_for_brackets: true);
+        if (bracket != null)
         {
-            Vector3 offset_to_pole = closest_pole.get_relative_position() - relative_position;
-            if (Vector3.Angle(offset_to_pole, closest_pole.get_orientation() * Vector3.left) > 135.0f)
-                attach_to_front = false;
+            Vector3 offset_to_pole = bracket_position - relative_position;
+            if (offset_to_pole.sqrMagnitude < 16.0f)
+            {
+                bool place_on_front_side = Vector3.Dot(offset_to_pole, bracket.get_orientation() * Vector3.right) < 0.0f;
+                if (place_on_front_side)
+                {
+                    if (!bracket.cantilever_on_front)
+                    {
+                        catenary_visual.add_cantilever(catenary_visual.cantilever_kind.inner, is_gantry_registration_arm: true,
+                            dual_wire: true, bracket.get_relative_position(), bracket.get_orientation());
+                        bracket.cantilever_on_front = true;
+                        Main.log($"Front {bracket_position} {bracket.get_relative_position()} {relative_position}");
+                    }
+                }
+                else if (!bracket.cantilever_on_back)
+                { 
+                    catenary_visual.add_cantilever(catenary_visual.cantilever_kind.inner, is_gantry_registration_arm: true, dual_wire: true, 
+                        bracket.get_relative_position() + bracket.get_orientation() * Vector3.left * (default_pole_offset * 2.0f), 
+                        bracket.get_orientation() * flip_around_vertical);
+                    bracket.cantilever_on_back = true;
+                    Main.log($"Back {bracket_position} {bracket.get_relative_position()} {relative_position}");
+                }
+            }
         }
     }
 
@@ -219,6 +251,10 @@ internal static class editor
 
             case placement.Bracket:
                 place_gantry_braket(relative_position);
+                break;
+
+            case placement.Cantilever:
+                place_cantilever(relative_position);
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);

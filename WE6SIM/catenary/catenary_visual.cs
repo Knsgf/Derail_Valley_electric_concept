@@ -22,18 +22,18 @@ namespace WE6SIM.catenary;
 internal static partial class catenary_visual
 {
     public enum pole_kind { Ground, Bridge, Tunnel, Bracket };
+    public enum cantilever_kind { inner, middle, outer, alternating };
 
     private static int  _last_x, _last_z;
     //private static float _remaining_time = 1.0f;
     private static bool _singleton_handlers_set = false, _scenery_changed = true, _store_scenery = false;
 
     private static string? _file_path;
-    private static readonly List<catenary_object> _freshly_added_objects = [];
-    private static List<catenary_object> _all_objects = [], _previously_visible_objects = [], _currently_visible_objects = [];
-    private static quad_tree? object_tree;
+    private static readonly List<catenary_object> _all_objects = [], _freshly_added_objects = [];
+    private static List<catenary_object> _previously_visible_objects = [], _currently_visible_objects = [];
+    private static quad_tree? _object_tree;
     private static readonly GameObject[] _templates;
     
-     
     
     private static readonly string[] _template_names =
     {
@@ -100,7 +100,7 @@ internal static partial class catenary_visual
         {
             Main.log($"Loaded objects: {loaded_objects.Count}");
             _all_objects.AddRange(loaded_objects);
-            object_tree      = new quad_tree(loaded_objects);
+            _object_tree     = new quad_tree(loaded_objects);
             _scenery_changed = true;
         }
     }
@@ -154,7 +154,7 @@ internal static partial class catenary_visual
             }
         }
         */
-        find_objects_within_region(visible_objects, object_tree, do_bounds_check: false,
+        find_objects_within_region(visible_objects, _object_tree, do_bounds_check: false,
             x - visible_distance_fixed, z - visible_distance_fixed,x + visible_distance_fixed, z + visible_distance_fixed);
         for (int object_index = visible_objects.Count - 1; object_index >= 0; --object_index)
         {
@@ -184,7 +184,7 @@ internal static partial class catenary_visual
 
     private static void reconstruct_tree()
     {
-        object_tree = new quad_tree(_all_objects);
+        _object_tree = new quad_tree(_all_objects);
         _freshly_added_objects.Clear();
     }
 

@@ -36,9 +36,12 @@ internal static partial class catenary_visual
             relative_position, orientation);
     }
 
-    public static void add_cantilever(Vector3 relative_position, Quaternion orientation)
+    public static void add_cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool dual_wire, 
+        Vector3 relative_position, Quaternion orientation)
     {
-
+        add_scenery_object((int x, int z, float y, Quaternion orientation) 
+            => new cantilever(cantilever_type, is_gantry_registration_arm, dual_wire, x, z, y, orientation),
+            relative_position, orientation);
     }
 
     public static void erase_nearby_objects(Vector3 relative_position)
@@ -47,7 +50,7 @@ internal static partial class catenary_visual
 
         (int x, int z) = get_absolute_position(relative_position);
         List<catenary_object> objects_to_remove = [];
-        find_objects_within_region(objects_to_remove, object_tree, do_bounds_check: true, 
+        find_objects_within_region(objects_to_remove, _object_tree, do_bounds_check: true, 
             x - erase_region_half_width, z - erase_region_half_width, x + erase_region_half_width, z + erase_region_half_width);
         foreach (catenary_object current_object in objects_to_remove)
         {
@@ -61,7 +64,7 @@ internal static partial class catenary_visual
         }
         if (objects_to_remove.Count > 0)
         {
-            object_tree = new quad_tree(_all_objects);
+            _object_tree = new quad_tree(_all_objects);
             _store_scenery = true;
         }
     }
@@ -71,7 +74,7 @@ internal static partial class catenary_visual
         (int x, int z) = get_absolute_position(relative_position);
         List<catenary_object> found_objects = [];
         int area_half_size_fixed = float_to_fixed(area_half_size);
-        find_objects_within_region(found_objects, object_tree, do_bounds_check: true,
+        find_objects_within_region(found_objects, _object_tree, do_bounds_check: true,
             x - area_half_size_fixed, z - area_half_size_fixed, x + area_half_size_fixed, z + area_half_size_fixed);
         objects.AddRange(found_objects);
     }
@@ -86,7 +89,7 @@ internal static partial class catenary_visual
                 where !current_object.placed_procedurally
                 select current_object
             ];
-            string raw_scenery = JsonConvert.SerializeObject(objects_to_store, 
+            string raw_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented,
                 new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
             File.WriteAllText(Path.Combine(_file_path, "scenery.json"), raw_scenery);
             _store_scenery = false;
