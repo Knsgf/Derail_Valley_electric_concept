@@ -15,6 +15,7 @@ using UnityEngine;
 using WE6SIM.catenary;
 
 using static UnityModManagerNet.UnityModManager;
+using static WE6SIM.catenary.catenary_visual;
 using static WE6SIM.utilities.world_position;
 
 namespace WE6SIM.catenary_editor;
@@ -33,12 +34,14 @@ internal static class editor
     private static readonly Quaternion flip_around_vertical = Quaternion.AngleAxis(180.0f, Vector3.up);
     private static readonly List<catenary_object_user> _nearby_objects = [];
 
-    private static int        _last_pole_x, _last_pole_z, _last_x, _last_z;
-    private static bool       _first_pole            = true;
-    private static Quaternion _last_pole_orientation = Quaternion.identity;
+    private static int             _last_pole_x, _last_pole_z, _last_x, _last_z;
+    private static bool            _first_cantilever      = true, _first_pole = true;
+    private static Quaternion      _last_pole_orientation = Quaternion.identity;
+    private static cantilever_kind _next_cantilever_type  = cantilever_kind.Middle;
     
     public static float pole_height_offset { get; set; }
-    public static catenary_visual.pole_kind pole_type { get; set; }
+    public static pole_kind pole_type { get; set; }
+    public static cantilever_kind cantilever_type { get; set; }
     public static placement part_placement { get; set; }
     public static bool skip_first { get; set; }
     public static int distance_between_poles { get; set; }
@@ -58,7 +61,7 @@ internal static class editor
         store_last_pole_location(relative_position, orientation);
         if (part_placement == placement.Left)
             orientation *= flip_around_vertical;
-        catenary_visual.add_pole((part_placement == placement.Bracket) ? catenary_visual.pole_kind.Bracket : pole_type, relative_position, orientation);
+        add_pole((part_placement == placement.Bracket) ? pole_kind.Bracket : pole_type, relative_position, orientation);
     }
 
     private static void place_many_poles_in_succession(Vector3 relative_position, Quaternion orientation)
@@ -128,7 +131,7 @@ internal static class editor
     {
         if (clear_list)
             _nearby_objects.Clear();
-        catenary_visual.get_objects_in_area(_nearby_objects, relative_position, area_half_size);
+        get_objects_in_area(_nearby_objects, relative_position, area_half_size);
     }
 
     private static void place_gantry(Vector3 relative_position)
@@ -152,7 +155,7 @@ internal static class editor
                     _ => throw new InvalidOperationException($"Gantry placement routine called in {part_placement} mode")
                 };
                 Main.reset_placement_mode();
-                catenary_visual.add_gantry(tracks, closest_pole.get_relative_position(), closest_pole.get_orientation());
+                add_gantry(tracks, closest_pole.get_relative_position(), closest_pole.get_orientation());
             }
         }
         _nearby_objects.Clear();
@@ -171,7 +174,7 @@ internal static class editor
                     continue;
                 pole_user? closest_pole          = get_closest<pole_user>(_nearby_objects, (Vector3) bracket_position);
                 Vector3?   closest_pole_position = closest_pole?.get_relative_position();
-                if (   closest_pole          == null || closest_pole.pole_type != catenary_visual.pole_kind.Bracket
+                if (   closest_pole          == null || closest_pole.pole_type != pole_kind.Bracket
                     || closest_pole_position == null || ((Vector3) closest_pole_position - (Vector3) bracket_position).sqrMagnitude > 0.01f)
                 {
                     place_pole((Vector3) bracket_position, gantry.get_orientation());
@@ -185,63 +188,94 @@ internal static class editor
     {
         pole_user? closest_pole = get_closest<pole_user>(_nearby_objects, relative_position, 
             look_for_gantry_brackets
-            ? ((pole_user pole) => pole.pole_type == catenary_visual.pole_kind.Bracket)
-            : ((pole_user pole) => pole.pole_type != catenary_visual.pole_kind.Bracket));
+            ? ((pole_user pole) => pole.pole_type == pole_kind.Bracket)
+            : ((pole_user pole) => pole.pole_type != pole_kind.Bracket));
         if (closest_pole == null)
             return (null, Vector3.zero);
-        return (closest_pole, closest_pole.get_relative_position() 
-            + (look_for_gantry_brackets ? Vector3.left : Vector3.right) * default_pole_offset);
+        return (closest_pole, closest_pole.get_relative_position() + closest_pole.get_orientation()
+            * (look_for_gantry_brackets ? Vector3.left : Vector3.right) * default_pole_offset);
     }
     
-    private static void place_cantilever(bool is_gantry_registration_arm, Vector3 relative_position)
+    private static bool place_cantilever(bool is_gantry_registration_arm, ref cantilever_kind cantilever_type, 
+        Vector3 relative_position)
     {
         grab_nearby_objects(relative_position, 10.0f);
         (pole_user? pole, Vector3 pole_position) = get_nearest_pole_position(relative_position, is_gantry_registration_arm);
-        if (pole != null)
+        if (pole == null)
+            return false;
+
+        Quaternion pole_orientation           = pole.get_orientation();
+        Vector3    offset_to_pole             = pole_position - relative_position;
+        Vector3    registration_arm_direction = pole_orientation * (is_gantry_registration_arm ? Vector3.right : Vector3.left);
+        bool       place_on_near_side         = false, place_on_far_side = false;
+        if (offset_to_pole.sqrMagnitude < 16.0f)
         {
-            Vector3 offset_to_pole             = pole_position - relative_position;
-            Vector3 registration_arm_direction = pole.get_orientation() * (is_gantry_registration_arm ? Vector3.right : Vector3.left);
-            if (offset_to_pole.sqrMagnitude < 16.0f)
+            place_on_near_side = Vector3.Dot(offset_to_pole, registration_arm_direction) < 0.0f;
+            if (place_on_near_side)
+                place_on_near_side = !pole.cantilever_on_near_side;
+            else
+                place_on_far_side  = !pole.cantilever_on_far_side;
+        }
+        if (!place_on_near_side && !place_on_far_side)
+            return false;
+
+        if (_first_cantilever)
+        {
+            _first_cantilever = false;
+            store_last_pole_location(pole_position, pole_orientation);
+        }
+        float angle_between_poles = Quaternion.Angle(_last_pole_orientation, pole_orientation);
+        if (angle_between_poles > 90.0f)
+            cantilever_type = (cantilever_type == cantilever_kind.Inner) ? cantilever_kind.Outer : cantilever_kind.Inner;
+        else
+        { 
+            float sweep_angle = Mathf.Rad2Deg * Mathf.Atan(maximum_sweep / distance_between_poles);
+            if (angle_between_poles > 3.0f * sweep_angle)
             {
-                bool place_on_near_side = Vector3.Dot(offset_to_pole, registration_arm_direction) < 0.0f;
-                if (place_on_near_side)
-                {
-                    if (!pole.cantilever_on_near_side)
-                    {
-                        catenary_visual.add_cantilever(catenary_visual.cantilever_kind.inner, is_gantry_registration_arm,
-                            dual_wire: true, pole.get_relative_position(), pole.get_orientation());
-                        pole.cantilever_on_near_side = true;
-                        //Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
-                    }
-                }
-                else if (!pole.cantilever_on_far_side)
-                { 
-                    catenary_visual.add_cantilever(catenary_visual.cantilever_kind.inner, is_gantry_registration_arm, dual_wire: true, 
-                        pole.get_relative_position() - registration_arm_direction * (default_pole_offset * 2.0f),
-                        pole.get_orientation() * flip_around_vertical);
-                    pole.cantilever_on_far_side = true;
-                    //Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
-                }
+                var     turn_axis  = Vector3.Cross(_last_pole_orientation * Vector3.forward, pole_orientation * Vector3.forward);
+                Vector3 pole_chord = pole_position - get_relative_position(_last_pole_x, _last_pole_z, pole_position.y);
+                var     turn_into  = Vector3.Cross(turn_axis, pole_chord);
+                cantilever_type = (Vector3.Dot(turn_into, pole_orientation * Vector3.right) > 0.0f) 
+                    ? cantilever_kind.Outer : cantilever_kind.Inner;
             }
         }
+
+        if (place_on_near_side)
+        {
+            add_cantilever(cantilever_type, is_gantry_registration_arm,
+                dual_wire: true, pole.get_relative_position(), pole_orientation);
+            pole.cantilever_on_near_side = true;
+            Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
+        }
+        else
+        {
+            add_cantilever(cantilever_type, is_gantry_registration_arm, dual_wire: true, 
+                pole.get_relative_position() - registration_arm_direction * (default_pole_offset * 2.0f),
+                pole_orientation * flip_around_vertical);
+            pole.cantilever_on_far_side = true;
+            Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
+        }
+        store_last_pole_location(pole_position, pole_orientation);
+        return true;
     }
 
     public static void process_location(Vector3 relative_position, Vector3 forward_direction)
     {
         if (erase_scenery)
         {
-            catenary_visual.erase_nearby_objects(PlayerManager.PlayerTransform.position);
+            erase_nearby_objects(PlayerManager.PlayerTransform.position);
             return;
         }
 
         switch (part_placement)
         {
             case placement.Disabled:
-                _first_pole = true;
+                _first_pole = _first_cantilever = true;
                 break;
 
             case placement.Left:
             case placement.Right:
+                _first_cantilever = true;
                 Quaternion orientation = Quaternion.FromToRotation(Vector3.forward, new Vector3(forward_direction.x, 0.0f, forward_direction.z));
                 place_many_poles_in_succession(relative_position, orientation);
                 break;
@@ -250,16 +284,32 @@ internal static class editor
             case placement.Gantry3:
             case placement.Gantry4:
             case placement.GantryStretch:
+                _first_pole = _first_cantilever = true;
                 place_gantry(PlayerManager.PlayerTransform.position);
                 break;
 
             case placement.Bracket:
+                _first_pole = _first_cantilever = true;
                 place_gantry_braket(relative_position);
                 break;
 
             case placement.Cantilever:
             case placement.GantryRegistrationArm:
-                place_cantilever(part_placement == placement.GantryRegistrationArm, relative_position);
+                _first_pole = true;
+                if (cantilever_type != cantilever_kind.Alternating)
+                    _next_cantilever_type = cantilever_type;
+				bool cantilever_placed = place_cantilever(part_placement == placement.GantryRegistrationArm, 
+                    ref _next_cantilever_type, relative_position);
+                if (cantilever_placed)
+                {
+                    if (cantilever_type != cantilever_kind.Alternating)
+                        cantilever_type = _next_cantilever_type;
+                    else
+                    {
+                        _next_cantilever_type = (_next_cantilever_type == cantilever_kind.Inner) 
+                            ? cantilever_kind.Outer : cantilever_kind.Inner;
+                    }
+                }
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);

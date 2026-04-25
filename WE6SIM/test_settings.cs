@@ -20,6 +20,9 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
     [Draw("Pole type")]
     private catenary_visual.pole_kind _pole_type = catenary_visual.pole_kind.Ground;
 
+	[Draw("Registration arm type")]
+	private catenary_visual.cantilever_kind _cantilever_type = catenary_visual.cantilever_kind.Middle;
+
     [Draw("Part placement")]
     private editor.placement _part_placement = editor.placement.Disabled;
 
@@ -59,6 +62,7 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 		editor.pole_height_offset     = _height_offset;
 		editor.pole_type			  = _pole_type;
 		editor.part_placement         = _part_placement;
+		editor.cantilever_type		  = _cantilever_type;
 		editor.skip_first             = _skip_first;
 		editor.distance_between_poles = _pole_distance;
 		editor.maximum_sweep          = _sweep / 1000.0f;

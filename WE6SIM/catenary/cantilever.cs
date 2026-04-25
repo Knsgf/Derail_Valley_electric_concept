@@ -31,17 +31,17 @@ internal static partial class catenary_visual
             {
                 return cantilever_type switch
                 {
-                    cantilever_kind.inner  => dual_wire ? 13 : 14,
-                    cantilever_kind.middle => dual_wire ? 15 : 16,
-                    cantilever_kind.outer  => dual_wire ? 17 : 18,
+                    cantilever_kind.Inner  => dual_wire ? 13 : 14,
+                    cantilever_kind.Middle => dual_wire ? 15 : 16,
+                    cantilever_kind.Outer  => dual_wire ? 17 : 18,
                     _ => throw new ArgumentOutOfRangeException($"Invalid registration arm type {cantilever_type}")
                 };
             }
             return cantilever_type switch
             {
-                cantilever_kind.inner  => dual_wire ? 4 : 5,
-                cantilever_kind.middle => dual_wire ? 6 : 7,
-                cantilever_kind.outer  => dual_wire ? 8 : 9,
+                cantilever_kind.Inner  => dual_wire ? 4 : 5,
+                cantilever_kind.Middle => dual_wire ? 6 : 7,
+                cantilever_kind.Outer  => dual_wire ? 8 : 9,
                 _ => throw new ArgumentOutOfRangeException($"Invalid cantilever type {cantilever_type}")
             };
         }

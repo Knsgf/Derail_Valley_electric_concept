@@ -22,7 +22,7 @@ namespace WE6SIM.catenary;
 internal static partial class catenary_visual
 {
     public enum pole_kind { Ground, Bridge, Tunnel, Bracket };
-    public enum cantilever_kind { inner, middle, outer, alternating };
+    public enum cantilever_kind { Inner, Middle, Outer, Alternating };
 
     private static int  _last_x, _last_z;
     //private static float _remaining_time = 1.0f;
