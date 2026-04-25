@@ -21,7 +21,10 @@ namespace WE6SIM.catenary_editor;
 
 internal static class editor
 {
-    public enum placement { Disabled, Left, Right, Gantry2, Gantry3, Gantry4, GantryStretch, Bracket, Cantilever };
+    public enum placement 
+    { 
+        Disabled, Left, Right, Gantry2, Gantry3, Gantry4, GantryStretch, Bracket, Cantilever, GantryRegistrationArm 
+    };
     const float mow_vehicle_length = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
     const float vehicle_half_length_squared = mow_vehicle_length * mow_vehicle_length / 4.0f;
     const float half_wheelbase_squared      =          wheelbase *          wheelbase / 4.0f;
@@ -178,45 +181,46 @@ internal static class editor
         _nearby_objects.Clear();
     }
 
-    private static (pole_user?, Vector3) get_nearest_pole_position(Vector3 relative_position, bool look_for_brackets)
+    private static (pole_user?, Vector3) get_nearest_pole_position(Vector3 relative_position, bool look_for_gantry_brackets)
     {
         pole_user? closest_pole = get_closest<pole_user>(_nearby_objects, relative_position, 
-            look_for_brackets
+            look_for_gantry_brackets
             ? ((pole_user pole) => pole.pole_type == catenary_visual.pole_kind.Bracket)
             : ((pole_user pole) => pole.pole_type != catenary_visual.pole_kind.Bracket));
         if (closest_pole == null)
             return (null, Vector3.zero);
         return (closest_pole, closest_pole.get_relative_position() 
-            + (look_for_brackets ? Vector3.left : Vector3.right) * default_pole_offset);
+            + (look_for_gantry_brackets ? Vector3.left : Vector3.right) * default_pole_offset);
     }
     
-    private static void place_cantilever(Vector3 relative_position)
+    private static void place_cantilever(bool is_gantry_registration_arm, Vector3 relative_position)
     {
         grab_nearby_objects(relative_position, 10.0f);
-        (pole_user? bracket, Vector3 bracket_position) = get_nearest_pole_position(relative_position, look_for_brackets: true);
-        if (bracket != null)
+        (pole_user? pole, Vector3 pole_position) = get_nearest_pole_position(relative_position, is_gantry_registration_arm);
+        if (pole != null)
         {
-            Vector3 offset_to_pole = bracket_position - relative_position;
+            Vector3 offset_to_pole             = pole_position - relative_position;
+            Vector3 registration_arm_direction = pole.get_orientation() * (is_gantry_registration_arm ? Vector3.right : Vector3.left);
             if (offset_to_pole.sqrMagnitude < 16.0f)
             {
-                bool place_on_front_side = Vector3.Dot(offset_to_pole, bracket.get_orientation() * Vector3.right) < 0.0f;
-                if (place_on_front_side)
+                bool place_on_near_side = Vector3.Dot(offset_to_pole, registration_arm_direction) < 0.0f;
+                if (place_on_near_side)
                 {
-                    if (!bracket.cantilever_on_front)
+                    if (!pole.cantilever_on_near_side)
                     {
-                        catenary_visual.add_cantilever(catenary_visual.cantilever_kind.inner, is_gantry_registration_arm: true,
-                            dual_wire: true, bracket.get_relative_position(), bracket.get_orientation());
-                        bracket.cantilever_on_front = true;
-                        Main.log($"Front {bracket_position} {bracket.get_relative_position()} {relative_position}");
+                        catenary_visual.add_cantilever(catenary_visual.cantilever_kind.inner, is_gantry_registration_arm,
+                            dual_wire: true, pole.get_relative_position(), pole.get_orientation());
+                        pole.cantilever_on_near_side = true;
+                        //Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
                     }
                 }
-                else if (!bracket.cantilever_on_back)
+                else if (!pole.cantilever_on_far_side)
                 { 
-                    catenary_visual.add_cantilever(catenary_visual.cantilever_kind.inner, is_gantry_registration_arm: true, dual_wire: true, 
-                        bracket.get_relative_position() + bracket.get_orientation() * Vector3.left * (default_pole_offset * 2.0f), 
-                        bracket.get_orientation() * flip_around_vertical);
-                    bracket.cantilever_on_back = true;
-                    Main.log($"Back {bracket_position} {bracket.get_relative_position()} {relative_position}");
+                    catenary_visual.add_cantilever(catenary_visual.cantilever_kind.inner, is_gantry_registration_arm, dual_wire: true, 
+                        pole.get_relative_position() - registration_arm_direction * (default_pole_offset * 2.0f),
+                        pole.get_orientation() * flip_around_vertical);
+                    pole.cantilever_on_far_side = true;
+                    //Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
                 }
             }
         }
@@ -254,7 +258,8 @@ internal static class editor
                 break;
 
             case placement.Cantilever:
-                place_cantilever(relative_position);
+            case placement.GantryRegistrationArm:
+                place_cantilever(part_placement == placement.GantryRegistrationArm, relative_position);
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);

@@ -13,8 +13,8 @@ namespace WE6SIM.catenary;
 interface pole_user: catenary_object_user
 {
     catenary_visual.pole_kind pole_type { get; }
-    bool cantilever_on_front { get; set; }
-    bool cantilever_on_back  { get; set; }
+    bool cantilever_on_near_side { get; set; }
+    bool cantilever_on_far_side  { get; set; }
 }
 
 internal static partial class catenary_visual
@@ -25,9 +25,9 @@ internal static partial class catenary_visual
         [JsonProperty]
         public pole_kind pole_type { get; private set; }
         [JsonProperty]
-        public bool cantilever_on_front { get; set; }
+        public bool cantilever_on_near_side { get; set; }
         [JsonProperty]
-        public bool cantilever_on_back  { get; set; }
+        public bool cantilever_on_far_side  { get; set; }
 
         private static int pole_template(pole_kind pole_type)
         {
