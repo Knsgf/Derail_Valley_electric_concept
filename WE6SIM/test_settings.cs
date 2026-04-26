@@ -18,10 +18,10 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 	private float _height_offset = 0.0f;
 
     [Draw("Pole type")]
-    private catenary_visual.pole_kind _pole_type = catenary_visual.pole_kind.Ground;
+    private overhead_equipment.pole_kind _pole_type = overhead_equipment.pole_kind.Ground;
 
 	[Draw("Registration arm type")]
-	private catenary_visual.cantilever_kind _cantilever_type = catenary_visual.cantilever_kind.Middle;
+	private overhead_equipment.cantilever_kind _cantilever_type = overhead_equipment.cantilever_kind.Middle;
 
     [Draw("Part placement")]
     private editor.placement _part_placement = editor.placement.Disabled;
@@ -55,9 +55,9 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 			_part_placement = editor.placement.Disabled;
 		}
 		if (_part_placement == editor.placement.Bracket)
-			_pole_type = catenary_visual.pole_kind.Bracket;
-		else if (_pole_type == catenary_visual.pole_kind.Bracket)
-			_pole_type = catenary_visual.pole_kind.Ground;
+			_pole_type = overhead_equipment.pole_kind.Bracket;
+		else if (_pole_type == overhead_equipment.pole_kind.Bracket)
+			_pole_type = overhead_equipment.pole_kind.Ground;
 
 		editor.pole_height_offset     = _height_offset;
 		editor.pole_type			  = _pole_type;

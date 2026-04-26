@@ -20,8 +20,11 @@ public static class Main
 	private static ModEntry.ModLogger? _logger;
 	private static test_settings?      _settings;
 	
-	public static Port? diagnostics { get; set; }
+	public static Port? diagnostics  { get; set; }
 	public static Port? diagnostics2 { get; set; }
+	public static ModEntry? mod_info { get; private set; }
+	
+	[Obsolete]
 	public static float pole_height_offset { get; set; }
 
 	public static void log(string message)
@@ -41,11 +44,11 @@ public static class Main
 
 			// Other plugin startup logic
 
-			catenary_visual.load_assets(mod);
 			_settings = test_settings.Load<test_settings>(mod);
 			mod.OnGUI = show_test_configuration;
 
 			log("WE6SIM started");
+			mod_info = mod;
 		}
 		catch (Exception ex)
 		{

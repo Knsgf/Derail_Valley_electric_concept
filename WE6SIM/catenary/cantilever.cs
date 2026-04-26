@@ -13,7 +13,7 @@ namespace WE6SIM.catenary;
 interface cantilever_user: catenary_object_user
 {}
 
-internal static partial class catenary_visual
+internal partial class overhead_equipment
 {
     [JsonObject]
     private class cantilever: catenary_object, cantilever_user
@@ -25,29 +25,30 @@ internal static partial class catenary_visual
         [JsonProperty]
         public bool dual_wire { get; private set; }
         
-        private static int get_template(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool dual_wire)
+        private static string get_template(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool dual_wire)
         {
             if (is_gantry_registration_arm)
             {
                 return cantilever_type switch
                 {
-                    cantilever_kind.Inner  => dual_wire ? 13 : 14,
-                    cantilever_kind.Middle => dual_wire ? 15 : 16,
-                    cantilever_kind.Outer  => dual_wire ? 17 : 18,
+                    cantilever_kind.Inner  => dual_wire ?  "RegistrationArmInnerDual" :  "RegistrationArmInnerSingle",
+                    cantilever_kind.Middle => dual_wire ? "RegistrationArmMiddleDual" : "RegistrationArmMiddleSingle",
+                    cantilever_kind.Outer  => dual_wire ?  "RegistrationArmOuterDual" :  "RegistrationArmOuterSingle",
                     _ => throw new ArgumentOutOfRangeException($"Invalid registration arm type {cantilever_type}")
                 };
             }
             return cantilever_type switch
             {
-                cantilever_kind.Inner  => dual_wire ? 4 : 5,
-                cantilever_kind.Middle => dual_wire ? 6 : 7,
-                cantilever_kind.Outer  => dual_wire ? 8 : 9,
+                cantilever_kind.Inner  => dual_wire ?  "InnerCantileverDual" :  "InnerCantileverSingle",
+                cantilever_kind.Middle => dual_wire ? "MiddleCantileverDual" : "MiddleCantileverSingle",
+                cantilever_kind.Outer  => dual_wire ?  "OuterCantileverDual" :  "OuterCantileverSingle",
                 _ => throw new ArgumentOutOfRangeException($"Invalid cantilever type {cantilever_type}")
             };
         }
         
         [JsonConstructor]
-        public cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool dual_wire, int x, int z, float y, Quaternion orientation)
+        public cantilever(cantilever_kind cantilever_type, 
+            bool is_gantry_registration_arm, bool dual_wire, int x, int z, float y, Quaternion orientation)
             : base(get_template(cantilever_type, is_gantry_registration_arm, dual_wire), x, z, y, orientation)
         {
             this.cantilever_type            = cantilever_type;

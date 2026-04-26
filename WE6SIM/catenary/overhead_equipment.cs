@@ -19,22 +19,11 @@ using WE6SIM.catenary_editor;
 
 namespace WE6SIM.catenary;
 
-internal static partial class catenary_visual
+internal partial class overhead_equipment
 {
     public enum pole_kind { Ground, Bridge, Tunnel, Bracket };
     public enum cantilever_kind { Inner, Middle, Outer, Alternating };
 
-    private static int  _last_x, _last_z;
-    //private static float _remaining_time = 1.0f;
-    private static bool _singleton_handlers_set = false, _scenery_changed = true, _store_scenery = false;
-
-    private static string? _file_path;
-    private static readonly List<catenary_object> _all_objects = [], _freshly_added_objects = [];
-    private static List<catenary_object> _previously_visible_objects = [], _currently_visible_objects = [];
-    private static quad_tree? _object_tree;
-    private static readonly GameObject[] _templates;
-    
-    
     private static readonly string[] _template_names =
     {
         "EndPoleAnchor",
@@ -61,13 +50,21 @@ internal static partial class catenary_visual
         "WireSingle",
         "WireSingleEnd"
     };
+    private static overhead_equipment? _system;
 
-    static catenary_visual()
-    {
-        _templates = new GameObject[_template_names.Length];
-    }
+    private int  _last_x, _last_z;
+    //private float _remaining_time = 1.0f;
+    private bool _scenery_changed = true, _store_scenery = false;
 
-    public static void load_assets(ModEntry mod)
+    private readonly Dictionary<string, GameObject> _templates = [];
+    private readonly string _file_path;
+    private readonly List<catenary_object> _all_objects = [], _freshly_added_objects = [];
+    private List<catenary_object> _previously_visible_objects = [], _currently_visible_objects = [];
+    private quad_tree _object_tree = new([]);
+
+    public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
+
+    private overhead_equipment(ModEntry mod)
     {
         _file_path = mod.Path;
         AssetBundle catenary_assets = AssetBundle.LoadFromFile(Path.Combine(_file_path, "catenary"))
@@ -75,16 +72,21 @@ internal static partial class catenary_visual
         string[] all_assets = catenary_assets.GetAllAssetNames();
         foreach (string name in all_assets)
             Main.log(name);
-        for (int asset_index = 0; asset_index < _template_names.Length; ++asset_index)
+        foreach (string template_name in _template_names)
         {
-            _templates[asset_index] = catenary_assets.LoadAsset<GameObject>($"Assets/Catenary/{_template_names[asset_index]}.prefab")
-                ?? throw new FileNotFoundException($"No {_template_names[asset_index]} prefab");
+            _templates[template_name] = catenary_assets.LoadAsset<GameObject>($"Assets/Catenary/{template_name}.prefab")
+                ?? throw new FileNotFoundException($"No {template_name} prefab");
         }
+
+        WorldMover floating_origin = SingletonBehaviour<WorldMover>.Instance;
+        assert.test(floating_origin != null);
+        floating_origin.WorldMoved           += floating_origin_shift;
+        UnloadWatcher.UnloadRequested        += dispose;
+        PlayerManager.PlayerTeleportFinished += track_player_movement;
     }
 
-    private static void load_scenery()
+    private void load_scenery(ModEntry mod)
     {
-        _all_objects.Clear();
         List<catenary_object>? loaded_objects = null;
         try
         {
@@ -100,16 +102,44 @@ internal static partial class catenary_visual
         {
             Main.log($"Loaded objects: {loaded_objects.Count}");
             _all_objects.AddRange(loaded_objects);
-            _object_tree     = new quad_tree(loaded_objects);
-            _scenery_changed = true;
         }
+        _scenery_changed = _all_objects.Count > 0;
+        if (_scenery_changed)
+            _object_tree = new quad_tree(_all_objects);
     }
 
-    private static void find_objects_within_region(List<catenary_object> found_objects, quad_tree? all_objects, 
+    public static void set_up(ModEntry mod)
+    {
+        Main.log("catenary_visual.set_up()");
+        if (_system != null)
+            throw new InvalidOperationException("Attempt to create a duplicate catenary in the world");
+        _system = new overhead_equipment(mod);
+        _system.load_scenery(mod);
+    }
+
+    public static void dispose()
+    {
+        Main.log("catenary_visual.dispose()");
+        if (_system == null)
+            return;
+        WorldMover floating_origin            = SingletonBehaviour<WorldMover>.Instance;
+        floating_origin?.WorldMoved          -= _system.floating_origin_shift;
+        UnloadWatcher.UnloadRequested        -= dispose;
+        PlayerManager.PlayerTeleportFinished -= _system.track_player_movement;
+        for (int index = _system._currently_visible_objects.Count - 1; index >= 0; --index)
+        {
+            catenary_object current_object = _system._currently_visible_objects[index];
+            GameObject.Destroy(current_object.entity);
+            current_object.entity = null;
+        }
+        _system = null;
+    }
+
+    private void find_objects_within_region(List<catenary_object> found_objects, quad_tree all_objects, 
         bool do_bounds_check, int left, int top, int right, int bottom)
     {
         found_objects.Clear();
-        all_objects?.find_objects(found_objects, do_bounds_check, left, top, right, bottom);
+        all_objects.find_objects(found_objects, do_bounds_check, left, top, right, bottom);
         foreach (catenary_object current_object in _freshly_added_objects)
         {
             if (current_object.x >= left && current_object.x <= right && current_object.z >= top && current_object.z <= bottom)
@@ -117,7 +147,7 @@ internal static partial class catenary_visual
         }
     }
 
-    public static void handle_scenery_visibility(Vector3 relative_postion)
+    public void handle_scenery_visibility(Vector3 relative_postion)
     {
         const float visible_distance       = 100.0f;
         const int   visible_distance_fixed = (int) (visible_distance * fixed_multiplier);
@@ -141,54 +171,23 @@ internal static partial class catenary_visual
         for (int object_index = visible_objects.Count - 1; object_index >= 0; --object_index)
             visible_objects[object_index].is_visible = false;
         visible_objects = _currently_visible_objects;
-        /*
-        visible_objects.Clear();
-        object_tree?.find_objects(visible_objects, x - visible_distance_fixed, z - visible_distance_fixed,
-                                                   x + visible_distance_fixed, z + visible_distance_fixed);
-        foreach (scenery_object current_object in _freshly_added_objects)
-        {
-            if (get_manhattan_distance(x, z, current_object.x, current_object.z) <= visible_distance_fixed + (visible_distance_fixed >> 1))
-            {
-                // current_object.is_visible = true;
-                visible_objects.Add(current_object);
-            }
-        }
-        */
         find_objects_within_region(visible_objects, _object_tree, do_bounds_check: false,
             x - visible_distance_fixed, z - visible_distance_fixed,x + visible_distance_fixed, z + visible_distance_fixed);
         for (int object_index = visible_objects.Count - 1; object_index >= 0; --object_index)
-        {
             visible_objects[object_index].reveal();
-            /*
-            catenary_object current_object = visible_objects[object_index];
-            current_object.is_visible = true;
-            current_object.entity   ??= GameObject.Instantiate(current_object.template,
-                get_relative_position(current_object.x, current_object.z, current_object.y), current_object.orientation);
-            */
-        }
 
         visible_objects = _previously_visible_objects;
         for (int object_index = visible_objects.Count - 1; object_index >= 0; --object_index)
-        {
             visible_objects[object_index].hide_when_out_of_view();
-            /*
-            catenary_object current_object = visible_objects[object_index];
-            if (!current_object.is_visible && current_object.entity is not null)
-            { 
-                GameObject.Destroy(current_object.entity);
-                current_object.entity = null;
-            }
-            */
-        }
     }
 
-    private static void reconstruct_tree()
+    private void reconstruct_tree()
     {
         _object_tree = new quad_tree(_all_objects);
         _freshly_added_objects.Clear();
     }
 
-    private static void floating_origin_shift(WorldMover floating_origin, Vector3 shift)
+    private void floating_origin_shift(WorldMover floating_origin, Vector3 shift)
     {
         if (_freshly_added_objects.Count >= 16)
             reconstruct_tree();
@@ -198,30 +197,13 @@ internal static partial class catenary_visual
             visible_objects[index].entity!.transform.position -= shift;
     }
 
-    private static void track_player_movement()
+    private void track_player_movement()
     {
         handle_scenery_visibility(PlayerManager.PlayerTransform.position);
     }
 
-    public static void set_up()
-    {
-        Main.log("catenary_visual.set_up()");
-        if (_all_objects.Count <= 0)
-            load_scenery();
-        if (!_singleton_handlers_set)
-        {
-            WorldMover floating_origin = SingletonBehaviour<WorldMover>.Instance;
-            if (floating_origin != null)
-            {
-                floating_origin.WorldMoved           += floating_origin_shift;
-                UnloadWatcher.UnloadRequested        += remove_all_scenery;
-                PlayerManager.PlayerTeleportFinished += track_player_movement;
-                _singleton_handlers_set = true;
-            }
-        }
-    }
 
-    private static _type_ add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
+    private _type_ add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
         int x, int z, float y, Quaternion orientation)
         where _type_: catenary_object
     {
@@ -233,24 +215,4 @@ internal static partial class catenary_visual
         return new_object;
     }
 
-    public static void remove_all_scenery()
-    {
-        Main.log("catenary_visual.remove_all_scenery()");
-        WorldMover floating_origin            = SingletonBehaviour<WorldMover>.Instance;
-        floating_origin?.WorldMoved          -= floating_origin_shift;
-        UnloadWatcher.UnloadRequested        -= remove_all_scenery;
-        PlayerManager.PlayerTeleportFinished -= track_player_movement;
-        _singleton_handlers_set = false;
-        for (int index = _currently_visible_objects.Count - 1; index >= 0; --index)
-        {
-            catenary_object current_object = _currently_visible_objects[index];
-
-            GameObject.Destroy(current_object.entity);
-            current_object.entity = null;
-        }
-        _currently_visible_objects.Clear();
-        _previously_visible_objects.Clear();
-        _freshly_added_objects.Clear();
-        _all_objects.Clear();
-    }
 }

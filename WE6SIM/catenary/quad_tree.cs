@@ -10,7 +10,7 @@ using WE6SIM.utilities;
 
 namespace WE6SIM.catenary;
 
-internal static partial class catenary_visual
+internal partial class overhead_equipment
 {
     private class quad_tree
     {
@@ -18,7 +18,7 @@ internal static partial class catenary_visual
 
         private class tree_node
         {
-            public tree_node[]?         quadrants         = null;
+            public tree_node[]?          quadrants         = null;
             public catenary_object?      division_object   = null;
             public List<catenary_object> remaining_objects = [];
         }

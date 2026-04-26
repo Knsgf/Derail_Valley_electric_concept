@@ -15,7 +15,7 @@ using UnityEngine;
 using WE6SIM.catenary;
 
 using static UnityModManagerNet.UnityModManager;
-using static WE6SIM.catenary.catenary_visual;
+using static WE6SIM.catenary.overhead_equipment;
 using static WE6SIM.utilities.world_position;
 
 namespace WE6SIM.catenary_editor;
@@ -61,7 +61,7 @@ internal static class editor
         store_last_pole_location(relative_position, orientation);
         if (part_placement == placement.Left)
             orientation *= flip_around_vertical;
-        add_pole((part_placement == placement.Bracket) ? pole_kind.Bracket : pole_type, relative_position, orientation);
+        system.add_pole((part_placement == placement.Bracket) ? pole_kind.Bracket : pole_type, relative_position, orientation);
     }
 
     private static void place_many_poles_in_succession(Vector3 relative_position, Quaternion orientation)
@@ -131,7 +131,7 @@ internal static class editor
     {
         if (clear_list)
             _nearby_objects.Clear();
-        get_objects_in_area(_nearby_objects, relative_position, area_half_size);
+        system.get_objects_in_area(_nearby_objects, relative_position, area_half_size);
     }
 
     private static void place_gantry(Vector3 relative_position)
@@ -155,7 +155,7 @@ internal static class editor
                     _ => throw new InvalidOperationException($"Gantry placement routine called in {part_placement} mode")
                 };
                 Main.reset_placement_mode();
-                add_gantry(tracks, closest_pole.get_relative_position(), closest_pole.get_orientation());
+                system.add_gantry(tracks, closest_pole.get_relative_position(), closest_pole.get_orientation());
             }
         }
         _nearby_objects.Clear();
@@ -242,14 +242,14 @@ internal static class editor
 
         if (place_on_near_side)
         {
-            add_cantilever(cantilever_type, is_gantry_registration_arm,
+            system.add_cantilever(cantilever_type, is_gantry_registration_arm,
                 dual_wire: true, pole.get_relative_position(), pole_orientation);
             pole.cantilever_on_near_side = true;
             Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
         }
         else
         {
-            add_cantilever(cantilever_type, is_gantry_registration_arm, dual_wire: true, 
+            system.add_cantilever(cantilever_type, is_gantry_registration_arm, dual_wire: true, 
                 pole.get_relative_position() - registration_arm_direction * (default_pole_offset * 2.0f),
                 pole_orientation * flip_around_vertical);
             pole.cantilever_on_far_side = true;
@@ -263,7 +263,7 @@ internal static class editor
     {
         if (erase_scenery)
         {
-            erase_nearby_objects(PlayerManager.PlayerTransform.position);
+            system.erase_nearby_objects(PlayerManager.PlayerTransform.position);
             return;
         }
 

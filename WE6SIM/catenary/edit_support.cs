@@ -14,9 +14,9 @@ using static WE6SIM.utilities.world_position;
 
 namespace WE6SIM.catenary;
 
-internal static partial class catenary_visual
+internal partial class overhead_equipment
 {
-    private static void add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
+    private void add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
         Vector3 relative_position, Quaternion orientation)
         where _type_: catenary_object
     {
@@ -24,19 +24,19 @@ internal static partial class catenary_visual
         add_scenery_object(constructor, x, z, relative_position.y, orientation);
     }
 
-    public static void add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation)
+    public void add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation)
     {
 		add_scenery_object((int x, int z, float y, Quaternion orientation) => new pole(pole_type, x, z, y, orientation),
             relative_position, orientation);
     }
 
-    public static void add_gantry(int tracks, Vector3 relative_position, Quaternion orientation)
+    public void add_gantry(int tracks, Vector3 relative_position, Quaternion orientation)
     {
         add_scenery_object((int x, int z, float y, Quaternion orientation) => new gantry(tracks, x, z, y, orientation),
             relative_position, orientation);
     }
 
-    public static void add_cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool dual_wire, 
+    public void add_cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool dual_wire, 
         Vector3 relative_position, Quaternion orientation)
     {
         add_scenery_object((int x, int z, float y, Quaternion orientation) 
@@ -44,7 +44,7 @@ internal static partial class catenary_visual
             relative_position, orientation);
     }
 
-    public static void erase_nearby_objects(Vector3 relative_position)
+    public void erase_nearby_objects(Vector3 relative_position)
     {
         const int erase_region_half_width = (int) (2.5f * fixed_multiplier);
 
@@ -69,7 +69,7 @@ internal static partial class catenary_visual
         }
     }
 
-    public static void get_objects_in_area(List<catenary_object_user> objects, Vector3 relative_position, float area_half_size)
+    public void get_objects_in_area(List<catenary_object_user> objects, Vector3 relative_position, float area_half_size)
     {
         (int x, int z) = get_absolute_position(relative_position);
         List<catenary_object> found_objects = [];
@@ -79,7 +79,7 @@ internal static partial class catenary_visual
         objects.AddRange(found_objects);
     }
 
-    public static void store_scenery()
+    public void store_scenery()
     {
         if (_store_scenery && _file_path != null)
         {

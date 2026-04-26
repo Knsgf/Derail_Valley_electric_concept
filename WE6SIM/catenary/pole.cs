@@ -12,12 +12,12 @@ namespace WE6SIM.catenary;
 
 interface pole_user: catenary_object_user
 {
-    catenary_visual.pole_kind pole_type { get; }
+    overhead_equipment.pole_kind pole_type { get; }
     bool cantilever_on_near_side { get; set; }
     bool cantilever_on_far_side  { get; set; }
 }
 
-internal static partial class catenary_visual
+internal partial class overhead_equipment
 {
     [JsonObject]
     private class pole: catenary_object, pole_user
@@ -29,14 +29,14 @@ internal static partial class catenary_visual
         [JsonProperty]
         public bool cantilever_on_far_side  { get; set; }
 
-        private static int pole_template(pole_kind pole_type)
+        private static string pole_template(pole_kind pole_type)
         {
             return pole_type switch
             {
-                pole_kind.Ground  => 10,
-                pole_kind.Bridge  => 10,
-                pole_kind.Tunnel  => 10,
-                pole_kind.Bracket => 12,
+                pole_kind.Ground  => "Pole",
+                pole_kind.Bridge  => "Pole",
+                pole_kind.Tunnel  => "Pole",
+                pole_kind.Bracket => "RegistrationBracket",
                 _ => throw new ArgumentOutOfRangeException($"Unknown pole type {pole_type}")
             };
         }
@@ -47,7 +47,7 @@ internal static partial class catenary_visual
             this.pole_type = pole_type;
             if (pole_type == pole_kind.Ground)
             {
-                catenary_object foundation     = add_scenery_object(wrap_constructor(11), x, z, y, orientation);
+                catenary_object foundation     = system.add_scenery_object(wrap_constructor("PoleFoundation"), x, z, y, orientation);
                 foundation.placed_procedurally = true;
             }
         }

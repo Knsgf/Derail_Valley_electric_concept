@@ -16,19 +16,15 @@ namespace WE6SIM.catenary;
 
 interface catenary_object_user
 {
-    int template_index { get; }
     Vector3 get_relative_position();
     Quaternion get_orientation();
 }
 
-internal static partial class catenary_visual
+internal partial class overhead_equipment
 {
     [JsonObject]
     private class catenary_object: catenary_object_user
     {
-        [JsonIgnore]
-        private int _template_index;
-
         [JsonIgnore]
         public GameObject? entity = null;
         [JsonIgnore]
@@ -42,27 +38,14 @@ internal static partial class catenary_visual
         public float y;
 
         [JsonIgnore]
-        public GameObject template { get; private set; }
+        protected GameObject template { get; private set; }
 
-        [JsonProperty]
-        public int template_index
+        protected catenary_object(string template_name, int x, int z, float y, Quaternion orientation)
         {
-            get => _template_index;
-            set
-            {
-                if (value >= _templates.Length)
-                    throw new ArgumentOutOfRangeException($"Prefab index {value} exceeds total number of prefabs {_templates.Length}");
-                _template_index = value;
-                template        = _templates[value];
-            }
-        }
-
-        [JsonConstructor]
-        public catenary_object(int template_index, int x, int z, float y, Quaternion orientation)
-        {
-            this.template_index = template_index;
-            this.template       = _templates[template_index]; //  Stupid analyzer
-            this.orientation    = orientation;
+            if (!system._templates.TryGetValue(template_name, out GameObject template))
+                throw new ArgumentException($"{template_name} not defined");
+            this.template    = template;
+            this.orientation = orientation;
             this.x = x;
             this.z = z;
             this.y = y;
@@ -87,9 +70,10 @@ internal static partial class catenary_visual
             }
         }
 
-        public static Func<int, int, float, Quaternion, catenary_object> wrap_constructor(int template_index)
+        public static Func<int, int, float, Quaternion, catenary_object> wrap_constructor(string template_name)
         {
-            return (int x, int z, float y, Quaternion orientation) => new catenary_object(template_index, x, z, y, orientation);
+            return (int x, int z, float y, Quaternion orientation) 
+                => new catenary_object(template_name, x, z, y, orientation);
         }
     }
 }

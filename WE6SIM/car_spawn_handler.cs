@@ -40,7 +40,9 @@ internal static class car_spawn_handler
 	public static void Postfix(CarSpawner __instance)
 	{
 		Main.log("car_spawn_handler.Postfix");
-        catenary_visual.set_up();
+		if (Main.mod_info == null)
+			throw new Exception("Run-time mod information unavailable");
+        overhead_equipment.set_up(Main.mod_info);
         __instance.CarSpawned -= on_car_spawned;
 		__instance.CarSpawned += on_car_spawned;
 		__instance.CarAboutToBeDeleted -= on_car_purged;
@@ -70,7 +72,7 @@ internal static class car_spawn_handler
 		{
 			Main.log($"MOW vehicle {vehicle.ID}");
 			_mow_vehicle = vehicle;
-			_mow_tracker = new mow_follower(vehicle);
+			_mow_tracker = new mow_follower(overhead_equipment.system, vehicle);
 			return;
 		}
 #endif

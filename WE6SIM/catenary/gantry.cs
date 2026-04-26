@@ -19,7 +19,7 @@ interface gantry_user: catenary_object_user
     Vector3? cross_point(Vector3 travel_relative_start, Vector3 travel_vector);
 }
 
-internal static partial class catenary_visual
+internal partial class overhead_equipment
 {
     [JsonObject]
     private class gantry: catenary_object, gantry_user
@@ -52,7 +52,7 @@ internal static partial class catenary_visual
                     entity.transform.position   = get_frame_relative_position(x, z, y, orientation, value);
                     entity.transform.localScale = new Vector3(value, 1.0f, 1.0f);
                 }
-                reconstruct_tree();
+                system.reconstruct_tree();
             }
         }
 
@@ -61,9 +61,9 @@ internal static partial class catenary_visual
             return world_position.get_relative_position(x, z, y) + orientation * Vector3.left * (gantry_shift * (stretch - 1.0f));
         }
 
-        private static int get_template(int tracks)
+        private static string get_template(int tracks)
         {
-            return (tracks >= 2 && tracks <= 4) ? (tracks - 1)
+            return (tracks >= 2 && tracks <= 4) ? $"Gantry{tracks}Tracks"
                 : throw new ArgumentOutOfRangeException("Gantries should cover 2, 3 or 4 tracks");
         }
 
@@ -82,8 +82,8 @@ internal static partial class catenary_visual
             this.tracks = tracks;
             _stretch    = stretch;
             (int further_pole_x, int further_pole_z) = further_pole_position(x, z, tracks, stretch, orientation);
-            _further_pole = add_scenery_object((int x, int z, float y, Quaternion orientation) => new pole(pole_kind.Ground, x, z, y, orientation), 
-                further_pole_x, further_pole_z, y, orientation);
+            _further_pole = system.add_scenery_object((int x, int z, float y, Quaternion orientation) 
+                => new pole(pole_kind.Ground, x, z, y, orientation), further_pole_x, further_pole_z, y, orientation);
             _further_pole.placed_procedurally = true;
         }
 
