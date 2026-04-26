@@ -106,7 +106,8 @@ internal static class editor
         }
     }
 
-    private static _type_? get_closest<_type_>(List<catenary_object_user> objects, Vector3 position, Func<_type_, bool>? filter = null)
+    private static _type_? get_closest<_type_>(List<catenary_object_user> objects, Vector3 position, float x_shift = 0.0f,
+        Func<_type_, bool>? filter = null)
         where _type_: catenary_object_user
     {
         _type_? closest_object           = default;
@@ -116,7 +117,9 @@ internal static class editor
         {
             if (current_object is _type_ object_of_specified_type && filter(object_of_specified_type))
             {
-                float distance_squared = (position - current_object.get_relative_position()).sqrMagnitude;
+                Vector3 shifted_position = current_object.get_relative_position() 
+                    + current_object.get_orientation() * Vector3.right * x_shift;
+                float distance_squared = (position - shifted_position).sqrMagnitude;
                 if (minimum_distance_squared > distance_squared)
                 {
                     minimum_distance_squared = distance_squared;
@@ -186,10 +189,17 @@ internal static class editor
 
     private static (pole_user?, Vector3) get_nearest_pole_position(Vector3 relative_position, bool look_for_gantry_brackets)
     {
-        pole_user? closest_pole = get_closest<pole_user>(_nearby_objects, relative_position, 
-            look_for_gantry_brackets
-            ? ((pole_user pole) => pole.pole_type == pole_kind.Bracket)
-            : ((pole_user pole) => pole.pole_type != pole_kind.Bracket));
+        pole_user? closest_pole;
+        if (look_for_gantry_brackets)
+        {
+            closest_pole = get_closest(_nearby_objects, relative_position, -0.9f * default_pole_offset, 
+                (pole_user pole) => pole.pole_type == pole_kind.Bracket);
+        }
+        else
+        {
+            closest_pole = get_closest(_nearby_objects, relative_position, default_pole_offset,
+                (pole_user pole) => pole.pole_type != pole_kind.Bracket);
+        }
         if (closest_pole == null)
             return (null, Vector3.zero);
         return (closest_pole, closest_pole.get_relative_position() + closest_pole.get_orientation()
