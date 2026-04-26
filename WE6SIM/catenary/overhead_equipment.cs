@@ -22,7 +22,7 @@ namespace WE6SIM.catenary;
 internal partial class overhead_equipment
 {
     public enum pole_kind { Ground, Bridge, Tunnel, Bracket };
-    public enum cantilever_kind { Inner, Middle, Outer, Alternating };
+    public enum cantilever_kind { Inner, Middle, Outer };
 
     private static readonly string[] _template_names =
     {
@@ -199,6 +199,8 @@ internal partial class overhead_equipment
 
     private void track_player_movement()
     {
+        (int x, int z) = get_absolute_position(PlayerManager.PlayerTransform.position);
+        Main.log($"x={x} z={z}");
         handle_scenery_visibility(PlayerManager.PlayerTransform.position);
     }
 

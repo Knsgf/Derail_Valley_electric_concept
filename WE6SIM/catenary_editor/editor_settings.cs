@@ -7,27 +7,24 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityModManagerNet;
+
 using WE6SIM.catenary;
-using WE6SIM.catenary_editor;
 
-namespace WE6SIM;
+namespace WE6SIM.catenary_editor;
 
-internal class test_settings: UnityModManager.ModSettings, IDrawable
+internal class editor_settings: UnityModManager.ModSettings, IDrawable
 {
-	[Draw("Pole vertical offset")]
-	private float _height_offset = 0.0f;
+    [Draw("Part placement")]
+    private editor.placement _part_placement = editor.placement.Disabled;
 
     [Draw("Pole type")]
     private overhead_equipment.pole_kind _pole_type = overhead_equipment.pole_kind.Ground;
 
-	[Draw("Registration arm type")]
-	private overhead_equipment.cantilever_kind _cantilever_type = overhead_equipment.cantilever_kind.Middle;
-
-    [Draw("Part placement")]
-    private editor.placement _part_placement = editor.placement.Disabled;
-
     [Draw("Skip first pole")]
 	private bool _skip_first = false;
+
+	[Draw("Pole vertical offset")]
+	private float _height_offset = 0.0f;
 
 	[Draw("Distance (m)")]
 	private int _pole_distance = 40;
@@ -35,13 +32,19 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 	[Draw("Sweep (mm)")]
 	private int _sweep = 300;
 
-	[Draw("Eraser")]
-	private bool _erase_scenery = false;
-
 	[Draw("Gantry stretch %")]
 	private int _gantry_stretch = 100;
 
-	public test_settings()
+	[Draw("Registration arm type")]
+	private overhead_equipment.cantilever_kind _cantilever_type = overhead_equipment.cantilever_kind.Middle;
+
+	[Draw("Zigzag")]
+	private bool _zigzag_arms = false;
+
+	[Draw("Eraser")]
+	private bool _erase_scenery = false;
+
+	public editor_settings()
 	{
 		Main.log("Settings set");
 		OnChange();
@@ -68,10 +71,11 @@ internal class test_settings: UnityModManager.ModSettings, IDrawable
 		editor.maximum_sweep          = _sweep / 1000.0f;
 		editor.erase_scenery          = _erase_scenery;
 		editor.gantry_stretch         = _gantry_stretch / 100.0f;
+		editor.zigzag                 = _zigzag_arms;
 	}
 
-	public void reset_placement_mode()
+	public void update_cantilever_type(overhead_equipment.cantilever_kind cantilever_type)
 	{
-		_part_placement = editor.part_placement = editor.placement.Disabled;
+		_cantilever_type = cantilever_type;
 	}
 }

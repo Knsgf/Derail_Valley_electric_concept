@@ -49,6 +49,8 @@ internal partial class overhead_equipment
             this.x = x;
             this.z = z;
             this.y = y;
+            if (Mathf.Abs(orientation.x) > 0.01f || Mathf.Abs(orientation.z) > 0.01f)
+                Main.log($"x={x} z={z} ax={orientation.x} ay={orientation.y} az={orientation.z}");
         }
 
         public Vector3 get_relative_position() => world_position.get_relative_position(x, z, y);

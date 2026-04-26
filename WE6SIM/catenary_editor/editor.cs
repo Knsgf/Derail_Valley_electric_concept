@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using UnityModManagerNet;
 
 using WE6SIM.catenary;
 
@@ -33,21 +34,36 @@ internal static class editor
 
     private static readonly Quaternion flip_around_vertical = Quaternion.AngleAxis(180.0f, Vector3.up);
 
-    private static int             _last_pole_x, _last_pole_z, _last_x, _last_z;
-    private static bool            _first_cantilever      = true, _first_pole = true;
-    private static Quaternion      _last_pole_orientation = Quaternion.identity;
-    private static cantilever_kind _next_cantilever_type  = cantilever_kind.Middle;
+    private static int              _last_pole_x, _last_pole_z, _last_x, _last_z;
+    private static bool             _first_cantilever      = true, _first_pole = true;
+    private static Quaternion       _last_pole_orientation = Quaternion.identity;
+    private static editor_settings? _settings;
     
-    public static float pole_height_offset { get; set; }
-    public static pole_kind pole_type { get; set; }
-    public static cantilever_kind cantilever_type { get; set; }
-    public static placement part_placement { get; set; }
-    public static bool skip_first { get; set; }
-    public static int distance_between_poles { get; set; }
-    public static float maximum_sweep { get; set; }
-    public static bool erase_scenery { get; set; }
-    public static bool use_DM1U { get; set; }
-    public static float gantry_stretch { get; set; }
+    public static placement       part_placement         { get; set; }
+    public static pole_kind       pole_type              { get; set; }
+    public static float           pole_height_offset     { get; set; }
+    public static bool            skip_first             { get; set; }
+    public static int             distance_between_poles { get; set; }
+    public static float           maximum_sweep          { get; set; }
+    public static float           gantry_stretch         { get; set; }
+    public static cantilever_kind cantilever_type        { get; set; }
+    public static bool            zigzag                 { get; set; }
+    public static bool            erase_scenery          { get; set; }
+    public static bool            use_DM1U               { get; set; }
+
+	private static void show_editor_controls(ModEntry mod)
+	{
+		_settings?.Draw(mod);
+	}
+
+    public static void set_up(ModEntry mod)
+    {
+		if (_settings == null)
+        {
+            _settings = editor_settings.Load<editor_settings>(mod);
+		    mod.OnGUI = show_editor_controls;
+        }
+    }
 
     private static void store_last_pole_location(Vector3 relative_position, Quaternion orientation)
     {
@@ -285,6 +301,7 @@ internal static class editor
             return;
         }
 
+        Quaternion orientation;
         switch (part_placement)
         {
             case placement.Disabled:
@@ -294,8 +311,12 @@ internal static class editor
             case placement.Left:
             case placement.Right:
                 _first_cantilever = true;
-                Quaternion orientation = Quaternion.FromToRotation(Vector3.forward, new Vector3(forward_direction.x, 0.0f, forward_direction.z));
-                place_many_poles_in_succession(relative_position, orientation);
+                forward_direction.y = 0.0f;
+                if (forward_direction.sqrMagnitude > 0.1f)
+                {
+                    orientation = Quaternion.FromToRotation(Vector3.forward, forward_direction);
+                    place_many_poles_in_succession(relative_position, orientation);
+                }
                 break;
 
             case placement.Gantry2:
@@ -320,20 +341,16 @@ internal static class editor
             case placement.Cantilever:
             case placement.GantryRegistrationArm:
                 _first_pole = true;
-                if (cantilever_type != cantilever_kind.Alternating)
-                    _next_cantilever_type = cantilever_type;
+                cantilever_kind _next_cantilever_type = cantilever_type;
 				bool cantilever_placed = place_cantilever(part_placement == placement.GantryRegistrationArm, 
                     ref _next_cantilever_type, relative_position);
-                if (cantilever_placed)
+                if (cantilever_placed && zigzag)
                 {
-                    if (cantilever_type != cantilever_kind.Alternating)
-                        cantilever_type = _next_cantilever_type;
-                    else
-                    {
-                        _next_cantilever_type = (_next_cantilever_type == cantilever_kind.Inner) 
-                            ? cantilever_kind.Outer : cantilever_kind.Inner;
-                    }
+                    _next_cantilever_type = (_next_cantilever_type == cantilever_kind.Inner) 
+                        ? cantilever_kind.Outer : cantilever_kind.Inner;
                 }
+                cantilever_type = _next_cantilever_type;
+                _settings?.update_cantilever_type(_next_cantilever_type);
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);

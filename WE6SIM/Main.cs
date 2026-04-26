@@ -10,6 +10,7 @@ using static UnityModManagerNet.UnityModManager;
 
 using LocoSim.Implementations;
 using WE6SIM.catenary;
+using WE6SIM.catenary_editor;
 
 namespace WE6SIM;
 
@@ -18,7 +19,6 @@ public static class Main
 	// Unity Mod Manage Wiki: https://wiki.nexusmods.com/index.php/Category:Unity_Mod_Manager
 
 	private static ModEntry.ModLogger? _logger;
-	private static test_settings?      _settings;
 	
 	public static Port? diagnostics  { get; set; }
 	public static Port? diagnostics2 { get; set; }
@@ -43,10 +43,7 @@ public static class Main
 			code_injector.PatchAll(Assembly.GetExecutingAssembly());
 
 			// Other plugin startup logic
-
-			_settings = test_settings.Load<test_settings>(mod);
-			mod.OnGUI = show_test_configuration;
-
+			editor.set_up(mod);
 			log("WE6SIM started");
 			mod_info = mod;
 		}
@@ -58,15 +55,5 @@ public static class Main
 		}
 
 		return true;
-	}
-
-	private static void show_test_configuration(ModEntry mod)
-	{
-		_settings.Draw(mod);
-	}
-
-	public static void reset_placement_mode()
-	{
-		_settings?.reset_placement_mode();
 	}
 }
