@@ -13,6 +13,7 @@ namespace WE6SIM.catenary;
 interface pole_user: catenary_object_user
 {
     overhead_equipment.pole_kind pole_type { get; }
+    bool gantry_attached         { get; set; }
     bool cantilever_on_near_side { get; set; }
     bool cantilever_on_far_side  { get; set; }
 }
@@ -24,6 +25,8 @@ internal partial class overhead_equipment
     {
         [JsonProperty]
         public pole_kind pole_type { get; private set; }
+        [JsonProperty]
+        public bool gantry_attached         { get; set; }
         [JsonProperty]
         public bool cantilever_on_near_side { get; set; }
         [JsonProperty]

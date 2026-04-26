@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 using UnityEngine;
 
 using WE6SIM.catenary_editor;
@@ -17,6 +20,7 @@ interface gantry_user: catenary_object_user
 {
     float stretch { get; set; }
     Vector3? cross_point(Vector3 travel_relative_start, Vector3 travel_vector);
+    void change_orientation(Quaternion new_orientation);
 }
 
 internal partial class overhead_equipment
@@ -43,17 +47,22 @@ internal partial class overhead_equipment
             set
             {
                 _stretch = value;
-                (int further_pole_x, int further_pole_z) = further_pole_position(x, z, tracks, value, orientation);
-                _further_pole.x = further_pole_x;
-                _further_pole.z = further_pole_z;
-                _further_pole.entity?.transform.position = world_position.get_relative_position(further_pole_x, further_pole_z, y);
-                if (entity is not null)
-                {
-                    entity.transform.position   = get_frame_relative_position(x, z, y, orientation, value);
-                    entity.transform.localScale = new Vector3(value, 1.0f, 1.0f);
-                }
-                system.reconstruct_tree();
+                reposition_further_pole();
             }
+        }
+
+        private void reposition_further_pole()
+        {
+            (int further_pole_x, int further_pole_z) = further_pole_position(x, z, tracks, _stretch, orientation);
+            _further_pole.x = further_pole_x;
+            _further_pole.z = further_pole_z;
+            _further_pole.entity?.transform.position = world_position.get_relative_position(further_pole_x, further_pole_z, y);
+            if (entity is not null)
+            {
+                entity.transform.position   = get_frame_relative_position(x, z, y, orientation, _stretch);
+                entity.transform.localScale = new Vector3(_stretch, 1.0f, 1.0f);
+            }
+            system.reconstruct_tree();
         }
 
         private static Vector3 get_frame_relative_position(int x, int z, float y, Quaternion orientation, float stretch)
@@ -117,5 +126,37 @@ internal partial class overhead_equipment
             braket_position.y = y;
             return braket_position;
 		}
+
+        public void change_orientation(Quaternion new_orientation)
+        {
+            if (Quaternion.Angle(orientation, new_orientation) < 1.0f)
+                return;
+            List<catenary_object_user> nearby_objects = [];
+            system.get_objects_in_area(nearby_objects, get_relative_position(), 0.1f);
+            catenary_object? base_pole = null;
+            for (int index = nearby_objects.Count - 1; index >= 0; --index)
+            { 
+                if (nearby_objects[index] is pole regular_pole && regular_pole.pole_type == pole_kind.Ground)
+                {
+                    base_pole = regular_pole;
+                    break;
+                }
+            }
+            
+            assert.test(base_pole != null);
+            bool visible = is_visible;
+            base_pole.is_visible = _further_pole.is_visible = is_visible = false;
+            hide_when_out_of_view();
+            base_pole.hide_when_out_of_view();
+            _further_pole.hide_when_out_of_view();
+            base_pole.orientation = _further_pole.orientation = orientation = new_orientation;
+            reposition_further_pole();
+            if (visible)
+            {
+                base_pole.reveal();
+                _further_pole.reveal();
+                reveal();
+            }
+        }
 	}
 }
