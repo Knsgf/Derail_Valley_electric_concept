@@ -25,22 +25,26 @@ internal static class editor
 {
     public enum placement 
     { 
-        Disabled, Left, Right, Gantry2, Gantry3, Gantry4, GantryStretch, GantryAlign, Bracket, Cantilever, GantryRegistrationArm 
+        Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryStretch, GantryAlign, Bracket, FlippedBracket,
+        Cantilever, GantryRegistrationArm 
     };
     const float mow_vehicle_length = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
     const float vehicle_half_length_squared = mow_vehicle_length * mow_vehicle_length / 4.0f;
     const float half_wheelbase_squared      =          wheelbase *          wheelbase / 4.0f;
     const float default_pole_offset         = 2.2f;
 
-    private static readonly Quaternion flip_around_vertical = Quaternion.AngleAxis(180.0f, Vector3.up);
+    private static readonly Quaternion flip_around_vertical                  = Quaternion.AngleAxis(180.0f, Vector3.up);
+    private static readonly Quaternion turn_by_90_counter_clockwise_vertical = Quaternion.AngleAxis(-90.0f, Vector3.up);
 
     private static int              _last_pole_x, _last_pole_z, _last_x, _last_z;
     private static bool             _first_cantilever      = true, _first_pole = true;
     private static Quaternion       _last_pole_orientation = Quaternion.identity;
     private static editor_settings? _settings;
+    private static pole_user?       _movable_pole = null;
     
     public static placement       part_placement         { get; set; }
     public static pole_kind       pole_type              { get; set; }
+    public static float           pole_horizontal_offset { get; set; }
     public static float           pole_height_offset     { get; set; }
     public static bool            skip_first             { get; set; }
     public static int             distance_between_poles { get; set; }
@@ -73,10 +77,21 @@ internal static class editor
     
     public static void place_pole(Vector3 relative_position, Quaternion orientation)
     {
+        if (part_placement == placement.Front && _movable_pole != null)
+        {
+            _movable_pole.set_relative_position(relative_position + _movable_pole.get_orientation() * Vector3.right * pole_horizontal_offset);
+            return;
+        }
+
         store_last_pole_location(relative_position, orientation);
         if (part_placement == placement.Left)
             orientation *= flip_around_vertical;
-        system.add_pole((part_placement == placement.Bracket) ? pole_kind.Bracket : pole_type, relative_position, orientation);
+        else if (part_placement == placement.Front)
+            orientation *= turn_by_90_counter_clockwise_vertical;
+        pole_user last_pole = system.add_pole((part_placement == placement.Bracket) ? pole_kind.Bracket : pole_type, 
+            relative_position + orientation * Vector3.right * pole_horizontal_offset, orientation);
+        if (part_placement == placement.Front && _movable_pole == null)
+            _movable_pole = last_pole;
     }
 
     private static void place_many_poles_in_succession(Vector3 relative_position, Quaternion orientation)
@@ -163,7 +178,7 @@ internal static class editor
         else
         {
             pole_user? closest_pole = get_closest<pole_user>(nearby_objects, relative_position);
-            if (closest_pole != null && !closest_pole.gantry_attached)
+            if (closest_pole != null && !closest_pole.cantilever_on_near_side)
             {
                 int tracks = part_placement switch
                 {
@@ -172,11 +187,10 @@ internal static class editor
                     placement.Gantry4 => 4,
                     _ => throw new InvalidOperationException($"Gantry placement routine called in {part_placement} mode")
                 };
-                closest_pole.gantry_attached = true;
+                closest_pole.cantilever_on_near_side = true;
                 system.add_gantry(tracks, closest_pole.get_relative_position(), closest_pole.get_orientation());
             }
         }
-        nearby_objects.Clear();
     }
 
     private static void align_gantry(Vector3 relative_position, Quaternion orientation)
@@ -184,7 +198,6 @@ internal static class editor
         List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 5.0f);
         gantry_user? closest_gantry = get_closest<gantry_user>(nearby_objects, relative_position);
         closest_gantry?.change_orientation(orientation);
-        nearby_objects.Clear();
     }
 
     private static void place_gantry_braket(Vector3 relative_position)
@@ -203,11 +216,13 @@ internal static class editor
                 if (   closest_pole          == null || closest_pole.pole_type != pole_kind.Bracket
                     || closest_pole_position == null || ((Vector3) closest_pole_position - (Vector3) bracket_position).sqrMagnitude > 0.01f)
                 {
-                    place_pole((Vector3) bracket_position, gantry.get_orientation());
+                    Quaternion orientation = gantry.get_orientation();
+                    if (part_placement == placement.FlippedBracket)
+                        orientation *= flip_around_vertical;
+                    place_pole((Vector3) bracket_position, orientation);
                 }
             }
         }
-        nearby_objects.Clear();
     }
 
     private static (pole_user?, Vector3) get_nearest_pole_position(List<catenary_object_user> nearby_objects, 
@@ -305,17 +320,29 @@ internal static class editor
         switch (part_placement)
         {
             case placement.Disabled:
-                _first_pole = _first_cantilever = true;
+                _first_cantilever = _first_pole = true;
+                _movable_pole     = null;
                 break;
 
             case placement.Left:
             case placement.Right:
-                _first_cantilever = true;
+                _first_cantilever   = true;
+                _movable_pole       = null;
                 forward_direction.y = 0.0f;
-                if (forward_direction.sqrMagnitude > 0.1f)
+                if (forward_direction.sqrMagnitude > 0.9f)
                 {
                     orientation = Quaternion.FromToRotation(Vector3.forward, forward_direction);
                     place_many_poles_in_succession(relative_position, orientation);
+                }
+                break;
+
+            case placement.Front:
+                _first_cantilever = _first_pole = true;
+                forward_direction.y = 0.0f;
+                if (forward_direction.sqrMagnitude > 0.9f)
+                {
+                    orientation = Quaternion.FromToRotation(Vector3.forward, forward_direction);
+                    place_pole(relative_position - 1.05f * Vector3.up, orientation);
                 }
                 break;
 
@@ -323,24 +350,29 @@ internal static class editor
             case placement.Gantry3:
             case placement.Gantry4:
             case placement.GantryStretch:
-                _first_pole = _first_cantilever = true;
+                _first_cantilever = _first_pole = true;
+                _movable_pole     = null;
                 place_gantry(PlayerManager.PlayerTransform.position);
                 break;
 
             case placement.GantryAlign:
-                _first_pole = _first_cantilever = true;
+                _first_cantilever = _first_pole = true;
+                _movable_pole     = null;
                 orientation = Quaternion.FromToRotation(Vector3.forward, new Vector3(forward_direction.x, 0.0f, forward_direction.z));
                 align_gantry(PlayerManager.PlayerTransform.position, orientation);
                 break;
 
             case placement.Bracket:
-                _first_pole = _first_cantilever = true;
+            case placement.FlippedBracket:
+                _first_cantilever = _first_pole = true;
+                _movable_pole     = null;
                 place_gantry_braket(relative_position);
                 break;
 
             case placement.Cantilever:
             case placement.GantryRegistrationArm:
-                _first_pole = true;
+                _first_pole   = true;
+                _movable_pole = null;
                 cantilever_kind _next_cantilever_type = cantilever_type;
 				bool cantilever_placed = place_cantilever(part_placement == placement.GantryRegistrationArm, 
                     ref _next_cantilever_type, relative_position);

@@ -14,7 +14,7 @@ internal partial class overhead_equipment
 {
     private class quad_tree
     {
-        const int node_objects_limit = 64;
+        public const int node_objects_limit = 64;
 
         private class tree_node
         {
@@ -88,12 +88,7 @@ internal partial class overhead_equipment
             int left, int top, int right, int bottom)
         {
             if (!do_bounds_check)
-            {
-                foreach (catenary_object current_object in current_node.remaining_objects)
-                {
-                    found_objects.Add(current_object);
-                }
-            }
+                found_objects.AddRange(current_node.remaining_objects);
             else
             {
                 foreach (catenary_object current_object in current_node.remaining_objects)

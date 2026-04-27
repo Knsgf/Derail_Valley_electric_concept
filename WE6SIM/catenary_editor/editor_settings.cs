@@ -23,8 +23,11 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
     [Draw("Skip first pole")]
 	private bool _skip_first = false;
 
-	[Draw("Pole vertical offset")]
-	private float _height_offset = 0.0f;
+	[Draw("Pole horizontal offset (mm)")]
+	private int _horizontal_offset = 0;
+
+	[Draw("Pole vertical offset (mm)")]
+	private int _height_offset = 0;
 
 	[Draw("Distance (m)")]
 	private int _pole_distance = 40;
@@ -57,12 +60,13 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 			_erase_scenery  = false;
 			_part_placement = editor.placement.Disabled;
 		}
-		if (_part_placement == editor.placement.Bracket)
+		if (_part_placement is editor.placement.Bracket or editor.placement.FlippedBracket)
 			_pole_type = overhead_equipment.pole_kind.Bracket;
 		else if (_pole_type == overhead_equipment.pole_kind.Bracket)
 			_pole_type = overhead_equipment.pole_kind.Ground;
 
-		editor.pole_height_offset     = _height_offset;
+		editor.pole_height_offset     = _height_offset     / 1000.0f;
+		editor.pole_horizontal_offset = _horizontal_offset / 1000.0f;
 		editor.pole_type			  = _pole_type;
 		editor.part_placement         = _part_placement;
 		editor.cantilever_type		  = _cantilever_type;

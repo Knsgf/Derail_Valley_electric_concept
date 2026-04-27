@@ -189,7 +189,7 @@ internal partial class overhead_equipment
 
     private void floating_origin_shift(WorldMover floating_origin, Vector3 shift)
     {
-        if (_freshly_added_objects.Count >= 16)
+        if (_freshly_added_objects.Count >= quad_tree.node_objects_limit)
             reconstruct_tree();
         
         List<catenary_object> visible_objects = _currently_visible_objects;

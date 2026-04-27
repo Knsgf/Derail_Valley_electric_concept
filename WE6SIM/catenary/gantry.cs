@@ -38,7 +38,7 @@ internal partial class overhead_equipment
         [JsonIgnore]
         private float _stretch;
         [JsonIgnore]
-        private readonly pole _further_pole;
+        public readonly pole _further_pole;
 
         [JsonProperty]
         public float stretch
@@ -46,23 +46,20 @@ internal partial class overhead_equipment
             get => _stretch;
             set
             {
-                _stretch = value;
+                _stretch   = value;
+                is_visible = false;
+                hide_when_out_of_view();
                 reposition_further_pole();
+                system.handle_scenery_visibility(PlayerManager.PlayerTransform.position);
             }
         }
 
         private void reposition_further_pole()
         {
-            (int further_pole_x, int further_pole_z) = further_pole_position(x, z, tracks, _stretch, orientation);
-            _further_pole.x = further_pole_x;
-            _further_pole.z = further_pole_z;
-            _further_pole.entity?.transform.position = world_position.get_relative_position(further_pole_x, further_pole_z, y);
-            if (entity is not null)
-            {
-                entity.transform.position   = get_frame_relative_position(x, z, y, orientation, _stretch);
-                entity.transform.localScale = new Vector3(_stretch, 1.0f, 1.0f);
-            }
-            system.reconstruct_tree();
+            _further_pole.is_visible = false;
+            _further_pole.hide_when_out_of_view();
+            (_further_pole.x, _further_pole.z) = further_pole_position(x, z, tracks, _stretch, orientation);
+            system.reconstruct_tree_after_moving_object(_further_pole);
         }
 
         private static Vector3 get_frame_relative_position(int x, int z, float y, Quaternion orientation, float stretch)
@@ -93,7 +90,7 @@ internal partial class overhead_equipment
             (int further_pole_x, int further_pole_z) = further_pole_position(x, z, tracks, stretch, orientation);
             _further_pole = system.add_scenery_object((int x, int z, float y, Quaternion orientation) 
                 => new pole(pole_kind.Ground, x, z, y, orientation), further_pole_x, further_pole_z, y, orientation);
-            _further_pole.placed_procedurally = true;
+            _further_pole.placed_procedurally = _further_pole.cantilever_on_far_side = true;
         }
 
 		public override void reveal()
@@ -144,19 +141,13 @@ internal partial class overhead_equipment
             }
             
             assert.test(base_pole != null);
-            bool visible = is_visible;
             base_pole.is_visible = _further_pole.is_visible = is_visible = false;
             hide_when_out_of_view();
             base_pole.hide_when_out_of_view();
             _further_pole.hide_when_out_of_view();
             base_pole.orientation = _further_pole.orientation = orientation = new_orientation;
             reposition_further_pole();
-            if (visible)
-            {
-                base_pole.reveal();
-                _further_pole.reveal();
-                reveal();
-            }
+            system.handle_scenery_visibility(PlayerManager.PlayerTransform.position);
         }
 	}
 }

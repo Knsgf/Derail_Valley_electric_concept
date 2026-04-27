@@ -1,32 +1,36 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Newtonsoft.Json;
+
 using UnityEngine;
 
 using WE6SIM.catenary_editor;
+using WE6SIM.utilities;
+
 using static WE6SIM.utilities.world_position;
 
 namespace WE6SIM.catenary;
 
 internal partial class overhead_equipment
 {
-    private void add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
+    private _type_ add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
         Vector3 relative_position, Quaternion orientation)
         where _type_: catenary_object
     {
         (int x, int z) = get_absolute_position(relative_position);
-        add_scenery_object(constructor, x, z, relative_position.y, orientation);
+        return add_scenery_object(constructor, x, z, relative_position.y, orientation);
     }
 
-    public void add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation)
+    public pole_user add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation)
     {
-		add_scenery_object((int x, int z, float y, Quaternion orientation) => new pole(pole_type, x, z, y, orientation),
+		return add_scenery_object((int x, int z, float y, Quaternion orientation) => new pole(pole_type, x, z, y, orientation),
             relative_position, orientation);
     }
 
@@ -54,6 +58,8 @@ internal partial class overhead_equipment
             x - erase_region_half_width, z - erase_region_half_width, x + erase_region_half_width, z + erase_region_half_width);
         foreach (catenary_object current_object in objects_to_remove)
         {
+            if (current_object is pole catenary_pole)
+                catenary_pole.erased = true;
             if (current_object.entity is not null)
             {
                 GameObject.Destroy(current_object.entity);
@@ -64,8 +70,8 @@ internal partial class overhead_equipment
         }
         if (objects_to_remove.Count > 0)
         {
-            _object_tree = new quad_tree(_all_objects);
-            _store_scenery = true;
+            reconstruct_tree();
+            _scenery_changed = _store_scenery = true;
         }
     }
 
@@ -79,10 +85,36 @@ internal partial class overhead_equipment
         objects.AddRange(found_objects);
     }
 
+    private void reconstruct_tree_after_moving_object(catenary_object entity)
+    {
+        _scenery_changed = _store_scenery = true;
+        if (!_freshly_added_objects.Contains(entity))
+        {
+            int index;
+            for (index = _all_objects.Count - 1; index >= 0; --index)
+            {
+                if (_all_objects[index] == entity)
+                {
+                    _all_objects.FastRemoveAt(index);
+                    break;
+                }
+            }
+            assert.test(index >= 0);
+            reconstruct_tree();
+            _all_objects.Add(entity);
+            _freshly_added_objects.Add(entity);
+        }
+    }
+
     public void store_scenery()
     {
         if (_store_scenery && _file_path != null)
         {
+            foreach (catenary_object current_object in _all_objects)
+            {
+                if (current_object is gantry current_gantry && current_gantry._further_pole.erased)
+                    current_gantry.placed_procedurally = true;
+            }
             List<catenary_object> objects_to_store =
 			[..
                 from   current_object in _all_objects

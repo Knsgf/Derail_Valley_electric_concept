@@ -18,6 +18,7 @@ interface catenary_object_user
 {
     Vector3 get_relative_position();
     Quaternion get_orientation();
+    void set_relative_position(Vector3 new_position);
 }
 
 internal partial class overhead_equipment
@@ -56,6 +57,16 @@ internal partial class overhead_equipment
         public Vector3 get_relative_position() => world_position.get_relative_position(x, z, y);
 
         public Quaternion get_orientation() => orientation;
+
+        public void set_relative_position(Vector3 new_position)
+        {
+            is_visible = false;
+            hide_when_out_of_view();
+            (x, z) = get_absolute_position(new_position);
+            y = new_position.y;
+            system.reconstruct_tree_after_moving_object(this);
+            system.handle_scenery_visibility(PlayerManager.PlayerTransform.position);
+        }
 
         public virtual void reveal()
         {
