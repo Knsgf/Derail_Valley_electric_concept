@@ -59,6 +59,7 @@ internal static class editor
     public static bool            suspend_cantilever_distance      { get; set; }
     public static bool            erase_scenery                    { get; set; }
     public static bool            use_DM1U                         { get; set; }
+    public static GameObject?     mow_monitor                      { get; set; }
 
 	private static void show_editor_controls(ModEntry mod)
 	{
@@ -394,7 +395,7 @@ internal static class editor
                         _settings?.reset_placement_mode();
                         break;
                     }                    
-                    if (!suspend_cantilever_distance)
+                    if (!suspend_cantilever_distance && !_first_cantilever)
                     {
                         (int x, int z) = get_absolute_position(relative_position);
                         _remaining_cantilevers_distance -= Mathf.Sqrt(get_distance_squared(x, z, _last_x, _last_z));
@@ -413,7 +414,21 @@ internal static class editor
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);
-        _settings?.show_remaining_cantilever_placement_distance(_remaining_cantilevers_distance);
+
+        distance_monitor? tracker = mow_monitor?.GetComponent<distance_monitor>();
+        if (tracker is not null)
+        {
+            if (part_placement is not placement.Cantilever and not placement.GantryRegistrationArm 
+                || !automatic_cantilever_termination)
+            {
+                tracker.show = false;
+            }
+            else
+            {
+                tracker.distance = Mathf.RoundToInt(_remaining_cantilevers_distance);
+                tracker.show     = true;
+            }
+        }
     }
 }
 

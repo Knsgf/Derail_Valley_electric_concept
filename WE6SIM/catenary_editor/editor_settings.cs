@@ -55,9 +55,6 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 	[Draw("Maximum distance (m)")]
 	private int _stop_cantilever_placement_distance = 1600;
 
-	[Draw("Remaining distance (m)")]
-	private int _remaining_cantilever_placement_distance;
-
 	[Draw("Suspend distance measurement")]
 	private bool _suspend_cantilever_distance_measurement = false;
 
@@ -107,10 +104,5 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 	public void reset_placement_mode()
 	{
 		_part_placement = editor.placement.Disabled;
-	}
-
-	public void show_remaining_cantilever_placement_distance(float remaining_distance)
-	{
-		_remaining_cantilever_placement_distance = Mathf.RoundToInt(remaining_distance);
 	}
 }
