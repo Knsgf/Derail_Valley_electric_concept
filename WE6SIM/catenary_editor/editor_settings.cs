@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using UnityEngine;
+
 using UnityModManagerNet;
 
 using WE6SIM.catenary;
@@ -14,7 +16,7 @@ namespace WE6SIM.catenary_editor;
 
 internal class editor_settings: UnityModManager.ModSettings, IDrawable
 {
-    [Draw("Part placement")]
+	[Draw("Part placement")]
     private editor.placement _part_placement = editor.placement.Disabled;
 
     [Draw("Pole type")]
@@ -43,6 +45,21 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 
 	[Draw("Zigzag")]
 	private bool _zigzag_arms = false;
+	
+	[Draw("Dual arm")]
+	private bool _dual_arm = false;
+	
+	[Draw("Automatic termination")]
+	private bool _stop_cantilever_placement_after_distance = false;
+
+	[Draw("Maximum distance (m)")]
+	private int _stop_cantilever_placement_distance = 1600;
+
+	[Draw("Remaining distance (m)")]
+	private int _remaining_cantilever_placement_distance;
+
+	[Draw("Suspend distance measurement")]
+	private bool _suspend_cantilever_distance_measurement = false;
 
 	[Draw("Eraser")]
 	private bool _erase_scenery = false;
@@ -65,21 +82,35 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 		else if (_pole_type == overhead_equipment.pole_kind.Bracket)
 			_pole_type = overhead_equipment.pole_kind.Ground;
 
-		editor.pole_height_offset     = _height_offset     / 1000.0f;
-		editor.pole_horizontal_offset = _horizontal_offset / 1000.0f;
-		editor.pole_type			  = _pole_type;
-		editor.part_placement         = _part_placement;
-		editor.cantilever_type		  = _cantilever_type;
-		editor.skip_first             = _skip_first;
-		editor.distance_between_poles = _pole_distance;
-		editor.maximum_sweep          = _sweep / 1000.0f;
-		editor.erase_scenery          = _erase_scenery;
-		editor.gantry_stretch         = _gantry_stretch / 100.0f;
-		editor.zigzag                 = _zigzag_arms;
+		editor.pole_height_offset				= _height_offset     / 1000.0f;
+		editor.pole_horizontal_offset			= _horizontal_offset / 1000.0f;
+		editor.pole_type						= _pole_type;
+		editor.part_placement					= _part_placement;
+		editor.cantilever_type					= _cantilever_type;
+		editor.skip_first						= _skip_first;
+		editor.distance_between_poles			= _pole_distance;
+		editor.maximum_sweep					= _sweep / 1000.0f;
+		editor.erase_scenery					= _erase_scenery;
+		editor.gantry_stretch					= _gantry_stretch / 100.0f;
+		editor.zigzag							= _zigzag_arms;
+		editor.dual_wire						= _dual_arm;
+		editor.automatic_cantilever_termination = _stop_cantilever_placement_after_distance;
+		editor.cantilever_termination_distance  = _stop_cantilever_placement_distance;
+		editor.suspend_cantilever_distance      = _suspend_cantilever_distance_measurement;
 	}
 
 	public void update_cantilever_type(overhead_equipment.cantilever_kind cantilever_type)
 	{
 		_cantilever_type = cantilever_type;
+	}
+
+	public void reset_placement_mode()
+	{
+		_part_placement = editor.placement.Disabled;
+	}
+
+	public void show_remaining_cantilever_placement_distance(float remaining_distance)
+	{
+		_remaining_cantilever_placement_distance = Mathf.RoundToInt(remaining_distance);
 	}
 }

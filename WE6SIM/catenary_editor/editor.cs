@@ -37,23 +37,28 @@ internal static class editor
     private static readonly Quaternion turn_by_90_counter_clockwise_vertical = Quaternion.AngleAxis(-90.0f, Vector3.up);
 
     private static int              _last_pole_x, _last_pole_z, _last_x, _last_z;
+    private static float            _remaining_cantilevers_distance;
     private static bool             _first_cantilever      = true, _first_pole = true;
     private static Quaternion       _last_pole_orientation = Quaternion.identity;
     private static editor_settings? _settings;
     private static pole_user?       _movable_pole = null;
     
-    public static placement       part_placement         { get; set; }
-    public static pole_kind       pole_type              { get; set; }
-    public static float           pole_horizontal_offset { get; set; }
-    public static float           pole_height_offset     { get; set; }
-    public static bool            skip_first             { get; set; }
-    public static int             distance_between_poles { get; set; }
-    public static float           maximum_sweep          { get; set; }
-    public static float           gantry_stretch         { get; set; }
-    public static cantilever_kind cantilever_type        { get; set; }
-    public static bool            zigzag                 { get; set; }
-    public static bool            erase_scenery          { get; set; }
-    public static bool            use_DM1U               { get; set; }
+    public static placement       part_placement                   { get; set; }
+    public static pole_kind       pole_type                        { get; set; }
+    public static float           pole_horizontal_offset           { get; set; }
+    public static float           pole_height_offset               { get; set; }
+    public static bool            skip_first                       { get; set; }
+    public static int             distance_between_poles           { get; set; }
+    public static float           maximum_sweep                    { get; set; }
+    public static float           gantry_stretch                   { get; set; }
+    public static cantilever_kind cantilever_type                  { get; set; }
+    public static bool            zigzag                           { get; set; }
+    public static bool            dual_wire                        { get; set; }
+    public static bool            automatic_cantilever_termination { get; set; }
+    public static int             cantilever_termination_distance  { get; set; }
+    public static bool            suspend_cantilever_distance      { get; set; }
+    public static bool            erase_scenery                    { get; set; }
+    public static bool            use_DM1U                         { get; set; }
 
 	private static void show_editor_controls(ModEntry mod)
 	{
@@ -292,13 +297,13 @@ internal static class editor
         if (place_on_near_side)
         {
             system.add_cantilever(cantilever_type, is_gantry_registration_arm,
-                dual_wire: true, pole.get_relative_position(), pole_orientation);
+                dual_wire, pole.get_relative_position(), pole_orientation);
             pole.cantilever_on_near_side = true;
             Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
         }
         else
         {
-            system.add_cantilever(cantilever_type, is_gantry_registration_arm, dual_wire: true, 
+            system.add_cantilever(cantilever_type, is_gantry_registration_arm, dual_wire, 
                 pole.get_relative_position() - registration_arm_direction * (default_pole_offset * 2.0f),
                 pole_orientation * flip_around_vertical);
             pole.cantilever_on_far_side = true;
@@ -320,14 +325,16 @@ internal static class editor
         switch (part_placement)
         {
             case placement.Disabled:
-                _first_cantilever = _first_pole = true;
-                _movable_pole     = null;
+                _movable_pole                   = null;
+                _first_cantilever               = _first_pole = true;
+                _remaining_cantilevers_distance = cantilever_termination_distance;
                 break;
 
             case placement.Left:
             case placement.Right:
-                _first_cantilever   = true;
-                _movable_pole       = null;
+                _movable_pole                   = null;
+                _first_cantilever               = true;
+                _remaining_cantilevers_distance = cantilever_termination_distance;
                 forward_direction.y = 0.0f;
                 if (forward_direction.sqrMagnitude > 0.9f)
                 {
@@ -337,7 +344,8 @@ internal static class editor
                 break;
 
             case placement.Front:
-                _first_cantilever = _first_pole = true;
+                _first_cantilever               = _first_pole = true;
+                _remaining_cantilevers_distance = cantilever_termination_distance;
                 forward_direction.y = 0.0f;
                 if (forward_direction.sqrMagnitude > 0.9f)
                 {
@@ -350,22 +358,25 @@ internal static class editor
             case placement.Gantry3:
             case placement.Gantry4:
             case placement.GantryStretch:
-                _first_cantilever = _first_pole = true;
-                _movable_pole     = null;
+                _movable_pole                   = null;
+                _first_cantilever               = _first_pole = true;
+                _remaining_cantilevers_distance = cantilever_termination_distance;
                 place_gantry(PlayerManager.PlayerTransform.position);
                 break;
 
             case placement.GantryAlign:
-                _first_cantilever = _first_pole = true;
-                _movable_pole     = null;
+                _movable_pole                   = null;
+                _first_cantilever               = _first_pole = true;
+                _remaining_cantilevers_distance = cantilever_termination_distance;
                 orientation = Quaternion.FromToRotation(Vector3.forward, new Vector3(forward_direction.x, 0.0f, forward_direction.z));
                 align_gantry(PlayerManager.PlayerTransform.position, orientation);
                 break;
 
             case placement.Bracket:
             case placement.FlippedBracket:
-                _first_cantilever = _first_pole = true;
-                _movable_pole     = null;
+                _movable_pole                   = null;
+                _first_cantilever               = _first_pole = true;
+                _remaining_cantilevers_distance = cantilever_termination_distance;
                 place_gantry_braket(relative_position);
                 break;
 
@@ -373,6 +384,22 @@ internal static class editor
             case placement.GantryRegistrationArm:
                 _first_pole   = true;
                 _movable_pole = null;
+                if (!automatic_cantilever_termination)
+                    _remaining_cantilevers_distance = cantilever_termination_distance;
+                else 
+                {
+                    if (_remaining_cantilevers_distance < 0.0f) 
+                    {                    
+                        part_placement = placement.Disabled;
+                        _settings?.reset_placement_mode();
+                        break;
+                    }                    
+                    if (!suspend_cantilever_distance)
+                    {
+                        (int x, int z) = get_absolute_position(relative_position);
+                        _remaining_cantilevers_distance -= Mathf.Sqrt(get_distance_squared(x, z, _last_x, _last_z));
+                    }
+                }
                 cantilever_kind _next_cantilever_type = cantilever_type;
 				bool cantilever_placed = place_cantilever(part_placement == placement.GantryRegistrationArm, 
                     ref _next_cantilever_type, relative_position);
@@ -386,6 +413,7 @@ internal static class editor
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);
+        _settings?.show_remaining_cantilever_placement_distance(_remaining_cantilevers_distance);
     }
 }
 
