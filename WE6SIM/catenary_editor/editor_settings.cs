@@ -58,6 +58,12 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 	[Draw("Suspend distance measurement")]
 	private bool _suspend_cantilever_distance_measurement = false;
 
+	[Draw("Suspend wire placement")]
+	private bool _suspend_wire_placement = false;
+	
+	[Draw("Terminate wire at next pole")]
+	private bool _terminate_wire_placement = false;
+
 	[Draw("Eraser")]
 	private bool _erase_scenery = false;
 
@@ -94,6 +100,8 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 		editor.automatic_cantilever_termination = _stop_cantilever_placement_after_distance;
 		editor.cantilever_termination_distance  = _stop_cantilever_placement_distance;
 		editor.suspend_cantilever_distance      = _suspend_cantilever_distance_measurement;
+		editor.suspend_wire_placement			= _suspend_wire_placement;
+		editor.terminate_wire_at_next_pole      = _terminate_wire_placement;
 	}
 
 	public void update_cantilever_type(overhead_equipment.cantilever_kind cantilever_type)
@@ -104,5 +112,6 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 	public void reset_placement_mode()
 	{
 		_part_placement = editor.placement.Disabled;
+		/*_dual_arm       =*/ _terminate_wire_placement = _suspend_wire_placement = false;
 	}
 }

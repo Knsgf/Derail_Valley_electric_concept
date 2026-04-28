@@ -58,6 +58,8 @@ internal static class editor
     public static bool            automatic_cantilever_termination { get; set; }
     public static int             cantilever_termination_distance  { get; set; }
     public static bool            suspend_cantilever_distance      { get; set; }
+    public static bool            suspend_wire_placement           { get; set; }
+    public static bool            terminate_wire_at_next_pole      { get; set; }
     public static bool            erase_scenery                    { get; set; }
     public static bool            use_DM1U                         { get; set; }
     public static GameObject?     mow_monitor                      { get; set; }
@@ -322,26 +324,26 @@ internal static class editor
             (pole_user current_pole) => !current_pole.anchored && current_pole.pole_type == pole_kind.Ground);
         cantilever_user? closest_registration_arm = get_closest(nearby_objects, relative_position, 0.0f, 
             (cantilever_user registration_arm) => !registration_arm.wire_attached);
-        bool wire_placed = false;
-        if ((   terminate_at_next_pole && _last_registration_arm != null &&             closest_pole != null &&             closest_pole != _last_pole             
+        
+        if (    terminate_at_next_pole && _last_registration_arm != null &&             closest_pole != null &&             closest_pole != _last_pole             
             || !terminate_at_next_pole && _last_pole             != null && closest_registration_arm != null && closest_registration_arm != _last_registration_arm) 
-            && _last_pole != null)
         {
-            Vector3 beginning_attachment_point;
             wire_kind wire_type = dual_wire ? wire_kind.plain_dual : wire_kind.plain_single;
+            Vector3   beginning_attachment_point;
             if (_last_registration_arm != null)
                 beginning_attachment_point = _last_registration_arm.relative_wire_attachment_point();
             else
             {
-                assert.test(closest_registration_arm != null);
+                assert.test(closest_registration_arm != null && _last_pole != null);
                 beginning_attachment_point = _last_pole.get_relative_position() + _last_pole.get_orientation() * Vector3.right * default_pole_offset;
-                dual_wire                  = closest_registration_arm.dual_wire;
-                _last_pole.anchored        = true;
+                //dual_wire                  = closest_registration_arm.dual_wire;
                 wire_type                  = dual_wire ? wire_kind.end_anchor_dual : wire_kind.end_anchor_single;
+                Main.log($"Anchor start: {(dual_wire ? "dual" : "single")}");
             }
             Vector3 end_attachment_point; 
             if (terminate_at_next_pole)
             {
+                Main.log("Anchor end");
                 assert.test(closest_pole != null);
                 end_attachment_point  = closest_pole.get_relative_position() + closest_pole.get_orientation() * Vector3.right * default_pole_offset;
                 closest_pole.anchored = true;
@@ -350,26 +352,36 @@ internal static class editor
             }
             else
             {
+                Main.log("Intermediate");
                 assert.test(closest_registration_arm != null);
                 if (closest_registration_arm.dual_wire != dual_wire)
                     return false;
                 end_attachment_point = closest_registration_arm.relative_wire_attachment_point();
                 closest_registration_arm.wire_attached = true;
+                Main.log("Intermediate registered");
             }
 
-            Vector3 wire_direction            = end_attachment_point - beginning_attachment_point;
-            var     wire_horizontal_direction = new Vector3(wire_direction.x, 0.0f, wire_direction.z);
-            var     wire_orientation          = Quaternion.FromToRotation(Vector3.forward, wire_horizontal_direction);
-            system.add_wire(wire_type, substation_index, wire_direction.magnitude, end_attachment_point.y - beginning_attachment_point.y, 
+            Vector3 wire_direction = end_attachment_point - beginning_attachment_point;
+            float   wire_length    = wire_direction.magnitude;
+            Main.log($"{end_attachment_point} {beginning_attachment_point} {wire_direction} {wire_length}");
+            if (wire_length < default_pole_offset * 4.0f)
+                return false;
+            var wire_horizontal_direction = new Vector3(wire_direction.x, 0.0f, wire_direction.z);
+            var wire_orientation          = Quaternion.FromToRotation(Vector3.back, wire_horizontal_direction);
+            system.add_wire(wire_type, substation_index, wire_length, beginning_attachment_point.y - end_attachment_point.y, 
                 end_attachment_point, wire_orientation);
-
+            if (_last_registration_arm == null && _last_pole != null)
+                _last_pole.anchored = true;
+            if (closest_pole != null)
+                _last_pole = closest_pole;
             if (closest_registration_arm != null)
                 _last_registration_arm = closest_registration_arm;
-            wire_placed = true;
+            return true;
         }
-        if (closest_pole != null)
+
+        if (closest_pole != null && (_last_pole == null || _last_registration_arm == null))
             _last_pole = closest_pole;
-        return wire_placed;
+        return false;
     }
 
     public static void process_location(Vector3 relative_position, Vector3 forward_direction)
@@ -457,6 +469,7 @@ internal static class editor
                     if (_remaining_cantilevers_distance < 0.0f) 
                     {                    
                         part_placement = placement.Disabled;
+                        dual_wire      = false;
                         _settings?.reset_placement_mode();
                         break;
                     }                    
@@ -476,6 +489,20 @@ internal static class editor
                 }
                 cantilever_type = _next_cantilever_type;
                 _settings?.update_cantilever_type(_next_cantilever_type);
+                break;
+
+            case placement.Wire:
+                _first_pole = _first_cantilever = true;
+                if (!suspend_wire_placement)
+                {
+                    bool wire_placed = place_wire(0, relative_position, terminate_wire_at_next_pole);
+                    if (wire_placed && terminate_wire_at_next_pole)
+                    {
+                        part_placement = placement.Disabled;
+                        /*dual_wire      =*/ terminate_wire_at_next_pole = false;
+                        _settings?.reset_placement_mode();
+                    }
+                }
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);
