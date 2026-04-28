@@ -48,6 +48,14 @@ internal partial class overhead_equipment
             relative_position, orientation);
     }
 
+    public void add_wire(wire_kind wire_type, int substation_index, float length, float previous_pole_vertical_offset,
+        Vector3 relative_position, Quaternion orientation)
+    {
+        add_scenery_object((int x, int z, float y, Quaternion orientation) 
+            => new wire(wire_type, substation_index, length, previous_pole_vertical_offset, x, z, y, orientation),
+            relative_position, orientation);
+    }
+
     public void erase_nearby_objects(Vector3 relative_position)
     {
         const int erase_region_half_width = (int) (2.5f * fixed_multiplier);
@@ -56,23 +64,22 @@ internal partial class overhead_equipment
         List<catenary_object> objects_to_remove = [];
         find_objects_within_region(objects_to_remove, _object_tree, do_bounds_check: true, 
             x - erase_region_half_width, z - erase_region_half_width, x + erase_region_half_width, z + erase_region_half_width);
+        bool rebuild_tree = false;
         foreach (catenary_object current_object in objects_to_remove)
         {
             if (current_object is pole catenary_pole)
                 catenary_pole.erased = true;
             if (current_object.entity is not null)
             {
-                GameObject.Destroy(current_object.entity);
-                current_object.entity = null;
+                current_object.is_visible = false;
+                current_object.hide_when_out_of_view();
             }
-            _freshly_added_objects.Remove(current_object);
+            rebuild_tree |= !_freshly_added_objects.Remove(current_object);
             _all_objects.Remove(current_object);
         }
-        if (objects_to_remove.Count > 0)
-        {
+        if (rebuild_tree)
             reconstruct_tree();
-            _scenery_changed = _store_scenery = true;
-        }
+        _scenery_changed = _store_scenery = true;
     }
 
     public void get_objects_in_area(List<catenary_object_user> objects, Vector3 relative_position, float area_half_size)

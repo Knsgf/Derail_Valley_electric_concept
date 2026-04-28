@@ -15,6 +15,7 @@ interface pole_user: catenary_object_user
     overhead_equipment.pole_kind pole_type { get; }
     bool cantilever_on_near_side { get; set; }
     bool cantilever_on_far_side  { get; set; }
+    bool anchored                { get; set; }
 }
 
 internal partial class overhead_equipment
@@ -31,6 +32,8 @@ internal partial class overhead_equipment
         public bool cantilever_on_near_side { get; set; }
         [JsonProperty]
         public bool cantilever_on_far_side  { get; set; }
+        [JsonProperty]
+        public bool anchored { get; set; }
 
         private static string pole_template(pole_kind pole_type)
         {

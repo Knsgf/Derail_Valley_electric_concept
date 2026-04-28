@@ -14,6 +14,7 @@ using UnityEngine;
 using UnityModManagerNet;
 
 using WE6SIM.catenary;
+using WE6SIM.utilities;
 
 using static UnityModManagerNet.UnityModManager;
 using static WE6SIM.catenary.overhead_equipment;
@@ -26,12 +27,11 @@ internal static class editor
     public enum placement 
     { 
         Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryStretch, GantryAlign, Bracket, FlippedBracket,
-        Cantilever, GantryRegistrationArm 
+        Cantilever, GantryRegistrationArm, Wire 
     };
-    const float mow_vehicle_length = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
+    const float mow_vehicle_length          = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
     const float vehicle_half_length_squared = mow_vehicle_length * mow_vehicle_length / 4.0f;
     const float half_wheelbase_squared      =          wheelbase *          wheelbase / 4.0f;
-    const float default_pole_offset         = 2.2f;
 
     private static readonly Quaternion flip_around_vertical                  = Quaternion.AngleAxis(180.0f, Vector3.up);
     private static readonly Quaternion turn_by_90_counter_clockwise_vertical = Quaternion.AngleAxis(-90.0f, Vector3.up);
@@ -41,7 +41,8 @@ internal static class editor
     private static bool             _first_cantilever      = true, _first_pole = true;
     private static Quaternion       _last_pole_orientation = Quaternion.identity;
     private static editor_settings? _settings;
-    private static pole_user?       _movable_pole = null;
+    private static pole_user?       _last_pole             = null;
+    private static cantilever_user? _last_registration_arm = null;
     
     public static placement       part_placement                   { get; set; }
     public static pole_kind       pole_type                        { get; set; }
@@ -83,9 +84,9 @@ internal static class editor
     
     public static void place_pole(Vector3 relative_position, Quaternion orientation)
     {
-        if (part_placement == placement.Front && _movable_pole != null)
+        if (part_placement == placement.Front && _last_pole != null)
         {
-            _movable_pole.set_relative_position(relative_position + _movable_pole.get_orientation() * Vector3.right * pole_horizontal_offset);
+            _last_pole.set_relative_position(relative_position + _last_pole.get_orientation() * Vector3.right * pole_horizontal_offset);
             return;
         }
 
@@ -96,8 +97,8 @@ internal static class editor
             orientation *= turn_by_90_counter_clockwise_vertical;
         pole_user last_pole = system.add_pole((part_placement == placement.Bracket) ? pole_kind.Bracket : pole_type, 
             relative_position + orientation * Vector3.right * pole_horizontal_offset, orientation);
-        if (part_placement == placement.Front && _movable_pole == null)
-            _movable_pole = last_pole;
+        if (part_placement == placement.Front && _last_pole == null)
+            _last_pole = last_pole;
     }
 
     private static void place_many_poles_in_succession(Vector3 relative_position, Quaternion orientation)
@@ -314,6 +315,63 @@ internal static class editor
         return true;
     }
 
+    private static bool place_wire(int substation_index, Vector3 relative_position, bool terminate_at_next_pole)
+    {
+        List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 1.0f);
+        pole_user? closest_pole = get_closest(nearby_objects, relative_position, 0.0f, 
+            (pole_user current_pole) => !current_pole.anchored && current_pole.pole_type == pole_kind.Ground);
+        cantilever_user? closest_registration_arm = get_closest(nearby_objects, relative_position, 0.0f, 
+            (cantilever_user registration_arm) => !registration_arm.wire_attached);
+        bool wire_placed = false;
+        if ((   terminate_at_next_pole && _last_registration_arm != null &&             closest_pole != null &&             closest_pole != _last_pole             
+            || !terminate_at_next_pole && _last_pole             != null && closest_registration_arm != null && closest_registration_arm != _last_registration_arm) 
+            && _last_pole != null)
+        {
+            Vector3 beginning_attachment_point;
+            wire_kind wire_type = dual_wire ? wire_kind.plain_dual : wire_kind.plain_single;
+            if (_last_registration_arm != null)
+                beginning_attachment_point = _last_registration_arm.relative_wire_attachment_point();
+            else
+            {
+                assert.test(closest_registration_arm != null);
+                beginning_attachment_point = _last_pole.get_relative_position() + _last_pole.get_orientation() * Vector3.right * default_pole_offset;
+                dual_wire                  = closest_registration_arm.dual_wire;
+                _last_pole.anchored        = true;
+                wire_type                  = dual_wire ? wire_kind.end_anchor_dual : wire_kind.end_anchor_single;
+            }
+            Vector3 end_attachment_point; 
+            if (terminate_at_next_pole)
+            {
+                assert.test(closest_pole != null);
+                end_attachment_point  = closest_pole.get_relative_position() + closest_pole.get_orientation() * Vector3.right * default_pole_offset;
+                closest_pole.anchored = true;
+                wire_type             = dual_wire ? wire_kind.end_anchor_dual : wire_kind.end_anchor_single;
+                (end_attachment_point, beginning_attachment_point) = (beginning_attachment_point, end_attachment_point);
+            }
+            else
+            {
+                assert.test(closest_registration_arm != null);
+                if (closest_registration_arm.dual_wire != dual_wire)
+                    return false;
+                end_attachment_point = closest_registration_arm.relative_wire_attachment_point();
+                closest_registration_arm.wire_attached = true;
+            }
+
+            Vector3 wire_direction            = end_attachment_point - beginning_attachment_point;
+            var     wire_horizontal_direction = new Vector3(wire_direction.x, 0.0f, wire_direction.z);
+            var     wire_orientation          = Quaternion.FromToRotation(Vector3.forward, wire_horizontal_direction);
+            system.add_wire(wire_type, substation_index, wire_direction.magnitude, end_attachment_point.y - beginning_attachment_point.y, 
+                end_attachment_point, wire_orientation);
+
+            if (closest_registration_arm != null)
+                _last_registration_arm = closest_registration_arm;
+            wire_placed = true;
+        }
+        if (closest_pole != null)
+            _last_pole = closest_pole;
+        return wire_placed;
+    }
+
     public static void process_location(Vector3 relative_position, Vector3 forward_direction)
     {
         if (erase_scenery)
@@ -326,14 +384,16 @@ internal static class editor
         switch (part_placement)
         {
             case placement.Disabled:
-                _movable_pole                   = null;
+                _last_pole                      = null;
+                _last_registration_arm          = null;
                 _first_cantilever               = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 break;
 
             case placement.Left:
             case placement.Right:
-                _movable_pole                   = null;
+                _last_pole                      = null;
+                _last_registration_arm          = null;
                 _first_cantilever               = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 forward_direction.y = 0.0f;
@@ -345,6 +405,7 @@ internal static class editor
                 break;
 
             case placement.Front:
+                _last_registration_arm          = null;
                 _first_cantilever               = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 forward_direction.y = 0.0f;
@@ -359,14 +420,16 @@ internal static class editor
             case placement.Gantry3:
             case placement.Gantry4:
             case placement.GantryStretch:
-                _movable_pole                   = null;
+                _last_pole                      = null;
+                _last_registration_arm          = null;
                 _first_cantilever               = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 place_gantry(PlayerManager.PlayerTransform.position);
                 break;
 
             case placement.GantryAlign:
-                _movable_pole                   = null;
+                _last_pole                      = null;
+                _last_registration_arm          = null;
                 _first_cantilever               = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 orientation = Quaternion.FromToRotation(Vector3.forward, new Vector3(forward_direction.x, 0.0f, forward_direction.z));
@@ -375,7 +438,8 @@ internal static class editor
 
             case placement.Bracket:
             case placement.FlippedBracket:
-                _movable_pole                   = null;
+                _last_pole                      = null;
+                _last_registration_arm          = null;
                 _first_cantilever               = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 place_gantry_braket(relative_position);
@@ -383,8 +447,9 @@ internal static class editor
 
             case placement.Cantilever:
             case placement.GantryRegistrationArm:
-                _first_pole   = true;
-                _movable_pole = null;
+                _first_pole            = true;
+                _last_pole             = null;
+                _last_registration_arm = null;
                 if (!automatic_cantilever_termination)
                     _remaining_cantilevers_distance = cantilever_termination_distance;
                 else 
