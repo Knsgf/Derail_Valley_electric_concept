@@ -41,7 +41,7 @@ internal static class editor
     private static bool             _first_cantilever      = true, _first_pole = true;
     private static Quaternion       _last_pole_orientation = Quaternion.identity;
     private static editor_settings? _settings;
-    private static pole_user?       _last_pole             = null;
+    private static pole_user?       _anchor_pole           = null;
     private static cantilever_user? _last_registration_arm = null;
     
     public static placement       part_placement                   { get; set; }
@@ -86,9 +86,9 @@ internal static class editor
     
     public static void place_pole(Vector3 relative_position, Quaternion orientation)
     {
-        if (part_placement == placement.Front && _last_pole != null)
+        if (part_placement == placement.Front && _anchor_pole != null)
         {
-            _last_pole.set_relative_position(relative_position + _last_pole.get_orientation() * Vector3.right * pole_horizontal_offset);
+            _anchor_pole.set_relative_position(relative_position + _anchor_pole.get_orientation() * Vector3.right * pole_horizontal_offset);
             return;
         }
 
@@ -99,8 +99,8 @@ internal static class editor
             orientation *= turn_by_90_counter_clockwise_vertical;
         pole_user last_pole = system.add_pole((part_placement == placement.Bracket) ? pole_kind.Bracket : pole_type, 
             relative_position + orientation * Vector3.right * pole_horizontal_offset, orientation);
-        if (part_placement == placement.Front && _last_pole == null)
-            _last_pole = last_pole;
+        if (part_placement == placement.Front && _anchor_pole == null)
+            _anchor_pole = last_pole;
     }
 
     private static void place_many_poles_in_succession(Vector3 relative_position, Quaternion orientation)
@@ -322,11 +322,18 @@ internal static class editor
         List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 1.0f);
         pole_user? closest_pole = get_closest(nearby_objects, relative_position, 0.0f, 
             (pole_user current_pole) => !current_pole.anchored && current_pole.pole_type == pole_kind.Ground);
+        if (_anchor_pole == null)
+        {
+            if (closest_pole == null)
+                return false;
+            _anchor_pole = closest_pole;
+            Main.log($"Staring anchor at {closest_pole.get_relative_position()}");
+        }
+        
         cantilever_user? closest_registration_arm = get_closest(nearby_objects, relative_position, 0.0f, 
             (cantilever_user registration_arm) => !registration_arm.wire_attached);
-        
-        if (    terminate_at_next_pole && _last_registration_arm != null &&             closest_pole != null &&             closest_pole != _last_pole             
-            || !terminate_at_next_pole && _last_pole             != null && closest_registration_arm != null && closest_registration_arm != _last_registration_arm) 
+        if (    terminate_at_next_pole && _last_registration_arm != null &&             closest_pole != null &&             closest_pole != _anchor_pole             
+            || !terminate_at_next_pole                                   && closest_registration_arm != null && closest_registration_arm != _last_registration_arm) 
         {
             wire_kind wire_type = dual_wire ? wire_kind.plain_dual : wire_kind.plain_single;
             Vector3   beginning_attachment_point;
@@ -334,9 +341,8 @@ internal static class editor
                 beginning_attachment_point = _last_registration_arm.relative_wire_attachment_point();
             else
             {
-                assert.test(closest_registration_arm != null && _last_pole != null);
-                beginning_attachment_point = _last_pole.get_relative_position() + _last_pole.get_orientation() * Vector3.right * default_pole_offset;
-                //dual_wire                  = closest_registration_arm.dual_wire;
+                assert.test(closest_registration_arm != null);
+                beginning_attachment_point = _anchor_pole.get_relative_position() + _anchor_pole.get_orientation() * Vector3.right * default_pole_offset;
                 wire_type                  = dual_wire ? wire_kind.end_anchor_dual : wire_kind.end_anchor_single;
                 Main.log($"Anchor start: {(dual_wire ? "dual" : "single")}");
             }
@@ -346,7 +352,6 @@ internal static class editor
                 Main.log("Anchor end");
                 assert.test(closest_pole != null);
                 end_attachment_point  = closest_pole.get_relative_position() + closest_pole.get_orientation() * Vector3.right * default_pole_offset;
-                closest_pole.anchored = true;
                 wire_type             = dual_wire ? wire_kind.end_anchor_dual : wire_kind.end_anchor_single;
                 (end_attachment_point, beginning_attachment_point) = (beginning_attachment_point, end_attachment_point);
             }
@@ -370,17 +375,18 @@ internal static class editor
             var wire_orientation          = Quaternion.FromToRotation(Vector3.back, wire_horizontal_direction);
             system.add_wire(wire_type, substation_index, wire_length, beginning_attachment_point.y - end_attachment_point.y, 
                 end_attachment_point, wire_orientation);
-            if (_last_registration_arm == null && _last_pole != null)
-                _last_pole.anchored = true;
-            if (closest_pole != null)
-                _last_pole = closest_pole;
+            
+            // Anchor poles only after successfully placing a section
+            if (_last_registration_arm == null)
+                _anchor_pole.anchored = true;
+            if (terminate_at_next_pole)
+                closest_pole!.anchored = true;
+
             if (closest_registration_arm != null)
                 _last_registration_arm = closest_registration_arm;
             return true;
         }
 
-        if (closest_pole != null && (_last_pole == null || _last_registration_arm == null))
-            _last_pole = closest_pole;
         return false;
     }
 
@@ -396,17 +402,17 @@ internal static class editor
         switch (part_placement)
         {
             case placement.Disabled:
-                _last_pole                      = null;
-                _last_registration_arm          = null;
-                _first_cantilever               = _first_pole = true;
+                _anchor_pole           = null;
+                _last_registration_arm = null;
+                _first_cantilever      = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 break;
 
             case placement.Left:
             case placement.Right:
-                _last_pole                      = null;
-                _last_registration_arm          = null;
-                _first_cantilever               = true;
+                _anchor_pole           = null;
+                _last_registration_arm = null;
+                _first_cantilever      = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 forward_direction.y = 0.0f;
                 if (forward_direction.sqrMagnitude > 0.9f)
@@ -432,17 +438,17 @@ internal static class editor
             case placement.Gantry3:
             case placement.Gantry4:
             case placement.GantryStretch:
-                _last_pole                      = null;
-                _last_registration_arm          = null;
-                _first_cantilever               = _first_pole = true;
+                _anchor_pole           = null;
+                _last_registration_arm = null;
+                _first_cantilever      = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 place_gantry(PlayerManager.PlayerTransform.position);
                 break;
 
             case placement.GantryAlign:
-                _last_pole                      = null;
-                _last_registration_arm          = null;
-                _first_cantilever               = _first_pole = true;
+                _anchor_pole           = null;
+                _last_registration_arm = null;
+                _first_cantilever      = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 orientation = Quaternion.FromToRotation(Vector3.forward, new Vector3(forward_direction.x, 0.0f, forward_direction.z));
                 align_gantry(PlayerManager.PlayerTransform.position, orientation);
@@ -450,9 +456,9 @@ internal static class editor
 
             case placement.Bracket:
             case placement.FlippedBracket:
-                _last_pole                      = null;
-                _last_registration_arm          = null;
-                _first_cantilever               = _first_pole = true;
+                _anchor_pole           = null;
+                _last_registration_arm = null;
+                _first_cantilever      = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 place_gantry_braket(relative_position);
                 break;
@@ -460,7 +466,7 @@ internal static class editor
             case placement.Cantilever:
             case placement.GantryRegistrationArm:
                 _first_pole            = true;
-                _last_pole             = null;
+                _anchor_pole           = null;
                 _last_registration_arm = null;
                 if (!automatic_cantilever_termination)
                     _remaining_cantilevers_distance = cantilever_termination_distance;
@@ -498,8 +504,8 @@ internal static class editor
                     bool wire_placed = place_wire(0, relative_position, terminate_wire_at_next_pole);
                     if (wire_placed && terminate_wire_at_next_pole)
                     {
-                        part_placement = placement.Disabled;
-                        /*dual_wire      =*/ terminate_wire_at_next_pole = false;
+                        part_placement              = placement.Disabled;
+                        terminate_wire_at_next_pole = false;
                         _settings?.reset_placement_mode();
                     }
                 }

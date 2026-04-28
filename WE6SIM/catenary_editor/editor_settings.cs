@@ -111,7 +111,7 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 
 	public void reset_placement_mode()
 	{
-		_part_placement = editor.placement.Disabled;
-		/*_dual_arm       =*/ _terminate_wire_placement = _suspend_wire_placement = false;
+		_part_placement           = editor.placement.Disabled;
+		_terminate_wire_placement = _suspend_wire_placement = false;
 	}
 }
