@@ -41,7 +41,7 @@ internal partial class overhead_equipment
             {
                 pole_kind.Ground  => "Pole",
                 pole_kind.Bridge  => "Pole",
-                pole_kind.Tunnel  => "Pole",
+                pole_kind.Tunnel  => "TunnelPole",
                 pole_kind.Bracket => "RegistrationBracket",
                 _ => throw new ArgumentOutOfRangeException($"Unknown pole type {pole_type}")
             };

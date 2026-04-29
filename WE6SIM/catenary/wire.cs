@@ -37,21 +37,26 @@ internal partial class overhead_equipment
         private GameObject? _primary_transform, _secondary_transform;
 
         [JsonProperty]
-        public wire_kind wire_type { get; private set; }
+        public wire_kind wire_type;
+        [JsonProperty]
+        public float length;
+        [JsonProperty]
+        public float previous_pole_vertical_offset;
+
+        [JsonProperty]
         public int substation_index { get; private set; }
-        [JsonProperty]
-        public float length { get; private set; }
-        [JsonProperty]
-        public float previous_pole_vertical_offset { get; private set; }
 
         private static string wire_template(wire_kind wire_type)
         {
             return wire_type switch
             {
-                wire_kind.plain_dual        => "WireDual",
-                wire_kind.plain_single      => "WireSingle",
-                wire_kind.end_anchor_dual   => "WireDualEnd",
-                wire_kind.end_anchor_single => "WireSingleEnd",
+                wire_kind.plain_dual           => "WireDual",
+                wire_kind.plain_single         => "WireSingle",
+                wire_kind.middle_anchor_dual   => "WireMidpointAnchorDual",
+                wire_kind.middle_anchor_single => "WireMidpointAnchorSingle",
+                wire_kind.end_anchor_dual      => "WireDualEnd",
+                wire_kind.end_anchor_single    => "WireSingleEnd",
+                wire_kind.wall_anchor_single   => "WireSingleWallEnd",
                 _ => throw new ArgumentOutOfRangeException($"Invalid wire type {wire_type}")
             };
         }

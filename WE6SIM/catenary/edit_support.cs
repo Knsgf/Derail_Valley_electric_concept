@@ -28,6 +28,11 @@ internal partial class overhead_equipment
         return add_scenery_object(constructor, x, z, relative_position.y, orientation);
     }
 
+    public void add_scenery_object(string template_name, Vector3 relative_position, Quaternion orientation)
+    {
+        add_scenery_object(catenary_object.wrap_constructor(template_name), relative_position, orientation);
+    }
+
     public pole_user add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation)
     {
 		return add_scenery_object((int x, int z, float y, Quaternion orientation) => new pole(pole_type, x, z, y, orientation),
@@ -40,11 +45,11 @@ internal partial class overhead_equipment
             relative_position, orientation);
     }
 
-    public void add_cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool dual_wire, 
-        Vector3 relative_position, Quaternion orientation)
+    public void add_cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool is_tunnel_registration_arm,
+        bool dual_wire, Vector3 relative_position, Quaternion orientation)
     {
         add_scenery_object((int x, int z, float y, Quaternion orientation) 
-            => new cantilever(cantilever_type, is_gantry_registration_arm, dual_wire, x, z, y, orientation),
+            => new cantilever(cantilever_type, is_gantry_registration_arm, is_tunnel_registration_arm, dual_wire, x, z, y, orientation),
             relative_position, orientation);
     }
 
@@ -115,22 +120,19 @@ internal partial class overhead_equipment
 
     public void store_scenery()
     {
-        if (_store_scenery && _file_path != null)
+        if (/*_store_scenery &&*/ _file_path != null)
         {
-            foreach (catenary_object current_object in _all_objects)
-            {
-                if (current_object is gantry current_gantry && current_gantry._further_pole.erased)
-                    current_gantry.placed_procedurally = true;
-            }
             List<catenary_object> objects_to_store =
 			[..
                 from   current_object in _all_objects
-                where !current_object.placed_procedurally
+                where !current_object.placed_procedurally 
+                    && !(current_object is gantry saving_gantry && saving_gantry._further_pole.erased)
                 select current_object
             ];
             string raw_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented,
                 new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
             File.WriteAllText(Path.Combine(_file_path, "scenery.json"), raw_scenery);
+            File.WriteAllText(@"C:\Users\Kf177\source\repos\we6\WE6SIM\catenary\scenery.json", raw_scenery);
             _store_scenery = false;
         }
     }

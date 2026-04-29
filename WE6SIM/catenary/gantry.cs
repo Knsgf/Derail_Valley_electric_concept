@@ -18,9 +18,11 @@ namespace WE6SIM.catenary;
 
 interface gantry_user: catenary_object_user
 {
+#if DEBUG
     float stretch { get; set; }
     Vector3? cross_point(Vector3 travel_relative_start, Vector3 travel_vector);
     void change_orientation(Quaternion new_orientation);
+#endif
 }
 
 internal partial class overhead_equipment
@@ -91,6 +93,11 @@ internal partial class overhead_equipment
             _further_pole = system.add_scenery_object((int x, int z, float y, Quaternion orientation) 
                 => new pole(pole_kind.Ground, x, z, y, orientation), further_pole_x, further_pole_z, y, orientation);
             _further_pole.placed_procedurally = _further_pole.cantilever_on_far_side = true;
+
+#if DEBUG
+            catenary_object arrow = system.add_scenery_object(wrap_constructor("GantryArrow"), x, z, y, orientation);
+            arrow.placed_procedurally = true;
+#endif
         }
 
 		public override void reveal()
@@ -105,6 +112,7 @@ internal partial class overhead_equipment
             return top_left * bottom_right - top_right * bottom_left;
         }
         
+#if DEBUG
         public Vector3? cross_point(Vector3 travel_relative_start, Vector3 travel_vector)
         {
             Vector3 gantry_closer_end = world_position.get_relative_position(x, z, y) + orientation * (Vector3.right * default_pole_offset);
@@ -150,4 +158,6 @@ internal partial class overhead_equipment
             system.handle_scenery_visibility(PlayerManager.PlayerTransform.position);
         }
 	}
+#endif
+
 }

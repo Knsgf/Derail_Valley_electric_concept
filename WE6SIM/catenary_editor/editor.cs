@@ -98,7 +98,7 @@ internal static class editor
         else if (part_placement == placement.Front)
             orientation *= turn_by_90_counter_clockwise_vertical;
         pole_user last_pole = system.add_pole((part_placement == placement.Bracket) ? pole_kind.Bracket : pole_type, 
-            relative_position + orientation * Vector3.right * pole_horizontal_offset, orientation);
+            relative_position + orientation * Vector3.right * pole_horizontal_offset + Vector3.up * pole_height_offset, orientation);
         if (part_placement == placement.Front && _anchor_pole == null)
             _anchor_pole = last_pole;
     }
@@ -300,15 +300,15 @@ internal static class editor
 
         if (place_on_near_side)
         {
-            system.add_cantilever(cantilever_type, is_gantry_registration_arm,
+            system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type == pole_kind.Tunnel,
                 dual_wire, pole.get_relative_position(), pole_orientation);
             pole.cantilever_on_near_side = true;
             Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
         }
         else
         {
-            system.add_cantilever(cantilever_type, is_gantry_registration_arm, dual_wire, 
-                pole.get_relative_position() - registration_arm_direction * (default_pole_offset * 2.0f),
+            system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type == pole_kind.Tunnel, 
+                dual_wire, pole.get_relative_position() - registration_arm_direction * (default_pole_offset * 2.0f),
                 pole_orientation * flip_around_vertical);
             pole.cantilever_on_far_side = true;
             Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
@@ -317,6 +317,15 @@ internal static class editor
         return true;
     }
 
+    private static void anchor_pole(pole_user anchored_pole, Vector3 wire_direction)
+    {
+        Quaternion anchor_orientation = anchored_pole.get_orientation();
+        if (Vector3.Dot(wire_direction, anchor_orientation * Vector3.forward) > 0.0f)
+            anchor_orientation *= flip_around_vertical;
+        system.add_scenery_object("PoleAnchor", anchored_pole.get_relative_position(), anchor_orientation);
+        anchored_pole.anchored = true;
+    }
+    
     private static bool place_wire(int substation_index, Vector3 relative_position, bool terminate_at_next_pole)
     {
         List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 1.0f);
@@ -378,9 +387,9 @@ internal static class editor
             
             // Anchor poles only after successfully placing a section
             if (_last_registration_arm == null)
-                _anchor_pole.anchored = true;
+                anchor_pole(_anchor_pole, wire_direction);
             if (terminate_at_next_pole)
-                closest_pole!.anchored = true;
+                anchor_pole(closest_pole!, wire_direction);
 
             if (closest_registration_arm != null)
                 _last_registration_arm = closest_registration_arm;
@@ -412,7 +421,7 @@ internal static class editor
             case placement.Right:
                 _anchor_pole           = null;
                 _last_registration_arm = null;
-                _first_cantilever      = _first_pole = true;
+                _first_cantilever      = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
                 forward_direction.y = 0.0f;
                 if (forward_direction.sqrMagnitude > 0.9f)

@@ -22,36 +22,56 @@ namespace WE6SIM.catenary;
 internal partial class overhead_equipment
 {
     public enum pole_kind { Ground, Bridge, Tunnel, Bracket };
-    public enum cantilever_kind { Inner, Middle, Outer };
-    public enum wire_kind { plain_dual, plain_single, end_anchor_dual, end_anchor_single, middle_anchor_dual, middle_anchor_single };
+    public enum cantilever_kind { Inner, OutwardsInner, MiddleInner, Middle, Outer };
+    public enum wire_kind { plain_dual, plain_single, end_anchor_dual, end_anchor_single, wall_anchor_single,
+        middle_anchor_dual, middle_anchor_single };
 
     public const float default_pole_offset = 2.2f;
 
     private static readonly string[] _template_names =
     {
-        "EndPoleAnchor",
+#if DEBUG
+        "GantryArrow",
+#endif
         "Gantry2Tracks",
         "Gantry3Tracks",
         "Gantry4Tracks",
         "InnerCantileverDual",
         "InnerCantileverSingle",
+        "InnerOutwardCantileverDual",
+        "InnerOutwardCantileverSingle",
         "MiddleCantileverDual",
         "MiddleCantileverSingle",
+        "MiddleInwardCantileverDual",
+        "MiddleInwardCantileverSingle",
         "OuterCantileverDual",
         "OuterCantileverSingle",
         "Pole",
+        "PoleAnchor",
         "PoleFoundation",
-        "RegistrationBracket",
         "RegistrationArmInnerDual",
         "RegistrationArmInnerSingle",
         "RegistrationArmMiddleDual",
         "RegistrationArmMiddleSingle",
+        "RegistrationArmMiddleInnerDual",
+        "RegistrationArmMiddleInnerSingle",
         "RegistrationArmOuterDual",
         "RegistrationArmOuterSingle",
+        "RegistrationBracket",
+        "SideRail",
+        "SideRailPole",
+        "TunnelInnerDual",
+        "TunnelInnerSingle",
+        "TunnelOuterDual",
+        "TunnelOuterSingle",
+        "TunnelPole",
         "WireDual",
         "WireDualEnd",
+        "WireMidpointAnchorDual",
         "WireSingle",
-        "WireSingleEnd"
+        "WireSingleEnd",
+        "WireMidpointAnchorSingle",
+        "WireSingleWallEnd",
     };
     private static overhead_equipment? _system;
 
@@ -70,8 +90,8 @@ internal partial class overhead_equipment
     private overhead_equipment(ModEntry mod)
     {
         _file_path = mod.Path;
-        AssetBundle catenary_assets = AssetBundle.LoadFromFile(Path.Combine(_file_path, "catenary"))
-                ?? throw new FileNotFoundException("Not found " + Path.Combine(_file_path, "catenary"));
+        AssetBundle catenary_assets = AssetBundle.LoadFromFile(Path.Combine(_file_path, "catenary_parts"))
+                ?? throw new FileNotFoundException("Not found " + Path.Combine(_file_path, "catenary_parts"));
         string[] all_assets = catenary_assets.GetAllAssetNames();
         foreach (string name in all_assets)
             Main.log(name);
