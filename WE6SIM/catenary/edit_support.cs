@@ -24,6 +24,7 @@ internal partial class overhead_equipment
         Vector3 relative_position, Quaternion orientation)
         where _type_: catenary_object
     {
+        _store_scenery = true;
         (int x, int z) = get_absolute_position(relative_position);
         return add_scenery_object(constructor, x, z, relative_position.y, orientation);
     }
@@ -53,18 +54,24 @@ internal partial class overhead_equipment
             relative_position, orientation);
     }
 
-    public void add_wire(wire_kind wire_type, int substation_index, float length, float previous_pole_vertical_offset,
+    public void add_wire(wire_kind wire_type, string substation, float length, float previous_pole_vertical_offset,
         Vector3 relative_position, Quaternion orientation)
     {
         add_scenery_object((int x, int z, float y, Quaternion orientation) 
-            => new wire(wire_type, substation_index, length, previous_pole_vertical_offset, x, z, y, orientation),
+            => new wire(wire_type, substation, length, previous_pole_vertical_offset, x, z, y, orientation),
             relative_position, orientation);
     }
 
-    public void erase_nearby_objects(Vector3 relative_position)
+    public void add_substation(string map_location, float supply_voltage, float maximum_load, bool has_inverter, Vector3 relative_position)
     {
-        const int erase_region_half_width = (int) (2.5f * fixed_multiplier);
+        add_scenery_object((int x, int z, float y, Quaternion orientation)
+            => new substation(map_location, supply_voltage, maximum_load, has_inverter, x, z, y, orientation),
+            relative_position, Quaternion.AngleAxis(90.0f, Vector3.back));
+    }
 
+    public void erase_nearby_objects(Vector3 relative_position, float erase_reach)
+    {
+        int erase_region_half_width = float_to_fixed(erase_reach);
         (int x, int z) = get_absolute_position(relative_position);
         List<catenary_object> objects_to_remove = [];
         find_objects_within_region(objects_to_remove, _object_tree, do_bounds_check: true, 
@@ -81,10 +88,10 @@ internal partial class overhead_equipment
             }
             rebuild_tree |= !_freshly_added_objects.Remove(current_object);
             _all_objects.Remove(current_object);
+            _scenery_changed = _store_scenery = true;
         }
         if (rebuild_tree)
             reconstruct_tree();
-        _scenery_changed = _store_scenery = true;
     }
 
     public void get_objects_in_area(List<catenary_object_user> objects, Vector3 relative_position, float area_half_size)
@@ -120,7 +127,7 @@ internal partial class overhead_equipment
 
     public void store_scenery()
     {
-        if (/*_store_scenery &&*/ _file_path != null)
+        if (_store_scenery && _file_path != null)
         {
             List<catenary_object> objects_to_store =
 			[..
@@ -129,10 +136,10 @@ internal partial class overhead_equipment
                     && !(current_object is gantry saving_gantry && saving_gantry._further_pole.erased)
                 select current_object
             ];
-            string raw_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented,
+            string formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented,
                 new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-            File.WriteAllText(Path.Combine(_file_path, "scenery.json"), raw_scenery);
-            File.WriteAllText(@"C:\Users\Kf177\source\repos\we6\WE6SIM\catenary\scenery.json", raw_scenery);
+            File.WriteAllText(Path.Combine(_file_path, "scenery.json"), formatted_scenery);
+            File.WriteAllText(@"C:\Users\Kf177\source\repos\we6\WE6SIM\catenary\scenery.json", formatted_scenery);
             _store_scenery = false;
         }
     }

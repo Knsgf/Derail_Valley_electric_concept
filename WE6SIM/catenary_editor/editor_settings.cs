@@ -64,8 +64,14 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 	[Draw("Terminate wire at next pole")]
 	private bool _terminate_wire_placement = false;
 
+	[Draw("Substation")]
+	private string _substation = "";
+
 	[Draw("Eraser")]
 	private bool _erase_scenery = false;
+
+	[Draw("Eraser reach (mm)")]
+	private int _eraser_radius = 2500;
 
 	public editor_settings()
 	{
@@ -94,6 +100,7 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 		editor.distance_between_poles			= _pole_distance;
 		editor.maximum_sweep					= _sweep / 1000.0f;
 		editor.erase_scenery					= _erase_scenery;
+		editor.eraser_area_half                 = _eraser_radius / 1000.0f;
 		editor.gantry_stretch					= _gantry_stretch / 100.0f;
 		editor.zigzag							= _zigzag_arms;
 		editor.dual_wire						= _dual_arm;
@@ -102,6 +109,7 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 		editor.suspend_cantilever_distance      = _suspend_cantilever_distance_measurement;
 		editor.suspend_wire_placement			= _suspend_wire_placement;
 		editor.terminate_wire_at_next_pole      = _terminate_wire_placement;
+		editor.designated_substation                       = (_substation.Length >= 2) ? _substation : null;
 	}
 
 	public void update_cantilever_type(overhead_equipment.cantilever_kind cantilever_type)
@@ -113,5 +121,6 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 	{
 		_part_placement           = editor.placement.Disabled;
 		_terminate_wire_placement = _suspend_wire_placement = false;
+		_substation               = "";
 	}
 }

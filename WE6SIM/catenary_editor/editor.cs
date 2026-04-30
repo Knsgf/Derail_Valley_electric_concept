@@ -27,7 +27,7 @@ internal static class editor
     public enum placement 
     { 
         Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryStretch, GantryAlign, Bracket, FlippedBracket,
-        Cantilever, GantryRegistrationArm, Wire 
+        Cantilever, GantryRegistrationArm, Wire, Substation, SubstationNoInverter, OverheadCraneSupply
     };
     const float mow_vehicle_length          = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
     const float vehicle_half_length_squared = mow_vehicle_length * mow_vehicle_length / 4.0f;
@@ -60,7 +60,9 @@ internal static class editor
     public static bool            suspend_cantilever_distance      { get; set; }
     public static bool            suspend_wire_placement           { get; set; }
     public static bool            terminate_wire_at_next_pole      { get; set; }
+    public static string?         designated_substation                       { get; set; }
     public static bool            erase_scenery                    { get; set; }
+    public static float           eraser_area_half                 { get; set; }
     public static bool            use_DM1U                         { get; set; }
     public static GameObject?     mow_monitor                      { get; set; }
 
@@ -178,14 +180,15 @@ internal static class editor
 
     private static void place_gantry(Vector3 relative_position)
     {
-        List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 25.0f);
         if (part_placement == placement.GantryStretch)
         {
+            List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 25.0f);
             gantry_user? closest_gantry = get_closest<gantry_user>(nearby_objects, relative_position);
             closest_gantry?.stretch = gantry_stretch;
         }
         else
         {
+            List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 2.5f);
             pole_user? closest_pole = get_closest<pole_user>(nearby_objects, relative_position);
             if (closest_pole != null && !closest_pole.cantilever_on_near_side)
             {
@@ -326,7 +329,7 @@ internal static class editor
         anchored_pole.anchored = true;
     }
     
-    private static bool place_wire(int substation_index, Vector3 relative_position, bool terminate_at_next_pole)
+    private static bool place_wire(string substation, Vector3 relative_position, bool terminate_at_next_pole)
     {
         List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 1.0f);
         pole_user? closest_pole = get_closest(nearby_objects, relative_position, 0.0f, 
@@ -382,7 +385,7 @@ internal static class editor
                 return false;
             var wire_horizontal_direction = new Vector3(wire_direction.x, 0.0f, wire_direction.z);
             var wire_orientation          = Quaternion.FromToRotation(Vector3.back, wire_horizontal_direction);
-            system.add_wire(wire_type, substation_index, wire_length, beginning_attachment_point.y - end_attachment_point.y, 
+            system.add_wire(wire_type, substation, wire_length, beginning_attachment_point.y - end_attachment_point.y, 
                 end_attachment_point, wire_orientation);
             
             // Anchor poles only after successfully placing a section
@@ -403,7 +406,7 @@ internal static class editor
     {
         if (erase_scenery)
         {
-            system.erase_nearby_objects(PlayerManager.PlayerTransform.position);
+            system.erase_nearby_objects(PlayerManager.PlayerTransform.position, eraser_area_half);
             return;
         }
 
@@ -508,15 +511,47 @@ internal static class editor
 
             case placement.Wire:
                 _first_pole = _first_cantilever = true;
+                _remaining_cantilevers_distance = cantilever_termination_distance;
                 if (!suspend_wire_placement)
                 {
-                    bool wire_placed = place_wire(0, relative_position, terminate_wire_at_next_pole);
+                    bool wire_placed = place_wire(designated_substation ?? "NEUTRAL", relative_position, terminate_wire_at_next_pole);
                     if (wire_placed && terminate_wire_at_next_pole)
                     {
                         part_placement              = placement.Disabled;
                         terminate_wire_at_next_pole = false;
                         _settings?.reset_placement_mode();
                     }
+                }
+                break;
+
+            case placement.Substation:
+            case placement.SubstationNoInverter:
+            case placement.OverheadCraneSupply:
+                _anchor_pole           = null;
+                _last_registration_arm = null;
+                _first_cantilever      = _first_pole = true;
+                _remaining_cantilevers_distance = cantilever_termination_distance;
+                if (designated_substation != null)
+                {
+                    float supply_voltage = part_placement switch
+                    { 
+                        placement.Substation           => 1600.0f,
+                        placement.SubstationNoInverter => 1000.0f,
+                        placement.OverheadCraneSupply  =>  600.0f,
+                        _ => 0.0f
+                    };
+                    float maximum_load = part_placement switch
+                    { 
+                        placement.Substation           => 4500.0f,
+                        placement.SubstationNoInverter => 2000.0f,
+                        placement.OverheadCraneSupply  =>  500.0f,
+                        _ => 0.0f
+                    };
+                    system.add_substation(designated_substation, supply_voltage, maximum_load, part_placement == placement.Substation, 
+                        PlayerManager.PlayerTransform.position + Vector3.up);
+                    part_placement        = placement.Disabled;
+                    designated_substation = null;
+                    _settings?.reset_placement_mode();
                 }
                 break;
         }

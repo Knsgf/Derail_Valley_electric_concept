@@ -14,7 +14,6 @@ namespace WE6SIM.catenary;
 
 interface wire_user: catenary_object_user
 {
-    int substation_index { get; }
 }
 
 internal partial class overhead_equipment
@@ -42,9 +41,9 @@ internal partial class overhead_equipment
         public float length;
         [JsonProperty]
         public float previous_pole_vertical_offset;
-
         [JsonProperty]
-        public int substation_index { get; private set; }
+        public string substation;
+
 
         private static string wire_template(wire_kind wire_type)
         {
@@ -62,12 +61,12 @@ internal partial class overhead_equipment
         }
         
         [JsonConstructor]
-        public wire(wire_kind wire_type, int substation_index, float length, float previous_pole_vertical_offset, 
+        public wire(wire_kind wire_type, string substation, float length, float previous_pole_vertical_offset, 
             int x, int z, float y, Quaternion orientation): base(wire_template(wire_type), x, z, y, orientation)
         {
             assert.test(length > 0.0f);
             this.wire_type                     = wire_type;
-            this.substation_index              = substation_index;
+            this.substation                    = substation;
             this.length                        = length;
             this.previous_pole_vertical_offset = previous_pole_vertical_offset;
             

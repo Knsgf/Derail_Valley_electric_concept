@@ -128,7 +128,7 @@ internal partial class overhead_equipment
         }
         _scenery_changed = _all_objects.Count > 0;
         if (_scenery_changed)
-            _object_tree = new quad_tree(_all_objects);
+            reconstruct_tree();
     }
 
     public static void set_up(ModEntry mod)
@@ -137,7 +137,8 @@ internal partial class overhead_equipment
         if (_system != null)
             throw new InvalidOperationException("Attempt to create a duplicate catenary in the world");
         _system = new overhead_equipment(mod);
-        _system.load_scenery(mod);
+        _system.load_scenery(mod);  // "catenary_object" and its derivaties require "system" property to be initialised,
+                                    // which precludes doing loading inside constructor
     }
 
     public static void dispose()
@@ -236,7 +237,7 @@ internal partial class overhead_equipment
         _all_objects.Add(new_object);
         _freshly_added_objects.Add(new_object);
         Main.log($"x={new_object.x / fixed_multiplier} z={new_object.z / fixed_multiplier} y={new_object.y} c={_all_objects.Count}");
-        _scenery_changed = _store_scenery = true;
+        _scenery_changed = true;
         return new_object;
     }
 
