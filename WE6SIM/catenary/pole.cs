@@ -53,7 +53,7 @@ internal partial class overhead_equipment
             this.pole_type = pole_type;
             if (pole_type == pole_kind.Ground)
             {
-                catenary_object foundation     = system.add_scenery_object(wrap_constructor("PoleFoundation"), x, z, y, orientation);
+                catenary_object foundation     = system.add_scenery_object(miscellaneous_object.build_generic("PoleFoundation"), x, z, y, orientation);
                 foundation.placed_procedurally = true;
             }
         }

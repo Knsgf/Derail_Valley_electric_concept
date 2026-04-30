@@ -82,11 +82,5 @@ internal partial class overhead_equipment
                 entity = null;
             }
         }
-
-        public static Func<int, int, float, Quaternion, catenary_object> wrap_constructor(string template_name)
-        {
-            return (int x, int z, float y, Quaternion orientation) 
-                => new catenary_object(template_name, x, z, y, orientation);
-        }
     }
 }

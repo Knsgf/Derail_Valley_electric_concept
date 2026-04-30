@@ -95,7 +95,7 @@ internal partial class overhead_equipment
             _further_pole.placed_procedurally = _further_pole.cantilever_on_far_side = true;
 
 #if DEBUG
-            catenary_object arrow = system.add_scenery_object(wrap_constructor("GantryArrow"), x, z, y, orientation);
+            catenary_object arrow = system.add_scenery_object(miscellaneous_object.build_generic("GantryArrow"), x, z, y, orientation);
             arrow.placed_procedurally = true;
 #endif
         }

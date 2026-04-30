@@ -29,9 +29,9 @@ internal partial class overhead_equipment
         return add_scenery_object(constructor, x, z, relative_position.y, orientation);
     }
 
-    public void add_scenery_object(string template_name, Vector3 relative_position, Quaternion orientation)
+    public void add_miscellaneous_object(string template_name, Vector3 relative_position, Quaternion orientation)
     {
-        add_scenery_object(catenary_object.wrap_constructor(template_name), relative_position, orientation);
+        add_scenery_object(miscellaneous_object.build_generic(template_name), relative_position, orientation);
     }
 
     public pole_user add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation)

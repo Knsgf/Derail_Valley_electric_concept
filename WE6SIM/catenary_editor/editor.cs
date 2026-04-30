@@ -322,10 +322,14 @@ internal static class editor
 
     private static void anchor_pole(pole_user anchored_pole, Vector3 wire_direction)
     {
+        Vector3    anchor_position    = anchored_pole.get_relative_position();
         Quaternion anchor_orientation = anchored_pole.get_orientation();
         if (Vector3.Dot(wire_direction, anchor_orientation * Vector3.forward) > 0.0f)
+        {
             anchor_orientation *= flip_around_vertical;
-        system.add_scenery_object("PoleAnchor", anchored_pole.get_relative_position(), anchor_orientation);
+            anchor_position    += anchor_orientation * Vector3.left * (default_pole_offset * 2.0f);
+        }
+        system.add_miscellaneous_object("PoleAnchor", anchor_position, anchor_orientation);
         anchored_pole.anchored = true;
     }
     
