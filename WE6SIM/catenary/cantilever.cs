@@ -47,7 +47,7 @@ internal partial class overhead_equipment
                 return cantilever_type switch
                 {
                     cantilever_kind.Inner         => "RegistrationArmInner",
-                    cantilever_kind.OutwardsInner => "RegistrationArmMiddle",
+                    cantilever_kind.OutwardsInner => "RegistrationArmInnerOutward",
                     cantilever_kind.MiddleInner   => "RegistrationArmMiddleInner",
                     cantilever_kind.Middle        => "RegistrationArmMiddle",
                     cantilever_kind.Outer         => "RegistrationArmOuter",
@@ -88,19 +88,7 @@ internal partial class overhead_equipment
             this.dual_wire                  = dual_wire;
 
             float wire_attachment_offset;
-            if (is_gantry_registration_arm)
-            { 
-                wire_attachment_offset = cantilever_type switch
-                {
-                    cantilever_kind.Inner         => sweep,
-                    cantilever_kind.OutwardsInner => 0.0f,
-                    cantilever_kind.MiddleInner   => 0.0f,
-                    cantilever_kind.Middle        => 0.0f,
-                    cantilever_kind.Outer         => -sweep,
-                    _ => throw new ArgumentOutOfRangeException($"Unknown cantilever type {cantilever_type}")
-                };
-            }
-            else if (is_tunnel_registration_arm)
+            if (is_tunnel_registration_arm)
             { 
                 wire_attachment_offset = cantilever_type switch
                 {

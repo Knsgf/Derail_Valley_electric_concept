@@ -51,6 +51,8 @@ internal partial class overhead_equipment
         "PoleFoundation",
         "RegistrationArmInnerDual",
         "RegistrationArmInnerSingle",
+        "RegistrationArmInnerOutwardDual",
+        "RegistrationArmInnerOutwardSingle",
         "RegistrationArmMiddleDual",
         "RegistrationArmMiddleSingle",
         "RegistrationArmMiddleInnerDual",
