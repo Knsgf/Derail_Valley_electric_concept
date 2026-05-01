@@ -13,7 +13,8 @@ namespace WE6SIM.utilities;
 
 internal static class world_position
 {
-    public const float fixed_multiplier = 1000.0f;
+    public const int   fixed_divider    = 1000;
+    public const float fixed_multiplier = fixed_divider;
     
     public static int float_to_fixed(float value)
     {

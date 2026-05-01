@@ -30,7 +30,14 @@ internal partial class overhead_equipment
     [JsonObject]
     private class gantry: catenary_object, gantry_user
     {
-        //const float gantry_shift = 2.2f;
+#if DEBUG
+        [JsonIgnore]
+        private readonly int  _gantry_closer_end_x, _gantry_closer_end_z;
+        [JsonIgnore]
+        private          int _gantry_further_end_x, _gantry_further_end_z;
+        [JsonIgnore]
+        private line_cross _mow_movement_intersection;
+#endif
         
         [JsonIgnore]
         private static readonly float[] _gantry_lengths = [8.86f, 13.26f, 17.56f];
@@ -46,6 +53,7 @@ internal partial class overhead_equipment
         public float stretch
         {
             get => _stretch;
+#if DEBUG
             set
             {
                 _stretch   = value;
@@ -54,14 +62,7 @@ internal partial class overhead_equipment
                 reposition_further_pole();
                 system.handle_scenery_visibility(PlayerManager.PlayerTransform.position);
             }
-        }
-
-        private void reposition_further_pole()
-        {
-            _further_pole.is_visible = false;
-            _further_pole.hide_when_out_of_view();
-            (_further_pole.x, _further_pole.z) = further_pole_position(x, z, tracks, _stretch, orientation);
-            system.reconstruct_tree_after_moving_object(_further_pole);
+#endif
         }
 
         private static Vector3 get_frame_relative_position(int x, int z, float y, Quaternion orientation, float stretch)
@@ -97,6 +98,12 @@ internal partial class overhead_equipment
 #if DEBUG
             catenary_object arrow = system.add_scenery_object(miscellaneous_object.build_generic("GantryArrow"), x, z, y, orientation);
             arrow.placed_procedurally = true;
+            ( _gantry_closer_end_x,  _gantry_closer_end_z) = world_position.get_absolute_position(
+                get_relative_position() + orientation * Vector3.right * default_pole_offset);
+            (_gantry_further_end_x, _gantry_further_end_z) = world_position.get_absolute_position(
+                get_relative_position() + orientation * Vector3.left  * (_gantry_lengths[tracks - 2] * stretch));
+            _mow_movement_intersection = new line_cross(_gantry_closer_end_x,  _gantry_closer_end_z, 
+                                                       _gantry_further_end_x, _gantry_further_end_z, 0.01f);
 #endif
         }
 
@@ -107,29 +114,31 @@ internal partial class overhead_equipment
             entity.transform.localScale = new Vector3(_stretch, 1.0f, 1.0f);
 		}
 
-        private float calculate_2x2_determinant(float top_left, float top_right, float bottom_left, float bottom_right)
-        {
-            return top_left * bottom_right - top_right * bottom_left;
-        }
-        
 #if DEBUG
+        private void reposition_further_pole()
+        {
+            _further_pole.is_visible = false;
+            _further_pole.hide_when_out_of_view();
+            (_further_pole.x, _further_pole.z) = further_pole_position(x, z, tracks, _stretch, orientation);
+            (_gantry_further_end_x, _gantry_further_end_z) = world_position.get_absolute_position(
+                get_relative_position() + orientation * Vector3.left  * (_gantry_lengths[tracks - 2] * _stretch));
+            _mow_movement_intersection = new line_cross(_gantry_closer_end_x,  _gantry_closer_end_z, 
+                                                       _gantry_further_end_x, _gantry_further_end_z, 0.01f);
+            system.reconstruct_tree_after_moving_object(_further_pole);
+        }
+
         public Vector3? cross_point(Vector3 travel_relative_start, Vector3 travel_vector)
         {
-            Vector3 gantry_closer_end = world_position.get_relative_position(x, z, y) + orientation * (Vector3.right * default_pole_offset);
-            Vector3 gantry_span       = orientation * Vector3.left * (_gantry_lengths[tracks - 2] * stretch);
-            float divider = calculate_2x2_determinant(gantry_span.x, -travel_vector.x, gantry_span.z, -travel_vector.z);
-            if (divider == 0.0f)
+            (int travel_start_x, int travel_start_z) = world_position.get_absolute_position(travel_relative_start                );
+            (int   travel_end_x, int   travel_end_z) = world_position.get_absolute_position(travel_relative_start + travel_vector);
+            float? gantry_cross = _mow_movement_intersection.crossed_line_parameter(travel_start_x, travel_start_z,
+                                                                                    travel_end_x,   travel_end_z);
+            if (gantry_cross == null)
                 return null;
-            float origins_difference_x = travel_relative_start.x - gantry_closer_end.x, origins_difference_z = travel_relative_start.z - gantry_closer_end.z;
-            float gantry_cross_point = calculate_2x2_determinant(origins_difference_x, -travel_vector.x, origins_difference_z, -travel_vector.z) / divider;
-            if (gantry_cross_point < 0.0f || gantry_cross_point > 1.0f)
-                return null;
-            float travel_vector_cross_point = calculate_2x2_determinant(gantry_span.x, origins_difference_x, gantry_span.z, origins_difference_z) / divider;
-            if (travel_vector_cross_point < 0.0f || travel_vector_cross_point > 1.0f)
-                return null; 
-            Vector3 braket_position = travel_relative_start + travel_vector * travel_vector_cross_point;
-            braket_position.y = y;
-            return braket_position;
+            var gantry_cross_point = (float) gantry_cross;
+            Vector3 gantry_closer_end  = world_position.get_relative_position( _gantry_closer_end_x,  _gantry_closer_end_z, y);
+            Vector3 gantry_further_end = world_position.get_relative_position(_gantry_further_end_x, _gantry_further_end_z, y);
+            return Vector3.LerpUnclamped(gantry_closer_end, gantry_further_end, gantry_cross_point);
 		}
 
         public void change_orientation(Quaternion new_orientation)
