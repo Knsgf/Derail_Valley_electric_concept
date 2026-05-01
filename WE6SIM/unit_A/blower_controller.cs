@@ -16,7 +16,7 @@ internal class blower_controller: electric_device
     private readonly Port _blower_audio, _contactor_on_sound, _contactor_off_sound;
     
     private float _relative_speed = 0.0f, _line_voltage = 0.0f, _motor_current = 0.0f;
-    private float _line_voltage_multiplier = series_3_parallel_2;
+    private float _line_voltage_multiplier = series_6;
     private bool  _reconfiguration = false, _previously_active = false;
 
     public bool active { get; set; }
@@ -32,6 +32,8 @@ internal class blower_controller: electric_device
 
     private float voltage_divider()
     {
+        if (!is_powered || (!active && !full_speed_mode))
+            return series_6;
         if (_line_voltage <= 525.0f)
             return parallel_6;
         if (_line_voltage <= 1050.0f)
@@ -51,17 +53,19 @@ internal class blower_controller: electric_device
         _reconfiguration = false;
     }
     
-    public void simulate(float line_voltage, float traction_motor_current)
+    public void simulate(bool rheostatic_braking_on, float line_voltage, float traction_motor_current)
     {
         check_if_disposed();
         _line_voltage  = line_voltage           = Mathf.Abs(          line_voltage);
         _motor_current = traction_motor_current = Mathf.Abs(traction_motor_current);
         float fan_motor_voltage;
-        if (!is_powered || !active || _reconfiguration)
+        if ((!rheostatic_braking_on && !is_powered) || (!active && !full_speed_mode) || _reconfiguration)
         {
             fan_motor_voltage = 0.0f;
             if (_previously_active)
                 _contactor_off_sound.Value = 1.0f;
+            if (!_reconfiguration && _line_voltage_multiplier != series_6)
+                switch_configuration();
             _previously_active = false;
         }
         else

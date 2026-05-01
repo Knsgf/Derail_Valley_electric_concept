@@ -8,11 +8,12 @@ namespace WE6SIM.utilities;
 
 internal static class signal_cable
 {
-	public enum AB1_shift { unit_b_camshaft_lsb = 1, battery = 23 };
+	public enum AB1_shift { unit_B_camshaft_LSB = 1, unit_B_overhead_supply = 5, battery = 23 };
 	public enum AB1_signals
 	{
 		back_pantograph       = 0x1,
-		unit_b_camshaft_notch = 0xF << AB1_shift.unit_b_camshaft_lsb,
+		unit_b_camshaft_notch = 0xF << AB1_shift.unit_B_camshaft_LSB,
+		overhead_power        = 0x1 << AB1_shift.unit_B_overhead_supply,
 		battery = 0x1 << AB1_shift.battery
 	};
 	public enum BA1_shift { unit_b_camshaft_lsb = 0 };

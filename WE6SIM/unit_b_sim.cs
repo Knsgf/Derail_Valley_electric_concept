@@ -22,7 +22,7 @@ internal class unit_b_sim: electric_device
 	private readonly SimController _simulation;
 	private readonly camshaft_motor _secondary_controller;
 
-	private readonly Fuse _appliances;
+	private readonly Fuse _appliances, _overhead_power;
 	private readonly Port _control_AB1, _control_BA1;
 
 	private int _secondary_camshaft_target_notch = 1;
@@ -32,7 +32,8 @@ internal class unit_b_sim: electric_device
 	{
 		SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-		_appliances = grab_fuse(fuses, "fusebox.ELECTRICS_MAIN");
+		_appliances     = grab_fuse(fuses, "fusebox.ELECTRICS_MAIN");
+        _overhead_power = grab_fuse(fuses, "fusebox.OVERHEAD_POWER");
 
 		//_throttle_handle = get_port(ports, "throttle.EXT_IN");
 		//_reverser_handle = get_port(ports, "reverser.REVERSER");
@@ -62,9 +63,10 @@ internal class unit_b_sim: electric_device
 			return;
 		
 		_pantograph.toggle(!port_value_signal_active(AB1, (int) AB1_signals.back_pantograph));
-		_appliances.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.battery));
+		_appliances.ChangeState    (port_value_signal_active(AB1, (int) AB1_signals.battery       ));
+		_overhead_power.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.overhead_power));
 
-		_secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_b_camshaft_notch, (int) AB1_shift.unit_b_camshaft_lsb);
+		_secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_b_camshaft_notch, (int) AB1_shift.unit_B_camshaft_LSB);
 		switch (_secondary_camshaft_target_notch)
 		{
 			case 0:

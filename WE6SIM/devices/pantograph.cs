@@ -44,6 +44,8 @@ internal class pantograph: electric_device
     private int     _interations_left = max_iterations_before_sleep;
     private bool    _stowed = true;
 
+    public float voltage { get; private set; }
+
     private static GameObject? find_pantograph_base(GameObject entity)
     {
         if (string.Equals(entity.name, pantograph_tag, StringComparison.OrdinalIgnoreCase))
@@ -137,7 +139,10 @@ internal class pantograph: electric_device
     {
         check_if_disposed();
         if (_stowed || !is_powered)
+        {
             _target_height = _initial_head_height;
+            voltage        = 0.0f;
+        }
         else
         {
             (int strip_end1_x, int stripe_end1_z) = world_position.get_absolute_position(_contact_strip_end1.position);
@@ -146,12 +151,16 @@ internal class pantograph: electric_device
             float?  wire_height         = overhead_equipment.system.wire_height(strip_end1_x, stripe_end1_z, 
                                                                                 strip_end2_x, stripe_end2_z, base_world_position.y);
             if (wire_height == null)
+            {
                 _target_height = maximum_head_height;
+                voltage        = 0.0f;
+            }
             else
             {
                 Vector3 target_head_world_position = base_world_position;
                 target_head_world_position.y       = (float) wire_height;
                 _target_height                     = _unit.transform.InverseTransformPoint(target_head_world_position).y;
+                voltage                            = (Mathf.Abs(_current_height - _target_height) < 0.015f) ? 1600.0f : 0.0f;
             }
         }
 
