@@ -83,9 +83,9 @@ internal partial class overhead_equipment
 
     private readonly Dictionary<string, GameObject> _templates = [];
     private readonly string _file_path;
-    private readonly List<catenary_object> _all_objects = [], _freshly_added_objects = [];
+    private readonly List<catenary_object> _all_objects = [], _freshly_added_objects = [], _nearby_wires = [];
     private List<catenary_object> _previously_visible_objects = [], _currently_visible_objects = [];
-    private quad_tree _object_tree = new([]);
+    private quad_tree _object_tree = new([]), _wires_tree = new([]);
 
     public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
 
@@ -141,6 +141,12 @@ internal partial class overhead_equipment
         _system = new overhead_equipment(mod);
         _system.load_scenery(mod);  // "catenary_object" and its derivaties require "system" property to be initialised,
                                     // which precludes doing loading inside constructor
+        _system._wires_tree = new(
+        [..
+            from   current_object in _system._all_objects
+            where  current_object is wire
+            select current_object
+        ]);
     }
 
     public static void dispose()
@@ -243,4 +249,23 @@ internal partial class overhead_equipment
         return new_object;
     }
 
+    public float? wire_height(int strip_end1_x, int strip_end1_z, int strip_end2_x, int strip_end2_z, float pantograph_base_y)
+    {
+        const int wire_search_half_area = (int) (60.0f * fixed_multiplier);
+        
+        int strip_centre_x = (strip_end1_x + strip_end2_x) >> 1;
+        int strip_centre_z = (strip_end1_z + strip_end2_z) >> 1;
+        _nearby_wires.Clear();
+        find_objects_within_region(_nearby_wires, _wires_tree, do_bounds_check: true, 
+            strip_centre_x - wire_search_half_area, strip_centre_z - wire_search_half_area, 
+            strip_centre_x + wire_search_half_area, strip_centre_z + wire_search_half_area);
+        foreach (catenary_object current_object in _nearby_wires)
+        {
+            var    current_wire   = (wire) current_object;
+            float? contact_height = current_wire.contact_height(strip_end1_x, strip_end1_z, strip_end2_x, strip_end2_z, pantograph_base_y);
+            if (contact_height != null)
+                return contact_height;
+        }
+        return null;
+    }
 }

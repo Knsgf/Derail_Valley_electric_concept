@@ -23,7 +23,7 @@ internal partial class overhead_equipment
     [JsonObject]
     private class wire: catenary_object, wire_user
     {
-        const float default_section_length = 40.0f;
+        const float default_section_length = 40.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f;
         
         [JsonIgnore]
         private static readonly float y_scale = Mathf.Sqrt(2.0f);
@@ -34,6 +34,10 @@ internal partial class overhead_equipment
         private readonly Quaternion _primary_vertical_orientation;
         [JsonIgnore]
         private readonly Vector3 _primary_vertical_scale, _secondary_vertical_scale;
+        [JsonIgnore]
+        private readonly line_cross _pantograph_strip_intersection;
+        [JsonIgnore]
+        private readonly float _other_end_y;
         
         private GameObject? _primary_transform, _secondary_transform;
 
@@ -45,7 +49,6 @@ internal partial class overhead_equipment
         public float previous_pole_vertical_offset;
         [JsonProperty]
         public string substation;
-
 
         private static string wire_template(wire_kind wire_type)
         {
@@ -78,6 +81,13 @@ internal partial class overhead_equipment
             _primary_vertical_scale         = new Vector3(1.0f, Mathf.Cos(primary_orientation_angle), Mathf.Sin(primary_orientation_angle));
             _secondary_vertical_scale       = new Vector3(1.0f, y_scale, length / default_section_length * y_scale / Mathf.Cos(shear_angle));
             Main.log($"wire {shear_angle} {primary_orientation_angle} {_primary_vertical_scale} {_secondary_vertical_scale}");
+
+            bool    end_achor     = wire_type is wire_kind.end_anchor_dual or wire_kind.end_anchor_single or wire_kind.wall_anchor_single;
+            Vector3 wire_top_view = orientation * Vector3.forward * (end_achor ? (length - end_anchor_dead_length) : length);
+            _pantograph_strip_intersection = new line_cross(x, z, 
+                x + world_position.float_to_fixed(wire_top_view.x), z + world_position.float_to_fixed(wire_top_view.z), 0.01f);
+            _other_end_y = y + previous_pole_vertical_offset;
+            Main.log($"WTV = {wire_top_view} h0 = {y} h1 = {_other_end_y}");
         }
 
         public override void reveal()
@@ -114,5 +124,16 @@ internal partial class overhead_equipment
                 entity = _primary_transform = _secondary_transform = null;
             }
 		}
+
+        public float? contact_height(int strip_end1_x, int strip_end1_z, int strip_end2_x, int strip_end2_z, 
+            float pantograph_base_y)
+        {
+            float? intersection_parameter = _pantograph_strip_intersection.crossed_line_parameter(strip_end1_x, strip_end1_z,
+                                                                                                  strip_end2_x, strip_end2_z);
+            if (intersection_parameter == null)
+                return null;
+            float contact_height = Mathf.LerpUnclamped(y, _other_end_y, (float) intersection_parameter) + default_wire_height;
+            return (contact_height > pantograph_base_y) ? contact_height : null;
+        }
     }
 }

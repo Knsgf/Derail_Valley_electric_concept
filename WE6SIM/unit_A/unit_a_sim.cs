@@ -99,7 +99,7 @@ internal partial class unit_a_sim: electric_device
 		_control_stand.register_handler(   "field_handle", field_control_handler);
         _control_stand.register_handler("selector_handle",      selector_handler);
 
-		//_control_stand.register_handler("front_pantograph_switch", toggle_pole);
+		_control_stand.register_handler("front_pantograph_switch", toggle_pantograph);
         _control_stand.register_handler("fast_notching_switch", fast_notching_toggle);
 
 		set_supply_volts   = _control_stand.create_setter(        "supply_volts");
@@ -117,6 +117,11 @@ internal partial class unit_a_sim: electric_device
         _unit = unit;
 		_simulation = simulation;
 		simulation.SimulationFlow.TickEvent += simulate;
+	}
+
+	private void toggle_pantograph(float port_value)
+	{
+		_pantograph.toggle(port_value < 0.5f);
 	}
 
 	/*

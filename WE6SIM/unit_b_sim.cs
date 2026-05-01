@@ -60,10 +60,8 @@ internal class unit_b_sim: electric_device
 	{
 		if (disposed)
 			return;
-		if (port_value_signal_active(AB1, (int) AB1_signals.back_pantograph))
-			_pantograph.set_target_height(6.0f + Main.pole_height_offset);
-		else
-			_pantograph.set_target_height(0.0f);
+		
+		_pantograph.toggle(!port_value_signal_active(AB1, (int) AB1_signals.back_pantograph));
 		_appliances.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.battery));
 
 		_secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_b_camshaft_notch, (int) AB1_shift.unit_b_camshaft_lsb);
