@@ -32,7 +32,7 @@ internal class unit_b_sim: electric_device
 	{
 		SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-		_appliances     = grab_fuse(fuses, "fusebox.ELECTRICS_MAIN");
+		_appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
         _overhead_power = grab_fuse(fuses, "fusebox.OVERHEAD_POWER");
 
 		//_throttle_handle = get_port(ports, "throttle.EXT_IN");

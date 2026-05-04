@@ -35,12 +35,14 @@ internal partial class unit_a_sim: electric_device
     private readonly SimController _simulation;
     private readonly circuit       _circuit;
 
-    private readonly pantograph             _pantograph;
-    private readonly traction_motor[]       _traction_motors;
-    private readonly blower_controller      _blowers;
-    private readonly throttle_controller    _throttle_controller;
-    private readonly control_stand          _control_stand;
-    private readonly TrainCar               _unit;
+    private readonly pantograph                 _pantograph;
+    private readonly traction_motor[]           _traction_motors;
+    private readonly blower_controller          _blowers;
+    private readonly throttle_controller        _throttle_controller;
+    private readonly control_stand              _control_stand;
+    private readonly red_ditch_light_controller _red_light_controller;
+    
+    private readonly TrainCar _unit;
 
     private readonly Action<float> set_primary_notch, set_seconday_notch, set_supply_volts, set_motors_volts;
     private readonly Action<float>[] set_motor_group_load, set_motor_group_field;
@@ -59,7 +61,7 @@ internal partial class unit_a_sim: electric_device
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-        _appliances = grab_fuse(fuses, "fusebox.ELECTRICS_MAIN");
+        _appliances = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
         set_up_fuses(_appliances);
         power_supply_toggled += appliances_toggle;
 
@@ -94,7 +96,7 @@ internal partial class unit_a_sim: electric_device
         _traction_motors = new traction_motor[motors];
         for (int motor_number = 1; motor_number <= motors; ++motor_number)
             _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
-        _blowers = new blower_controller(_overhead_power, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
+        _blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
 
         _control_stand       = new control_stand(_appliances, ports);
         _throttle_controller = new throttle_controller(this);
@@ -105,6 +107,7 @@ internal partial class unit_a_sim: electric_device
 
         _control_stand.register_handler("front_pantograph_switch", toggle_pantograph);
         _control_stand.register_handler("fast_notching_switch", fast_notching_toggle);
+        _red_light_controller = new red_ditch_light_controller(_appliances, ports);
 
         set_supply_volts   = _control_stand.create_setter(        "supply_volts");
         set_motors_volts   = _control_stand.create_setter(        "motors_volts");
@@ -358,6 +361,7 @@ internal partial class unit_a_sim: electric_device
             _blowers.Dispose();
             _contactors.Dispose();
             _control_stand.Dispose();
+            _red_light_controller.Dispose();
             _simulation.SimulationFlow.TickEvent -= simulate;
             _control_BA1.ValueUpdatedInternally  -= MU_BA1_control;
         }
