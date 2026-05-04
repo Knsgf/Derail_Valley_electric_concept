@@ -18,6 +18,7 @@ interface pole_user: catenary_object_user
     bool cantilever_on_near_side { get; set; }
     bool cantilever_on_far_side  { get; set; }
     bool anchored                { get; set; }
+    Vector3 get_pole_true_position();
 }
 
 internal partial class overhead_equipment
@@ -58,6 +59,16 @@ internal partial class overhead_equipment
                 catenary_object foundation     = system.add_scenery_object(miscellaneous_object.build_generic("PoleFoundation"), x, z, y, orientation);
                 foundation.placed_procedurally = true;
             }
+        }
+
+        public Vector3 get_pole_true_position()
+        { 
+            if (pole_type != pole_kind.Bracket)
+                return get_relative_position() + orientation * Vector3.right * default_pole_offset; 
+            
+            // Gantry bracket position is slightly biased to prevent placement of 2 registration arms above the
+            // same track at the same point under 3-track gantry, where bracket attachment zones may overlap
+            return get_relative_position() + orientation * Vector3.left * (default_pole_offset + 0.005f);
         }
     }
 }

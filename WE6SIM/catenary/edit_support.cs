@@ -36,8 +36,13 @@ internal partial class overhead_equipment
 
     public pole_user add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation)
     {
-		return add_scenery_object((int x, int z, float y, Quaternion orientation) => new pole(pole_type, x, z, y, orientation),
-            relative_position, orientation);
+        if (pole_type == pole_kind.SideRail)
+        {
+            return add_scenery_object((int x, int z, float y, Quaternion orientation) => 
+                new side_rail_pole(x, z, y, orientation), relative_position, orientation);
+        }
+        return add_scenery_object((int x, int z, float y, Quaternion orientation) => 
+            new pole(pole_type, x, z, y, orientation), relative_position, orientation);
     }
 
     public void add_gantry(int tracks, Vector3 relative_position, Quaternion orientation)

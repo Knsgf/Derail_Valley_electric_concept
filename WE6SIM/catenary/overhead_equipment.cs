@@ -21,10 +21,10 @@ namespace WE6SIM.catenary;
 
 internal partial class overhead_equipment
 {
-    public enum pole_kind { Ground, Bridge, Tunnel, Bracket };
+    public enum pole_kind { Ground, Bridge, Tunnel, Bracket, SideRail };
     public enum cantilever_kind { Inner, OutwardsInner, MiddleInner, Middle, Outer };
     public enum wire_kind { plain_dual, plain_single, end_anchor_dual, end_anchor_single, wall_anchor_single,
-        middle_anchor_dual, middle_anchor_single };
+        middle_anchor_dual, middle_anchor_single, side_rail, termination_rail };
 
     public const float default_pole_offset = 2.2f;
 
@@ -61,6 +61,7 @@ internal partial class overhead_equipment
         "RegistrationArmOuterSingle",
         "RegistrationBracket",
         "SideRail",
+        "SideRailEnd",
         "SideRailPole",
         "TunnelInnerDual",
         "TunnelInnerSingle",

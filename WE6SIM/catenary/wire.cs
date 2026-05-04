@@ -23,7 +23,7 @@ internal partial class overhead_equipment
     [JsonObject]
     private class wire: catenary_object, wire_user
     {
-        const float default_section_length = 40.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f;
+        const float default_section_length = 40.0f, default_side_rail_length = 10.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f;
         
         [JsonIgnore]
         private static readonly float y_scale = Mathf.Sqrt(2.0f);
@@ -61,6 +61,8 @@ internal partial class overhead_equipment
                 wire_kind.end_anchor_dual      => "WireDualEnd",
                 wire_kind.end_anchor_single    => "WireSingleEnd",
                 wire_kind.wall_anchor_single   => "WireSingleWallEnd",
+                wire_kind.side_rail            => "SideRail",
+                wire_kind.termination_rail     => "SideRailEnd",
                 _ => throw new ArgumentOutOfRangeException($"Invalid wire type {wire_type}")
             };
         }
@@ -77,9 +79,11 @@ internal partial class overhead_equipment
             
             float shear_angle               = Mathf.Atan(previous_pole_vertical_offset / length);
             float primary_orientation_angle = Mathf.Deg2Rad * 45.0f + shear_angle / 2.0f;
-            _primary_vertical_orientation   = Quaternion.Euler(Mathf.Rad2Deg * (-primary_orientation_angle), 0.0f, 0.0f);
-            _primary_vertical_scale         = new Vector3(1.0f, Mathf.Cos(primary_orientation_angle), Mathf.Sin(primary_orientation_angle));
-            _secondary_vertical_scale       = new Vector3(1.0f, y_scale, length / default_section_length * y_scale / Mathf.Cos(shear_angle));
+            float template_section_length   = (wire_type is wire_kind.side_rail or wire_kind.termination_rail) 
+                ? default_side_rail_length : default_section_length;
+            _primary_vertical_orientation = Quaternion.Euler(Mathf.Rad2Deg * (-primary_orientation_angle), 0.0f, 0.0f);
+            _primary_vertical_scale       = new Vector3(1.0f, Mathf.Cos(primary_orientation_angle), Mathf.Sin(primary_orientation_angle));
+            _secondary_vertical_scale     = new Vector3(1.0f, y_scale, length / template_section_length * y_scale / Mathf.Cos(shear_angle));
             Main.log($"wire {shear_angle} {primary_orientation_angle} {_primary_vertical_scale} {_secondary_vertical_scale}");
 
             bool    end_achor     = wire_type is wire_kind.end_anchor_dual or wire_kind.end_anchor_single or wire_kind.wall_anchor_single;
