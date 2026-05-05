@@ -26,9 +26,10 @@ internal partial class unit_a_sim: electric_device
     private readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
-    private readonly Fuse   _appliances, _overhead_power;
-    private readonly Port   _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
-    private readonly Port   _contactor_on_sound, _contactor_off_sound;
+    private readonly Fuse _appliances, _overhead_power;
+    private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
+    private readonly Port _contactor_on_sound, _contactor_off_sound;
+    private readonly Port _reverse_current_lamp;
 
     private readonly Port _control_AB1, _control_BA1, _torque_b;
 
@@ -108,6 +109,7 @@ internal partial class unit_a_sim: electric_device
         _control_stand.register_handler("front_pantograph_switch", toggle_pantograph);
         _control_stand.register_handler("fast_notching_switch", fast_notching_toggle);
         _red_light_controller = new red_ditch_light_controller(_appliances, ports);
+        _reverse_current_lamp = grab_port(ports, "[CustomSimulation].REVERSE_CURRENT");
 
         set_supply_volts   = _control_stand.create_setter(        "supply_volts");
         set_motors_volts   = _control_stand.create_setter(        "motors_volts");
@@ -321,21 +323,24 @@ internal partial class unit_a_sim: electric_device
         set_supply_volts(_named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"]);
         _motors_volts = _currents["VM"] * _element_resistances["VM"];
         set_motors_volts(_motors_volts);
-        float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
+        float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_field = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
         for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
         {
             traction_motor motor = traction_motors[motor_index];
-            total_torque += motor.wheel_torque;
-            average_RPM  += motor.RPM;
-            average_load += motor.load_current;
-            maximum_load  = Mathf.Max(maximum_load, Mathf.Abs(motor.load_current));
-            average_EMF  += motor.EMF;
+            total_torque  += motor.wheel_torque;
+            average_RPM   += motor.RPM;
+            average_load  += motor.load_current;
+            maximum_load   = Mathf.Max(maximum_load, Mathf.Abs(motor.load_current));
+            average_field += motor.field_current;
+            average_EMF   += motor.EMF;
         }
-        average_RPM  /= traction_motors.Length;
-        average_EMF  /= traction_motors.Length;
-        average_load /= traction_motors.Length;
-        _traction_motor_RPM.Value  = average_RPM;
-        _traction_motor_load.Value = average_load;
+        average_RPM   /= traction_motors.Length;
+        average_EMF   /= traction_motors.Length;
+        average_load  /= traction_motors.Length;
+        average_field /= traction_motors.Length;
+        _traction_motor_RPM.Value   = average_RPM;
+        _traction_motor_load.Value  = average_load;
+        _reverse_current_lamp.Value = (maximum_load >= 10.0f && average_load * average_field < 0.0f) ? 1.0f : 0.0f;
         for (int group_index = 2; group_index >= 0; --group_index)
         {
             set_motor_group_load[group_index](traction_motors[group_index << 1].load_current);
