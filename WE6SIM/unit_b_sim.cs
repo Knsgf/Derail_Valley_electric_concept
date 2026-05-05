@@ -90,7 +90,7 @@ internal class unit_b_sim: electric_device
 	private void simulate()
 	{
 		check_if_disposed();
-		_pantograph.move();
+		_pantograph.simulate();
 		set_port_signal(_control_BA1, (int) BA1_signals.unit_b_camshaft_notch, (int) BA1_shift.unit_b_camshaft_lsb,
 			_secondary_controller.current_notch);
 	}

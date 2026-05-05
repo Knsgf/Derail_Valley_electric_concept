@@ -260,13 +260,19 @@ internal partial class overhead_equipment
         find_objects_within_region(_nearby_wires, _wires_tree, do_bounds_check: true, 
             strip_centre_x - wire_search_half_area, strip_centre_z - wire_search_half_area, 
             strip_centre_x + wire_search_half_area, strip_centre_z + wire_search_half_area);
+        float lowest_height = float.MaxValue;
+        //Main.log($"{_nearby_wires.Count} wires");
         foreach (catenary_object current_object in _nearby_wires)
         {
             var    current_wire   = (wire) current_object;
             float? contact_height = current_wire.contact_height(strip_end1_x, strip_end1_z, strip_end2_x, strip_end2_z, pantograph_base_y);
             if (contact_height != null)
-                return contact_height;
+            {
+                float wire_height = (float) contact_height;
+                if (lowest_height > wire_height)
+                    lowest_height = wire_height;
+            }
         }
-        return null;
+        return (lowest_height < float.MaxValue) ? lowest_height : null;
     }
 }

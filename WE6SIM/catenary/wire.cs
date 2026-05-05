@@ -23,7 +23,8 @@ internal partial class overhead_equipment
     [JsonObject]
     private class wire: catenary_object, wire_user
     {
-        const float default_section_length = 40.0f, default_side_rail_length = 10.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f;
+        const float default_section_length = 40.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f;
+        const float default_side_rail_length = 10.0f, default_side_rail_height = 4.5f;
         
         [JsonIgnore]
         private static readonly float y_scale = Mathf.Sqrt(2.0f);
@@ -37,7 +38,7 @@ internal partial class overhead_equipment
         [JsonIgnore]
         private readonly line_cross _pantograph_strip_intersection;
         [JsonIgnore]
-        private readonly float _other_end_y;
+        private readonly float _other_end_y, _contact_height;
         
         private GameObject? _primary_transform, _secondary_transform;
 
@@ -77,10 +78,10 @@ internal partial class overhead_equipment
             this.length                        = length;
             this.previous_pole_vertical_offset = previous_pole_vertical_offset;
             
+            bool  is_side_rail              = wire_type is wire_kind.side_rail or wire_kind.termination_rail;
             float shear_angle               = Mathf.Atan(previous_pole_vertical_offset / length);
             float primary_orientation_angle = Mathf.Deg2Rad * 45.0f + shear_angle / 2.0f;
-            float template_section_length   = (wire_type is wire_kind.side_rail or wire_kind.termination_rail) 
-                ? default_side_rail_length : default_section_length;
+            float template_section_length   = is_side_rail ? default_side_rail_length : default_section_length;
             _primary_vertical_orientation = Quaternion.Euler(Mathf.Rad2Deg * (-primary_orientation_angle), 0.0f, 0.0f);
             _primary_vertical_scale       = new Vector3(1.0f, Mathf.Cos(primary_orientation_angle), Mathf.Sin(primary_orientation_angle));
             _secondary_vertical_scale     = new Vector3(1.0f, y_scale, length / template_section_length * y_scale / Mathf.Cos(shear_angle));
@@ -92,6 +93,8 @@ internal partial class overhead_equipment
                 x + world_position.float_to_fixed(wire_top_view.x), z + world_position.float_to_fixed(wire_top_view.z), 0.01f);
             _other_end_y = y + previous_pole_vertical_offset;
             Main.log($"WTV = {wire_top_view} h0 = {y} h1 = {_other_end_y}");
+
+            _contact_height = is_side_rail ? default_side_rail_height : default_wire_height;
         }
 
         public override void reveal()
@@ -136,7 +139,8 @@ internal partial class overhead_equipment
                                                                                                   strip_end2_x, strip_end2_z);
             if (intersection_parameter == null)
                 return null;
-            float contact_height = Mathf.LerpUnclamped(y, _other_end_y, (float) intersection_parameter) + default_wire_height;
+            float contact_height = Mathf.LerpUnclamped(y, _other_end_y, (float) intersection_parameter) + _contact_height;
+            //Main.log($"@{contact_height} -> {pantograph_base_y}");
             return (contact_height > pantograph_base_y) ? contact_height : null;
         }
     }

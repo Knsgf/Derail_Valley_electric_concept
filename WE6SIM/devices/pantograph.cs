@@ -23,13 +23,23 @@ internal class pantograph: electric_device
     const string first_contact_strip_tag =       "StripEnd1", second_contact_strip_tag = "StripEnd2";
     const string piston_lever_tag        =        "LeverTip";
 
-    const float maximum_head_height = 6.6f, frame_thickness = 0.085f, head_movement_speed = 0.1f;
+    const string sidepan_base_tag          = "SidepanBase";
+    const string sidepan_pivot_tag         = "SidepanPivot", sidepan_arm_tag           = "SidepanArm";
+    const string sidepan_inner_contact_tag = "SidepanInner", sidepan_outer_contact_tag = "SidepanOuter";
+
+    const float maximum_head_height = 6.6f, frame_thickness = 0.085f, head_movement_speed = 0.5f;
+    const float sidepan_relative_movement_speed = 0.5f;
     const int   max_iterations_before_sleep = 6;
+
+    private static readonly Quaternion _sidepan_pivot_deployed_orientation = Quaternion.AngleAxis(90.0f  , Vector3.up   );
+    private static readonly Quaternion   _sidepan_arm_deployed_orientation = Quaternion.AngleAxis(15.456f, Vector3.right);
 
     private Transform _base, _front_lower_frame, _front_upper_frame, _back_lower_frame, _back_upper_frame, _head;
     private Transform _front_piston, _back_piston;
     private Transform _head_rollers, _top_pivot, _piston_lever_tip;
     private Transform _contact_strip_end1, _contact_strip_end2;
+
+    private Transform _sidepan_base, _sidepan_pivot, _sidepan_arm, _sidepan_inner_contact, _sidepan_outer_contact;
 
     private readonly Quaternion _initial_front_lower_frame_orientation, _initial_front_upper_frame_orientation;
     private readonly Quaternion _initial_back_lower_frame_orientation, _initial_back_upper_frame_orientation;
@@ -44,15 +54,18 @@ internal class pantograph: electric_device
     private int     _interations_left = max_iterations_before_sleep;
     private bool    _stowed = true;
 
+    private float _side_pivot_relative_position = 0.0f, _side_arm_relative_position = 0.0f;
+    private bool  _sidepan_stowed = true, _at_either_end = false;
+
     public float voltage { get; private set; }
 
-    private static GameObject? find_pantograph_base(GameObject entity)
+    private static GameObject? find_pantograph_base(bool is_sidepan, GameObject entity)
     {
-        if (string.Equals(entity.name, pantograph_tag, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(entity.name, is_sidepan ? sidepan_base_tag : pantograph_tag, StringComparison.OrdinalIgnoreCase))
             return entity;
         foreach (Transform child in entity.transform)
         {
-            GameObject? candidate = find_pantograph_base(child.gameObject);
+            GameObject? candidate = find_pantograph_base(is_sidepan, child.gameObject);
             if (candidate != null)
                 return candidate;
         }
@@ -63,32 +76,42 @@ internal class pantograph: electric_device
     {
         Transform entity_location = entity.transform;
         //Main.log(entity.name);
-        if (string.Equals(entity.name,				  pantograph_tag, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(entity.name,				   pantograph_tag, StringComparison.OrdinalIgnoreCase))
             _base = entity_location;
-        else if (string.Equals(entity.name,					head_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,					 head_tag, StringComparison.OrdinalIgnoreCase))
             _head = entity_location;
-        else if (string.Equals(entity.name,	   lower_front_frame_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,	    lower_front_frame_tag, StringComparison.OrdinalIgnoreCase))
             _front_lower_frame = entity_location;
-        else if (string.Equals(entity.name,	   upper_front_frame_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,	    upper_front_frame_tag, StringComparison.OrdinalIgnoreCase))
             _front_upper_frame = entity_location;
-        else if (string.Equals(entity.name,		lower_back_frame_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,		 lower_back_frame_tag, StringComparison.OrdinalIgnoreCase))
             _back_lower_frame = entity_location;
-        else if (string.Equals(entity.name,		upper_back_frame_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,		 upper_back_frame_tag, StringComparison.OrdinalIgnoreCase))
             _back_upper_frame = entity_location;
-        else if (string.Equals(entity.name,			front_piston_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,			 front_piston_tag, StringComparison.OrdinalIgnoreCase))
             _front_piston = entity_location;
-        else if (string.Equals(entity.name,			 back_piston_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,			  back_piston_tag, StringComparison.OrdinalIgnoreCase))
             _back_piston = entity_location;
-        else if (string.Equals(entity.name,       rollers_offset_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,        rollers_offset_tag, StringComparison.OrdinalIgnoreCase))
             _head_rollers = entity_location;
-        else if (string.Equals(entity.name,            top_pivot_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,             top_pivot_tag, StringComparison.OrdinalIgnoreCase))
             _top_pivot = entity_location;
-        else if (string.Equals(entity.name,         piston_lever_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,          piston_lever_tag, StringComparison.OrdinalIgnoreCase))
             _piston_lever_tip = entity_location;
-        else if (string.Equals(entity.name,  first_contact_strip_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,   first_contact_strip_tag, StringComparison.OrdinalIgnoreCase))
             _contact_strip_end1 = entity_location;
-        else if (string.Equals(entity.name, second_contact_strip_tag, StringComparison.OrdinalIgnoreCase))
+        else if (string.Equals(entity.name,  second_contact_strip_tag, StringComparison.OrdinalIgnoreCase))
             _contact_strip_end2 = entity_location;
+        else if (string.Equals(entity.name,          sidepan_base_tag, StringComparison.OrdinalIgnoreCase))
+            _sidepan_base = entity_location;
+        else if (string.Equals(entity.name,         sidepan_pivot_tag, StringComparison.OrdinalIgnoreCase))
+            _sidepan_pivot = entity_location;
+        else if (string.Equals(entity.name,           sidepan_arm_tag, StringComparison.OrdinalIgnoreCase))
+            _sidepan_arm = entity_location;
+        else if (string.Equals(entity.name, sidepan_inner_contact_tag, StringComparison.OrdinalIgnoreCase))
+            _sidepan_inner_contact = entity_location;
+        else if (string.Equals(entity.name, sidepan_outer_contact_tag, StringComparison.OrdinalIgnoreCase))
+            _sidepan_outer_contact = entity_location;
 
         foreach (Transform child_location in entity_location)
         {
@@ -98,7 +121,7 @@ internal class pantograph: electric_device
 
     public pantograph(GameObject unit, Fuse electric_supply): base("pantograph", electric_supply)
     {
-        GameObject pantograph_base = find_pantograph_base(unit) ?? throw new Exception("Missing pantograph");
+        GameObject pantograph_base = find_pantograph_base(is_sidepan: false, unit) ?? throw new Exception("Missing pantograph");
         assign_parts(pantograph_base);
         if (_base == null || _head == null || _front_lower_frame == null || _front_upper_frame == null
             || _back_lower_frame == null || _back_upper_frame == null || _front_piston == null || _back_piston == null
@@ -133,37 +156,18 @@ internal class pantograph: electric_device
         _initial_front_upper_frame_orientation = _front_upper_frame.localRotation * Quaternion.AngleAxis(upper_frame_rest_angle, Vector3.left );
         _initial_back_lower_frame_orientation  =  _back_lower_frame.localRotation * Quaternion.AngleAxis(lower_frame_rest_angle, Vector3.right);
         _initial_back_upper_frame_orientation  =  _back_upper_frame.localRotation * Quaternion.AngleAxis(upper_frame_rest_angle, Vector3.right);
+
+        GameObject sidepan_base = find_pantograph_base(is_sidepan: true, unit) ?? throw new Exception("Missing sidepan");
+        assign_parts(sidepan_base);
+        if (_sidepan_base == null || _sidepan_pivot == null || _sidepan_arm == null 
+            || _sidepan_inner_contact == null || _sidepan_outer_contact == null)
+        {
+            throw new Exception("Incomplete sidepan");
+        }
     }
 
-    public void move()
+    private void move()
     {
-        check_if_disposed();
-        if (_stowed || !is_powered)
-        {
-            _target_height = _initial_head_height;
-            voltage        = 0.0f;
-        }
-        else
-        {
-            (int strip_end1_x, int stripe_end1_z) = world_position.get_absolute_position(_contact_strip_end1.position);
-            (int strip_end2_x, int stripe_end2_z) = world_position.get_absolute_position(_contact_strip_end2.position);
-            Vector3 base_world_position = _base.position;
-            float?  wire_height         = overhead_equipment.system.wire_height(strip_end1_x, stripe_end1_z, 
-                                                                                strip_end2_x, stripe_end2_z, base_world_position.y);
-            if (wire_height == null)
-            {
-                _target_height = maximum_head_height;
-                voltage        = 0.0f;
-            }
-            else
-            {
-                Vector3 target_head_world_position = base_world_position;
-                target_head_world_position.y       = (float) wire_height;
-                _target_height                     = _unit.transform.InverseTransformPoint(target_head_world_position).y;
-                voltage                            = (Mathf.Abs(_current_height - _target_height) < 0.015f) ? 1600.0f : 0.0f;
-            }
-        }
-
         if (_current_height < _target_height - 0.006f)
         {
             _current_height   = Mathf.Min(_current_height + head_movement_speed * Time.deltaTime, maximum_head_height);
@@ -214,17 +218,105 @@ internal class pantograph: electric_device
         _back_piston.localPosition  = new Vector3(0.0f, _piston_height, -piston_extension);
     }
 
-    /*
-    public void set_target_height(float target_head_height)
+    private void sidepan_move()
+    {
+        if (_sidepan_stowed)
+        {
+            if (_side_arm_relative_position > 0.0f)
+            {
+                _side_arm_relative_position -= sidepan_relative_movement_speed * Time.deltaTime;
+                _at_either_end               = false;
+            }
+            else if (_side_pivot_relative_position > 0.0f)
+            {
+                _side_pivot_relative_position -= sidepan_relative_movement_speed * Time.deltaTime;
+                _at_either_end                 = false;
+            }
+            else if (_at_either_end)
+                return;
+            _at_either_end = true;
+        }
+        else
+        {
+            if (_side_pivot_relative_position < 1.0f)
+            {
+                _side_pivot_relative_position += sidepan_relative_movement_speed * Time.deltaTime;
+                _at_either_end                 = false;
+            }
+            else if (_side_arm_relative_position < 1.0f)
+            {
+                _side_arm_relative_position += sidepan_relative_movement_speed * Time.deltaTime;
+                _at_either_end               = false;
+            }
+            else if (_at_either_end)
+                return;
+            _at_either_end = true;
+        }
+        _sidepan_pivot.localRotation = Quaternion.Slerp(Quaternion.identity, _sidepan_pivot_deployed_orientation, _side_pivot_relative_position);
+        _sidepan_arm.localRotation   = Quaternion.Slerp(Quaternion.identity,   _sidepan_arm_deployed_orientation,   _side_arm_relative_position);
+    }
+
+    private float? get_wire_height(Transform pantograph_base, Transform strip_end1, Transform strip_end2) 
+    { 
+        (int strip_end1_x, int stripe_end1_z) = world_position.get_absolute_position(strip_end1.position);
+        (int strip_end2_x, int stripe_end2_z) = world_position.get_absolute_position(strip_end2.position);
+        //Main.log($"Contact ({strip_end1_x}, {stripe_end1_z})-({strip_end2_x}, {stripe_end2_z}) {pantograph_base.position.y}");
+        return overhead_equipment.system.wire_height(strip_end1_x, stripe_end1_z, 
+                                                     strip_end2_x, stripe_end2_z, pantograph_base.position.y);
+    }
+    
+    public void simulate()
     {
         check_if_disposed();
-        _target_height = !is_powered ? _initial_head_height : Mathf.Clamp(target_head_height, _initial_head_height, maximum_head_height);
+        if (_stowed || !is_powered)
+        {
+            _target_height = _initial_head_height;
+            voltage        = 0.0f;
+        }
+        else
+        {
+            /*
+            (int strip_end1_x, int stripe_end1_z) = world_position.get_absolute_position(_contact_strip_end1.position);
+            (int strip_end2_x, int stripe_end2_z) = world_position.get_absolute_position(_contact_strip_end2.position);
+            Vector3 base_world_position = _base.position;
+            float?  wire_height         = overhead_equipment.system.wire_height(strip_end1_x, stripe_end1_z, 
+                                                                                strip_end2_x, stripe_end2_z, base_world_position.y);
+            */
+            float? wire_height = get_wire_height(_base, _contact_strip_end1, _contact_strip_end2);
+            if (wire_height == null)
+            {
+                _target_height = maximum_head_height;
+                voltage        = 0.0f;
+            }
+            else
+            {
+                Vector3 target_head_world_position = _base.position;
+                target_head_world_position.y       = (float) wire_height;
+                _target_height                     = _unit.transform.InverseTransformPoint(target_head_world_position).y;
+                voltage                            = (Mathf.Abs(_current_height - _target_height) < 0.015f) ? 1600.0f : 0.0f;
+            }
+        }
+        move();
+
+        if (_sidepan_stowed || _side_pivot_relative_position < 1.0f || _side_arm_relative_position < 1.0f)
+            voltage = 0.0f;
+        else
+            voltage = (get_wire_height(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact) == null) ? 0.0f : 1050.0f;
+        sidepan_move();
+
+        Main.diagnostics?.Value = _sidepan_stowed ? 0.0f : 1.0f;
+        Main.diagnostics2?.Value = _at_either_end ? 1.0f : 0.0f;
     }
-    */
 
     public void toggle(bool stowed)
     {
         check_if_disposed();
         _stowed = stowed;
+    }
+
+    public void sidepan_toggle(bool stowed)
+    {
+        check_if_disposed();
+        _sidepan_stowed = stowed;
     }
 }

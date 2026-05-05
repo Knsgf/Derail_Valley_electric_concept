@@ -128,7 +128,7 @@ internal partial class unit_a_sim: electric_device
 
     private void toggle_pantograph(float port_value)
     {
-        _pantograph.toggle(port_value < 0.5f);
+        _pantograph.sidepan_toggle(port_value < 0.5f);
     }
 
     /*
@@ -294,7 +294,7 @@ internal partial class unit_a_sim: electric_device
     {
         check_if_disposed();
         overhead_equipment.system.handle_scenery_visibility(_unit.transform.position);
-        _pantograph.move();
+        _pantograph.simulate();
         _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
 
         set_primary_notch(_contactors._primary_controller.current_position);
@@ -345,9 +345,6 @@ internal partial class unit_a_sim: electric_device
         _blowers.active = rheostatic_brake_on || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
         //_blowers.full_speed_mode = true;
         _blowers.simulate(rheostatic_brake_on, rheostatic_brake_on ? _motors_volts : voltage, maximum_load);
-
-        Main.diagnostics?.Value = _currents["MA5"];
-        Main.diagnostics2?.Value = _currents["MA6"];
 
         _torque_a.Value = _torque_b.Value = total_torque / 2.0f;
     }
