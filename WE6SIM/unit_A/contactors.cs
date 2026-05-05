@@ -31,7 +31,7 @@ internal partial class unit_a_sim
             _selector_traction_shaft     = new camshaft_contactor_set(_selector_traction_toggles, contactor_locations, _selector_motor, contactor_on_sound, contactor_off_sound);
             _selector_regenerative_shaft = new camshaft_contactor_set(_selector_regenerative_toggles, contactor_locations, _selector_motor, contactor_on_sound, contactor_off_sound);
             
-            _line_contactor = new contactor(["LC1"], null, contactor_locations, contactor_on_sound, contactor_off_sound, appliances);
+            _line_contactor = new contactor(["LC1", "LCA", "LCB", "LCC", "LCD", "LCE", "LCF"], null, contactor_locations, contactor_on_sound, contactor_off_sound, appliances);
             _line_contactor2 = new contactor(["LC2", "LC3"], null, contactor_locations, contactor_on_sound, contactor_off_sound, appliances);
 
             string[] dynamic_brake_closed_contacts = new string[motors + 5], dynamic_brake_open_contacts = new string[motors + 3];
