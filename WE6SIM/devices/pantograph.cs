@@ -298,12 +298,14 @@ internal class pantograph: electric_device
         }
         move();
 
+        float sidepan_voltage;
         if (_sidepan_stowed || _side_pivot_relative_position < 1.0f || _side_arm_relative_position < 1.0f)
-            voltage = 0.0f;
+            sidepan_voltage = 0.0f;
         else
-            voltage = (get_wire_height(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact) == null) ? 0.0f : 1050.0f;
+            sidepan_voltage = (get_wire_height(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact) == null) ? 0.0f : 1050.0f;
         sidepan_move();
 
+        voltage = Mathf.Max(voltage, sidepan_voltage);
         Main.diagnostics?.Value = _sidepan_stowed ? 0.0f : 1.0f;
         Main.diagnostics2?.Value = _at_either_end ? 1.0f : 0.0f;
     }

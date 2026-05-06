@@ -130,7 +130,7 @@ internal partial class unit_a_sim: electric_device
 
     private void toggle_pantograph(float port_value)
     {
-        _pantograph.sidepan_toggle(port_value < 0.5f);
+        _pantograph.toggle(port_value < 0.5f);
     }
 
     /*
