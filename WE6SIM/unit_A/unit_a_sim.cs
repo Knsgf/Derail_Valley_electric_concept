@@ -331,7 +331,10 @@ internal partial class unit_a_sim: electric_device
         average_field /= traction_motors.Length;
         _traction_motor_RPM.Value   = average_RPM;
         _traction_motor_load.Value  = average_load;
-        _reverse_current_lamp.Value = (maximum_load >= 10.0f && average_load * average_field < 0.0f) ? 1.0f : 0.0f;
+        if (maximum_load < 10.0f)
+            _reverse_current_lamp.Value = 0.0f;
+        else
+            _reverse_current_lamp.Value = (average_load * average_field * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f;
         for (int group_index = 2; group_index >= 0; --group_index)
         {
             set_motor_group_load[group_index](traction_motors[group_index << 1].load_current);
