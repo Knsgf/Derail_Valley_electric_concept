@@ -168,14 +168,16 @@ internal class pantograph: electric_device
 
     private void move()
     {
-        if (_current_height < _target_height - 0.006f)
+        float height_difference = _target_height - _current_height;
+        float movement_speed    = Mathf.Min(head_movement_speed, Mathf.Abs(height_difference) / 0.5f);
+        if (height_difference > 0.006f)
         {
-            _current_height   = Mathf.Min(_current_height + head_movement_speed * Time.deltaTime, maximum_head_height);
+            _current_height   = Mathf.Min(_current_height + movement_speed * Time.deltaTime, maximum_head_height);
             _interations_left = max_iterations_before_sleep;
         }
-        else if (_current_height > _target_height + 0.006f)
+        else if (height_difference < -0.006f)
         {
-            _current_height   = Mathf.Max(_current_height - head_movement_speed * Time.deltaTime, _initial_head_height);
+            _current_height   = Mathf.Max(_current_height - movement_speed * Time.deltaTime, _initial_head_height);
             _interations_left = max_iterations_before_sleep;
         }
         else if (_interations_left <= 0)
