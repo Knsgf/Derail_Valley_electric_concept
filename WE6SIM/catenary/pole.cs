@@ -18,6 +18,7 @@ interface pole_user: catenary_object_user
     bool cantilever_on_near_side { get; set; }
     bool cantilever_on_far_side  { get; set; }
     bool anchored                { get; set; }
+    bool siding_anchor           { get; set; }
     Vector3 get_pole_true_position();
 }
 
@@ -37,6 +38,8 @@ internal partial class overhead_equipment
         public bool cantilever_on_far_side  { get; set; }
         [JsonProperty]
         public bool anchored { get; set; }
+        [JsonProperty]
+        public bool siding_anchor { get; set; }
 
         private static string pole_template(pole_kind pole_type)
         {
@@ -51,9 +54,10 @@ internal partial class overhead_equipment
         }
 
         [JsonConstructor]
-        public pole(pole_kind pole_type, int x, int z, float y, Quaternion orientation): base(pole_template(pole_type), x, z, y, orientation)
+        public pole(pole_kind pole_type, bool is_siding_anchor_pole, int x, int z, float y, Quaternion orientation): base(pole_template(pole_type), x, z, y, orientation)
         {
-            this.pole_type = pole_type;
+            this.pole_type     = pole_type;
+            this.siding_anchor = is_siding_anchor_pole;
             if (pole_type == pole_kind.Ground)
             {
                 catenary_object foundation     = system.add_scenery_object(miscellaneous_object.build_generic("PoleFoundation"), x, z, y, orientation);

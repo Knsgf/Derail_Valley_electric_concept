@@ -34,7 +34,8 @@ internal partial class overhead_equipment
         add_scenery_object(miscellaneous_object.build_generic(template_name), relative_position, orientation);
     }
 
-    public pole_user add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation)
+    public pole_user add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation, 
+        bool is_siding_anchor_pole = false)
     {
         if (pole_type == pole_kind.SideRail)
         {
@@ -42,7 +43,7 @@ internal partial class overhead_equipment
                 new side_rail_pole(x, z, y, orientation), relative_position, orientation);
         }
         return add_scenery_object((int x, int z, float y, Quaternion orientation) => 
-            new pole(pole_type, x, z, y, orientation), relative_position, orientation);
+            new pole(pole_type, is_siding_anchor_pole, x, z, y, orientation), relative_position, orientation);
     }
 
     public void add_gantry(int tracks, Vector3 relative_position, Quaternion orientation)
@@ -132,7 +133,7 @@ internal partial class overhead_equipment
 
     public void store_scenery()
     {
-        if (_store_scenery && _file_path != null)
+        if (/*_store_scenery &&*/ _file_path != null)
         {
             List<catenary_object> objects_to_store =
 			[..

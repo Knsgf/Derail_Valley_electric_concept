@@ -35,6 +35,7 @@ internal static class editor
 
     private static readonly Quaternion flip_around_vertical                  = Quaternion.AngleAxis(180.0f, Vector3.up);
     private static readonly Quaternion turn_by_90_counter_clockwise_vertical = Quaternion.AngleAxis(-90.0f, Vector3.up);
+    private static readonly Quaternion turn_by_90_clockwise_vertical         = Quaternion.AngleAxis( 90.0f, Vector3.up);
 
     private static readonly List<wire_user> _freshly_added_wires = [];
 
@@ -90,7 +91,8 @@ internal static class editor
     
     public static void place_pole(Vector3 relative_position, Quaternion orientation)
     {
-        if (part_placement == placement.Front && _anchor_pole != null)
+        bool is_siding_anchor_pole = part_placement == placement.Front;
+        if (is_siding_anchor_pole && _anchor_pole != null)
         {
             _anchor_pole.set_relative_position(relative_position + _anchor_pole.get_orientation() * Vector3.right * pole_horizontal_offset);
             return;
@@ -102,8 +104,9 @@ internal static class editor
         else if (part_placement == placement.Front)
             orientation *= turn_by_90_counter_clockwise_vertical;
         pole_user last_pole = system.add_pole((part_placement == placement.Bracket) ? pole_kind.Bracket : pole_type, 
-            relative_position + orientation * Vector3.right * pole_horizontal_offset + Vector3.up * pole_height_offset, orientation);
-        if (part_placement == placement.Front && _anchor_pole == null)
+            relative_position + orientation * Vector3.right * pole_horizontal_offset + Vector3.up * pole_height_offset, 
+            orientation, is_siding_anchor_pole);
+        if (is_siding_anchor_pole && _anchor_pole == null)
             _anchor_pole = last_pole;
     }
 
@@ -318,7 +321,12 @@ internal static class editor
     {
         Vector3    anchor_position    = anchored_pole.get_relative_position();
         Quaternion anchor_orientation = anchored_pole.get_orientation();
-        if (Vector3.Dot(wire_direction, anchor_orientation * Vector3.forward) > 0.0f)
+        if (anchored_pole.siding_anchor)
+        {
+            anchor_orientation *= turn_by_90_clockwise_vertical;
+            anchor_position    += anchor_orientation * (Vector3.left + Vector3.forward) * default_pole_offset;
+        }
+        else if (Vector3.Dot(wire_direction, anchor_orientation * Vector3.forward) > 0.0f)
         {
             anchor_orientation *= flip_around_vertical;
             anchor_position    += anchor_orientation * Vector3.left * (default_pole_offset * 2.0f);
@@ -329,7 +337,7 @@ internal static class editor
     
     private static bool place_wire(string substation, Vector3 relative_position, bool terminate_at_next_pole)
     {
-        List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 1.0f);
+        List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 2.5f);
         pole_kind  pole_type_to_search = (pole_type == pole_kind.SideRail) ? pole_kind.SideRail : pole_kind.Ground;
         pole_user? closest_pole        = get_closest(nearby_objects, relative_position,
             (pole_user current_pole) => !current_pole.anchored && current_pole.pole_type == pole_type_to_search);

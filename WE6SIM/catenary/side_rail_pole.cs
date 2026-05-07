@@ -51,6 +51,13 @@ internal partial class overhead_equipment
         }
         [JsonIgnore]
         public bool dual_wire => false;
+        [JsonIgnore]
+        public bool siding_anchor
+        {
+            get => false;
+            set
+            {}
+        }
         [JsonProperty]
         public bool wire_attached { get; set; }
 

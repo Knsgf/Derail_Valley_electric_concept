@@ -92,7 +92,7 @@ internal partial class overhead_equipment
             _stretch    = stretch;
             (int further_pole_x, int further_pole_z) = further_pole_position(x, z, tracks, stretch, orientation);
             _further_pole = system.add_scenery_object((int x, int z, float y, Quaternion orientation) 
-                => new pole(pole_kind.Ground, x, z, y, orientation), further_pole_x, further_pole_z, y, orientation);
+                => new pole(pole_kind.Ground, is_siding_anchor_pole: false, x, z, y, orientation), further_pole_x, further_pole_z, y, orientation);
             _further_pole.placed_procedurally = _further_pole.cantilever_on_far_side = true;
 
 #if DEBUG
