@@ -18,6 +18,9 @@ internal class control_stand: electric_device
         ["selector_handle"] = "[Selector].EXT_IN",
 
         ["front_pantograph_switch"] = "[FrontPantographSwitch].EXT_IN",
+        ["back_pantograph_switch" ] = "[BackPantographSwitch].EXT_IN",
+        ["left_sidepan_switch"    ] = "[LeftSidePanSwitch].EXT_IN",
+        ["right_sidepan_switch"   ] = "[RighttSidePanSwitch].EXT_IN",
         ["fast_notching_switch"   ] = "[FastNotchingSwitch].EXT_IN",
 
         ["primary_notch_hand"  ] = "[CustomSimulation].PRIMARY_NOTCH",

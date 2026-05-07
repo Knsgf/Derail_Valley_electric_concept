@@ -106,8 +106,11 @@ internal partial class unit_a_sim: electric_device
         _control_stand.register_handler(   "field_handle", field_control_handler);
         _control_stand.register_handler("selector_handle",      selector_handler);
 
-        _control_stand.register_handler("front_pantograph_switch", toggle_pantograph);
-        _control_stand.register_handler("fast_notching_switch", fast_notching_toggle);
+        _control_stand.register_handler("front_pantograph_switch", toggle_front_pantograph);
+        _control_stand.register_handler( "back_pantograph_switch",  toggle_back_pantograph);
+        _control_stand.register_handler(    "left_sidepan_switch",     toggle_left_sidepan);
+        _control_stand.register_handler(   "right_sidepan_switch",    toggle_right_sidepan);
+        _control_stand.register_handler(   "fast_notching_switch",    fast_notching_toggle);
         _red_light_controller = new red_ditch_light_controller(_appliances, ports);
         _reverse_current_lamp = grab_port(ports, "[CustomSimulation].REVERSE_CURRENT");
 
@@ -128,39 +131,25 @@ internal partial class unit_a_sim: electric_device
         simulation.SimulationFlow.TickEvent += simulate;
     }
 
-    private void toggle_pantograph(float port_value)
+    private void toggle_front_pantograph(float port_value)
     {
         _pantograph.toggle(port_value < 0.5f);
     }
 
-    /*
-    private void toggle_pole(float port_value)
+    private void toggle_back_pantograph(float port_value)
     {
-        //Main.log($"toggle_pole(): {_test != null}");
-        if (disposed)
-            return;
-        if (port_value >= 0.5f)
-        {
-            if (_test_pole is null)
-            {
-                //Vector3 front_pos = _unit.FrontCouplerAnchor.position;
-                Quaternion front_rot = _unit.FrontCouplerAnchor.rotation;
-                //Vector3 offset = _unit.FrontCouplerAnchor.TransformDirection(new Vector3(0.0f, -1.125f, -5.5f));
-                Vector3 pole_position = _unit.FrontCouplerAnchor.TransformPoint(new Vector3(0.0f, Main.pole_height_offset - 1.125f, -5.5f));
-                _test_pole = GameObject.Instantiate<GameObject>(_test_pole_prefab, front_pos + offset pole_position, front_rot);
-                _pantograph.set_target_height(6.0f + Main.pole_height_offset);
-                toggle_port_signal(_control_AB1, (int) AB1_signals.back_pantograph, true);
-            }
-        }
-        else if (_test_pole is not null)
-        {
-            GameObject.Destroy(_test_pole);
-            _test_pole = null;
-            _pantograph.set_target_height(0.0f);
-            toggle_port_signal(_control_AB1, (int) AB1_signals.back_pantograph, false);
-        }
+        toggle_port_signal(_control_AB1, (int) AB1_signals.unit_B_pantograph, port_value >= 0.5f);
     }
-        */
+
+    private void toggle_right_sidepan(float port_value)
+    {
+        _pantograph.sidepan_toggle(port_value < 0.5f);
+    }
+    
+    private void toggle_left_sidepan(float port_value)
+    {
+        toggle_port_signal(_control_AB1, (int) AB1_signals.unit_B_sidepan, port_value >= 0.5f);
+    }
 
     private void fast_notching_toggle(float port_value)
     {

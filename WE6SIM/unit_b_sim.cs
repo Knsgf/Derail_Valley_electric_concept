@@ -62,7 +62,8 @@ internal class unit_b_sim: electric_device
 		if (disposed)
 			return;
 		
-		_pantograph.toggle(!port_value_signal_active(AB1, (int) AB1_signals.back_pantograph));
+		_pantograph.toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_pantograph));
+		_pantograph.sidepan_toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan));
 		_appliances.ChangeState    (port_value_signal_active(AB1, (int) AB1_signals.battery       ));
 		_overhead_power.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.overhead_power));
 
