@@ -37,6 +37,7 @@ internal partial class unit_a_sim: electric_device
     private readonly circuit       _circuit;
 
     private readonly pantograph                 _pantograph;
+    private readonly roof_busbar                _roof_bus;
     private readonly traction_motor[]           _traction_motors;
     private readonly blower_controller          _blowers;
     private readonly throttle_controller        _throttle_controller;
@@ -93,7 +94,8 @@ internal partial class unit_a_sim: electric_device
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
         _contactors = new contactors(_appliances, _contactor_locations, _contactor_on_sound, _contactor_off_sound);
-        _pantograph = new pantograph(unit.gameObject, _appliances);
+        _roof_bus   = new roof_busbar(ports, is_unit_A: true);
+        _pantograph = new pantograph(unit.gameObject, _roof_bus, _appliances);
         _traction_motors = new traction_motor[motors];
         for (int motor_number = 1; motor_number <= motors; ++motor_number)
             _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
@@ -230,7 +232,7 @@ internal partial class unit_a_sim: electric_device
 
     private void set_exciter_voltage(int field_handle_postion)
     {
-        float line_voltage = _pantograph.voltage, exciter_EMF;
+        float line_voltage = _roof_bus.voltage, exciter_EMF;
         if (line_voltage < 1000.0f || !_overhead_power.State)
             exciter_EMF = 0.0f;
         else
@@ -297,7 +299,7 @@ internal partial class unit_a_sim: electric_device
                 _currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
         }
         bool  rheostatic_brake_on = _selector == 2;
-        float voltage = rheostatic_brake_on ? 0.0f : _pantograph.voltage;
+        float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
         _overhead_power.ChangeState(voltage >= 1000.0f);
         if (_currents["EPS"] < 0.0f)
             voltage += _currents["EPS"] * _element_resistances["EPS"];
@@ -349,6 +351,7 @@ internal partial class unit_a_sim: electric_device
         {
             base.Dispose();
             _pantograph.Dispose();
+            _roof_bus.Dispose();
             _blowers.Dispose();
             _contactors.Dispose();
             _control_stand.Dispose();

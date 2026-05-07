@@ -133,7 +133,7 @@ internal partial class overhead_equipment
 
     public void store_scenery()
     {
-        if (/*_store_scenery &&*/ _file_path != null)
+        if (_store_scenery && _file_path != null)
         {
             List<catenary_object> objects_to_store =
 			[..

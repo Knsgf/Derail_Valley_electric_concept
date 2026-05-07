@@ -34,6 +34,8 @@ internal class pantograph: electric_device
     private static readonly Quaternion _sidepan_pivot_deployed_orientation = Quaternion.AngleAxis(90.0f  , Vector3.up   );
     private static readonly Quaternion   _sidepan_arm_deployed_orientation = Quaternion.AngleAxis(15.456f, Vector3.right);
 
+    private readonly roof_busbar _roof_bus;
+
     private Transform _base, _front_lower_frame, _front_upper_frame, _back_lower_frame, _back_upper_frame, _head;
     private Transform _front_piston, _back_piston;
     private Transform _head_rollers, _top_pivot, _piston_lever_tip;
@@ -56,8 +58,6 @@ internal class pantograph: electric_device
 
     private float _side_pivot_relative_position = 0.0f, _side_arm_relative_position = 0.0f;
     private bool  _sidepan_stowed = true, _at_either_end = false;
-
-    public float voltage { get; private set; }
 
     private static GameObject? find_pantograph_base(bool is_sidepan, GameObject entity)
     {
@@ -119,8 +119,10 @@ internal class pantograph: electric_device
         }
     }
 
-    public pantograph(GameObject unit, Fuse electric_supply): base("pantograph", electric_supply)
+    public pantograph(GameObject unit, roof_busbar roof_bus, Fuse electric_supply): base("pantograph", electric_supply)
     {
+        _roof_bus = roof_bus;
+        
         GameObject pantograph_base = find_pantograph_base(is_sidepan: false, unit) ?? throw new Exception("Missing pantograph");
         assign_parts(pantograph_base);
         if (_base == null || _head == null || _front_lower_frame == null || _front_upper_frame == null
@@ -272,8 +274,8 @@ internal class pantograph: electric_device
         check_if_disposed();
         if (_stowed || !is_powered)
         {
-            _target_height = _initial_head_height;
-            voltage        = 0.0f;
+            _target_height               = _initial_head_height;
+            _roof_bus.pantograph_voltage = 0.0f;
         }
         else
         {
@@ -287,29 +289,24 @@ internal class pantograph: electric_device
             float? wire_height = get_wire_height(_base, _contact_strip_end1, _contact_strip_end2);
             if (wire_height == null)
             {
-                _target_height = maximum_head_height;
-                voltage        = 0.0f;
+                _target_height               = maximum_head_height;
+                _roof_bus.pantograph_voltage = 0.0f;
             }
             else
             {
                 Vector3 target_head_world_position = _base.position;
                 target_head_world_position.y       = (float) wire_height;
                 _target_height                     = _unit.transform.InverseTransformPoint(target_head_world_position).y;
-                voltage                            = (Mathf.Abs(_current_height - _target_height) < 0.015f) ? 1600.0f : 0.0f;
+                _roof_bus.pantograph_voltage       = (Mathf.Abs(_current_height - _target_height) < 0.015f) ? 1600.0f : 0.0f;
             }
         }
         move();
 
-        float sidepan_voltage;
         if (_sidepan_stowed || _side_pivot_relative_position < 1.0f || _side_arm_relative_position < 1.0f)
-            sidepan_voltage = 0.0f;
+            _roof_bus.sidepan_voltage = 0.0f;
         else
-            sidepan_voltage = (get_wire_height(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact) == null) ? 0.0f : 1050.0f;
+            _roof_bus.sidepan_voltage = (get_wire_height(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact) == null) ? 0.0f : 1050.0f;
         sidepan_move();
-
-        voltage = Mathf.Max(voltage, sidepan_voltage);
-        Main.diagnostics?.Value = _sidepan_stowed ? 0.0f : 1.0f;
-        Main.diagnostics2?.Value = _at_either_end ? 1.0f : 0.0f;
     }
 
     public void toggle(bool stowed)

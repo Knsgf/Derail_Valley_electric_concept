@@ -16,7 +16,8 @@ namespace WE6SIM;
 
 internal class unit_b_sim: electric_device
 {
-	private readonly pantograph _pantograph;
+	private readonly pantograph  _pantograph;
+	private readonly roof_busbar _roof_bus;
 
 	private readonly TrainCar _unit;
 	private readonly SimController _simulation;
@@ -51,7 +52,9 @@ internal class unit_b_sim: electric_device
 		_unit = unit;
 		_simulation = simulation;
 		simulation.SimulationFlow.TickEvent += simulate;
-		_pantograph = new pantograph(unit.gameObject, _appliances);
+		
+		_roof_bus   = new roof_busbar(ports, is_unit_A: false);
+		_pantograph = new pantograph(unit.gameObject, _roof_bus, _appliances);
 
 		//_throttle = new throttle_controllers();
 		//_throttle.traction_toggle += traction_toggle;
@@ -103,6 +106,7 @@ internal class unit_b_sim: electric_device
 			base.Dispose();
 			_secondary_controller.Dispose();
 			_pantograph.Dispose();
+			_roof_bus.Dispose();
 			_simulation.SimulationFlow.TickEvent -= simulate;
 			_control_AB1.ValueUpdatedInternally  -= MU_AB1_control;
 		}

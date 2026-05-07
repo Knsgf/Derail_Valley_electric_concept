@@ -6,12 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using LocoSim.Implementations;
+
+using Newtonsoft.Json.Linq;
+
 using UnityEngine;
+
+using WE6SIM.utilities;
 
 namespace WE6SIM.devices;
 
-internal class roof_busbar
+internal class roof_busbar: electric_device
 {
+    private readonly Port _inter_unit_cable_supplier, _inter_unit_cable_receiver;
+
     private float _pantograph_voltage, _sidepan_voltage, _inter_unit_cable_voltage;
 
     public float voltage         { get; private set; }
@@ -34,14 +42,26 @@ internal class roof_busbar
             set_supply_voltage();
         }
     }
-    public float inter_unit_cable_voltage
+    
+    public roof_busbar(Dictionary<string, Port> ports, bool is_unit_A): base("Roof busbar")
     {
-        get => _inter_unit_cable_voltage;
-        set
+        if (is_unit_A)
         {
-            _inter_unit_cable_voltage = value;
-            set_supply_voltage();
+            _inter_unit_cable_supplier = sensor_grabber.grab_port(ports, "internal_MU.SUPPLY_TO_B");
+            _inter_unit_cable_receiver = sensor_grabber.grab_port(ports, "internal_MU.SUPPLY_FROM_B");
         }
+        else
+        {
+            _inter_unit_cable_supplier = sensor_grabber.grab_port(ports, "internal_MU.SUPPLY_TO_A");
+            _inter_unit_cable_receiver = sensor_grabber.grab_port(ports, "internal_MU.SUPPLY_FROM_A");
+        }
+        _inter_unit_cable_receiver.ValueUpdatedInternally += voltage_from_other_unit_changed;
+    }
+
+    private void voltage_from_other_unit_changed(float voltage)
+    {
+        _inter_unit_cable_voltage = voltage;
+        set_supply_voltage();
     }
 
     private static bool made_short_circuit(float voltage1, float voltage2)
@@ -54,11 +74,22 @@ internal class roof_busbar
         short_circuited = made_short_circuit(_pantograph_voltage,          _sidepan_voltage)
                        || made_short_circuit(_pantograph_voltage, _inter_unit_cable_voltage)
                        || made_short_circuit(   _sidepan_voltage, _inter_unit_cable_voltage);
+        float pantographs_voltage;
         if (!short_circuited)
-            voltage = Mathf.Max(_pantograph_voltage, Mathf.Max(_sidepan_voltage, _inter_unit_cable_voltage));
+        {
+            pantographs_voltage = Mathf.Max(_pantograph_voltage,          _sidepan_voltage);
+            voltage             = Mathf.Max(pantographs_voltage, _inter_unit_cable_voltage);
+        }
         else
         {
-            voltage = 0.0f;
+            pantographs_voltage = voltage = 0.0f;
         }
+        _inter_unit_cable_supplier.Value = pantographs_voltage;
     }
+
+	public override void Dispose()
+	{
+		base.Dispose();
+        _inter_unit_cable_receiver.ValueUpdatedInternally -= voltage_from_other_unit_changed;
+	}
 }
