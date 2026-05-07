@@ -16,6 +16,7 @@ namespace WE6SIM.catenary;
 
 interface wire_user: catenary_object_user
 {
+    overhead_equipment.wire_kind wire_type { get; set; }
 }
 
 internal partial class overhead_equipment
@@ -43,13 +44,14 @@ internal partial class overhead_equipment
         private GameObject? _primary_transform, _secondary_transform;
 
         [JsonProperty]
-        public wire_kind wire_type;
-        [JsonProperty]
         public float length;
         [JsonProperty]
         public float previous_pole_vertical_offset;
         [JsonProperty]
         public string substation;
+
+        [JsonProperty]
+        public wire_kind wire_type { get; set; }
 
         private static string wire_template(wire_kind wire_type)
         {

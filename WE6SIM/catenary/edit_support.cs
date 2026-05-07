@@ -59,10 +59,10 @@ internal partial class overhead_equipment
             relative_position, orientation);
     }
 
-    public void add_wire(wire_kind wire_type, string substation, float length, float previous_pole_vertical_offset,
+    public wire_user add_wire(wire_kind wire_type, string substation, float length, float previous_pole_vertical_offset,
         Vector3 relative_position, Quaternion orientation)
     {
-        add_scenery_object((int x, int z, float y, Quaternion orientation) 
+        return add_scenery_object((int x, int z, float y, Quaternion orientation) 
             => new wire(wire_type, substation, length, previous_pole_vertical_offset, x, z, y, orientation),
             relative_position, orientation);
     }

@@ -36,6 +36,8 @@ internal static class editor
     private static readonly Quaternion flip_around_vertical                  = Quaternion.AngleAxis(180.0f, Vector3.up);
     private static readonly Quaternion turn_by_90_counter_clockwise_vertical = Quaternion.AngleAxis(-90.0f, Vector3.up);
 
+    private static readonly List<wire_user> _freshly_added_wires = [];
+
     private static int              _last_pole_x, _last_pole_z, _last_x, _last_z;
     private static float            _remaining_cantilevers_distance;
     private static bool             _first_cantilever      = true, _first_pole = true;
@@ -333,6 +335,7 @@ internal static class editor
             (pole_user current_pole) => !current_pole.anchored && current_pole.pole_type == pole_type_to_search);
         if (_anchor_pole == null)
         {
+            _freshly_added_wires.Clear();
             if (closest_pole == null)
                 return false;
             _anchor_pole = closest_pole;
@@ -394,16 +397,26 @@ internal static class editor
                 return false;
             var wire_horizontal_direction = new Vector3(wire_direction.x, 0.0f, wire_direction.z);
             var wire_orientation          = Quaternion.FromToRotation(Vector3.back, wire_horizontal_direction);
-            system.add_wire(wire_type, substation, wire_length, beginning_attachment_point.y - end_attachment_point.y, 
+            wire_user new_section         = system.add_wire(wire_type, substation, wire_length, beginning_attachment_point.y - end_attachment_point.y, 
                 end_attachment_point, wire_orientation);
             
             if (wire_type is not wire_kind.side_rail and not wire_kind.termination_rail)
             {
+                _freshly_added_wires.Add(new_section);
+
                 // Anchor poles only after successfully placing a section
                 if (_last_registration_arm == null)
                     anchor_pole(_anchor_pole, wire_direction);
-                if (terminate_at_next_pole)
+                else if (terminate_at_next_pole)
+                {
                     anchor_pole(closest_pole!, wire_direction);
+                    if (_freshly_added_wires.Count >= 5)
+                    {
+                        _freshly_added_wires[(_freshly_added_wires.Count + 1) >> 1].wire_type = dual_wire 
+                            ? wire_kind.middle_anchor_dual : wire_kind.middle_anchor_single;
+                    }
+                    _freshly_added_wires.Clear();
+                }
             }
 
             if (closest_registration_arm != null)
