@@ -41,8 +41,9 @@ internal static class editor
 
     private static int              _last_pole_x, _last_pole_z, _last_x, _last_z;
     private static float            _remaining_cantilevers_distance;
-    private static bool             _first_cantilever      = true, _first_pole = true;
-    private static Quaternion       _last_pole_orientation = Quaternion.identity;
+    private static bool             _first_cantilever                = true, _first_pole = true;
+    private static Quaternion       _last_pole_orientation           = Quaternion.identity;
+    private static Vector3          _last_registration_arm_direction = Vector3.zero;
     private static editor_settings? _settings;
     private static pole_user?       _anchor_pole           = null;
     private static cantilever_user? _last_registration_arm = null;
@@ -272,23 +273,26 @@ internal static class editor
             if (place_on_near_side)
                 place_on_near_side = !pole.cantilever_on_near_side;
             else
-                place_on_far_side  = !pole.cantilever_on_far_side;
+            {
+                place_on_far_side          = !pole.cantilever_on_far_side;
+                registration_arm_direction = -registration_arm_direction;
+            }
         }
         if (!place_on_near_side && !place_on_far_side)
             return false;
 
         if (_first_cantilever)
         {
-            _first_cantilever = false;
-            store_last_pole_location(pole_position, pole_orientation);
+            _first_cantilever                = false;
+            _last_registration_arm_direction = registration_arm_direction;
         }
-        float angle_between_poles = Quaternion.Angle(_last_pole_orientation, pole_orientation);
-        if (angle_between_poles > 90.0f)
+        float angle_between_arms = Vector3.Angle(registration_arm_direction, _last_registration_arm_direction);
+        if (angle_between_arms > 90.0f)
             cantilever_type = (cantilever_type == cantilever_kind.Inner) ? cantilever_kind.Outer : cantilever_kind.Inner;
         else
         { 
             float sweep_angle = Mathf.Rad2Deg * Mathf.Atan(maximum_sweep / distance_between_poles);
-            if (angle_between_poles > 3.0f * sweep_angle)
+            if (angle_between_arms > 3.0f * sweep_angle)
             {
                 var     turn_axis  = Vector3.Cross(_last_pole_orientation * Vector3.forward, pole_orientation * Vector3.forward);
                 Vector3 pole_chord = pole_position - get_relative_position(_last_pole_x, _last_pole_z, pole_position.y);
@@ -308,12 +312,12 @@ internal static class editor
         else
         {
             system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type == pole_kind.Tunnel, 
-                dual_wire, pole.get_relative_position() - registration_arm_direction * (default_pole_offset * 2.0f),
+                dual_wire, pole.get_relative_position() + registration_arm_direction * (default_pole_offset * 2.0f),
                 pole_orientation * flip_around_vertical);
             pole.cantilever_on_far_side = true;
             Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
         }
-        store_last_pole_location(pole_position, pole_orientation);
+        _last_registration_arm_direction = registration_arm_direction;
         return true;
     }
 
