@@ -8,6 +8,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
 
+using WE6SIM.catenary_editor;
 using WE6SIM.utilities;
 
 using static WE6SIM.utilities.world_position;
@@ -151,7 +152,6 @@ internal partial class overhead_equipment
 
             Vector3 player_position = PlayerManager.PlayerTransform.position;
             (int player_x, int player_z) = get_absolute_position(PlayerManager.PlayerTransform.position);
-            /*
             add_miscellaneous_object("PoleFoundation", PlayerManager.PlayerTransform.position, Quaternion.identity);
             objects_to_store =
             [..
@@ -162,23 +162,6 @@ internal partial class overhead_equipment
                 orderby (long) x_offset * x_offset + (long) z_offset * z_offset
                 select  current_object
             ];
-            */
-            Main.log($"PL {player_position}");
-            objects_to_store =
-            [..
-                from    current_object in _all_objects
-                let     x_offset = Math.Abs(current_object.x - player_x)
-                let     z_offset = Math.Abs(current_object.z - player_z)
-                where   current_object is pole && x_offset <= 10 * fixed_divider && z_offset <= 10 * fixed_divider
-                select  (pole) current_object into current_pole
-                orderby (current_pole.get_pole_true_position() - player_position).magnitude
-                select  current_pole
-            ];
-            foreach (catenary_object current_object in objects_to_store)
-            {
-                var current_pole = (pole) current_object;
-                Main.log($"POLE {current_pole.get_pole_true_position()} {current_pole.x} {current_pole.z}");
-            }
             formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented,
                 new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
             File.WriteAllText(Path.Combine(_file_path, "nearby_objects.json"), formatted_scenery);

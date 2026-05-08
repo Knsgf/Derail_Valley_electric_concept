@@ -348,7 +348,7 @@ internal static class editor
             if (closest_pole == null)
                 return false;
             _anchor_pole = closest_pole;
-            Main.log($"Staring anchor at {closest_pole.get_world_position()} ");
+            Main.log($"Staring anchor at {closest_pole.get_world_position()} {relative_position} {pole_type_to_search}");
         }
         
         cantilever_user? closest_registration_arm = get_closest(nearby_objects, relative_position,

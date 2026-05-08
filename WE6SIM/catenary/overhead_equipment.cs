@@ -129,6 +129,7 @@ internal partial class overhead_equipment
             Main.log($"Loaded objects: {loaded_objects.Count}");
             _all_objects.AddRange(loaded_objects);
         }
+        /*
         for (int index1 = _all_objects.Count - 1; index1 > 0; --index1)
         {
             for (int index2 = index1 - 1; index2 >= 0; --index2)
@@ -143,6 +144,7 @@ internal partial class overhead_equipment
                 }
             }
         }
+        */
         _scenery_changed = _all_objects.Count > 0;
         if (_scenery_changed)
             reconstruct_tree();
