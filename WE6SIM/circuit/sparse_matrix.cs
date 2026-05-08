@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
+
 using UnityEngine;
 
 namespace WE6SIM.circuit_sim;
@@ -137,6 +137,13 @@ internal partial class sparse_matrix
         }
     }
 
+    // Performs LU deomposition with partial pivoting, splitting outputs into:
+    // * lower triangular matrix, excluding main diagonal, which is implicitly all 1's,
+    // * elements on upper triangular matrix diagonal,
+    // * upper triangular matrix, excluding main diagonal, which is stored separately for perfomance reasons
+    // * row permutation array
+    //
+    // Note that this is not a genuine LDU decompositon, as U matrix is not normalised to have identity diagonal
     public void decompose_to(sparse_matrix lower, [NotNull] ref float[]? upper_diagonal, sparse_matrix upper, [NotNull] ref int[]? row_permutation)
     {
         int size = _num_rows;

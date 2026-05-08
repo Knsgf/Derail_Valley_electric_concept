@@ -2,8 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
 using WE6SIM.utilities;
 
@@ -107,24 +105,24 @@ internal class circuit_compiler
         int    termination_position;
         if (direction > 0)
         {
-			//string search_part = diagram[row][(column + 1)..];
-			string search_part = diagram[row].Substring(column + 1);
-			termination_position = search_part.IndexOf(termination_symbol);
+            //string search_part = diagram[row][(column + 1)..];
+            string search_part = diagram[row].Substring(column + 1);
+            termination_position = search_part.IndexOf(termination_symbol);
             if (termination_position < 0)
                 throw new MalformedCircuitException($"Unrecognised element at {row}, {column}");
-			//name = search_part[..termination_position];
-			name = search_part.Substring(0, termination_position);
+            //name = search_part[..termination_position];
+            name = search_part.Substring(0, termination_position);
         }
         else
         {
             //string search_part = diagram[row][..column];
-			string search_part = diagram[row].Substring(0, column);
-			termination_position = search_part.LastIndexOf(termination_symbol);
+            string search_part = diagram[row].Substring(0, column);
+            termination_position = search_part.LastIndexOf(termination_symbol);
             if (termination_position < 0)
                 throw new MalformedCircuitException($"Unrecognised element at {row}, {column}");
             //name = search_part[(termination_position + 1)..];
-			name = search_part.Substring(termination_position + 1);
-		}
+            name = search_part.Substring(termination_position + 1);
+        }
 
         if (element != element_type.contactor & !elements.TryGetValue(name, out float resistance))
             throw new ArgumentException($"Element {name}'s resistance not specified");

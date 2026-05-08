@@ -2,16 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 using UnityEngine;
 
-using WE6SIM.catenary_editor;
 using WE6SIM.utilities;
 
 namespace WE6SIM.catenary;
@@ -107,12 +101,12 @@ internal partial class overhead_equipment
 #endif
         }
 
-		public override void reveal()
-		{
+        public override void reveal()
+        {
             is_visible = true;
             entity ??= GameObject.Instantiate(template, get_frame_relative_position(x, z, y, orientation, _stretch), orientation);
             entity.transform.localScale = new Vector3(_stretch, 1.0f, 1.0f);
-		}
+        }
 
 #if DEBUG
         private void reposition_further_pole()
@@ -139,7 +133,7 @@ internal partial class overhead_equipment
             Vector3 gantry_closer_end  = world_position.get_relative_position( _gantry_closer_end_x,  _gantry_closer_end_z, y);
             Vector3 gantry_further_end = world_position.get_relative_position(_gantry_further_end_x, _gantry_further_end_z, y);
             return Vector3.LerpUnclamped(gantry_closer_end, gantry_further_end, gantry_cross_point);
-		}
+        }
 
         public void change_orientation(Quaternion new_orientation)
         {
@@ -166,7 +160,7 @@ internal partial class overhead_equipment
             reposition_further_pole();
             system.handle_scenery_visibility(PlayerManager.PlayerTransform.position);
         }
-	}
+    }
 #endif
 
 }

@@ -4,14 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Newtonsoft.Json;
-
 using UnityEngine;
 
-using WE6SIM.catenary_editor;
 using WE6SIM.utilities;
 
 using static WE6SIM.utilities.world_position;
@@ -136,7 +132,7 @@ internal partial class overhead_equipment
         if (_store_scenery && _file_path != null)
         {
             List<catenary_object> objects_to_store =
-			[..
+            [..
                 from   current_object in _all_objects
                 where !current_object.placed_procedurally 
                     && !(current_object is gantry saving_gantry && saving_gantry._further_pole.erased)

@@ -1,13 +1,6 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Newtonsoft.Json;
-
 using UnityEngine;
 
 namespace WE6SIM.catenary;
@@ -66,8 +59,8 @@ internal partial class overhead_equipment
             _rail_attachment_point_offset = orientation * Vector3.right * side_rail_pole_offset;
         }
 
-		public Vector3 get_pole_true_position() => get_relative_position() + _rail_attachment_point_offset;
+        public Vector3 get_pole_true_position() => get_relative_position() + _rail_attachment_point_offset;
         
         public Vector3 relative_wire_attachment_point() => get_pole_true_position();
-	}
+    }
 }

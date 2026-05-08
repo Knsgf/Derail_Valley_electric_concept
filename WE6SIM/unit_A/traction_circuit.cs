@@ -8,7 +8,7 @@ namespace WE6SIM.unit_A;
 
 internal partial class unit_a_sim
 {
-	private static readonly string circuit_diagram =
+    private static readonly string circuit_diagram =
 """
 ╔══ Unit A ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗   ╔══ Unit B ═════════════════════════════════════════════════════════╗
 ║                               *--#CR1.4A#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*               *--#CR1.4B#-------------------------*                                                                                                       ║
@@ -142,7 +142,7 @@ internal partial class unit_a_sim
         }
     }
 
-	private static readonly string _reverser_toggles =
+    private static readonly string _reverser_toggles =
 """
 #  RF1.1 RF1.2 RR1.1 RR1.2 RF2.1 RF2.2 RR2.1 RR2.2 RF3.1 RF3.2 RR3.1 RR3.2 RF4.1 RF4.2 RR4.1 RR4.2 RF5.1 RF5.2 RR5.1 RR5.2 RF6.1 RF6.2 RR6.1 RR6.2
 1 |===========|     |     |===========|     |     |===========|     |     |===========|     |     |===========|     |     |===========|     |     |
@@ -161,7 +161,7 @@ internal partial class unit_a_sim
 7   |===============================================================================================|
 """;
     
-	private static readonly string _secondary_contactor_toggles =
+    private static readonly string _secondary_contactor_toggles =
 """
 #    CR1.1B  CR1.2B  CR1.3B  CR1.4B  CR2.1B  CR2.2B  CR2.3B  CR2.4B  CR3.1B  CR3.2B  CR3.3B  CR3.4B  
 1   |=======|       |       |       |=======|       |       |       |=======|       |       |       |

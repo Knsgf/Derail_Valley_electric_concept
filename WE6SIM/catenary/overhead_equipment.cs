@@ -1,21 +1,18 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 using DV.Utils;
+using Newtonsoft.Json;
+using UnityEngine;
+
 using WE6SIM.utilities;
 
 using static UnityModManagerNet.UnityModManager;
 using static WE6SIM.utilities.world_position;
-using WE6SIM.catenary_editor;
 
 namespace WE6SIM.catenary;
 

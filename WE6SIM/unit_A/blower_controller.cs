@@ -38,10 +38,10 @@ internal class blower_controller: electric_device
             return parallel_6;
         if (_line_voltage <= 1050.0f)
             return series_2_parallel_3;
-		return (full_speed_mode || _motor_current >= 275.0f) ? series_3_parallel_2 : series_6;
-	}
+        return (full_speed_mode || _motor_current >= 275.0f) ? series_3_parallel_2 : series_6;
+    }
 
-	private async void switch_configuration()
+    private async void switch_configuration()
     {
         if (_reconfiguration || voltage_divider() == _line_voltage_multiplier)
             return;

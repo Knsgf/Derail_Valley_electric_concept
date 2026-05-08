@@ -1,13 +1,7 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Newtonsoft.Json;
-
 using UnityEngine;
 
 using WE6SIM.utilities;
@@ -100,7 +94,7 @@ internal partial class overhead_equipment
         }
 
         public override void reveal()
-		{
+        {
             is_visible = true;
             if (entity is null)
             {
@@ -120,11 +114,11 @@ internal partial class overhead_equipment
                 secondary_location.localRotation = secondary_vertical_orientation;
                 secondary_location.localScale    = _secondary_vertical_scale;
             }
-		}
+        }
 
-		public override void hide_when_out_of_view()
-		{
-			if (!is_visible && entity is not null)
+        public override void hide_when_out_of_view()
+        {
+            if (!is_visible && entity is not null)
             {
                 assert.test(_primary_transform is not null && _secondary_transform is not null);
                 GameObject.Destroy(_secondary_transform);
@@ -132,7 +126,7 @@ internal partial class overhead_equipment
                 GameObject.Destroy(              entity);
                 entity = _primary_transform = _secondary_transform = null;
             }
-		}
+        }
 
         public float? contact_height(int strip_end1_x, int strip_end1_z, int strip_end2_x, int strip_end2_z, 
             float pantograph_base_y)

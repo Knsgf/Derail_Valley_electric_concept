@@ -118,7 +118,7 @@ internal partial class unit_a_sim: electric_device
         _reverse_current_lamp = grab_port(ports, "[CustomSimulation].REVERSE_CURRENT");
         _independent_brake    = grab_port(ports, "[IndependentBrake].EXT_IN");
         _independent_brake.ValueUpdatedInternally += synchronise_independent_brake;
-		_sander = grab_port(ports, "[Sander].CONTROL_EXT_IN");
+        _sander = grab_port(ports, "[Sander].CONTROL_EXT_IN");
         _sander.ValueUpdatedInternally += synchronise_sander;
 
         set_supply_volts   = _control_stand.create_setter(        "supply_volts");

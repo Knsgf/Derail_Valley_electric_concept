@@ -9,8 +9,6 @@ using UnityEngine;
 using WE6SIM.catenary;
 using WE6SIM.utilities;
 
-using static UnityEngine.UI.CanvasScaler;
-
 namespace WE6SIM.devices;
 
 internal class pantograph: electric_device

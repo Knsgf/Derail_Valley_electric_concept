@@ -1,10 +1,6 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using LocoSim.Implementations;
 
@@ -28,9 +24,9 @@ internal class red_ditch_light_controller: electric_device
         _light_control_port.Value = (switch_setting is > 0.3f and < 0.7f) ? 1.0f: 0.0f;
     }
 
-	public override void Dispose()
-	{
+    public override void Dispose()
+    {
         base.Dispose();
         _light_switch_port.ValueUpdatedInternally -= switch_red_light;
-	}
+    }
 }

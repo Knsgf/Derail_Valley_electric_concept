@@ -11,7 +11,7 @@ namespace WE6SIM.devices;
 internal class control_stand: electric_device
 {
     private static readonly Dictionary<string, string> _port_id_map = new()
-	{
+    {
         ["reverser_handle"] = "[Reverser].EXT_IN",
         ["throttle_handle"] = "[Throttle].EXT_IN",
         ["field_handle"   ] = "[FieldControl].EXT_IN",
@@ -81,13 +81,13 @@ internal class control_stand: electric_device
         return new_setter;
     }
 
-	public override void Dispose()
-	{
-		if (!disposed)
+    public override void Dispose()
+    {
+        if (!disposed)
         {
             base.Dispose();
-			foreach (KeyValuePair<string, Action<float>> control_pair in _port_handlers)
+            foreach (KeyValuePair<string, Action<float>> control_pair in _port_handlers)
                 _port_map[control_pair.Key].ValueUpdatedInternally -= control_pair.Value;
-		}
-	}
+        }
+    }
 }

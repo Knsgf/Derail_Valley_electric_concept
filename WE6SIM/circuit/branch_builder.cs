@@ -2,8 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
 namespace WE6SIM.circuit_sim;
 
@@ -38,8 +36,8 @@ internal partial class circuit_builder
         {
             if (__setup_done)
                 throw new InvalidOperationException($"Circuit set-up finished");
-			if (ohms < 0.0f)
-				throw new ArgumentOutOfRangeException("Negative resistance");
+            if (ohms < 0.0f)
+                throw new ArgumentOutOfRangeException("Negative resistance");
             if (resistances.ContainsKey(name))
                 throw new InvalidOperationException($"{name} is already present");
             resistances[name] = ohms;
@@ -51,8 +49,8 @@ internal partial class circuit_builder
                 throw new InvalidOperationException($"Circuit set-up finished");
             if (_num_contactors >= 30)
                 throw new InvalidOperationException($"No more than 30 contactors permitted per branch");
-			if (string.IsNullOrWhiteSpace(name))
-				throw new ArgumentException("Null or blank contactor name");
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Null or blank contactor name");
             if (contactors.ContainsKey(name))
                 throw new InvalidOperationException($"{name} is already present");
             contactors[name] = _num_contactors++;

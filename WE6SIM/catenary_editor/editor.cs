@@ -2,15 +2,11 @@
 
 #if DEBUG
 
-using DV.Utils;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
+
 using UnityModManagerNet;
 
 using WE6SIM.catenary;
@@ -70,17 +66,17 @@ internal static class editor
     public static bool            use_DM1U                         { get; set; }
     public static GameObject?     mow_monitor                      { get; set; }
 
-	private static void show_editor_controls(ModEntry mod)
-	{
-		_settings?.Draw(mod);
-	}
+    private static void show_editor_controls(ModEntry mod)
+    {
+        _settings?.Draw(mod);
+    }
 
     public static void set_up(ModEntry mod)
     {
-		if (_settings == null)
+        if (_settings == null)
         {
             _settings = editor_settings.Load<editor_settings>(mod);
-		    mod.OnGUI = show_editor_controls;
+            mod.OnGUI = show_editor_controls;
         }
     }
 
@@ -167,7 +163,7 @@ internal static class editor
                 Vector3 true_position = (current_object is pole_user pole_object) 
                     ? pole_object.get_pole_true_position() 
                     : current_object.get_relative_position();
-				float distance_squared = (position - true_position).sqrMagnitude;
+                float distance_squared = (position - true_position).sqrMagnitude;
                 if (minimum_distance_squared > distance_squared)
                 {
                     minimum_distance_squared = distance_squared;
@@ -537,7 +533,7 @@ internal static class editor
                     }
                 }
                 cantilever_kind _next_cantilever_type = cantilever_type;
-				bool cantilever_placed = place_cantilever(part_placement == placement.GantryRegistrationArm, 
+                bool cantilever_placed = place_cantilever(part_placement == placement.GantryRegistrationArm, 
                     ref _next_cantilever_type, relative_position);
                 if (cantilever_placed && zigzag)
                 {

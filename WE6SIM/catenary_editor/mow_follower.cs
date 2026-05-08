@@ -3,16 +3,11 @@
 #if DEBUG
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 using DV.ThingTypes;
-using WE6SIM.catenary;
 
-using static WE6SIM.utilities.world_position;
+using WE6SIM.catenary;
 
 namespace WE6SIM.catenary_editor;
 

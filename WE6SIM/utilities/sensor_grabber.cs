@@ -9,18 +9,18 @@ namespace WE6SIM.utilities;
 
 internal static class sensor_grabber
 {
-	public static Fuse grab_fuse(Dictionary<string, Fuse> fuses, string name)
-	{
-		if (!fuses.TryGetValue(name, out Fuse fuse))
-			throw new ArgumentException("No fuse " + name);
-		return fuse;
-	}
+    public static Fuse grab_fuse(Dictionary<string, Fuse> fuses, string name)
+    {
+        if (!fuses.TryGetValue(name, out Fuse fuse))
+            throw new ArgumentException("No fuse " + name);
+        return fuse;
+    }
 
-	public static Port grab_port(Dictionary<string, Port> ports, string name)
-	{
-		if (!ports.TryGetValue(name, out Port port))
-			throw new ArgumentException("No port " + name);
-		return port;
-	}
+    public static Port grab_port(Dictionary<string, Port> ports, string name)
+    {
+        if (!ports.TryGetValue(name, out Port port))
+            throw new ArgumentException("No port " + name);
+        return port;
+    }
 
 }

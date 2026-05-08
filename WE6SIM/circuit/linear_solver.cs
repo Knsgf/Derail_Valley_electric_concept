@@ -1,10 +1,6 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 using WE6SIM.utilities;
 
@@ -14,21 +10,19 @@ internal partial class sparse_matrix
 {
     internal class linear_solver
     {
-        private static float[]? __intermediate_vector;
-
         private readonly sparse_matrix _L = new(), _U = new();
-        private float[]? _U_diagonal;
-        private int[]? _row_map;
+        private float[]? _U_diagonal, _intermediate_vector;
+        private int[]?   _row_map;
 
-        public static void compute(sparse_matrix lower, float[] upper_diagonal, sparse_matrix upper, float[] results,
+        private void compute(sparse_matrix lower, float[] upper_diagonal, sparse_matrix upper, float[] results,
             int[] row_map, sparse_matrix right_side)
         {
             int size = lower._num_rows;
             assert.test(size == lower._num_columns && size == upper._num_rows && size == upper._num_columns);
             assert.test(size == upper_diagonal.Length && size == right_side._num_rows && right_side._num_columns == 1);
-            assert.test(size == results.Length && __intermediate_vector != null && size <= __intermediate_vector.Length);
+            assert.test(size == results.Length && _intermediate_vector != null && size <= _intermediate_vector.Length);
 
-            float[] temporary = __intermediate_vector!;
+            float[] temporary = _intermediate_vector;
             temporary[0] = right_side[row_map[0], 0];
             Dictionary<int, float>[] lower_contents = lower._contents;
             for (int row = 1; row < size; ++row)
@@ -70,14 +64,14 @@ internal partial class sparse_matrix
         public void change_coeff_matrix(sparse_matrix coeffs)
         {
             coeffs.decompose_to(_L, ref _U_diagonal, _U, ref _row_map);
-            if (__intermediate_vector == null || __intermediate_vector.Length < _U_diagonal.Length)
-                __intermediate_vector = new float[_U_diagonal.Length];
+            if (_intermediate_vector == null || _intermediate_vector.Length < _U_diagonal.Length)
+                _intermediate_vector = new float[_U_diagonal.Length];
         }
 
         public void solve(float[] results, sparse_matrix right_hand_side)
         {
-            assert.test(_U_diagonal != null && _row_map != null && __intermediate_vector != null);
-            assert.test(_U_diagonal!.Length <= __intermediate_vector!.Length);
+            assert.test(_U_diagonal != null && _row_map != null && _intermediate_vector != null);
+            assert.test(_U_diagonal.Length <= _intermediate_vector.Length);
             assert.test(results.Length == _U_diagonal.Length);
             assert.test(right_hand_side._num_rows == _U_diagonal.Length && right_hand_side._num_columns == 1);
             compute(_L, _U_diagonal, _U, results, _row_map, right_hand_side);

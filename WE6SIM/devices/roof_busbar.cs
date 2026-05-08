@@ -1,14 +1,8 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using LocoSim.Implementations;
-
-using Newtonsoft.Json.Linq;
 
 using UnityEngine;
 
@@ -87,9 +81,9 @@ internal class roof_busbar: electric_device
         _inter_unit_cable_supplier.Value = pantographs_voltage;
     }
 
-	public override void Dispose()
-	{
-		base.Dispose();
+    public override void Dispose()
+    {
+        base.Dispose();
         _inter_unit_cable_receiver.ValueUpdatedInternally -= voltage_from_other_unit_changed;
-	}
+    }
 }

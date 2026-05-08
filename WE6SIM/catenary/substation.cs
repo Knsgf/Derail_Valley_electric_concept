@@ -1,13 +1,6 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Newtonsoft.Json;
-
 using UnityEngine;
 
 namespace WE6SIM.catenary;
@@ -38,11 +31,11 @@ internal partial class overhead_equipment
             this.has_inverter   = has_inverter;
         }
 
-		public override void reveal()
-		{
+        public override void reveal()
+        {
 #if DEBUG
-			base.reveal();
+            base.reveal();
 #endif
-		}
+        }
     }
 }
