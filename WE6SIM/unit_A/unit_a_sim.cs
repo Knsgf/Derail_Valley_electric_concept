@@ -76,12 +76,6 @@ internal partial class unit_a_sim: electric_device
         _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM" );
         _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF" );
 
-        _torque_B    = grab_port(ports, "internal_MU.TM4-6");
-        _wheel_RPM_B = grab_port(ports, "internal_MU.WHEEL_RPM_FROM_B");
-        _control_AB1 = grab_port(ports, "internal_MU.CONTROL_AB1");
-        _control_BA1 = grab_port(ports, "internal_MU.CONTROL_BA1");
-        _control_BA1.ValueUpdatedInternally += MU_BA1_control;
-
         const float variation = 0.1f;
         UnityEngine.Random.State old_state = UnityEngine.Random.state;
         UnityEngine.Random.InitState(random_seed);
@@ -91,6 +85,9 @@ internal partial class unit_a_sim: electric_device
         _circuit = circuit_compiler.trace(_element_resistances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations, _currents);
         foreach (string branch_name in _named_branches.Keys)
             _currents[branch_name] = 0.0f;
+
+        _torque_B    = grab_port(ports, "internal_MU.TM4-6");
+        _wheel_RPM_B = grab_port(ports, "internal_MU.WHEEL_RPM_FROM_B");
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
@@ -103,6 +100,10 @@ internal partial class unit_a_sim: electric_device
         for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
             _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM_B);
         _blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
+
+        _control_AB1 = grab_port(ports, "internal_MU.CONTROL_AB1");
+        _control_BA1 = grab_port(ports, "internal_MU.CONTROL_BA1");
+        _control_BA1.ValueUpdatedInternally += MU_BA1_control;
 
         _control_stand       = new control_stand(_appliances, ports);
         _throttle_controller = new throttle_controller(this);
@@ -330,7 +331,18 @@ internal partial class unit_a_sim: electric_device
         _circuit.simulate();    // Must be called after all EMFs have been set
 
         set_supply_volts(_named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"]);
-        _motors_volts = _currents["VM"] * _element_resistances["VM"];
+        if (_selector == 3)
+        {
+            _motors_volts = Mathf.Abs(_currents["VM12"] * _element_resistances["VM12"])
+                          + Mathf.Abs(_currents["VM34"] * _element_resistances["VM34"])
+                          + Mathf.Abs(_currents["VM56"] * _element_resistances["VM56"]);
+        }
+        else
+        {
+            float motor_volts_1_4 = Mathf.Max(Mathf.Abs(_currents["VM12"] * _element_resistances["VM12"]), 
+                                              Mathf.Abs(_currents["VM34"] * _element_resistances["VM34"]));
+            _motors_volts         = Mathf.Max(Mathf.Abs(_currents["VM56"] * _element_resistances["VM56"]), motor_volts_1_4);
+        }
         set_motors_volts(_motors_volts);
         float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_field = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
         for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
@@ -355,13 +367,16 @@ internal partial class unit_a_sim: electric_device
             _reverse_current_lamp.Value = (average_load * average_field * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f;
         for (int group_index = 2; group_index >= 0; --group_index)
         {
-            set_motor_group_load[group_index](traction_motors[group_index << 1].load_current);
+            set_motor_group_load [group_index](traction_motors[group_index << 1].load_current );
             set_motor_group_field[group_index](traction_motors[group_index << 1].field_current);
         }
         _traction_motor_EMF.Value = average_EMF;
-        _blowers.active = rheostatic_brake_on || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
+        
+        _blowers.active        = rheostatic_brake_on || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
+        _blowers.motor_current = maximum_load;
+        _blowers.line_voltage  = rheostatic_brake_on ? _motors_volts : voltage;
         //_blowers.full_speed_mode = true;
-        _blowers.simulate(rheostatic_brake_on, rheostatic_brake_on ? _motors_volts : voltage, maximum_load);
+        _blowers.simulate();
 
         _torque_a.Value = _torque_B.Value = total_torque / 2.0f;
     }
