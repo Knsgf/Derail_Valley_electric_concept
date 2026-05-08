@@ -14,6 +14,7 @@ interface catenary_object_user
 {
     Vector3 get_relative_position();
     Quaternion get_orientation();
+    (int x, int z) get_world_position();
     void set_relative_position(Vector3 new_position);
 }
 
@@ -51,6 +52,8 @@ internal partial class overhead_equipment
         }
 
         public Vector3 get_relative_position() => world_position.get_relative_position(x, z, y);
+
+        public (int x, int z) get_world_position() => (x, z);
 
         public Quaternion get_orientation() => orientation;
 

@@ -223,18 +223,19 @@ internal static class editor
         {
             if (current_object is gantry_user gantry)
             {
-                Vector3? bracket_position = gantry.cross_point(last_relative_position, relative_position - last_relative_position);
-                if (bracket_position == null)
+                Vector3? possible_bracket_position = gantry.cross_point(last_relative_position, relative_position - last_relative_position);
+                if (possible_bracket_position == null)
                     continue;
-                pole_user? closest_pole          = get_closest<pole_user>(nearby_objects, (Vector3) bracket_position);
-                Vector3?   closest_pole_position = closest_pole?.get_relative_position();
-                if (   closest_pole          == null || closest_pole.pole_type != pole_kind.Bracket
-                    || closest_pole_position == null || ((Vector3) closest_pole_position - (Vector3) bracket_position).sqrMagnitude > 0.01f)
+                var bracket_position = (Vector3) possible_bracket_position;
+                pole_user? closest_bracket = get_closest(nearby_objects, bracket_position, 
+                    (pole_user pole) => pole.pole_type == pole_kind.Bracket);
+                Vector3? closest_bracket_position = closest_bracket?.get_relative_position();
+                if (closest_bracket_position == null || ((Vector3) closest_bracket_position - bracket_position).sqrMagnitude >= 1.0f)
                 {
                     Quaternion orientation = gantry.get_orientation();
                     if (part_placement == placement.FlippedBracket)
                         orientation *= flip_around_vertical;
-                    place_pole((Vector3) bracket_position, orientation);
+                    place_pole(bracket_position, orientation);
                 }
             }
         }
@@ -337,7 +338,7 @@ internal static class editor
     
     private static bool place_wire(string substation, Vector3 relative_position, bool terminate_at_next_pole)
     {
-        List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 2.5f);
+        List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 10.0f);
         pole_kind  pole_type_to_search = (pole_type == pole_kind.SideRail) ? pole_kind.SideRail : pole_kind.Ground;
         pole_user? closest_pole        = get_closest(nearby_objects, relative_position,
             (pole_user current_pole) => !current_pole.anchored && current_pole.pole_type == pole_type_to_search);
@@ -347,7 +348,7 @@ internal static class editor
             if (closest_pole == null)
                 return false;
             _anchor_pole = closest_pole;
-            Main.log($"Staring anchor at {closest_pole.get_relative_position()}");
+            Main.log($"Staring anchor at {closest_pole.get_world_position()} ");
         }
         
         cantilever_user? closest_registration_arm = get_closest(nearby_objects, relative_position,

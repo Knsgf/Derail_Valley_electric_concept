@@ -129,20 +129,59 @@ internal partial class overhead_equipment
 
     public void store_scenery()
     {
-        if (_store_scenery && _file_path != null)
+        if (_file_path != null)
         {
-            List<catenary_object> objects_to_store =
+            List<catenary_object> objects_to_store;
+            string                formatted_scenery;
+            if (_store_scenery)
+            {
+                objects_to_store =
+                [..
+                    from   current_object in _all_objects
+                    where !current_object.placed_procedurally 
+                        && !(current_object is gantry saving_gantry && saving_gantry._further_pole.erased)
+                    select current_object
+                ];
+                formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented,
+                    new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                File.WriteAllText(Path.Combine(_file_path, "scenery.json"), formatted_scenery);
+                File.WriteAllText(@"C:\Users\Kf177\source\repos\we6\WE6SIM\catenary\scenery.json", formatted_scenery);
+                _store_scenery = false;
+            }
+
+            Vector3 player_position = PlayerManager.PlayerTransform.position;
+            (int player_x, int player_z) = get_absolute_position(PlayerManager.PlayerTransform.position);
+            /*
+            add_miscellaneous_object("PoleFoundation", PlayerManager.PlayerTransform.position, Quaternion.identity);
+            objects_to_store =
             [..
-                from   current_object in _all_objects
-                where !current_object.placed_procedurally 
-                    && !(current_object is gantry saving_gantry && saving_gantry._further_pole.erased)
-                select current_object
+                from    current_object in _all_objects
+                let     x_offset = Math.Abs(current_object.x - player_x)
+                let     z_offset = Math.Abs(current_object.z - player_z)
+                where   x_offset <= 10 * fixed_divider && z_offset <= 10 * fixed_divider
+                orderby (long) x_offset * x_offset + (long) z_offset * z_offset
+                select  current_object
             ];
-            string formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented,
+            */
+            Main.log($"PL {player_position}");
+            objects_to_store =
+            [..
+                from    current_object in _all_objects
+                let     x_offset = Math.Abs(current_object.x - player_x)
+                let     z_offset = Math.Abs(current_object.z - player_z)
+                where   current_object is pole && x_offset <= 10 * fixed_divider && z_offset <= 10 * fixed_divider
+                select  (pole) current_object into current_pole
+                orderby (current_pole.get_pole_true_position() - player_position).magnitude
+                select  current_pole
+            ];
+            foreach (catenary_object current_object in objects_to_store)
+            {
+                var current_pole = (pole) current_object;
+                Main.log($"POLE {current_pole.get_pole_true_position()} {current_pole.x} {current_pole.z}");
+            }
+            formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented,
                 new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-            File.WriteAllText(Path.Combine(_file_path, "scenery.json"), formatted_scenery);
-            File.WriteAllText(@"C:\Users\Kf177\source\repos\we6\WE6SIM\catenary\scenery.json", formatted_scenery);
-            _store_scenery = false;
+            File.WriteAllText(Path.Combine(_file_path, "nearby_objects.json"), formatted_scenery);
         }
     }
 }

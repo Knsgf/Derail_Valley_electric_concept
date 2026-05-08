@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 using DV.Utils;
+
 using Newtonsoft.Json;
+
 using UnityEngine;
 
 using WE6SIM.utilities;
@@ -126,6 +129,20 @@ internal partial class overhead_equipment
             Main.log($"Loaded objects: {loaded_objects.Count}");
             _all_objects.AddRange(loaded_objects);
         }
+        for (int index1 = _all_objects.Count - 1; index1 > 0; --index1)
+        {
+            for (int index2 = index1 - 1; index2 >= 0; --index2)
+            {
+                if (_all_objects[index1] is pole pole1 && _all_objects[index2] is pole pole2
+                    && pole1.pole_type == pole_kind.Bracket && pole2.pole_type == pole_kind.Bracket
+                    && Math.Abs(pole1.x - pole2.x) < fixed_divider && Math.Abs(pole1.z - pole2.z) < fixed_divider)
+                { 
+                    _all_objects.RemoveAt(index1);
+                    _store_scenery = true;
+                    break;
+                }
+            }
+        }
         _scenery_changed = _all_objects.Count > 0;
         if (_scenery_changed)
             reconstruct_tree();
@@ -165,7 +182,7 @@ internal partial class overhead_equipment
         _system = null;
     }
 
-    private void find_objects_within_region(List<catenary_object> found_objects, quad_tree all_objects, 
+    private void find_objects_within_region(List<catenary_object> found_objects, quad_tree all_objects,
         bool do_bounds_check, int left, int top, int right, int bottom)
     {
         found_objects.Clear();
