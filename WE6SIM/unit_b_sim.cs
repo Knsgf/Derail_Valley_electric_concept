@@ -25,7 +25,7 @@ internal class unit_b_sim: electric_device
 
 	private readonly Fuse _appliances, _overhead_power;
 	private readonly Port _control_AB1, _control_BA1;
-    private readonly Port _independent_brake;
+    private readonly Port _independent_brake, _sander;
 
 	private int _secondary_camshaft_target_notch = 1;
 
@@ -49,6 +49,7 @@ internal class unit_b_sim: electric_device
 		_control_BA1 = grab_port(ports, "internal_MU.CONTROL_BA1");
         
 		_independent_brake = grab_port(ports, "[IndependentBrake].EXT_IN");
+		_sander            = grab_port(ports, "[Sander].CONTROL_EXT_IN"  );
 
 		_secondary_controller = new camshaft_motor(unit_a_sim.camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 
@@ -74,10 +75,12 @@ internal class unit_b_sim: electric_device
 		_pantograph.toggle        (!port_value_signal_active(AB1, (int) AB1_signals.unit_B_pantograph));
 		_pantograph.sidepan_toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan   ));
 		
-		_secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_B_camshaft_notch, 
-			(int) AB1_shift.unit_B_camshaft_notch);
 		_independent_brake.Value = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_B_independent_brake, 
 			(int) AB1_shift.unit_B_independent_brake) / 5.0f;
+		_sander.Value = port_value_signal_active(AB1, (int) AB1_signals.unit_B_sander) ? 1.0f : 0.0f;
+
+		_secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_B_camshaft_notch, 
+			(int) AB1_shift.unit_B_camshaft_notch);
 		switch (_secondary_camshaft_target_notch)
 		{
 			case 0:

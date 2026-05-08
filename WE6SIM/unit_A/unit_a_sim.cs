@@ -30,7 +30,7 @@ internal partial class unit_a_sim: electric_device
     private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _reverse_current_lamp;
-    private readonly Port _independent_brake;
+    private readonly Port _independent_brake, _sander;
 
     private readonly Port _control_AB1, _control_BA1, _torque_b;
 
@@ -118,6 +118,8 @@ internal partial class unit_a_sim: electric_device
         _reverse_current_lamp = grab_port(ports, "[CustomSimulation].REVERSE_CURRENT");
         _independent_brake    = grab_port(ports, "[IndependentBrake].EXT_IN");
         _independent_brake.ValueUpdatedInternally += synchronise_independent_brake;
+		_sander = grab_port(ports, "[Sander].CONTROL_EXT_IN");
+        _sander.ValueUpdatedInternally += synchronise_sander;
 
         set_supply_volts   = _control_stand.create_setter(        "supply_volts");
         set_motors_volts   = _control_stand.create_setter(        "motors_volts");
@@ -187,6 +189,11 @@ internal partial class unit_a_sim: electric_device
     {
         set_port_signal(_control_AB1, (int) AB1_signals.unit_B_independent_brake, (int) AB1_shift.unit_B_independent_brake, 
             Mathf.RoundToInt(raw_handle_position * 5.0f));
+    }
+    
+    private void synchronise_sander(float sander_switch)
+    {
+        toggle_port_signal(_control_AB1, (int) AB1_signals.unit_B_sander, sander_switch >= 0.5f);
     }
 
     private void reverser_handler(float raw_reverser)

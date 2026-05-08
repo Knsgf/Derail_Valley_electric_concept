@@ -15,6 +15,7 @@ internal static class signal_cable
         unit_B_overhead_supply   = 2, 
         unit_B_camshaft_notch    = 3, 
         unit_B_independent_brake = 7,
+        unit_B_sander            = 10,
         
         battery = 23 
     };
@@ -25,6 +26,7 @@ internal static class signal_cable
         unit_B_overhead_power    = 0x1 << AB1_shift.unit_B_overhead_supply,
         unit_B_camshaft_notch    = 0xF << AB1_shift.unit_B_camshaft_notch,
         unit_B_independent_brake = 0x7 << AB1_shift.unit_B_independent_brake,
+        unit_B_sander            = 0x1 << AB1_shift.unit_B_sander,
 
         battery = 0x1 << AB1_shift.battery
     };
