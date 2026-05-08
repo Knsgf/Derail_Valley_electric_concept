@@ -18,8 +18,7 @@ namespace WE6SIM.unit_A;
 
 internal partial class unit_a_sim: electric_device
 {
-    //const int nb = 3/*, mb = 6 / nb*/;
-    const int motors = 6;
+    const int   motors = 6;
     const float max_exciter_voltage = 120.0f, min_exciter_voltage = 10.0f, max_exciter_current = 2000.0f;
     const float max_exciter_power = max_exciter_voltage * max_exciter_current;
 
@@ -32,7 +31,7 @@ internal partial class unit_a_sim: electric_device
     private readonly Port _reverse_current_lamp;
     private readonly Port _independent_brake, _sander;
 
-    private readonly Port _control_AB1, _control_BA1, _torque_b;
+    private readonly Port _control_AB1, _control_BA1, _torque_B, _wheel_RPM_B;
 
     private readonly SimController _simulation;
     private readonly circuit       _circuit;
@@ -77,7 +76,8 @@ internal partial class unit_a_sim: electric_device
         _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM" );
         _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF" );
 
-        _torque_b    = grab_port(ports, "internal_MU.TM4-6");
+        _torque_B    = grab_port(ports, "internal_MU.TM4-6");
+        _wheel_RPM_B = grab_port(ports, "internal_MU.WHEEL_RPM_FROM_B");
         _control_AB1 = grab_port(ports, "internal_MU.CONTROL_AB1");
         _control_BA1 = grab_port(ports, "internal_MU.CONTROL_BA1");
         _control_BA1.ValueUpdatedInternally += MU_BA1_control;
@@ -98,8 +98,10 @@ internal partial class unit_a_sim: electric_device
         _roof_bus   = new roof_busbar(ports, is_unit_A: true);
         _pantograph = new pantograph(unit.gameObject, _roof_bus, _appliances);
         _traction_motors = new traction_motor[motors];
-        for (int motor_number = 1; motor_number <= motors; ++motor_number)
+        for (int motor_number = 1; motor_number <= motors / 2; ++motor_number)
             _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
+        for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
+            _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM_B);
         _blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
 
         _control_stand       = new control_stand(_appliances, ports);
@@ -361,7 +363,7 @@ internal partial class unit_a_sim: electric_device
         //_blowers.full_speed_mode = true;
         _blowers.simulate(rheostatic_brake_on, rheostatic_brake_on ? _motors_volts : voltage, maximum_load);
 
-        _torque_a.Value = _torque_b.Value = total_torque / 2.0f;
+        _torque_a.Value = _torque_B.Value = total_torque / 2.0f;
     }
 
     public override void Dispose()
