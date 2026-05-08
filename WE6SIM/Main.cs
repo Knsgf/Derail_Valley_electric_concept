@@ -23,9 +23,6 @@ public static class Main
     public static Port? diagnostics2 { get; set; }
     public static ModEntry? mod_info { get; private set; }
     
-    [Obsolete]
-    public static float pole_height_offset { get; set; }
-
     public static void log(string message)
     {
         _logger?.Log(message);
