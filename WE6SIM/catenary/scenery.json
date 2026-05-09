@@ -8081,5 +8081,21 @@
     "z": 7321456,
     "y": 131.962814,
     "wire_type": "termination_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+substation, WE6SIM",
+    "map_location": "SM1000",
+    "supply_voltage": 1000.0,
+    "maximum_load": 2000.0,
+    "has_inverter": false,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": -0.707106769,
+      "w": 0.707106769
+    },
+    "x": 8375657,
+    "z": 7877380,
+    "y": 130.941376
   }
 ]
