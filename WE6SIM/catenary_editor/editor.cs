@@ -338,7 +338,13 @@ internal static class editor
     
     private static bool place_wire(string substation, Vector3 relative_position, bool terminate_at_next_pole)
     {
-        List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 10.0f);
+        wire_kind wire_type;
+        if (pole_type == pole_kind.SideRail)
+            wire_type = wire_kind.side_rail;
+        else
+            wire_type = dual_wire ? wire_kind.plain_dual : wire_kind.plain_single;
+        List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 
+            (wire_type == wire_kind.side_rail) ? 2.0f : 10.0f);
         pole_kind  pole_type_to_search = (pole_type == pole_kind.SideRail) ? pole_kind.SideRail : pole_kind.Ground;
         pole_user? closest_pole        = get_closest(nearby_objects, relative_position,
             (pole_user current_pole) => !current_pole.anchored && current_pole.pole_type == pole_type_to_search);
@@ -356,12 +362,7 @@ internal static class editor
         if (    terminate_at_next_pole && _last_registration_arm != null &&             closest_pole != null &&             closest_pole != _anchor_pole             
             || !terminate_at_next_pole                                   && closest_registration_arm != null && closest_registration_arm != _last_registration_arm) 
         {
-            wire_kind wire_type;
-            if (pole_type == pole_kind.SideRail)
-                wire_type = wire_kind.side_rail;
-            else
-                wire_type = dual_wire ? wire_kind.plain_dual : wire_kind.plain_single;
-            Vector3   beginning_attachment_point;
+            Vector3 beginning_attachment_point;
             if (_last_registration_arm != null)
                 beginning_attachment_point = _last_registration_arm.relative_wire_attachment_point();
             else
