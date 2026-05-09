@@ -6662,7 +6662,7 @@
     "x": 7665110,
     "z": 7120736,
     "y": 131.9729,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
@@ -7474,6 +7474,280 @@
     "x": 7673444,
     "z": 7126722,
     "y": 131.9916,
+    "wire_type": "termination_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.934121,
+      "z": 0.0,
+      "w": -0.356956571
+    },
+    "x": 7672536,
+    "z": 7129163,
+    "y": 131.987411,
+    "wire_attached": true
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9362027,
+      "z": 0.0,
+      "w": -0.3514606
+    },
+    "x": 7665902,
+    "z": 7121654,
+    "y": 131.973312,
+    "wire_attached": true
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.939731836,
+      "z": 0.0,
+      "w": -0.3419125
+    },
+    "x": 7659407,
+    "z": 7114017,
+    "y": 131.985809,
+    "wire_attached": true
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.945270956,
+      "z": 0.0,
+      "w": -0.326286435
+    },
+    "x": 7653129,
+    "z": 7106183,
+    "y": 131.953629,
+    "wire_attached": true
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9501954,
+      "z": 0.0,
+      "w": -0.311654925
+    },
+    "x": 7647094,
+    "z": 7098121,
+    "y": 131.955292,
+    "wire_attached": true
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9547424,
+      "z": 0.0,
+      "w": -0.297434032
+    },
+    "x": 7641314,
+    "z": 7089926,
+    "y": 131.972855,
+    "wire_attached": true
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.956329346,
+      "z": 0.0,
+      "w": -0.292291462
+    },
+    "x": 7635747,
+    "z": 7081588,
+    "y": 131.978851,
+    "wire_attached": true
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.956223667,
+      "z": 0.0,
+      "w": -0.292636931
+    },
+    "x": 7630130,
+    "z": 7073254,
+    "y": 131.980347,
+    "wire_attached": true
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.956242561,
+      "z": 0.0,
+      "w": -0.292575032
+    },
+    "x": 7624566,
+    "z": 7064944,
+    "y": 131.981323,
+    "wire_attached": true
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.956246,
+      "z": 0.0,
+      "w": -0.292563856
+    },
+    "x": 7619017,
+    "z": 7056614,
+    "y": 131.972229,
+    "wire_attached": true
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 10.0090437,
+    "previous_pole_vertical_offset": -0.009094238,
+    "substation": "SM1000",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.957144,
+      "z": 0.0,
+      "w": -0.289612353
+    },
+    "x": 7622656,
+    "z": 7066233,
+    "y": 131.981323,
+    "wire_type": "termination_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 10.00101,
+    "previous_pole_vertical_offset": 0.0009765625,
+    "substation": "SM1000",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.95680207,
+      "z": 0.0,
+      "w": -0.290740252
+    },
+    "x": 7628221,
+    "z": 7074543,
+    "y": 131.980347,
+    "wire_type": "side_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 10.0485334,
+    "previous_pole_vertical_offset": 0.00149536133,
+    "substation": "SM1000",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9563576,
+      "z": 0.0,
+      "w": -0.292198926
+    },
+    "x": 7633837,
+    "z": 7082876,
+    "y": 131.978851,
+    "wire_type": "side_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 10.0504332,
+    "previous_pole_vertical_offset": 0.005996704,
+    "substation": "SM1000",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9569879,
+      "z": 0.0,
+      "w": -0.2901277
+    },
+    "x": 7639418,
+    "z": 7091235,
+    "y": 131.972855,
+    "wire_type": "side_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 10.0970707,
+    "previous_pole_vertical_offset": 0.0175628662,
+    "substation": "SM1000",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9531972,
+      "z": 0.0,
+      "w": -0.302349448
+    },
+    "x": 7645238,
+    "z": 7099486,
+    "y": 131.955292,
+    "wire_type": "side_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 10.1417856,
+    "previous_pole_vertical_offset": 0.001663208,
+    "substation": "SM1000",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.948820651,
+      "z": 0.0,
+      "w": -0.315815568
+    },
+    "x": 7651316,
+    "z": 7107604,
+    "y": 131.953629,
+    "wire_type": "side_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 10.115633,
+    "previous_pole_vertical_offset": -0.0321807861,
+    "substation": "SM1000",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9434824,
+      "z": 0.0,
+      "w": -0.331422627
+    },
+    "x": 7657642,
+    "z": 7115498,
+    "y": 131.985809,
+    "wire_type": "side_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 10.0723076,
+    "previous_pole_vertical_offset": 0.0124969482,
+    "substation": "SM1000",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9385503,
+      "z": 0.0,
+      "w": -0.345142484
+    },
+    "x": 7664167,
+    "z": 7123170,
+    "y": 131.973312,
+    "wire_type": "side_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 10.0468359,
+    "previous_pole_vertical_offset": 0.0140991211,
+    "substation": "SM1000",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.353962958,
+      "z": 0.0,
+      "w": 0.935259461
+    },
+    "x": 7664167,
+    "z": 7123170,
+    "y": 131.973312,
     "wire_type": "termination_rail"
   }
 ]

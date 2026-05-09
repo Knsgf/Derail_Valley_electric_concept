@@ -347,7 +347,8 @@ internal static class editor
             (wire_type == wire_kind.side_rail) ? 2.0f : 10.0f);
         pole_kind  pole_type_to_search = (pole_type == pole_kind.SideRail) ? pole_kind.SideRail : pole_kind.Ground;
         pole_user? closest_pole        = get_closest(nearby_objects, relative_position,
-            (pole_user current_pole) => !current_pole.anchored && current_pole.pole_type == pole_type_to_search);
+            (pole_user current_pole) => !current_pole.anchored && current_pole.pole_type == pole_type_to_search
+                                     && !(current_pole is side_rail_pole_user side_pole && side_pole.wire_attached));
         if (_anchor_pole == null)
         {
             _freshly_added_wires.Clear();
@@ -369,12 +370,15 @@ internal static class editor
             {
                 assert.test(closest_registration_arm != null);
                 beginning_attachment_point = _anchor_pole.get_pole_true_position();
-                if (wire_type == wire_kind.side_rail)
-                    wire_type = wire_kind.termination_rail;
-                else
+                if (wire_type != wire_kind.side_rail)
                 {
                     wire_type = dual_wire ? wire_kind.end_anchor_dual : wire_kind.end_anchor_single;
                     Main.log($"Anchor start: {(dual_wire ? "dual" : "single")}");
+                }
+                else
+                {
+                    wire_type                                          = wire_kind.termination_rail;
+                    ((side_rail_pole_user) _anchor_pole).wire_attached = true;
                 }
             }
             Vector3 end_attachment_point; 
@@ -383,10 +387,13 @@ internal static class editor
                 Main.log("Anchor end");
                 assert.test(closest_pole != null);
                 end_attachment_point  = closest_pole.get_pole_true_position();
-                if (wire_type == wire_kind.side_rail)
-                    wire_type = wire_kind.termination_rail;
-                else
+                if (wire_type != wire_kind.side_rail)
                     wire_type = dual_wire ? wire_kind.end_anchor_dual : wire_kind.end_anchor_single;
+                else
+                {
+                    wire_type                                          = wire_kind.termination_rail;
+                    ((side_rail_pole_user) closest_pole).wire_attached = true;
+                }
                 (end_attachment_point, beginning_attachment_point) = (beginning_attachment_point, end_attachment_point);
             }
             else
