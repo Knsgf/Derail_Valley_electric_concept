@@ -13,6 +13,11 @@ internal class blower_controller: electric_device
     const float acceleration_ratio = 0.95f, slowdown_ratio = 0.999f;
     const float series_3_parallel_2 = 1.0f / 3.0f, series_2_parallel_3 = 1.0f / 2.0f, parallel_6 = 1.0f;
 
+    const float dynamic_braking_parallel_maximum_voltage  = 950.0f;
+    const float dynamic_braking_series_minimum_voltage    = 900.0f;
+    const float traction_low_speed_maximum_motor_current  = 300.0f;
+    const float traction_high_speed_minimum_motor_current = 250.0f;
+
     private readonly Port _blower_audio, _contactor_on_sound, _contactor_off_sound;
     
     private float _relative_speed = 0.0f, _line_voltage = 0.0f, _motor_current = 0.0f;
@@ -46,8 +51,12 @@ internal class blower_controller: electric_device
         if (!is_powered)
             return series_3_parallel_2;
         if (rheostatic_braking_on)
-            return (line_voltage >= 975.0f) ? series_2_parallel_3 : parallel_6;
-        return (full_speed_mode || motor_current >= 275.0f) ? series_2_parallel_3 : series_3_parallel_2;
+        {
+            return (line_voltage >= (dynamic_braking_parallel_maximum_voltage + dynamic_braking_series_minimum_voltage) / 2.0f) 
+                ? series_2_parallel_3 : parallel_6;
+        }
+        return (full_speed_mode || motor_current >= (traction_high_speed_minimum_motor_current + traction_low_speed_maximum_motor_current) / 2.0f) 
+            ? series_2_parallel_3 : series_3_parallel_2;
     }
 
     private async void switch_configuration()
@@ -84,9 +93,10 @@ internal class blower_controller: electric_device
                 _contactor_on_sound.Value = 1.0f;
             _previously_active = true;
             fan_motor_voltage  = line_voltage * _line_voltage_multiplier;
-            if (    rheostatic_braking_on && _line_voltage is >= 950 or <= 900
-                || !rheostatic_braking_on && (   _motor_current >= 300.0f || full_speed_mode) 
-                                              || _motor_current <= 250.0f && !full_speed_mode)
+            if (    rheostatic_braking_on && _line_voltage is > dynamic_braking_parallel_maximum_voltage 
+                                                           or < dynamic_braking_series_minimum_voltage
+                || !rheostatic_braking_on && (   _motor_current > traction_low_speed_maximum_motor_current  || full_speed_mode) 
+                                              || _motor_current < traction_high_speed_minimum_motor_current && !full_speed_mode)
             {
                 switch_configuration();
             }
