@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 
 using UnityEngine;
 
+using WE6SIM.catenary_editor;
 using WE6SIM.utilities;
 
 using static UnityModManagerNet.UnityModManager;
@@ -169,6 +170,7 @@ internal partial class overhead_equipment
     public static void dispose()
     {
         Main.log("catenary_visual.dispose()");
+        editor.disable();
         if (_system == null)
             return;
         WorldMover floating_origin            = SingletonBehaviour<WorldMover>.Instance;

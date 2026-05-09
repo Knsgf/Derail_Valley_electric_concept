@@ -609,6 +609,12 @@ internal static class editor
             }
         }
     }
+
+    public static void disable()
+    {
+        part_placement = placement.Disabled;
+        _settings?.reset_placement_mode();
+    }
 }
 
 #endif

@@ -130,6 +130,7 @@ internal partial class overhead_equipment
 
     public void store_scenery()
     {
+        editor.disable();
         if (_file_path != null)
         {
             List<catenary_object> objects_to_store;
@@ -151,8 +152,8 @@ internal partial class overhead_equipment
             }
 
             Vector3 player_position = PlayerManager.PlayerTransform.position;
-            (int player_x, int player_z) = get_absolute_position(PlayerManager.PlayerTransform.position);
-            add_miscellaneous_object("PoleFoundation", PlayerManager.PlayerTransform.position, Quaternion.identity);
+            (int player_x, int player_z) = get_absolute_position(player_position);
+            add_miscellaneous_object("GantryArrow", PlayerManager.PlayerTransform.position, Quaternion.identity);
             objects_to_store =
             [..
                 from    current_object in _all_objects
