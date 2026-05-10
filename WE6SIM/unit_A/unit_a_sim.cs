@@ -372,9 +372,10 @@ internal partial class unit_a_sim: electric_device
         }
         _traction_motor_EMF.Value = average_EMF;
         
-        _blowers.active        = rheostatic_brake_on || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
-        _blowers.motor_current = maximum_load;
-        _blowers.line_voltage  = rheostatic_brake_on ? _motors_volts : voltage;
+        _blowers.active                = rheostatic_brake_on || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
+        _blowers.rheostatic_braking_on = rheostatic_brake_on;
+        _blowers.motor_current         = maximum_load;
+        _blowers.line_voltage          = rheostatic_brake_on ? _motors_volts : voltage;
         //_blowers.full_speed_mode = true;
         _blowers.simulate();
 

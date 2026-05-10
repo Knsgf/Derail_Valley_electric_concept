@@ -21,7 +21,7 @@ internal class blower_controller: electric_device
     private readonly Port _blower_audio, _contactor_on_sound, _contactor_off_sound;
     
     private float _relative_speed = 0.0f, _line_voltage = 0.0f, _motor_current = 0.0f;
-    private float _line_voltage_multiplier = 0.5f;
+    private float _line_voltage_multiplier = series_3_parallel_2;
     private bool  _reconfiguration = false, _previously_active = false;
 
     public bool active { get; set; }
@@ -92,7 +92,7 @@ internal class blower_controller: electric_device
             if (!_previously_active)
                 _contactor_on_sound.Value = 1.0f;
             _previously_active = true;
-            fan_motor_voltage  = line_voltage * _line_voltage_multiplier;
+            fan_motor_voltage  = _line_voltage * _line_voltage_multiplier;
             if (    rheostatic_braking_on && _line_voltage is > dynamic_braking_parallel_maximum_voltage 
                                                            or < dynamic_braking_series_minimum_voltage
                 || !rheostatic_braking_on && (   _motor_current > traction_low_speed_maximum_motor_current  || full_speed_mode) 
