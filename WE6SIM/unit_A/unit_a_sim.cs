@@ -30,6 +30,7 @@ internal partial class unit_a_sim: electric_device
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _reverse_current_lamp;
     private readonly Port _independent_brake, _sander;
+    private readonly Port _total_load;
 
     private readonly Port _control_AB1, _control_BA1, _torque_B, _wheel_RPM_B;
 
@@ -75,6 +76,7 @@ internal partial class unit_a_sim: electric_device
         _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD");
         _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM" );
         _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF" );
+        _total_load          = grab_port(ports, "[CustomSimulation].TOTAL_DRAW");
 
         const float variation = 0.1f;
         UnityEngine.Random.State old_state = UnityEngine.Random.state;
@@ -86,8 +88,8 @@ internal partial class unit_a_sim: electric_device
         foreach (string branch_name in _named_branches.Keys)
             _currents[branch_name] = 0.0f;
 
-        _torque_B    = grab_port(ports, "internal_MU.TM4-6");
-        _wheel_RPM_B = grab_port(ports, "internal_MU.WHEEL_RPM_FROM_B");
+        _torque_B    = grab_port(ports, "[internal_MU].TM4-6");
+        _wheel_RPM_B = grab_port(ports, "[internal_MU].WHEEL_RPM_FROM_B");
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
@@ -101,8 +103,8 @@ internal partial class unit_a_sim: electric_device
             _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM_B);
         _blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
 
-        _control_AB1 = grab_port(ports, "internal_MU.CONTROL_AB1");
-        _control_BA1 = grab_port(ports, "internal_MU.CONTROL_BA1");
+        _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
+        _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
         _control_BA1.ValueUpdatedInternally += MU_BA1_control;
 
         _control_stand       = new control_stand(_appliances, ports);
@@ -306,7 +308,8 @@ internal partial class unit_a_sim: electric_device
     {
         check_if_disposed();
         overhead_equipment.system.handle_scenery_visibility(_unit.transform.position);
-        _pantograph.simulate();
+        _total_load.Value = _currents["EPS"];
+        _pantograph.simulate(_total_load.Value);
         _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
 
         set_primary_notch(_contactors._primary_controller.current_position);
@@ -320,8 +323,6 @@ internal partial class unit_a_sim: electric_device
         bool  rheostatic_brake_on = _selector == 2;
         float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
         _overhead_power.ChangeState(voltage >= 1000.0f);
-        if (_currents["EPS"] < 0.0f)
-            voltage += _currents["EPS"] * _element_resistances["EPS"];
         _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
         if (_selector < 2)
             set_exciter_voltage(_field_position);

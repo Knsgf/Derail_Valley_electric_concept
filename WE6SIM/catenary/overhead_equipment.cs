@@ -89,6 +89,8 @@ internal partial class overhead_equipment
     private List<catenary_object> _previously_visible_objects = [], _currently_visible_objects = [];
     private quad_tree _object_tree = new([]), _wires_tree = new([]);
 
+    private substation[]? _all_substations = null;
+
     public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
 
     private overhead_equipment(ModEntry mod)
@@ -112,7 +114,7 @@ internal partial class overhead_equipment
         PlayerManager.PlayerTeleportFinished += track_player_movement;
     }
 
-    private void load_scenery(ModEntry mod)
+    private void load_scenery()
     {
         List<catenary_object>? loaded_objects = null;
         try
@@ -130,6 +132,7 @@ internal partial class overhead_equipment
             Main.log($"Loaded objects: {loaded_objects.Count}");
             _all_objects.AddRange(loaded_objects);
         }
+
         /*
         for (int index1 = _all_objects.Count - 1; index1 > 0; --index1)
         {
@@ -157,14 +160,47 @@ internal partial class overhead_equipment
         if (_system != null)
             throw new InvalidOperationException("Attempt to create a duplicate catenary in the world");
         _system = new overhead_equipment(mod);
-        _system.load_scenery(mod);  // "catenary_object" and its derivaties require "system" property to be initialised,
-                                    // which precludes doing loading inside constructor
-        _system._wires_tree = new(
+        _system.load_scenery();  // "catenary_object" and its derivaties require "system" property to be initialised,
+                                 // which precludes doing loading inside constructor
+
+        List<substation> all_substations =
         [..
             from   current_object in _system._all_objects
-            where  current_object is wire
-            select current_object
-        ]);
+            let    current_substation = current_object as substation
+            where  current_substation != null
+            select current_substation
+        ];
+        substation neutral_connection = new("NEUTRAL", 0.0f, 100000.0f, false, 0, 0, 0.0f, Quaternion.identity);
+        all_substations.Add(neutral_connection);
+        int last_substation = all_substations.Count - 1;
+        (all_substations[0], all_substations[last_substation]) = (all_substations[last_substation], all_substations[0]);
+        _system._all_substations                   = new substation[last_substation + 1];
+        Dictionary<string, int> substation_indices = [];
+        for (int index = 0; index <= last_substation; ++index)
+        {
+            _system._all_substations[index] = all_substations[index];
+            substation_indices[all_substations[index].map_location] = index;
+        }
+
+        List<wire> all_wires = 
+        [..
+            from   current_object in _system._all_objects
+            let    current_wire = current_object as wire
+            where  current_wire != null
+            select current_wire
+        ];
+        foreach (wire current_wire in all_wires)
+        {
+            if (!substation_indices.TryGetValue(current_wire.substation, out int substation_index))
+                throw new Exception($"Non-existent substation connection {current_wire.substation}");
+            current_wire.substation_index = substation_index;
+        }
+        _system._wires_tree = new(
+            [..
+                from   current_wire in all_wires
+                select current_wire
+            ]
+        );
     }
 
     public static void dispose()
@@ -268,7 +304,8 @@ internal partial class overhead_equipment
         return new_object;
     }
 
-    public float? wire_height(int strip_end1_x, int strip_end1_z, int strip_end2_x, int strip_end2_z, float pantograph_base_y)
+    public (float?, float) wire_height_and_voltage(int strip_end1_x, int strip_end1_z, int strip_end2_x, int strip_end2_z, 
+        float pantograph_base_y, float load_current)
     {
         const int wire_search_half_area = (int) (60.0f * fixed_multiplier);
         
@@ -280,6 +317,7 @@ internal partial class overhead_equipment
             strip_centre_x + wire_search_half_area, strip_centre_z + wire_search_half_area);
         float lowest_height = float.MaxValue;
         //Main.log($"{_nearby_wires.Count} wires");
+        wire? wire_in_contact = null;
         foreach (catenary_object current_object in _nearby_wires)
         {
             var    current_wire   = (wire) current_object;
@@ -288,9 +326,18 @@ internal partial class overhead_equipment
             {
                 float wire_height = (float) contact_height;
                 if (lowest_height > wire_height)
-                    lowest_height = wire_height;
+                {
+                    lowest_height   = wire_height;
+                    wire_in_contact = current_wire;
+                }
             }
         }
-        return (lowest_height < float.MaxValue) ? lowest_height : null;
+
+        if (wire_in_contact == null)
+            return (null, 0.0f);
+
+        substation supplying_substation = _all_substations![wire_in_contact.substation_index];
+        return (lowest_height, supplying_substation.wire_voltage(wire_in_contact.x, wire_in_contact.z, 
+            wire_in_contact.y, load_current, wire_in_contact.length_1m_resistance));
     }
 }

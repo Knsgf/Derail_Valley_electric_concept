@@ -20,6 +20,7 @@ internal partial class overhead_equipment
     {
         const float default_section_length = 40.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f;
         const float default_side_rail_length = 10.0f, default_side_rail_height = 4.5f;
+        const float single_wire_1m_resistance = 3.3E-5f, dual_wire_1m_resistance = 2.2E-5f, side_rail_1m_resistance = 2.314E-5f;
         
         [JsonIgnore]
         private static readonly float y_scale = Mathf.Sqrt(2.0f);
@@ -43,6 +44,10 @@ internal partial class overhead_equipment
         public float previous_pole_vertical_offset;
         [JsonProperty]
         public string substation;
+        [JsonIgnore]
+        public int substation_index = 0;
+        [JsonIgnore]
+        public float length_1m_resistance;
 
         [JsonProperty]
         public wire_kind wire_type { get; set; }
@@ -73,6 +78,19 @@ internal partial class overhead_equipment
             this.substation                    = substation;
             this.length                        = length;
             this.previous_pole_vertical_offset = previous_pole_vertical_offset;
+            this.length_1m_resistance          = wire_type switch
+            {
+                wire_kind.plain_dual           =>   dual_wire_1m_resistance,
+                wire_kind.plain_single         => single_wire_1m_resistance,
+                wire_kind.middle_anchor_dual   =>   dual_wire_1m_resistance,
+                wire_kind.middle_anchor_single => single_wire_1m_resistance,
+                wire_kind.end_anchor_dual      =>   dual_wire_1m_resistance,
+                wire_kind.end_anchor_single    => single_wire_1m_resistance,
+                wire_kind.wall_anchor_single   => single_wire_1m_resistance,
+                wire_kind.side_rail            =>   side_rail_1m_resistance,
+                wire_kind.termination_rail     =>   side_rail_1m_resistance,
+                _ => throw new ArgumentOutOfRangeException($"Invalid wire type {wire_type}")
+            };
             
             bool  is_side_rail              = wire_type is wire_kind.side_rail or wire_kind.termination_rail;
             float shear_angle               = Mathf.Atan(previous_pole_vertical_offset / length);

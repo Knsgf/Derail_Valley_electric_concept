@@ -193,7 +193,7 @@ internal static class car_spawn_handler
                             break;
 
                         //case "traction.TORQUE_IN":
-                        case "internal_MU.TM4-6":
+                        case "[internal_MU].TM4-6":
                             Main.logger.Log($"Torque output connected");
                             _port2 = port;
                             break;

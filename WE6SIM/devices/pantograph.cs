@@ -258,16 +258,17 @@ internal class pantograph: electric_device
         _sidepan_arm.localRotation   = Quaternion.Slerp(Quaternion.identity,   _sidepan_arm_deployed_orientation,   _side_arm_relative_position);
     }
 
-    private float? get_wire_height(Transform pantograph_base, Transform strip_end1, Transform strip_end2) 
+    private (float?, float) get_wire_height_and_voltage(Transform pantograph_base, Transform strip_end1, Transform strip_end2,
+        float load_current) 
     { 
         (int strip_end1_x, int stripe_end1_z) = world_position.get_absolute_position(strip_end1.position);
         (int strip_end2_x, int stripe_end2_z) = world_position.get_absolute_position(strip_end2.position);
         //Main.log($"Contact ({strip_end1_x}, {stripe_end1_z})-({strip_end2_x}, {stripe_end2_z}) {pantograph_base.position.y}");
-        return overhead_equipment.system.wire_height(strip_end1_x, stripe_end1_z, 
-                                                     strip_end2_x, stripe_end2_z, pantograph_base.position.y);
+        return overhead_equipment.system.wire_height_and_voltage(strip_end1_x, stripe_end1_z, 
+                                                     strip_end2_x, stripe_end2_z, pantograph_base.position.y, load_current);
     }
     
-    public void simulate()
+    public void simulate(float load_current)
     {
         check_if_disposed();
         if (_stowed || !is_powered)
@@ -284,7 +285,7 @@ internal class pantograph: electric_device
             float?  wire_height         = overhead_equipment.system.wire_height(strip_end1_x, stripe_end1_z, 
                                                                                 strip_end2_x, stripe_end2_z, base_world_position.y);
             */
-            float? wire_height = get_wire_height(_base, _contact_strip_end1, _contact_strip_end2);
+            (float? wire_height, float supply_voltage) = get_wire_height_and_voltage(_base, _contact_strip_end1, _contact_strip_end2, load_current);
             if (wire_height == null)
             {
                 _target_height               = maximum_head_height;
@@ -295,7 +296,7 @@ internal class pantograph: electric_device
                 Vector3 target_head_world_position = _base.position;
                 target_head_world_position.y       = (float) wire_height;
                 _target_height                     = _unit.transform.InverseTransformPoint(target_head_world_position).y;
-                _roof_bus.pantograph_voltage       = (Mathf.Abs(_current_height - _target_height) < 0.015f) ? 1600.0f : 0.0f;
+                _roof_bus.pantograph_voltage       = (Mathf.Abs(_current_height - _target_height) < 0.015f) ? supply_voltage : 0.0f;
             }
         }
         move();
@@ -303,7 +304,7 @@ internal class pantograph: electric_device
         if (_sidepan_stowed || _side_pivot_relative_position < 1.0f || _side_arm_relative_position < 1.0f)
             _roof_bus.sidepan_voltage = 0.0f;
         else
-            _roof_bus.sidepan_voltage = (get_wire_height(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact) == null) ? 0.0f : 1050.0f;
+            (_, _roof_bus.sidepan_voltage) = get_wire_height_and_voltage(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact, load_current);
         sidepan_move();
     }
 

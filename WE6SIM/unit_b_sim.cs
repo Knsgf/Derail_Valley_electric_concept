@@ -27,6 +27,7 @@ internal class unit_b_sim: electric_device
     private readonly Fuse _appliances, _overhead_power;
     private readonly Port _control_AB1, _control_BA1;
     private readonly Port _independent_brake, _sander;
+    private readonly Port _total_load;
 
     private int _secondary_camshaft_target_notch = 1;
 
@@ -44,10 +45,12 @@ internal class unit_b_sim: electric_device
         //_front_pantograph_switch = get_port(ports, "[FrontPantographSwitch].EXT_IN");
         //_front_pantograph_switch.ValueUpdatedInternally += toggle_pole;
 
-        //_torque_b = get_port(ports, "internal_MU.TM4-6");
-        _control_AB1 = grab_port(ports, "internal_MU.CONTROL_AB1");
+        //_torque_b = get_port(ports, "[internal_MU].TM4-6");
+        _total_load = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD");
+
+        _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
         _control_AB1.ValueUpdatedInternally += MU_AB1_control;
-        _control_BA1 = grab_port(ports, "internal_MU.CONTROL_BA1");
+        _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
         
         _independent_brake = grab_port(ports, "[IndependentBrake].EXT_IN");
         _sander            = grab_port(ports, "[Sander].CONTROL_EXT_IN"  );
@@ -105,7 +108,7 @@ internal class unit_b_sim: electric_device
     private void simulate()
     {
         check_if_disposed();
-        _pantograph.simulate();
+        _pantograph.simulate(_total_load.Value);
         set_port_signal(_control_BA1, (int) BA1_signals.unit_B_camshaft_notch, (int) BA1_shift.unit_B_camshaft_notch,
             _secondary_controller.current_notch);
     }

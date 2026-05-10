@@ -3,6 +3,8 @@
 using Newtonsoft.Json;
 using UnityEngine;
 
+using WE6SIM.utilities;
+
 namespace WE6SIM.catenary;
 
 interface power_supply: catenary_object_user
@@ -31,6 +33,21 @@ internal partial class overhead_equipment
             this.has_inverter   = has_inverter;
         }
 
+        public float wire_voltage(int wire_x, int wire_z, float wire_y, float load_current, float wire_1m_resistance)
+        {
+            int   x_offset = x - wire_x, z_offset = z - wire_z;
+            float y_offset = y - wire_y;
+            float distance = Mathf.Sqrt(((long) x_offset * x_offset + (long) z_offset + z_offset) 
+                / (world_position.fixed_multiplier * world_position.fixed_multiplier) + y_offset * y_offset);
+            float voltage = supply_voltage;
+            if (load_current < 0.0f)
+            {
+                if (!has_inverter)
+                    voltage -= load_current * 10.0f;
+            }
+            return voltage - load_current * wire_1m_resistance * distance;
+        }
+        
         public override void reveal()
         {
 #if DEBUG

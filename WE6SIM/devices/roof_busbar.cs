@@ -41,13 +41,13 @@ internal class roof_busbar: electric_device
     {
         if (is_unit_A)
         {
-            _inter_unit_cable_supplier = sensor_grabber.grab_port(ports, "internal_MU.SUPPLY_TO_B");
-            _inter_unit_cable_receiver = sensor_grabber.grab_port(ports, "internal_MU.SUPPLY_FROM_B");
+            _inter_unit_cable_supplier = sensor_grabber.grab_port(ports, "[internal_MU].SUPPLY_TO_B");
+            _inter_unit_cable_receiver = sensor_grabber.grab_port(ports, "[internal_MU].SUPPLY_FROM_B");
         }
         else
         {
-            _inter_unit_cable_supplier = sensor_grabber.grab_port(ports, "internal_MU.SUPPLY_TO_A");
-            _inter_unit_cable_receiver = sensor_grabber.grab_port(ports, "internal_MU.SUPPLY_FROM_A");
+            _inter_unit_cable_supplier = sensor_grabber.grab_port(ports, "[internal_MU].SUPPLY_TO_A");
+            _inter_unit_cable_receiver = sensor_grabber.grab_port(ports, "[internal_MU].SUPPLY_FROM_A");
         }
         _inter_unit_cable_receiver.ValueUpdatedInternally += voltage_from_other_unit_changed;
     }

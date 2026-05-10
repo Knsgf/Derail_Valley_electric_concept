@@ -613,7 +613,7 @@
     "map_location": "SM1500",
     "supply_voltage": 1600.0,
     "maximum_load": 4500.0,
-    "has_inverter": true,
+    "has_inverter": false,
     "orientation": {
       "x": 0.0,
       "y": 0.0,
@@ -1522,7 +1522,7 @@
     "x": 7709166,
     "z": 7157310,
     "y": 131.982117,
-    "wire_type": "plain_single"
+    "wire_type": "middle_anchor_single"
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
@@ -5052,7 +5052,7 @@
     "x": 7805497,
     "z": 7232746,
     "y": 131.943436,
-    "wire_type": "plain_single"
+    "wire_type": "middle_anchor_single"
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
