@@ -45,6 +45,8 @@ internal partial class overhead_equipment
                 if (!has_inverter)
                     voltage -= load_current * 10.0f;
             }
+            //Main.diagnostics?.Value = distance;
+            //Main.diagnostics2?.Value = supply_voltage - maximum_load * wire_1m_resistance * distance;
             return voltage - load_current * wire_1m_resistance * distance;
         }
         

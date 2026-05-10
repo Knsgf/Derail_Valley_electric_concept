@@ -115,7 +115,7 @@ internal partial class unit_a_sim
 
     private static readonly Dictionary<string, float> _base_element_resistances = new()
     {
-        ["EPS"] = 0.1f,
+        ["EPS"] = 0.0f,
         ["EXT"] = 0.01f,
         ["VM12"] = 1.0E+4f,
         ["VM34"] = 1.0E+4f,
