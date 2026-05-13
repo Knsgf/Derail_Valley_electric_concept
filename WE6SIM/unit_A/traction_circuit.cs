@@ -135,7 +135,7 @@ internal partial class unit_a_sim
         }
         for (int motor_branch = 1; motor_branch <= motors; ++motor_branch)
         {
-            _base_element_resistances[$"MA{motor_branch}"  ] = 0.21f * 0.65f;
+            _base_element_resistances[$"MA{motor_branch}"  ] = 0.21f * 0.65f;   // Includes both rotor and compensating winding
             _base_element_resistances[$"MF{motor_branch}a" ] = 0.21f * 0.35f * (1.0f - traction_motor.field_partitioning);
             _base_element_resistances[$"MF{motor_branch}b" ] = 0.21f * 0.35f * (       traction_motor.field_partitioning);
 

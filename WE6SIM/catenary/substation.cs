@@ -40,7 +40,7 @@ internal partial class overhead_equipment
             float distance = Mathf.Sqrt(((long) x_offset * x_offset + (long) z_offset + z_offset) 
                 / (world_position.fixed_multiplier * world_position.fixed_multiplier) + y_offset * y_offset);
             float voltage = supply_voltage;
-            if (load_current < 0.0f)
+            if (load_current < -100.0f)
             {
                 if (!has_inverter)
                     voltage -= load_current * 10.0f;
