@@ -64,19 +64,13 @@ internal class unit_b_sim: electric_device
         _unit = unit;
         _simulation = simulation;
         simulation.SimulationFlow.TickEvent += simulate;
-        unit.brakeSystem.MainResPressureChanged += main_reservoir_to_auxiliary_connector;
         
-        _battery_cabinet = new(fuses, ports);
+        _battery_cabinet = new(fuses, ports, unit.brakeSystem);
         _roof_bus        = new(ports, is_unit_A: false);
         _pantograph      = new(unit.gameObject, _roof_bus, _appliances);
 
         //_throttle = new throttle_controllers();
         //_throttle.traction_toggle += traction_toggle;
-    }
-
-    private void main_reservoir_to_auxiliary_connector(float _, float pressure)
-    {
-        Main.log($"Main = {pressure}");
     }
 
     private void MU_AB1_control(float AB1)
@@ -132,9 +126,8 @@ internal class unit_b_sim: electric_device
             _pantograph.Dispose();
             _roof_bus.Dispose();
             _battery_cabinet.Dispose();
-            _simulation.SimulationFlow.TickEvent     -= simulate;
-            _unit.brakeSystem.MainResPressureChanged -= main_reservoir_to_auxiliary_connector;
-            _control_AB1.ValueUpdatedInternally      -= MU_AB1_control;
+            _simulation.SimulationFlow.TickEvent -= simulate;
+            _control_AB1.ValueUpdatedInternally  -= MU_AB1_control;
         }
     }
 }
