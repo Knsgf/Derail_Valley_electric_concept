@@ -66,8 +66,6 @@ internal partial class unit_a_sim: electric_device
 
         _appliances = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
         set_up_fuses(_appliances);
-        power_supply_toggled += appliances_toggle;
-
         _overhead_power = grab_fuse(fuses, "fusebox.OVERHEAD_POWER");
         _overhead_power.StateUpdated += overhead_power_toggle;
 
@@ -76,7 +74,7 @@ internal partial class unit_a_sim: electric_device
         _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD");
         _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM" );
         _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF" );
-        _total_load          = grab_port(ports, "[CustomSimulation].TOTAL_DRAW");
+        _total_load          = grab_port(ports, "[CustomGauges].CURRENT_DRAW");
 
         const float variation = 0.1f;
         UnityEngine.Random.State old_state = UnityEngine.Random.state;
@@ -120,7 +118,7 @@ internal partial class unit_a_sim: electric_device
         _control_stand.register_handler(   "right_sidepan_switch",    toggle_right_sidepan);
         _control_stand.register_handler(   "fast_notching_switch",    fast_notching_toggle);
         _red_light_controller = new red_ditch_light_controller(_appliances, ports);
-        _reverse_current_lamp = grab_port(ports, "[CustomSimulation].REVERSE_CURRENT");
+        _reverse_current_lamp = grab_port(ports, "[CustomGauges].REVERSE_CURRENT");
         _independent_brake    = grab_port(ports, "[IndependentBrake].EXT_IN");
         _independent_brake.ValueUpdatedInternally += synchronise_independent_brake;
         _sander = grab_port(ports, "[Sander].CONTROL_EXT_IN");
@@ -178,11 +176,6 @@ internal partial class unit_a_sim: electric_device
     {
         return extract_signal_from_port_value(BA1, (int) BA1_signals.unit_B_camshaft_notch,
             (int) BA1_shift.unit_B_camshaft_notch);
-    }
-
-    private void appliances_toggle(bool turn_on)
-    {
-        toggle_port_signal(_control_AB1, (int) AB1_signals.battery, turn_on);
     }
 
     private void overhead_power_toggle(bool turn_on)
@@ -300,7 +293,8 @@ internal partial class unit_a_sim: electric_device
     {
         if (disposed)
             return;
-        /*Main.diagnostics2?.Value =*/ _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
+        _appliances.ChangeState(port_value_signal_active(BA1, (int) BA1_signals.battery));
+        _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
         _contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
     }
 
@@ -322,7 +316,7 @@ internal partial class unit_a_sim: electric_device
         }
         bool  rheostatic_brake_on = _selector == 2;
         float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
-        _overhead_power.ChangeState(voltage >= 1000.0f);
+        _overhead_power.ChangeState(!rheostatic_brake_on && voltage >= 1000.0f);
         _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
         if (_selector < 2)
             set_exciter_voltage(_field_position);

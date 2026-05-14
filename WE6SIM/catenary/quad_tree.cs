@@ -25,7 +25,7 @@ internal partial class overhead_equipment
         private void divide_node(tree_node node)
         {
             List<catenary_object> remaining_objects       = node.remaining_objects;
-            int                  remaining_objects_count = remaining_objects.Count;
+            int                   remaining_objects_count = remaining_objects.Count;
 
             if (remaining_objects_count <= node_objects_limit)
                 return;
@@ -50,10 +50,10 @@ internal partial class overhead_equipment
                 }
             }
             catenary_object division_object = remaining_objects[closest_object];
-            node.division_object           = division_object;
+            node.division_object            = division_object;
             remaining_objects.FastRemoveAt(closest_object);
 
-            tree_node           [] quadrants      = node.quadrants = new tree_node[4];
+            tree_node            [] quadrants      = node.quadrants = new tree_node[4];
             List<catenary_object>[] quadrant_lists = new List<catenary_object>[4];
             for (int quadrant_index = 3; quadrant_index >= 0; --quadrant_index)
             {
@@ -91,20 +91,17 @@ internal partial class overhead_equipment
                 foreach (catenary_object current_object in current_node.remaining_objects)
                 {
                     if (current_object.x >= left && current_object.x <= right && current_object.z >= top && current_object.z <= bottom)
-                    {
                         found_objects.Add(current_object);
-                    }
                 }
             }
 
-            tree_node[]?    quadrants       = current_node.quadrants;
+            tree_node[]?     quadrants       = current_node.quadrants;
             catenary_object? division_object = current_node.division_object;
             if (division_object != null && quadrants != null)
             {
                 if (   division_object.x >= left && division_object.x <= right
                     && division_object.z >=  top && division_object.z <= bottom)
                 {
-                    //division_object.is_visible = true;
                     found_objects.Add(division_object);
                 }
                 if (left <= division_object.x)

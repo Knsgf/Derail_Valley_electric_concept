@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 
+using DV.Simulation.Brake;
 using DV.Simulation.Cars;
+
 using LocoSim.Implementations;
 
 using WE6SIM.devices;
@@ -13,15 +15,16 @@ using WE6SIM.utilities;
 using static WE6SIM.utilities.signal_cable;
 using static WE6SIM.utilities.sensor_grabber;
 
-namespace WE6SIM;
+namespace WE6SIM.unit_B;
 
 internal class unit_b_sim: electric_device
 {
-    private readonly pantograph  _pantograph;
-    private readonly roof_busbar _roof_bus;
+    private readonly pantograph    _pantograph;
+    private readonly roof_busbar   _roof_bus;
+    private readonly battery_panel _battery_cabinet;
 
-    private readonly TrainCar _unit;
-    private readonly SimController _simulation;
+    private readonly TrainCar       _unit;
+    private readonly SimController  _simulation;
     private readonly camshaft_motor _secondary_controller;
 
     private readonly Fuse _appliances, _overhead_power;
@@ -36,8 +39,9 @@ internal class unit_b_sim: electric_device
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-        _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
         _overhead_power = grab_fuse(fuses, "fusebox.OVERHEAD_POWER");
+        _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
+        set_up_fuses(_appliances);
 
         //_throttle_handle = get_port(ports, "throttle.EXT_IN");
         //_reverser_handle = get_port(ports, "reverser.REVERSER");
@@ -60,12 +64,19 @@ internal class unit_b_sim: electric_device
         _unit = unit;
         _simulation = simulation;
         simulation.SimulationFlow.TickEvent += simulate;
+        unit.brakeSystem.MainResPressureChanged += main_reservoir_to_auxiliary_connector;
         
-        _roof_bus   = new roof_busbar(ports, is_unit_A: false);
-        _pantograph = new pantograph(unit.gameObject, _roof_bus, _appliances);
+        _battery_cabinet = new(fuses, ports);
+        _roof_bus        = new(ports, is_unit_A: false);
+        _pantograph      = new(unit.gameObject, _roof_bus, _appliances);
 
         //_throttle = new throttle_controllers();
         //_throttle.traction_toggle += traction_toggle;
+    }
+
+    private void main_reservoir_to_auxiliary_connector(float _, float pressure)
+    {
+        Main.log($"Main = {pressure}");
     }
 
     private void MU_AB1_control(float AB1)
@@ -73,7 +84,6 @@ internal class unit_b_sim: electric_device
         if (disposed)
             return;
         
-        _appliances.ChangeState    (port_value_signal_active(AB1, (int) AB1_signals.battery              ));
         _overhead_power.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.unit_B_overhead_power));
 
         _pantograph.toggle        (!port_value_signal_active(AB1, (int) AB1_signals.unit_B_pantograph));
@@ -121,8 +131,10 @@ internal class unit_b_sim: electric_device
             _secondary_controller.Dispose();
             _pantograph.Dispose();
             _roof_bus.Dispose();
-            _simulation.SimulationFlow.TickEvent -= simulate;
-            _control_AB1.ValueUpdatedInternally  -= MU_AB1_control;
+            _battery_cabinet.Dispose();
+            _simulation.SimulationFlow.TickEvent     -= simulate;
+            _unit.brakeSystem.MainResPressureChanged -= main_reservoir_to_auxiliary_connector;
+            _control_AB1.ValueUpdatedInternally      -= MU_AB1_control;
         }
     }
 }

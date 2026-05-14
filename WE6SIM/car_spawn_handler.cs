@@ -9,6 +9,8 @@ using LocoSim.Implementations;
 using DV.ThingTypes;
 using WE6SIM.catenary;
 using WE6SIM.unit_A;
+using WE6SIM.unit_B;
+
 
 #if DEBUG
 using WE6SIM.catenary_editor;

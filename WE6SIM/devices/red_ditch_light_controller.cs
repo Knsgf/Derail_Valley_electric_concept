@@ -14,8 +14,8 @@ internal class red_ditch_light_controller: electric_device
     
     public red_ditch_light_controller(Fuse appliances, Dictionary<string, Port> ports): base("Red light", appliances)
     {
-        _light_control_port = sensor_grabber.grab_port(ports, "[CustomSimulation].RED_DITCH_LIGHT");
-        _light_switch_port  = sensor_grabber.grab_port(ports, "[DitchLightsSwitch].EXT_IN"        );
+        _light_control_port = sensor_grabber.grab_port(ports, "[CustomGauges].RED_DITCH_LIGHT");
+        _light_switch_port  = sensor_grabber.grab_port(ports, "[DitchLightsSwitch].EXT_IN"    );
         _light_switch_port.ValueUpdatedInternally += switch_red_light;
     }
 

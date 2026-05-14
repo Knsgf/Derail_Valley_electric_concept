@@ -16,8 +16,6 @@ internal static class signal_cable
         unit_B_camshaft_notch    = 3, 
         unit_B_independent_brake = 7,
         unit_B_sander            = 10,
-        
-        battery = 23 
     };
     public enum AB1_signals
     {
@@ -27,15 +25,17 @@ internal static class signal_cable
         unit_B_camshaft_notch    = 0xF << AB1_shift.unit_B_camshaft_notch,
         unit_B_independent_brake = 0x7 << AB1_shift.unit_B_independent_brake,
         unit_B_sander            = 0x1 << AB1_shift.unit_B_sander,
-
-        battery = 0x1 << AB1_shift.battery
     };
     public enum BA1_shift 
     { 
-        unit_B_camshaft_notch = 0 
+        battery               = 0,
+        control_air           = 1,
+        unit_B_camshaft_notch = 2 
     };
     public enum BA1_signals
     {
+        battery               = 0x1 << BA1_shift.battery,
+        control_air_usable    = 0x1 << BA1_shift.control_air,
         unit_B_camshaft_notch = 0x7 << BA1_shift.unit_B_camshaft_notch
     }
 
