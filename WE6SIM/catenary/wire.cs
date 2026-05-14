@@ -18,7 +18,7 @@ internal partial class overhead_equipment
     [JsonObject]
     private class wire: catenary_object, wire_user
     {
-        const float default_section_length = 40.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f;
+        const float default_section_length = 40.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f, end_achor_fixed_part_length = default_section_length - 35.0053f;
         const float default_side_rail_length = 10.0f, default_side_rail_height = 4.5f;
         const float single_wire_1m_resistance = 3.3E-5f, dual_wire_1m_resistance = 2.2E-5f, side_rail_1m_resistance = 2.314E-5f;
         
@@ -28,15 +28,17 @@ internal partial class overhead_equipment
         private static readonly Quaternion secondary_vertical_orientation = Quaternion.Euler(45.0f, 0.0f, 0.0f);
 
         [JsonIgnore]
-        private readonly Quaternion _primary_vertical_orientation;
+        private readonly Quaternion _primary_vertical_orientation, _fixed_part_primary_vertical_orientation;
         [JsonIgnore]
         private readonly Vector3 _primary_vertical_scale, _secondary_vertical_scale;
+        [JsonIgnore]
+        private readonly Vector3 _fixed_part_primary_vertical_scale, _fixed_part_secondary_vertical_scale, _fixed_part_offset;
         [JsonIgnore]
         private readonly line_cross _pantograph_strip_intersection;
         [JsonIgnore]
         private readonly float _other_end_y, _contact_height;
         
-        private GameObject? _primary_transform, _secondary_transform;
+        private GameObject? _primary_transform, _secondary_transform, _fixed_part_template, _fixed_primary_transform, _fixed_secondary_transform;
 
         [JsonProperty]
         public float length;
@@ -68,6 +70,17 @@ internal partial class overhead_equipment
                 _ => throw new ArgumentOutOfRangeException($"Invalid wire type {wire_type}")
             };
         }
+
+        private (Quaternion primary_orientation, Vector3 primary_scale, Vector3 secondary_scale) 
+            compute_shear_scale_transform(float shear_angle, float length, float template_section_length)
+        {
+            float primary_orientation_angle    = Mathf.Deg2Rad * 45.0f + shear_angle / 2.0f;
+            var   primary_vertical_orientation = Quaternion.Euler(Mathf.Rad2Deg * (-primary_orientation_angle), 0.0f, 0.0f);
+            var   primary_vertical_scale       = new Vector3(1.0f, Mathf.Cos(primary_orientation_angle), Mathf.Sin(primary_orientation_angle));
+            var   secondary_vertical_scale     = new Vector3(1.0f, y_scale, length / template_section_length * y_scale / Mathf.Cos(shear_angle));
+            Main.log($"wire {shear_angle} {primary_orientation_angle} {primary_vertical_scale} {secondary_vertical_scale}");
+            return (primary_vertical_orientation, primary_vertical_scale, secondary_vertical_scale);
+        }
         
         [JsonConstructor]
         public wire(wire_kind wire_type, string substation, float length, float previous_pole_vertical_offset, 
@@ -93,13 +106,26 @@ internal partial class overhead_equipment
             };
             
             bool  is_side_rail              = wire_type is wire_kind.side_rail or wire_kind.termination_rail;
-            float shear_angle               = Mathf.Atan(previous_pole_vertical_offset / length);
-            float primary_orientation_angle = Mathf.Deg2Rad * 45.0f + shear_angle / 2.0f;
             float template_section_length   = is_side_rail ? default_side_rail_length : default_section_length;
-            _primary_vertical_orientation = Quaternion.Euler(Mathf.Rad2Deg * (-primary_orientation_angle), 0.0f, 0.0f);
-            _primary_vertical_scale       = new Vector3(1.0f, Mathf.Cos(primary_orientation_angle), Mathf.Sin(primary_orientation_angle));
-            _secondary_vertical_scale     = new Vector3(1.0f, y_scale, length / template_section_length * y_scale / Mathf.Cos(shear_angle));
-            Main.log($"wire {shear_angle} {primary_orientation_angle} {_primary_vertical_scale} {_secondary_vertical_scale}");
+            float shear_angle               = Mathf.Atan(previous_pole_vertical_offset / length);
+            if (wire_type != wire_kind.end_anchor_single)
+            {
+                (_primary_vertical_orientation, _primary_vertical_scale, _secondary_vertical_scale) 
+                    = compute_shear_scale_transform(shear_angle, length, template_section_length);
+            }
+            else
+            {
+                _fixed_part_template = system._templates["WireSingleFixedEnd"];
+                (_fixed_part_primary_vertical_orientation, _fixed_part_primary_vertical_scale, _fixed_part_secondary_vertical_scale)
+                    = compute_shear_scale_transform(shear_angle, end_achor_fixed_part_length, end_achor_fixed_part_length);
+                float lengthwise_offset = length - default_section_length;
+                _fixed_part_offset = new Vector3(0.0f, previous_pole_vertical_offset / length * lengthwise_offset, 
+                    lengthwise_offset);
+                float stretch_part_length = length - end_achor_fixed_part_length;
+                assert.test(stretch_part_length > 0.0f);
+                (_primary_vertical_orientation, _primary_vertical_scale, _secondary_vertical_scale) 
+                    = compute_shear_scale_transform(shear_angle, stretch_part_length, default_section_length - end_achor_fixed_part_length);
+            }
 
             bool    end_achor     = wire_type is wire_kind.end_anchor_dual or wire_kind.end_anchor_single or wire_kind.wall_anchor_single;
             Vector3 wire_top_view = orientation * Vector3.forward * (end_achor ? (length - end_anchor_dead_length) : length);
@@ -111,6 +137,23 @@ internal partial class overhead_equipment
             _contact_height = is_side_rail ? default_side_rail_height : default_wire_height;
         }
 
+        private void reveal_part(string transform_name, Transform entity_location, Vector3 local_offset, GameObject template,
+            Quaternion primary_vertical_orientation, Vector3 primary_vertical_scale, Vector3 secondary_vertical_scale,
+            ref GameObject? primary_transform, ref GameObject? secondary_transform)
+        {
+            primary_transform = new GameObject(transform_name);
+            Transform primary_location = primary_transform.transform;
+            primary_location.SetParent(entity_location, worldPositionStays: false);
+            primary_location.localPosition = local_offset;
+            primary_location.localRotation = primary_vertical_orientation;
+            primary_location.localScale    = primary_vertical_scale;
+
+            secondary_transform = GameObject.Instantiate(template, primary_location);
+            Transform secondary_location     = secondary_transform.transform;
+            secondary_location.localRotation = secondary_vertical_orientation;
+            secondary_location.localScale    = secondary_vertical_scale;
+        }
+        
         public override void reveal()
         {
             is_visible = true;
@@ -121,16 +164,15 @@ internal partial class overhead_equipment
                 entity_location.position  = get_relative_position();
                 entity_location.rotation  = orientation;
 
-                _primary_transform = new GameObject("Shear A");
-                Transform primary_location = _primary_transform.transform;
-                primary_location.SetParent(entity_location, worldPositionStays: false);
-                primary_location.localRotation = _primary_vertical_orientation;
-                primary_location.localScale    = _primary_vertical_scale;
-
-                _secondary_transform = GameObject.Instantiate(template, primary_location);
-                Transform secondary_location     = _secondary_transform.transform;
-                secondary_location.localRotation = secondary_vertical_orientation;
-                secondary_location.localScale    = _secondary_vertical_scale;
+                reveal_part("ShearA", entity_location, Vector3.zero, template, 
+                    _primary_vertical_orientation, _primary_vertical_scale, _secondary_vertical_scale,
+                    ref _primary_transform, ref _secondary_transform);
+                if (_fixed_part_template is not null)
+                {
+                    reveal_part("ShearB", entity_location, _fixed_part_offset, _fixed_part_template,
+                        _fixed_part_primary_vertical_orientation, _fixed_part_primary_vertical_scale, _fixed_part_secondary_vertical_scale,
+                        ref _fixed_primary_transform, ref _fixed_secondary_transform);
+                }
             }
         }
 
@@ -142,6 +184,12 @@ internal partial class overhead_equipment
                 GameObject.Destroy(_secondary_transform);
                 GameObject.Destroy(  _primary_transform);
                 GameObject.Destroy(              entity);
+                if (_fixed_part_template is not null)
+                {
+                    GameObject.Destroy(_fixed_secondary_transform);
+                    GameObject.Destroy(  _fixed_primary_transform);
+                    _fixed_primary_transform = _fixed_secondary_transform = null;
+                }
                 entity = _primary_transform = _secondary_transform = null;
             }
         }

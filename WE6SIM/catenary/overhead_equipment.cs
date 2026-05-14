@@ -74,6 +74,7 @@ internal partial class overhead_equipment
         "WireMidpointAnchorDual",
         "WireSingle",
         "WireSingleEnd",
+        "WireSingleFixedEnd",
         "WireMidpointAnchorSingle",
         "WireSingleWallEnd",
     };
