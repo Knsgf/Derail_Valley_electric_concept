@@ -50,13 +50,26 @@ internal class blower_controller: electric_device
     {
         if (!is_powered)
             return series_3_parallel_2;
+        
         if (rheostatic_braking_on)
         {
             return (line_voltage >= (dynamic_braking_parallel_maximum_voltage + dynamic_braking_series_minimum_voltage) / 2.0f) 
                 ? series_2_parallel_3 : parallel_6;
         }
+        
+        float low_speed_setting, high_speed_setting;
+        if (_line_voltage <= dynamic_braking_series_minimum_voltage)
+        {
+            low_speed_setting  = series_2_parallel_3;
+            high_speed_setting = parallel_6;
+        }
+        else
+        {
+            low_speed_setting  = series_3_parallel_2;
+            high_speed_setting = series_2_parallel_3;
+        }
         return (full_speed_mode || motor_current >= (traction_high_speed_minimum_motor_current + traction_low_speed_maximum_motor_current) / 2.0f) 
-            ? series_2_parallel_3 : series_3_parallel_2;
+            ? high_speed_setting : low_speed_setting;
     }
 
     private async void switch_configuration()
@@ -78,13 +91,10 @@ internal class blower_controller: electric_device
         if (!is_powered || (!active && !full_speed_mode) || _reconfiguration)
         {
             fan_motor_voltage = 0.0f;
+            if (_line_voltage >= 500.0f)
+                switch_configuration();
             if (_previously_active && !_reconfiguration)
-            {
-                if (_line_voltage_multiplier != series_3_parallel_2)
-                    switch_configuration();
-                else
-                    _contactor_off_sound.Value = 1.0f;
-            }
+                _contactor_off_sound.Value = 1.0f;
             _previously_active = false;
         }
         else

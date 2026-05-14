@@ -23,7 +23,7 @@ internal static class editor
     public enum placement 
     { 
         Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryStretch, GantryAlign, Bracket, FlippedBracket,
-        Cantilever, GantryRegistrationArm, Wire, Substation, SubstationNoInverter, OverheadCraneSupply
+        Cantilever, GantryRegistrationArm, Wire, Substation, SubstationSideRail, LowClearancesYardCP, LowClearancesYardOR
     };
     const float mow_vehicle_length          = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
     const float vehicle_half_length_squared = mow_vehicle_length * mow_vehicle_length / 4.0f;
@@ -570,8 +570,9 @@ internal static class editor
                 break;
 
             case placement.Substation:
-            case placement.SubstationNoInverter:
-            case placement.OverheadCraneSupply:
+            case placement.SubstationSideRail:
+            case placement.LowClearancesYardCP:
+            case placement.LowClearancesYardOR:
                 _anchor_pole           = null;
                 _last_registration_arm = null;
                 _first_cantilever      = _first_pole = true;
@@ -580,16 +581,18 @@ internal static class editor
                 {
                     float supply_voltage = part_placement switch
                     { 
-                        placement.Substation           => 1600.0f,
-                        placement.SubstationNoInverter => 1000.0f,
-                        placement.OverheadCraneSupply  =>  600.0f,
+                        placement.Substation          => 1650.0f,
+                        placement.SubstationSideRail  => 1100.0f,
+                        placement.LowClearancesYardCP =>  825.0f,
+                        placement.LowClearancesYardOR =>  660.0f,
                         _ => 0.0f
                     };
                     float maximum_load = part_placement switch
                     { 
-                        placement.Substation           => 4500.0f,
-                        placement.SubstationNoInverter => 2000.0f,
-                        placement.OverheadCraneSupply  =>  500.0f,
+                        placement.Substation          => 4500.0f,
+                        placement.SubstationSideRail  => 2000.0f,
+                        placement.LowClearancesYardCP => 1000.0f,
+                        placement.LowClearancesYardOR =>  600.0f,
                         _ => 0.0f
                     };
                     system.add_substation(designated_substation, supply_voltage, maximum_load, part_placement == placement.Substation, 
