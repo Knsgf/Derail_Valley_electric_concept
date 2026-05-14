@@ -117,7 +117,8 @@ internal class pantograph: electric_device
         }
     }
 
-    public pantograph(GameObject unit, roof_busbar roof_bus, Fuse electric_supply): base("pantograph", electric_supply)
+    public pantograph(GameObject unit, roof_busbar roof_bus, Fuse electric_supply, Fuse air_supply)
+        : base("pantograph", electric_supply, air_supply)
     {
         _roof_bus = roof_bus;
         
@@ -222,6 +223,8 @@ internal class pantograph: electric_device
 
     private void sidepan_move()
     {
+        if (!is_powered)
+            return;
         if (_sidepan_stowed)
         {
             if (_side_arm_relative_position > 0.0f)

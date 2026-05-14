@@ -53,14 +53,15 @@ internal class camshaft_motor: electric_device
 
     public event Action<int>? notch_changed;
 
-    public camshaft_motor(int notches, Fuse power_supply, bool drop_to_1_on_power_loss): base("camshaft_motor", power_supply)
+    public camshaft_motor(int notches, Fuse power_supply, bool drop_to_1_on_power_loss, Fuse? air_supply = null)
+        : base("camshaft_motor", power_supply, air_supply)
     {
         _num_notches             = notches;
         _drop_to_1_on_power_loss = drop_to_1_on_power_loss;
         power_supply_toggled    += power_supply_changed;
 
         current_position = drop_to_1_on_power_loss ? 1.0f : (UnityEngine.Random.value * (notches - 1) + 1.0f);
-        _target_notch = current_notch;
+        _target_notch    = current_notch;
     }
 
     private void power_supply_changed(bool power_on)

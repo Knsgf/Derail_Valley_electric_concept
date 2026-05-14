@@ -25,8 +25,8 @@ internal class battery_panel: electric_device
     
     public const float battery_internal_resistance = 0.4f;
     
-    private readonly Fuse _appliances;
-    private readonly Port _control_BA1, _battery_voltmeter, _control_air_pressure, _auxiliary_compressor_switch;
+    private readonly Fuse _appliances, _control_air;
+    private readonly Port _control_BA1, _battery_voltmeter, _control_air_pressure, _control_air_valve, _auxiliary_compressor_switch;
     
     private readonly BrakeSystem _main_reservoir_connection;
 
@@ -35,14 +35,18 @@ internal class battery_panel: electric_device
     public battery_panel(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, BrakeSystem air_brakes)
         : base("Battery panel")
     {
-        _appliances = sensor_grabber.grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
+        _control_air = sensor_grabber.grab_fuse(fuses, "fusebox.CONTROL_AIR"     );
+        _appliances  = sensor_grabber.grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
         set_up_fuses(_appliances);
         power_supply_toggled += battery_toggle;
         
-        _control_BA1                 = sensor_grabber.grab_port(ports, "[internal_MU].CONTROL_BA1");
-        _battery_voltmeter           = sensor_grabber.grab_port(ports, "[BatteryPanel].BATTERY_VOLTAGE");
-        _control_air_pressure        = sensor_grabber.grab_port(ports, "[PantographAir].EXT_IN");
+        _control_BA1                 = sensor_grabber.grab_port(ports, "[internal_MU].CONTROL_BA1"          );
+        _battery_voltmeter           = sensor_grabber.grab_port(ports, "[BatteryPanel].BATTERY_VOLTAGE"     );
         _auxiliary_compressor_switch = sensor_grabber.grab_port(ports, "[BatteryPanel].AUXILIARY_COMPRESSOR");
+        _control_air_valve           = sensor_grabber.grab_port(ports, "[PantographAirValve].EXT_IN"        );
+        _control_air_pressure        = sensor_grabber.grab_port(ports, "[PantographAir].EXT_IN"             );
+        _control_air_valve.ValueUpdatedInternally    += control_air_toggle;
+        _control_air_pressure.ValueUpdatedInternally += control_air_toggle;
 
         _main_reservoir_connection         = air_brakes;
         air_brakes.MainResPressureChanged += main_reservoir_to_auxiliary_check_valve;
@@ -74,6 +78,13 @@ internal class battery_panel: electric_device
         toggle_port_signal(_control_BA1, (int) BA1_signals.battery, turned_on);
     }
 
+    private void control_air_toggle(float _)
+    {
+        bool sufficient_pressure = _control_air_valve.Value >= 0.5f && _control_air_pressure.Value >= 3.0f;
+        _control_air.ChangeState(sufficient_pressure);
+        toggle_port_signal(_control_BA1, (int) BA1_signals.control_air_usable, sufficient_pressure);
+    }
+
     private void main_reservoir_to_auxiliary_check_valve(float _, float pressure)
     {
         float connection_pressure = Mathf.Clamp(_main_reservoir_connection.mainReservoirPressure - 1.01325f, 0.0f, 5.0f);
@@ -85,6 +96,8 @@ internal class battery_panel: electric_device
 	{
 		base.Dispose();
         power_supply_toggled                              -= battery_toggle;
+        _control_air_valve.ValueUpdatedInternally         -= control_air_toggle;
+        _control_air_pressure.ValueUpdatedInternally      -= control_air_toggle;
         _main_reservoir_connection.MainResPressureChanged -= main_reservoir_to_auxiliary_check_valve;
 	}
 }

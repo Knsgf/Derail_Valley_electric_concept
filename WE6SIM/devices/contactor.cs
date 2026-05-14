@@ -16,7 +16,7 @@ internal class contactor: electric_device
         Port contactor_on_sound, Port contactor_off_sound,
         Fuse electric_supply, Fuse? air_supply = null): base("contactor", electric_supply, air_supply)
     {
-        _drive    = new camshaft_motor(2, electric_supply, drop_to_1_on_power_loss: true);
+        _drive    = new camshaft_motor(2, electric_supply, drop_to_1_on_power_loss: true, air_supply);
         _contacts = camshaft_contactor_set.on_off(normally_open, normally_closed, contactor_locations, _drive,
             contactor_on_sound, contactor_off_sound);
     }

@@ -19,7 +19,7 @@ internal partial class unit_a_sim
         public readonly contactor              _line_contactor, _line_contactor2, _dynamic_brake_contactor;
         public readonly contactor[]            _field_shunt_contactors;
 
-        public contactors(Fuse appliances, Dictionary<string, circuit.branch_user> contactor_locations, 
+        public contactors(Fuse appliances, Fuse air_supply, Dictionary<string, circuit.branch_user> contactor_locations, 
             Port contactor_on_sound, Port contactor_off_sound)
         {
             _primary_controller          = new camshaft_motor(camshaft_notches, appliances, drop_to_1_on_power_loss: false);
@@ -32,8 +32,9 @@ internal partial class unit_a_sim
             _selector_regenerative_shaft = new camshaft_contactor_set(_selector_regenerative_toggles, contactor_locations, _selector_motor, contactor_on_sound, contactor_off_sound);
             
             _line_contactor = new contactor(["LC1", "LCA", "LCB", "LCC", "LCD", "LCE", "LCF", "VMC12", "VMC34", "VMC56"], 
-                null, contactor_locations, contactor_on_sound, contactor_off_sound, appliances);
-            _line_contactor2 = new contactor(["LC2", "LC3"], null, contactor_locations, contactor_on_sound, contactor_off_sound, appliances);
+                null, contactor_locations, contactor_on_sound, contactor_off_sound, appliances, air_supply);
+            _line_contactor2 = new contactor(["LC2", "LC3"], null, contactor_locations, contactor_on_sound, contactor_off_sound, 
+                appliances, air_supply);
 
             string[] dynamic_brake_closed_contacts = new string[motors + 5], dynamic_brake_open_contacts = new string[motors + 3];
             dynamic_brake_closed_contacts[0] = "DB12c";
@@ -59,7 +60,8 @@ internal partial class unit_a_sim
                 string[] contacts = new string[motors];
                 for (int motor = 1; motor <= motors; ++motor)
                     contacts[motor - 1] = $"FS{motor}.{field_contactor}";
-                _field_shunt_contactors[field_contactor - 1] = new contactor(contacts, null, contactor_locations, contactor_on_sound, contactor_off_sound, appliances);
+                _field_shunt_contactors[field_contactor - 1] = new contactor(contacts, null, contactor_locations, contactor_on_sound, 
+                    contactor_off_sound, appliances, air_supply);
             }
             string[] open_contacts = new string[motors], closed_contacts = new string[motors];
             for (int motor = 1; motor <= motors; ++motor)
@@ -67,7 +69,8 @@ internal partial class unit_a_sim
                 open_contacts  [motor - 1] = $"FS{motor}.3o";
                 closed_contacts[motor - 1] = $"FS{motor}.3c";
             }
-            _field_shunt_contactors[3 - 1] = new contactor(open_contacts, closed_contacts, contactor_locations, contactor_on_sound, contactor_off_sound, appliances);
+            _field_shunt_contactors[3 - 1] = new contactor(open_contacts, closed_contacts, contactor_locations, contactor_on_sound, 
+                contactor_off_sound, appliances, air_supply);
         }
 
         public void switch_field_contactors(int field_handle)

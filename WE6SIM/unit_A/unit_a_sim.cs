@@ -3,16 +3,20 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
 
 using DV.Simulation.Cars;
+
 using LocoSim.Implementations;
+
+using UnityEngine;
+
+using WE6SIM.catenary;
 using WE6SIM.circuit_sim;
 using WE6SIM.devices;
+using WE6SIM.utilities;
 
-using static WE6SIM.utilities.signal_cable;
 using static WE6SIM.utilities.sensor_grabber;
-using WE6SIM.catenary;
+using static WE6SIM.utilities.signal_cable;
 
 namespace WE6SIM.unit_A;
 
@@ -25,7 +29,7 @@ internal partial class unit_a_sim: electric_device
     private readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
-    private readonly Fuse _appliances, _overhead_power;
+    private readonly Fuse _appliances, _overhead_power, _control_air;
     private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _reverse_current_lamp;
@@ -64,9 +68,10 @@ internal partial class unit_a_sim: electric_device
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-        _appliances = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
+        _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
+        _overhead_power = grab_fuse(fuses, "fusebox.OVERHEAD_POWER"  );
+        _control_air    = grab_fuse(fuses, "fusebox.CONTROL_AIR"     );
         set_up_fuses(_appliances);
-        _overhead_power = grab_fuse(fuses, "fusebox.OVERHEAD_POWER");
         _overhead_power.StateUpdated += overhead_power_toggle;
 
         _torque_a            = grab_port(ports, "traction.TORQUE_IN");
@@ -91,9 +96,9 @@ internal partial class unit_a_sim: electric_device
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
-        _contactors = new contactors(_appliances, _contactor_locations, _contactor_on_sound, _contactor_off_sound);
+        _contactors = new contactors(_appliances, _control_air, _contactor_locations, _contactor_on_sound, _contactor_off_sound);
         _roof_bus   = new roof_busbar(ports, is_unit_A: true);
-        _pantograph = new pantograph(unit.gameObject, _roof_bus, _appliances);
+        _pantograph = new pantograph(unit.gameObject, _roof_bus, _appliances, _control_air);
         _traction_motors = new traction_motor[motors];
         for (int motor_number = 1; motor_number <= motors / 2; ++motor_number)
             _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
@@ -293,7 +298,8 @@ internal partial class unit_a_sim: electric_device
     {
         if (disposed)
             return;
-        _appliances.ChangeState(port_value_signal_active(BA1, (int) BA1_signals.battery));
+        _appliances.ChangeState (port_value_signal_active(BA1, (int) BA1_signals.battery           ));
+        _control_air.ChangeState(port_value_signal_active(BA1, (int) BA1_signals.control_air_usable));
         _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
         _contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
     }

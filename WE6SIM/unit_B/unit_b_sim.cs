@@ -27,7 +27,7 @@ internal class unit_b_sim: electric_device
     private readonly SimController  _simulation;
     private readonly camshaft_motor _secondary_controller;
 
-    private readonly Fuse _appliances, _overhead_power;
+    private readonly Fuse _appliances, _overhead_power, _control_air;
     private readonly Port _control_AB1, _control_BA1;
     private readonly Port _independent_brake, _sander;
     private readonly Port _total_load;
@@ -39,7 +39,8 @@ internal class unit_b_sim: electric_device
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-        _overhead_power = grab_fuse(fuses, "fusebox.OVERHEAD_POWER");
+        _overhead_power = grab_fuse(fuses, "fusebox.OVERHEAD_POWER"  );
+        _control_air    = grab_fuse(fuses, "fusebox.CONTROL_AIR"     );
         _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
         set_up_fuses(_appliances);
 
@@ -67,7 +68,7 @@ internal class unit_b_sim: electric_device
         
         _battery_cabinet = new(fuses, ports, unit.brakeSystem);
         _roof_bus        = new(ports, is_unit_A: false);
-        _pantograph      = new(unit.gameObject, _roof_bus, _appliances);
+        _pantograph      = new(unit.gameObject, _roof_bus, _appliances, _control_air);
 
         //_throttle = new throttle_controllers();
         //_throttle.traction_toggle += traction_toggle;
