@@ -26,9 +26,9 @@ internal partial class overhead_equipment
         return add_scenery_object(constructor, x, z, relative_position.y, orientation);
     }
 
-    public void add_miscellaneous_object(string template_name, Vector3 relative_position, Quaternion orientation)
+    public catenary_object_user add_miscellaneous_object(string template_name, Vector3 relative_position, Quaternion orientation)
     {
-        add_scenery_object(miscellaneous_object.build_generic(template_name), relative_position, orientation);
+        return add_scenery_object(miscellaneous_object.build_generic(template_name), relative_position, orientation);
     }
 
     public pole_user add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation, 
@@ -128,6 +128,12 @@ internal partial class overhead_equipment
         }
     }
 
+    public void store_scenery_now()
+    {
+        _store_scenery = true;
+        store_scenery();
+    }
+
     public void store_scenery()
     {
         editor.disable();
@@ -135,6 +141,7 @@ internal partial class overhead_equipment
         {
             List<catenary_object> objects_to_store;
             string                formatted_scenery;
+            var                   write_types = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
             if (_store_scenery)
             {
                 objects_to_store =
@@ -144,16 +151,18 @@ internal partial class overhead_equipment
                         && !(current_object is gantry saving_gantry && saving_gantry._further_pole.erased)
                     select current_object
                 ];
-                formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented,
-                    new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented, write_types);
                 File.WriteAllText(Path.Combine(_file_path, "scenery.json"), formatted_scenery);
                 File.WriteAllText(@"C:\Users\Kf177\source\repos\we6\WE6SIM\catenary\scenery.json", formatted_scenery);
-                _store_scenery = false;
+
+                string compact_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.None, write_types);
+                File.WriteAllText(Path.Combine(_file_path, "compacted_scenery.json"), compact_scenery);
             }
 
             Vector3 player_position = PlayerManager.PlayerTransform.position;
             (int player_x, int player_z) = get_absolute_position(player_position);
-            add_miscellaneous_object("GantryArrow", PlayerManager.PlayerTransform.position, Quaternion.identity);
+            var player_location = (catenary_object) add_miscellaneous_object("GantryArrow", PlayerManager.PlayerTransform.position, Quaternion.identity);
+            player_location.placed_procedurally = true;
             objects_to_store =
             [..
                 from    current_object in _all_objects
@@ -163,9 +172,10 @@ internal partial class overhead_equipment
                 orderby (long) x_offset * x_offset + (long) z_offset * z_offset
                 select  current_object
             ];
-            formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented,
-                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+            formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented, write_types);
             File.WriteAllText(Path.Combine(_file_path, "nearby_objects.json"), formatted_scenery);
+            
+            _store_scenery = false;
         }
     }
 }

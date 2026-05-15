@@ -23,7 +23,8 @@ internal static class editor
     public enum placement 
     { 
         Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryStretch, GantryAlign, Bracket, FlippedBracket,
-        Cantilever, GantryRegistrationArm, Wire, Substation, SubstationSideRail, LowClearancesYardCP, LowClearancesYardOR
+        Cantilever, GantryRegistrationArm, Wire, Substation, SubstationSideRail, LowClearancesYardCP, LowClearancesYardOR,
+        SaveNow
     };
     const float mow_vehicle_length          = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
     const float vehicle_half_length_squared = mow_vehicle_length * mow_vehicle_length / 4.0f;
@@ -530,9 +531,7 @@ internal static class editor
                 {
                     if (_remaining_cantilevers_distance < 0.0f) 
                     {                    
-                        part_placement = placement.Disabled;
-                        dual_wire      = false;
-                        _settings?.reset_placement_mode();
+                        disable();
                         break;
                     }                    
                     if (!suspend_cantilever_distance && !_first_cantilever)
@@ -561,10 +560,9 @@ internal static class editor
                     bool wire_placed = place_wire(designated_substation ?? "NEUTRAL", relative_position, terminate_wire_at_next_pole);
                     if (wire_placed && terminate_wire_at_next_pole)
                     {
-                        part_placement              = placement.Disabled;
                         terminate_wire_at_next_pole = false;
                         _anchor_pole                = null;
-                        _settings?.reset_placement_mode();
+                        disable();
                     }
                 }
                 break;
@@ -597,10 +595,14 @@ internal static class editor
                     };
                     system.add_substation(designated_substation, supply_voltage, maximum_load, part_placement == placement.Substation, 
                         PlayerManager.PlayerTransform.position + Vector3.up);
-                    part_placement        = placement.Disabled;
                     designated_substation = null;
-                    _settings?.reset_placement_mode();
+                    disable();
                 }
+                break;
+
+            case placement.SaveNow:
+                system.store_scenery_now();
+                disable();
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);
