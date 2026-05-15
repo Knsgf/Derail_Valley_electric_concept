@@ -24,13 +24,15 @@ internal class traction_motor
 
     private bool _dynamic_brake_kickstarter_winding_on = false;
 
-    public const float field_partitioning = 0.63f;
+    public const float field_partitioning = 0.65f;
 
     public float RPM           { get; private set; }
     public float wheel_torque  { get; private set; }
     public float load_current  { get; private set; }
     public float field_current { get; private set; }
     public float EMF           { get; private set; }
+
+    //private readonly int _motor_number;
 
     public traction_motor(int motor_number, Port wheel_RPM)
     {
@@ -39,6 +41,8 @@ internal class traction_motor
         _armature_name = $"MA{motor_number}";
         _field_name1   = $"MF{motor_number}a";
         _field_name2   = $"MF{motor_number}b";
+
+        //_motor_number = motor_number;
     }
     
     public void simulate(bool rheostatic_braking, Dictionary<string, float> currents, Dictionary<string, circuit.branch_user> named_branches)
@@ -64,5 +68,13 @@ internal class traction_motor
         RPM                  = motor_RPM;
         load_current         = currents[armature_name];
         wheel_torque         = (torque_factor * gear_ratio) * load_current * magnetic_flux;
+
+        /*
+        if (_motor_number == 1)
+        {
+            Main.diagnostics?.Value = (field_current == 0.0f) ? 0.0f : Mathf.Abs(magnetic_flux / field_current);
+            Main.diagnostics2?.Value = Mathf.Abs(currents[_field_name1]);
+        }
+        */
     }
 }

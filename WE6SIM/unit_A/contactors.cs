@@ -13,11 +13,12 @@ internal partial class unit_a_sim
 {
     private struct contactors: IDisposable
     {
-        public readonly camshaft_motor         _reverser, _primary_controller, _selector_motor;
-        public readonly camshaft_contactor_set _reverser_shaft, _primary_camshaft, _secondary_camshaft;
-        public readonly camshaft_contactor_set _selector_traction_shaft, _selector_regenerative_shaft;
-        public readonly contactor              _line_contactor, _line_contactor2, _dynamic_brake_contactor;
-        public readonly contactor[]            _field_shunt_contactors;
+        public readonly camshaft_motor           _reverser, _primary_controller, _selector_motor;
+        public readonly camshaft_contactor_set   _reverser_shaft, _primary_camshaft, _secondary_camshaft;
+        public readonly camshaft_contactor_set   _selector_traction_shaft, _selector_regenerative_shaft;
+        public readonly camshaft_contactor_set[] _motor_cutouts;
+        public readonly contactor                _line_contactor, _line_contactor2, _dynamic_brake_contactor;
+        public readonly contactor[]              _field_shunt_contactors;
 
         public contactors(Fuse appliances, Fuse air_supply, Dictionary<string, circuit.branch_user> contactor_locations, 
             Port contactor_on_sound, Port contactor_off_sound)
@@ -31,10 +32,17 @@ internal partial class unit_a_sim
             _selector_traction_shaft     = new camshaft_contactor_set(_selector_traction_toggles, contactor_locations, _selector_motor, contactor_on_sound, contactor_off_sound);
             _selector_regenerative_shaft = new camshaft_contactor_set(_selector_regenerative_toggles, contactor_locations, _selector_motor, contactor_on_sound, contactor_off_sound);
             
-            _line_contactor = new contactor(["LC1", "LCA", "LCB", "LCC", "LCD", "LCE", "LCF", "VMC12", "VMC34", "VMC56"], 
-                null, contactor_locations, contactor_on_sound, contactor_off_sound, appliances, air_supply);
+            _line_contactor = new contactor(["LC1", "VMC12", "VMC34", "VMC56"], null, contactor_locations, contactor_on_sound, 
+                contactor_off_sound, appliances, air_supply);
             _line_contactor2 = new contactor(["LC2", "LC3"], null, contactor_locations, contactor_on_sound, contactor_off_sound, 
                 appliances, air_supply);
+            
+            _motor_cutouts = new camshaft_contactor_set[motors];
+            for (int motor = 1; motor <= motors; ++motor)
+            { 
+                _motor_cutouts[motor - 1] = camshaft_contactor_set.on_off([$"CO{motor}"], null, contactor_locations, null, 
+                    contactor_on_sound, contactor_off_sound);
+            }
 
             string[] dynamic_brake_closed_contacts = new string[motors + 5], dynamic_brake_open_contacts = new string[motors + 3];
             dynamic_brake_closed_contacts[0] = "DB12c";

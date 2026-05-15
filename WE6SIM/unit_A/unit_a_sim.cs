@@ -220,12 +220,14 @@ internal partial class unit_a_sim: electric_device
         switch (_throttle)
         {
             case 0:
-                //if (_single_notch_movement != null && !_single_notch_movement.IsCompleted)
-                //	_interrupt_single_notch_movement = true;
+                for (int motor = motors - 1; motor >= 0; --motor)
+                    _contactors._motor_cutouts[motor].switch_contactors(1);
                 _throttle_controller.roll_camshafts_over();
                 break;
 
             case 1:
+                for (int motor = motors - 1; motor >= 0; --motor)
+                    _contactors._motor_cutouts[motor].switch_contactors(2);
                 _throttle_controller.run_down();
                 break;
 
