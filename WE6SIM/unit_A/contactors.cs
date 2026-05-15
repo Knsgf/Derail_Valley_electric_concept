@@ -117,6 +117,8 @@ internal partial class unit_a_sim
             _line_contactor.Dispose();
             _line_contactor2.Dispose();
             _dynamic_brake_contactor.Dispose();
+            for (int motor = 0; motor < 6; ++motor)
+                _motor_cutouts[motor].Dispose();
             for (int field_contactor = 0; field_contactor < 6; ++field_contactor)
                 _field_shunt_contactors[field_contactor].Dispose();
         }

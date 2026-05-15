@@ -12,7 +12,7 @@ internal class control_stand: electric_device
 {
     private static readonly Dictionary<string, string> _port_id_map = new()
     {
-        ["reverser_handle"] = "[Reverser].EXT_IN",
+        ["reverser_handle"] = "[Reverser].CONTROL_EXT_IN",
         ["throttle_handle"] = "[Throttle].EXT_IN",
         ["field_handle"   ] = "[FieldControl].EXT_IN",
         ["selector_handle"] = "[Selector].EXT_IN",
