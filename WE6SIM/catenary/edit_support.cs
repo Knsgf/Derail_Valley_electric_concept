@@ -128,6 +128,19 @@ internal partial class overhead_equipment
         }
     }
 
+    private void load_scenery_from_file()
+    {
+        try
+        {
+            string raw_scenery = File.ReadAllText(Path.Combine(_file_path, "scenery.json"));
+            stuff_scenery(raw_scenery);
+        }
+        catch (Exception error)
+        {
+            Main.log($"Exception occured when loading scenery: {error}");
+        }
+    }
+
     public void store_scenery_now()
     {
         _store_scenery = true;

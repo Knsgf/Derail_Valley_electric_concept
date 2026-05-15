@@ -115,22 +115,13 @@ internal partial class overhead_equipment
         PlayerManager.PlayerTeleportFinished += track_player_movement;
     }
 
-    private void load_scenery()
+    private void stuff_scenery(string raw_scenery)
     {
-        List<catenary_object>? loaded_objects = null;
-        try
-        {
-            string raw_scenery = File.ReadAllText(Path.Combine(_file_path, "scenery.json"));
-            loaded_objects = JsonConvert.DeserializeObject<List<catenary_object>>(raw_scenery, 
-                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-        }
-        catch (Exception error)
-        {
-            Main.log($"Exception occured when loading scenery: {error}");
-        }
+        List<catenary_object>? loaded_objects = JsonConvert.DeserializeObject<List<catenary_object>>(raw_scenery, 
+            new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
         if (loaded_objects != null)
         {
-            Main.log($"Loaded objects: {loaded_objects.Count}");
+            Main.log($"Added objects: {loaded_objects.Count}");
             _all_objects.AddRange(loaded_objects);
         }
 
@@ -151,8 +142,13 @@ internal partial class overhead_equipment
         }
         */
         _scenery_changed = _all_objects.Count > 0;
-        if (_scenery_changed)
-            reconstruct_tree();
+    }
+
+    private void load_scenery_from_bundle(AssetBundle scenery, string location_name)
+    {
+        string raw_scenery = scenery.LoadAsset<TextAsset>($"Assets/Catenary/Scenery/scenery_{location_name}.json").text
+            ?? throw new FileNotFoundException($"No {location_name} location");
+        stuff_scenery(raw_scenery);
     }
 
     public static void set_up(ModEntry mod)
@@ -161,8 +157,22 @@ internal partial class overhead_equipment
         if (_system != null)
             throw new InvalidOperationException("Attempt to create a duplicate catenary in the world");
         _system = new overhead_equipment(mod);
-        _system.load_scenery();  // "catenary_object" and its derivaties require "system" property to be initialised,
-                                 // which precludes doing loading inside constructor
+        
+        // "catenary_object" and its derivaties require "system" property to be initialised,
+        // which precludes doing loading inside constructor
+        AssetBundle catenary = AssetBundle.LoadFromFile(Path.Combine(system._file_path, "catenary"))
+            ?? throw new FileNotFoundException("Not found " + Path.Combine(system._file_path, "catenary"));
+        string[] all_locations =
+        [
+            "SM"
+        ];
+        foreach (string location in all_locations)
+            _system.load_scenery_from_bundle(catenary, location);
+#if DEBUG        
+        _system.load_scenery_from_file();   
+#endif
+        if (_system._scenery_changed)
+            _system.reconstruct_tree();
 
         List<substation> all_substations =
         [..
