@@ -115,13 +115,18 @@ internal partial class overhead_equipment
         PlayerManager.PlayerTeleportFinished += track_player_movement;
     }
 
-    private void stuff_scenery(string raw_scenery)
+    private void stuff_scenery(string raw_scenery, bool no_saving)
     {
         List<catenary_object>? loaded_objects = JsonConvert.DeserializeObject<List<catenary_object>>(raw_scenery, 
             new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
         if (loaded_objects != null)
         {
             Main.log($"Added objects: {loaded_objects.Count}");
+            if (no_saving)
+            {
+                foreach (catenary_object current_object in loaded_objects)
+                    current_object.placed_procedurally = true;
+            }
             _all_objects.AddRange(loaded_objects);
         }
 
@@ -148,7 +153,7 @@ internal partial class overhead_equipment
     {
         string raw_scenery = scenery.LoadAsset<TextAsset>($"Assets/Catenary/Scenery/scenery_{location_name}.json").text
             ?? throw new FileNotFoundException($"No {location_name} location");
-        stuff_scenery(raw_scenery);
+        stuff_scenery(raw_scenery, no_saving: true);
     }
 
     public static void set_up(ModEntry mod)

@@ -133,7 +133,7 @@ internal partial class overhead_equipment
         try
         {
             string raw_scenery = File.ReadAllText(Path.Combine(_file_path, "scenery.json"));
-            stuff_scenery(raw_scenery);
+            stuff_scenery(raw_scenery, no_saving: false);
         }
         catch (Exception error)
         {
