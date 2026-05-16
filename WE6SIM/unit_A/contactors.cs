@@ -16,6 +16,7 @@ internal partial class unit_a_sim
         public readonly camshaft_motor           _reverser, _primary_controller, _selector_motor;
         public readonly camshaft_contactor_set   _reverser_shaft, _primary_camshaft, _secondary_camshaft;
         public readonly camshaft_contactor_set   _selector_traction_shaft, _selector_regenerative_shaft;
+        public readonly camshaft_contactor_set   _jogging_switch;
         public readonly camshaft_contactor_set[] _motor_cutouts;
         public readonly contactor                _line_contactor, _line_contactor2, _dynamic_brake_contactor;
         public readonly contactor[]              _field_shunt_contactors;
@@ -23,14 +24,15 @@ internal partial class unit_a_sim
         public contactors(Fuse appliances, Fuse air_supply, Dictionary<string, circuit.branch_user> contactor_locations, 
             Port contactor_on_sound, Port contactor_off_sound)
         {
-            _primary_controller          = new camshaft_motor(camshaft_notches, appliances, drop_to_1_on_power_loss: false);
-            _primary_camshaft            = new camshaft_contactor_set(_primary_contactor_toggles, contactor_locations, _primary_controller, contactor_on_sound, contactor_off_sound);
-            _secondary_camshaft          = new camshaft_contactor_set(_secondary_contactor_toggles, contactor_locations, null, contactor_on_sound, contactor_off_sound);
-            _reverser                    = new camshaft_motor(2, appliances, drop_to_1_on_power_loss: false);
-            _reverser_shaft              = new camshaft_contactor_set(_reverser_toggles, contactor_locations, _reverser, contactor_on_sound, contactor_off_sound);
-            _selector_motor              = new camshaft_motor(8, appliances, drop_to_1_on_power_loss: false);
-            _selector_traction_shaft     = new camshaft_contactor_set(_selector_traction_toggles, contactor_locations, _selector_motor, contactor_on_sound, contactor_off_sound);
-            _selector_regenerative_shaft = new camshaft_contactor_set(_selector_regenerative_toggles, contactor_locations, _selector_motor, contactor_on_sound, contactor_off_sound);
+            _primary_controller          = new(camshaft_notches, appliances, drop_to_1_on_power_loss: false);
+            _primary_camshaft            = new(_primary_contactor_toggles, contactor_locations, _primary_controller, contactor_on_sound, contactor_off_sound);
+            _secondary_camshaft          = new(_secondary_contactor_toggles, contactor_locations, null, contactor_on_sound, contactor_off_sound);
+            _reverser                    = new(2, appliances, drop_to_1_on_power_loss: false);
+            _reverser_shaft              = new(_reverser_toggles, contactor_locations, _reverser, contactor_on_sound, contactor_off_sound);
+            _selector_motor              = new(8, appliances, drop_to_1_on_power_loss: false);
+            _selector_traction_shaft     = new(_selector_traction_toggles, contactor_locations, _selector_motor, contactor_on_sound, contactor_off_sound);
+            _selector_regenerative_shaft = new(_selector_regenerative_toggles, contactor_locations, _selector_motor, contactor_on_sound, contactor_off_sound);
+            _jogging_switch              = camshaft_contactor_set.on_off(["JOG1", "JOG2"], null, contactor_locations, null, contactor_on_sound, contactor_off_sound);
             
             _line_contactor = new contactor(["LC1", "VMC12", "VMC34", "VMC56"], null, contactor_locations, contactor_on_sound, 
                 contactor_off_sound, appliances, air_supply);
@@ -91,7 +93,7 @@ internal partial class unit_a_sim
 
         public void switch_selector_contactors(int selector)
         {
-            if (selector == 0 || selector == 1)
+            if (selector is 0 or 1)
             {
                 _field_shunt_contactors[0].toggle(turn_on: true);
                 _field_shunt_contactors[1].toggle(turn_on: true);
@@ -102,6 +104,19 @@ internal partial class unit_a_sim
             }
             _dynamic_brake_contactor.toggle(selector == 2);
             _selector_motor.target_notch = (selector >= 5) ? 8 : (selector + 1);
+        }
+
+        public void toggle_traction_motors(bool turn_on)
+        {
+            int notch = turn_on ? 2 : 1;
+            for (int motor = motors - 1; motor >= 0; --motor)
+                _motor_cutouts[motor].switch_contactors(notch);
+        }
+
+        public void toggle_jogging(bool turn_on)
+        {
+            toggle_traction_motors(turn_on);
+            _jogging_switch.switch_contactors(turn_on ? 2 : 1);
         }
 
         public void Dispose()

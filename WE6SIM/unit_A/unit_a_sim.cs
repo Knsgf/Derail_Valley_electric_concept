@@ -13,6 +13,7 @@ using UnityEngine;
 using WE6SIM.catenary;
 using WE6SIM.circuit_sim;
 using WE6SIM.devices;
+using WE6SIM.unit_B;
 using WE6SIM.utilities;
 
 using static WE6SIM.utilities.sensor_grabber;
@@ -30,7 +31,7 @@ internal partial class unit_a_sim: electric_device
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
     private readonly Fuse _appliances, _overhead_power, _control_air;
-    private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF;
+    private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _reverse_current_lamp;
     private readonly Port _independent_brake, _sander;
@@ -56,7 +57,7 @@ internal partial class unit_a_sim: electric_device
 
     private contactors _contactors;
 
-    private bool _fast_notching_enabled = false;
+    private bool _fast_notching_enabled = false, _jogging_mode_on = false, _jog = false;
     private int  _throttle = 0, _secondary_camshaft_notch, _selector = 3, _field_position = 0;
     private Task? _single_notch_movement;
     private float _reverser_position = 0.5f, _motors_volts;
@@ -74,12 +75,13 @@ internal partial class unit_a_sim: electric_device
         set_up_fuses(_appliances);
         _overhead_power.StateUpdated += overhead_power_toggle;
 
-        _torque_a            = grab_port(ports, "traction.TORQUE_IN");
-        _wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN");
+        _torque_a            = grab_port(ports, "traction.TORQUE_IN"           );
+        _wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"    );
         _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD");
         _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM" );
         _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF" );
-        _total_load          = grab_port(ports, "[CustomGauges].CURRENT_DRAW");
+        _total_load          = grab_port(ports, "[CustomGauges].CURRENT_DRAW"  );
+        _jog_volts           = grab_port(ports, "[CustomSimulation].JOG_VOLTS" );
 
         const float variation = 0.1f;
         UnityEngine.Random.State old_state = UnityEngine.Random.state;
@@ -90,6 +92,7 @@ internal partial class unit_a_sim: electric_device
         _circuit = circuit_compiler.trace(_element_resistances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations, _currents);
         foreach (string branch_name in _named_branches.Keys)
             _currents[branch_name] = 0.0f;
+        _named_branches["BAT"].EMF = battery_panel.battery_EMF;
 
         _torque_B    = grab_port(ports, "[internal_MU].TM4-6");
         _wheel_RPM_B = grab_port(ports, "[internal_MU].WHEEL_RPM_FROM_B");
@@ -220,32 +223,34 @@ internal partial class unit_a_sim: electric_device
         switch (_throttle)
         {
             case 0:
-                for (int motor = motors - 1; motor >= 0; --motor)
-                    _contactors._motor_cutouts[motor].switch_contactors(1);
+                _contactors.toggle_traction_motors(turn_on: false);
                 _throttle_controller.roll_camshafts_over();
                 break;
 
             case 1:
-                for (int motor = motors - 1; motor >= 0; --motor)
-                    _contactors._motor_cutouts[motor].switch_contactors(2);
+                _contactors.toggle_traction_motors(turn_on: true);
                 _throttle_controller.run_down();
                 break;
 
             case 2:
+                _contactors.toggle_traction_motors(turn_on: true);
                 if (_single_notch_movement == null || _single_notch_movement.IsCompleted)
                     _single_notch_movement = _throttle_controller.notch_down();
                 break;
 
             case 3:
+                _contactors.toggle_traction_motors(turn_on: true);
                 _ = _throttle_controller.unlock_camshafts(continuous_run: false);
                 break;
 
             case 4:
+                _contactors.toggle_traction_motors(turn_on: true);
                 if (_single_notch_movement == null || _single_notch_movement.IsCompleted)
                     _single_notch_movement = _throttle_controller.notch_up();
                 break;
 
             case 5:
+                _contactors.toggle_traction_motors(turn_on: true);
                 _throttle_controller.run_up();
                 break;
         }
@@ -302,6 +307,7 @@ internal partial class unit_a_sim: electric_device
             return;
         _appliances.ChangeState (port_value_signal_active(BA1, (int) BA1_signals.battery           ));
         _control_air.ChangeState(port_value_signal_active(BA1, (int) BA1_signals.control_air_usable));
+        _jogging_mode_on          = port_value_signal_active(BA1, (int) BA1_signals.jog);
         _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
         _contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
     }
@@ -310,8 +316,32 @@ internal partial class unit_a_sim: electric_device
     {
         check_if_disposed();
         overhead_equipment.system.handle_scenery_visibility(_unit.transform.position);
-        _total_load.Value = _currents["EPS"];
-        _pantograph.simulate(_total_load.Value);
+        
+        bool yard_mode = _selector == 3;
+        bool jog = _jogging_mode_on && yard_mode && !is_powered;
+        
+        if (jog)
+        {
+            if (!_jog)
+            {
+                _contactors.toggle_jogging(turn_on: true);
+                _jog = true;
+            }
+            _total_load.Value = _currents["BAT"];
+            _jog_volts.Value  = battery_panel.battery_EMF - _total_load.Value * battery_panel.battery_internal_resistance;
+            _pantograph.simulate(0.0f);
+        }
+        else
+        {
+            if (_jog)
+            {
+                _contactors.toggle_jogging(turn_on: false);
+                _jog = false;
+            }
+            _total_load.Value = _currents["EPS"];
+            _jog_volts.Value  = 0.0f;
+            _pantograph.simulate(_total_load.Value);
+        }
         _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
 
         set_primary_notch(_contactors._primary_controller.current_position);
@@ -334,7 +364,7 @@ internal partial class unit_a_sim: electric_device
         _circuit.simulate();    // Must be called after all EMFs have been set
 
         set_supply_volts(_named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"]);
-        if (_selector == 3)
+        if (yard_mode)
         {
             _motors_volts = Mathf.Abs(_currents["VM12"] * _element_resistances["VM12"])
                           + Mathf.Abs(_currents["VM34"] * _element_resistances["VM34"])

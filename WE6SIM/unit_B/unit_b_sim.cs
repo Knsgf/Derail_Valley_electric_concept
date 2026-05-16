@@ -54,8 +54,8 @@ internal class unit_b_sim: electric_device
         _total_load = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD");
 
         _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
-        _control_AB1.ValueUpdatedInternally += MU_AB1_control;
         _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
+        _control_AB1.ValueUpdatedInternally += MU_AB1_control;
         
         _independent_brake = grab_port(ports, "[IndependentBrake].EXT_IN");
         _sander            = grab_port(ports, "[Sander].CONTROL_EXT_IN"  );

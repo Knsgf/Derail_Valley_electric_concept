@@ -23,11 +23,12 @@ internal class battery_panel: electric_device
 {
     const float auxiliary_air_pressure_buildup_per_second = 1.0f / 5.0f;
     
-    public const float battery_internal_resistance = 0.4f;
+    public const float battery_EMF = 120.0f, battery_internal_resistance = 0.4f;
     
     private readonly Fuse _appliances, _control_air;
-    private readonly Port _control_BA1, _battery_voltmeter, _control_air_pressure, _control_air_valve, _auxiliary_compressor_switch;
-    
+    private readonly Port _control_BA1, _control_air_valve, _auxiliary_compressor_switch, _jogging_switch;
+    private readonly Port _battery_voltmeter, _jogging_voltage, _control_air_pressure;
+
     private readonly BrakeSystem _main_reservoir_connection;
 
     private Task? _auxiliary_compressor_running = null;
@@ -41,12 +42,16 @@ internal class battery_panel: electric_device
         power_supply_toggled += battery_toggle;
         
         _control_BA1                 = sensor_grabber.grab_port(ports, "[internal_MU].CONTROL_BA1"          );
-        _battery_voltmeter           = sensor_grabber.grab_port(ports, "[BatteryPanel].BATTERY_VOLTAGE"     );
         _auxiliary_compressor_switch = sensor_grabber.grab_port(ports, "[BatteryPanel].AUXILIARY_COMPRESSOR");
         _control_air_valve           = sensor_grabber.grab_port(ports, "[PantographAirValve].EXT_IN"        );
+        _jogging_switch              = sensor_grabber.grab_port(ports, "[Jogging].EXT_IN"                   );
+        _battery_voltmeter           = sensor_grabber.grab_port(ports, "[BatteryPanel].BATTERY_VOLTAGE"     );
+        _jogging_voltage             = sensor_grabber.grab_port(ports, "[BatteryPanel].JOG_VOLTS"           );
         _control_air_pressure        = sensor_grabber.grab_port(ports, "[PantographAir].EXT_IN"             );
         _control_air_valve.ValueUpdatedInternally    += control_air_toggle;
         _control_air_pressure.ValueUpdatedInternally += control_air_toggle;
+        _jogging_switch.ValueUpdatedInternally       += jog_toggle;
+        _jogging_voltage.ValueUpdatedInternally      += jog_voltage;
 
         _main_reservoir_connection         = air_brakes;
         air_brakes.MainResPressureChanged += main_reservoir_to_auxiliary_check_valve;
@@ -55,8 +60,8 @@ internal class battery_panel: electric_device
     private float battery_voltage(bool auxiliay_compressor_running)
     {
         if (!is_powered)
-            return 0.0f;
-        return 120.0f - (auxiliay_compressor_running ? 20.0f : 10.0f) * battery_internal_resistance;
+            return (_jogging_switch.Value < 0.5f) ? 0.0f : _jogging_voltage.Value;
+        return battery_EMF - (auxiliay_compressor_running ? 20.0f : 10.0f) * battery_internal_resistance;
     }
 
     private async Task run_auxiliary_compressor()
@@ -73,6 +78,7 @@ internal class battery_panel: electric_device
     
     private void battery_toggle(bool turned_on)
     {
+        jog_toggle(turned_on ? 0.0f : _jogging_switch.Value);
         _auxiliary_compressor_running = run_auxiliary_compressor();
         _battery_voltmeter.Value      = battery_voltage(!_auxiliary_compressor_running.IsCompleted);
         toggle_port_signal(_control_BA1, (int) BA1_signals.battery, turned_on);
@@ -92,12 +98,24 @@ internal class battery_panel: electric_device
             _control_air_pressure.Value = connection_pressure;
     }
 
+    private void jog_toggle(float jog_switch)
+    {
+        toggle_port_signal(_control_BA1, (int) BA1_signals.jog, jog_switch >= 0.5f && !is_powered);
+    }
+
+    private void jog_voltage(float _)
+    {
+        _battery_voltmeter.Value = battery_voltage(false);
+    }
+
 	public override void Dispose()
 	{
 		base.Dispose();
         power_supply_toggled                              -= battery_toggle;
         _control_air_valve.ValueUpdatedInternally         -= control_air_toggle;
         _control_air_pressure.ValueUpdatedInternally      -= control_air_toggle;
+        _jogging_switch.ValueUpdatedInternally            -= jog_toggle;
+        _jogging_voltage.ValueUpdatedInternally           -= jog_voltage;
         _main_reservoir_connection.MainResPressureChanged -= main_reservoir_to_auxiliary_check_valve;
 	}
 }

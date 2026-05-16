@@ -30,12 +30,14 @@ internal static class signal_cable
     { 
         battery               = 0,
         control_air           = 1,
-        unit_B_camshaft_notch = 2 
+        jog                   = 2,
+        unit_B_camshaft_notch = 3 
     };
     public enum BA1_signals
     {
         battery               = 0x1 << BA1_shift.battery,
         control_air_usable    = 0x1 << BA1_shift.control_air,
+        jog                   = 0x1 << BA1_shift.jog,
         unit_B_camshaft_notch = 0x7 << BA1_shift.unit_B_camshaft_notch
     }
 
