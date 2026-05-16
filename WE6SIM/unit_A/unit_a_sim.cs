@@ -31,7 +31,7 @@ internal partial class unit_a_sim: electric_device
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
     private readonly Fuse _appliances, _overhead_power, _control_air;
-    private readonly Port _torque_a, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
+    private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _reverse_current_lamp;
     private readonly Port _independent_brake, _sander;
@@ -75,7 +75,7 @@ internal partial class unit_a_sim: electric_device
         set_up_fuses(_appliances);
         _overhead_power.StateUpdated += overhead_power_toggle;
 
-        _torque_a            = grab_port(ports, "traction.TORQUE_IN"           );
+        _torque_A            = grab_port(ports, "traction.TORQUE_IN"           );
         _wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"    );
         _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD");
         _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM" );
@@ -318,7 +318,7 @@ internal partial class unit_a_sim: electric_device
         overhead_equipment.system.handle_scenery_visibility(_unit.transform.position);
         
         bool yard_mode = _selector == 3;
-        bool jog = _jogging_mode_on && yard_mode && !is_powered;
+        bool jog       = _jogging_mode_on && !is_powered;
         
         if (jog)
         {
@@ -412,7 +412,13 @@ internal partial class unit_a_sim: electric_device
         //_blowers.full_speed_mode = true;
         _blowers.simulate();
 
-        _torque_a.Value = _torque_B.Value = total_torque / 2.0f;
+        if (!jog || yard_mode)
+            _torque_A.Value = _torque_B.Value = total_torque / 2.0f;
+        else
+        {
+            _torque_A.Value = 0.0f;
+            _torque_B.Value = total_torque;
+        }
     }
 
     public override void Dispose()
