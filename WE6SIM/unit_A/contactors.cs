@@ -47,8 +47,8 @@ internal partial class unit_a_sim
             }
 
             string[] dynamic_brake_closed_contacts = new string[motors + 5], dynamic_brake_open_contacts = new string[motors + 3];
-            dynamic_brake_closed_contacts[0] = "DB12c";
-            dynamic_brake_closed_contacts[1] = "DB36c";
+            dynamic_brake_closed_contacts[0] = "DB16c";
+            dynamic_brake_closed_contacts[1] = "DB34c";
             dynamic_brake_closed_contacts[2] = "DB56c";
             dynamic_brake_closed_contacts[3] = "DB12Gc";
             dynamic_brake_closed_contacts[4] = "DB34Gc";
