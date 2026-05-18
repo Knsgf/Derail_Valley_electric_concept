@@ -33,8 +33,6 @@ internal partial class unit_a_sim: electric_device
     private readonly Fuse _appliances, _overhead_power, _control_air;
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
-    private readonly Port _reverse_current_lamp;
-    private readonly Port _independent_brake, _sander;
     private readonly Port _total_load;
 
     private readonly Port _control_AB1, _control_BA1, _torque_B, _wheel_RPM_B;
@@ -52,8 +50,9 @@ internal partial class unit_a_sim: electric_device
     
     private readonly TrainCar _unit;
 
-    private readonly Action<float> set_primary_notch, set_seconday_notch, set_supply_volts, set_motors_volts;
+    private readonly Action<float>   set_primary_notch, set_seconday_notch, set_supply_volts, set_motors_volts;
     private readonly Action<float>[] set_motor_group_load, set_motor_group_field;
+    private readonly Action<float>   set_reverse_current_lamp;
 
     private contactors _contactors;
 
@@ -120,17 +119,15 @@ internal partial class unit_a_sim: electric_device
         _control_stand.register_handler(   "field_handle", field_control_handler);
         _control_stand.register_handler("selector_handle",      selector_handler);
 
-        _control_stand.register_handler("front_pantograph_switch", toggle_front_pantograph);
-        _control_stand.register_handler( "back_pantograph_switch",  toggle_back_pantograph);
-        _control_stand.register_handler(    "left_sidepan_switch",     toggle_left_sidepan);
-        _control_stand.register_handler(   "right_sidepan_switch",    toggle_right_sidepan);
-        _control_stand.register_handler(   "fast_notching_switch",    fast_notching_toggle);
+        _control_stand.register_handler("front_pantograph_switch",       toggle_front_pantograph);
+        _control_stand.register_handler( "back_pantograph_switch",        toggle_back_pantograph);
+        _control_stand.register_handler(    "left_sidepan_switch",           toggle_left_sidepan);
+        _control_stand.register_handler(   "right_sidepan_switch",          toggle_right_sidepan);
+        _control_stand.register_handler(   "fast_notching_switch",          fast_notching_toggle);
+
+        _control_stand.register_handler(      "independent_brake", synchronise_independent_brake);
+        _control_stand.register_handler(                 "sander",            synchronise_sander);
         _red_light_controller = new red_ditch_light_controller(_appliances, ports);
-        _reverse_current_lamp = grab_port(ports, "[CustomGauges].REVERSE_CURRENT");
-        _independent_brake    = grab_port(ports, "[IndependentBrake].EXT_IN");
-        _independent_brake.ValueUpdatedInternally += synchronise_independent_brake;
-        _sander = grab_port(ports, "[Sander].CONTROL_EXT_IN");
-        _sander.ValueUpdatedInternally += synchronise_sander;
 
         set_supply_volts   = _control_stand.create_setter(        "supply_volts");
         set_motors_volts   = _control_stand.create_setter(        "motors_volts");
@@ -143,6 +140,8 @@ internal partial class unit_a_sim: electric_device
             set_motor_group_load [group - 1] = _control_stand.create_setter( $"load_meter_{group}");
             set_motor_group_field[group - 1] = _control_stand.create_setter($"field_meter_{group}");
         }
+
+        set_reverse_current_lamp = _control_stand.create_setter("reverse_current_lamp");
 
         _unit = unit;
         _simulation = simulation;
@@ -395,9 +394,9 @@ internal partial class unit_a_sim: electric_device
         _traction_motor_RPM.Value   = average_RPM;
         _traction_motor_load.Value  = average_load;
         if (maximum_load < 10.0f)
-            _reverse_current_lamp.Value = 0.0f;
+            set_reverse_current_lamp(0.0f);
         else
-            _reverse_current_lamp.Value = (average_load * average_field * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f;
+            set_reverse_current_lamp((average_load * average_field * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f);
         for (int group_index = 2; group_index >= 0; --group_index)
         {
             set_motor_group_load [group_index](traction_motors[group_index << 1].load_current );
@@ -434,7 +433,6 @@ internal partial class unit_a_sim: electric_device
             _red_light_controller.Dispose();
             _simulation.SimulationFlow.TickEvent      -= simulate;
             _control_BA1.ValueUpdatedInternally       -= MU_BA1_control;
-            _independent_brake.ValueUpdatedInternally -= synchronise_independent_brake;
         }
     }
 }

@@ -23,10 +23,18 @@ internal class control_stand: electric_device
         ["right_sidepan_switch"   ] = "[RighttSidePanSwitch].EXT_IN",
         ["fast_notching_switch"   ] = "[FastNotchingSwitch].EXT_IN",
 
+        ["main_breaker_on_button" ] = "[MainBreakerOnButton].EXT_IN",
+        ["main_breaker_off_button"] = "[MainBreakerOffButton].EXT_IN",
+
         ["primary_notch_hand"  ] = "[CustomSimulation].PRIMARY_NOTCH",
         ["secondary_notch_hand"] = "[CustomSimulation].SECONDARY_NOTCH",
         ["supply_volts"        ] = "[CustomGauges].SUPPLY",
         ["motors_volts"        ] = "[CustomGauges].ALL_MOTOR_TERMINAL",
+
+        ["reverse_current_lamp"] = "[CustomGauges].REVERSE_CURRENT",
+
+        ["sander"           ] = "[Sander].CONTROL_EXT_IN",
+        ["independent_brake"] = "[IndependentBrake].EXT_IN"
     };
     
     static control_stand()
@@ -38,13 +46,22 @@ internal class control_stand: electric_device
         }
     }
 
-    private readonly Dictionary<string,          Port> _port_map      = [];
-    private readonly Dictionary<string, Action<float>> _port_handlers = [];
+    private readonly Dictionary<string,          Port?> _port_map      = [];
+    private readonly Dictionary<string, Action<float>?> _port_handlers = [];
 
-    public control_stand(Fuse electric_supply, Dictionary<string, Port> ports): base("control_stand", electric_supply)
+    public control_stand(Fuse electric_supply, Dictionary<string, Port> ports): base("Control stand", electric_supply)
     {
         foreach (KeyValuePair<string, string> port_pair in _port_id_map)
-            _port_map[port_pair.Key] = sensor_grabber.grab_port(ports, port_pair.Value);
+        {
+            try
+            {
+                _port_map[port_pair.Key] = sensor_grabber.grab_port(ports, port_pair.Value);
+            }
+            catch (ArgumentException _)
+            { 
+                _port_map[port_pair.Key] = null;
+            }
+        }
         power_supply_toggled += control_stand_toggled;
     }
 
@@ -52,8 +69,12 @@ internal class control_stand: electric_device
     {
         if (turned_on)
         {
-            foreach (KeyValuePair<string, Action<float>> control_pair in _port_handlers)
-                control_pair.Value(_port_map[control_pair.Key].Value);
+            foreach (KeyValuePair<string, Action<float>?> control_pair in _port_handlers)
+            { 
+                Port? control_port = _port_map[control_pair.Key];
+                if (control_port != null)
+                    control_pair.Value?.Invoke(control_port.Value);
+            }
         }
     }
 
@@ -61,7 +82,9 @@ internal class control_stand: electric_device
     {
         if (_port_handlers.ContainsKey(device))
             throw new InvalidOperationException($"Cannot attach {device} handler more than once");
-        if (!_port_map.TryGetValue(device, out Port hooked_port))
+        if (!_port_map.TryGetValue(device, out Port? hooked_port))
+            throw new ArgumentException($"Unknown device {device}");
+        if (hooked_port == null)
             throw new ArgumentException($"No {device} installed");
         Action<float> new_handler = delegate (float port_value)
         {
@@ -75,7 +98,9 @@ internal class control_stand: electric_device
 
     public Action<float> create_setter(string device)
     {
-        if (!_port_map.TryGetValue(device, out Port hooked_port))
+        if (!_port_map.TryGetValue(device, out Port? hooked_port))
+            throw new ArgumentException($"Unknown device {device}");
+        if (hooked_port == null)
             throw new ArgumentException($"No {device} installed");
         Action<float> new_setter = (float new_value) => hooked_port.Value = new_value;
         return new_setter;
@@ -86,8 +111,11 @@ internal class control_stand: electric_device
         if (!disposed)
         {
             base.Dispose();
-            foreach (KeyValuePair<string, Action<float>> control_pair in _port_handlers)
-                _port_map[control_pair.Key].ValueUpdatedInternally -= control_pair.Value;
+            foreach (KeyValuePair<string, Action<float>?> control_pair in _port_handlers)
+            {
+                Port? control_port                    = _port_map[control_pair.Key];
+                control_port?.ValueUpdatedInternally -= control_pair.Value;
+            }
         }
     }
 }
