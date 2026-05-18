@@ -21,7 +21,7 @@ internal partial class unit_A_sim
         public readonly contactor                _line_contactor, _line_contactor2, _dynamic_brake_contactor;
         public readonly contactor[]              _field_shunt_contactors;
 
-        public contactors(Fuse appliances, Fuse air_supply, Dictionary<string, circuit.branch_user> contactor_locations, 
+        public contactors(Fuse appliances, Fuse air_supply, Fuse main_breaker, Dictionary<string, circuit.branch_user> contactor_locations, 
             Port contactor_on_sound, Port contactor_off_sound)
         {
             _primary_controller          = new(camshaft_notches, appliances, drop_to_1_on_power_loss: false);
@@ -35,9 +35,9 @@ internal partial class unit_A_sim
             _jogging_switch              = camshaft_contactor_set.on_off(["JOG1", "JOG2"], null, contactor_locations, null, contactor_on_sound, contactor_off_sound);
             
             _line_contactor = new contactor(["LC1", "VMC12", "VMC34", "VMC56"], null, contactor_locations, contactor_on_sound, 
-                contactor_off_sound, appliances, air_supply);
+                contactor_off_sound, main_breaker, air_supply);
             _line_contactor2 = new contactor(["LC2", "LC3"], null, contactor_locations, contactor_on_sound, contactor_off_sound, 
-                appliances, air_supply);
+                main_breaker, air_supply);
             
             _motor_cutouts = new camshaft_contactor_set[motors];
             for (int motor = 1; motor <= motors; ++motor)
@@ -60,7 +60,7 @@ internal partial class unit_A_sim
                 dynamic_brake_closed_contacts[motor + 4] = $"DB{motor}c";
                 dynamic_brake_open_contacts  [motor + 2] = $"DB{motor}o";
             }
-            _dynamic_brake_contactor = new contactor(dynamic_brake_open_contacts, dynamic_brake_closed_contacts, contactor_locations, contactor_on_sound, contactor_off_sound, appliances);
+            _dynamic_brake_contactor = new contactor(dynamic_brake_open_contacts, dynamic_brake_closed_contacts, contactor_locations, contactor_on_sound, contactor_off_sound, main_breaker);
 
             _field_shunt_contactors = new contactor[6];
             for (int field_contactor = 1; field_contactor <= 6; ++field_contactor)
@@ -71,7 +71,7 @@ internal partial class unit_A_sim
                 for (int motor = 1; motor <= motors; ++motor)
                     contacts[motor - 1] = $"FS{motor}.{field_contactor}";
                 _field_shunt_contactors[field_contactor - 1] = new contactor(contacts, null, contactor_locations, contactor_on_sound, 
-                    contactor_off_sound, appliances, air_supply);
+                    contactor_off_sound, main_breaker, air_supply);
             }
             string[] open_contacts = new string[motors], closed_contacts = new string[motors];
             for (int motor = 1; motor <= motors; ++motor)
@@ -80,7 +80,7 @@ internal partial class unit_A_sim
                 closed_contacts[motor - 1] = $"FS{motor}.3c";
             }
             _field_shunt_contactors[3 - 1] = new contactor(open_contacts, closed_contacts, contactor_locations, contactor_on_sound, 
-                contactor_off_sound, appliances, air_supply);
+                contactor_off_sound, main_breaker, air_supply);
         }
 
         public void switch_field_contactors(int field_handle)
@@ -111,6 +111,7 @@ internal partial class unit_A_sim
             int notch = turn_on ? 2 : 1;
             for (int motor = motors - 1; motor >= 0; --motor)
                 _motor_cutouts[motor].switch_contactors(notch);
+            //_motor_cutouts[0].switch_contactors(notch);
         }
 
         public void toggle_jogging(bool turn_on)

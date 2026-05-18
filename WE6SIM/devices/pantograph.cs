@@ -60,7 +60,7 @@ internal class pantograph: electric_device
     public bool stowed         => _stowed;
     public bool sidepan_stowed => _sidepan_stowed;
 
-    public event Action<bool>? toggled, sidepan_toggled;
+    public event Action? toggled, sidepan_toggled;
 
     private static GameObject? find_pantograph_base(bool is_sidepan, GameObject entity)
     {
@@ -320,13 +320,13 @@ internal class pantograph: electric_device
     {
         check_if_disposed();
         _stowed = stowed;
-        toggled?.Invoke(stowed);
+        toggled?.Invoke();
     }
 
     public void sidepan_toggle(bool stowed)
     {
         check_if_disposed();
         _sidepan_stowed = stowed;
-        sidepan_toggled?.Invoke(stowed);
+        sidepan_toggled?.Invoke();
     }
 }

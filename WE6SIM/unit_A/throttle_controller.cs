@@ -151,8 +151,11 @@ internal partial class unit_A_sim
         public async Task unlock_camshafts(bool continuous_run)
         {
             unit_A_sim unit = _unit;
-            if (!unit.is_powered || _roll_over || unit._reverser_position > 0.3f && unit._reverser_position < 0.7f)
+            if (!unit.is_powered || !unit._main_breaker_closed.State || _roll_over 
+                || unit._reverser_position > 0.3f && unit._reverser_position < 0.7f)
+            {
                 return;
+            }
 
             bool enable_line_contactor2 = unit._selector != 3;
             if (!unit._contactors._line_contactor.engaged || enable_line_contactor2 && !!unit._contactors._line_contactor2.engaged)

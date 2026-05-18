@@ -59,7 +59,7 @@ internal class traction_motor
             _dynamic_brake_kickstarter_winding_on = true;
         if (_dynamic_brake_kickstarter_winding_on)
             magnetic_flux += kickstarter_winding_flux;
-        if (field_current < 0.0f)
+        if (field_current < -10.0f)
             magnetic_flux = -magnetic_flux;
 
         float  motor_EMF     = (-EMF_factor) * magnetic_flux * motor_RPM;
@@ -72,8 +72,8 @@ internal class traction_motor
         /*
         if (_motor_number == 1)
         {
-            Main.diagnostics?.Value = (field_current == 0.0f) ? 0.0f : Mathf.Abs(magnetic_flux / field_current);
-            Main.diagnostics2?.Value = Mathf.Abs(currents[_field_name1]);
+            Main.diagnostics?.Value = field_current;
+            Main.diagnostics2?.Value = magnetic_flux;
         }
         */
     }

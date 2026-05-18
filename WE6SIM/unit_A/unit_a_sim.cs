@@ -30,7 +30,7 @@ internal partial class unit_A_sim: electric_device
     private readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
-    private readonly Fuse _appliances, _overhead_power, _control_air;
+    private readonly Fuse _appliances, _control_air, _main_breaker_closed, _overhead_power;
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _total_load;
@@ -69,9 +69,10 @@ internal partial class unit_A_sim: electric_device
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-        _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
-        _overhead_power = grab_fuse(fuses, "fusebox.OVERHEAD_POWER"  );
-        _control_air    = grab_fuse(fuses, "fusebox.CONTROL_AIR"     );
+        _appliances          = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"    );
+        _control_air         = grab_fuse(fuses, "fusebox.CONTROL_AIR"         );
+        _main_breaker_closed = grab_fuse(fuses, "[MainBreakerContacts].CLOSED");
+        _overhead_power      = grab_fuse(fuses, "fusebox.OVERHEAD_POWER"      );
         set_up_fuses(_appliances);
         _overhead_power.StateUpdated += overhead_power_toggle;
 
@@ -99,7 +100,7 @@ internal partial class unit_A_sim: electric_device
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
-        _contactors   = new(_appliances, _control_air, _contactor_locations, _contactor_on_sound, _contactor_off_sound);
+        _contactors   = new(_appliances, _control_air, _main_breaker_closed, _contactor_locations, _contactor_on_sound, _contactor_off_sound);
         _roof_bus     = new(ports, is_unit_A: true);
         _pantograph   = new(unit.gameObject, _roof_bus, _appliances, _control_air);
         _control_AB1  = grab_port(ports, "[internal_MU].CONTROL_AB1");
@@ -112,7 +113,7 @@ internal partial class unit_A_sim: electric_device
             _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
         for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
             _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM_B);
-        _blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
+        _blowers = new blower_controller(_main_breaker_closed, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
 
         _control_stand       = new control_stand(_appliances, ports);
         _throttle_controller = new throttle_controller(this);
@@ -239,29 +240,29 @@ internal partial class unit_A_sim: electric_device
                 break;
 
             case 1:
-                _contactors.toggle_traction_motors(turn_on: true);
+                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 _throttle_controller.run_down();
                 break;
 
             case 2:
-                _contactors.toggle_traction_motors(turn_on: true);
+                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 if (_single_notch_movement == null || _single_notch_movement.IsCompleted)
                     _single_notch_movement = _throttle_controller.notch_down();
                 break;
 
             case 3:
-                _contactors.toggle_traction_motors(turn_on: true);
+                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 _ = _throttle_controller.unlock_camshafts(continuous_run: false);
                 break;
 
             case 4:
-                _contactors.toggle_traction_motors(turn_on: true);
+                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 if (_single_notch_movement == null || _single_notch_movement.IsCompleted)
                     _single_notch_movement = _throttle_controller.notch_up();
                 break;
 
             case 5:
-                _contactors.toggle_traction_motors(turn_on: true);
+                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 _throttle_controller.run_up();
                 break;
         }
@@ -270,7 +271,7 @@ internal partial class unit_A_sim: electric_device
     private void set_exciter_voltage(int field_handle_postion)
     {
         float line_voltage = _roof_bus.voltage, exciter_EMF;
-        if (line_voltage < 1000.0f || !_overhead_power.State)
+        if (line_voltage < 1000.0f || !_main_breaker_closed.State)
             exciter_EMF = 0.0f;
         else
         {
@@ -306,6 +307,7 @@ internal partial class unit_A_sim: electric_device
             return;
         int handle_postion = Mathf.RoundToInt(raw_selector_position * 5.0f);
         _selector = handle_postion;
+        _main_breaker.trip_if_all_pantographs_retracted();
         reverser_handler(_reverser_position);
         _contactors.switch_selector_contactors(handle_postion);
         if (handle_postion >= 2)
@@ -365,7 +367,6 @@ internal partial class unit_A_sim: electric_device
         }
         bool  rheostatic_brake_on = _selector == 2;
         float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
-        //_overhead_power.ChangeState(!rheostatic_brake_on && voltage >= 1000.0f);
         _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
         if (_selector < 2)
             set_exciter_voltage(_field_position);
@@ -389,6 +390,7 @@ internal partial class unit_A_sim: electric_device
         }
         set_motors_volts(_motors_volts);
         _main_breaker.trip_if_operating_parameters_exceeded(voltage, _motors_volts, _total_load.Value);
+        _overhead_power.ChangeState(voltage >= 1000.0f && _main_breaker_closed.State);
         float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_field = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
         for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
         {

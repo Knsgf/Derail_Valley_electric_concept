@@ -19,7 +19,6 @@ namespace WE6SIM.unit_A;
 
 internal partial class unit_A_sim
 {
-
     internal class main_circuit_breaker: electric_device
     {
         private readonly unit_A_sim _unit;
@@ -62,31 +61,36 @@ internal partial class unit_A_sim
             return !unit_A_pantograph.sidepan_stowed || port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan);
         }
         
-        private void trip_if_all_pantographs_retracted(bool _)
-        {
-            if (!ready_to_run())
-                trip();
-        }
-        private void trip_if_all_pantographs_retracted(float _)
+        public void trip_if_all_pantographs_retracted()
         {
             if (!ready_to_run())
                 trip();
         }
 
+        private void trip_if_all_pantographs_retracted(float _)
+        {
+            trip_if_all_pantographs_retracted();
+        }
+
         public async void toggle_on(float button_press)
         {
-            if (button_press < 0.5f || _engaging || !is_powered || _unit._throttle != 0 || !ready_to_run())
+            unit_A_sim unit = _unit;
+            if (button_press < 0.5f || unit._main_breaker_closed.State || _engaging || !is_powered 
+                || unit._throttle != 0 || !ready_to_run())
+            {
                 return;
+            }
             _engaging         = true;
             _trip_sound.Value = _engage_sound.Value = 0.0f;
             _arm_sound.Value  = 1.0f;
             await Task.Delay(1000);
 
+            _arm_sound.Value = 0.0f;
             if (!_engaging)
                 return;
-            _arm_sound.Value    = 0.0f;
             _engage_sound.Value = 1.0f;
-            _unit._overhead_power.ChangeState(true);
+            unit._main_breaker_closed.ChangeState(true);
+            unit.selector_handler(unit._selector / 5.0f);
             _engaging = false;
         }
 
@@ -98,10 +102,11 @@ internal partial class unit_A_sim
 
         public void trip()
         {
-            if (!_engaging && !_unit._overhead_power.State)
+            if (!_engaging && !_unit._main_breaker_closed.State)
                 return;
             _engaging = false;
-            _unit._overhead_power.ChangeState(false);
+            _unit._main_breaker_closed.ChangeState(false);
+            _unit._contactors.toggle_traction_motors(turn_on: false);
             _trip_sound.Value = 1.0f;
         }
 
