@@ -7,24 +7,24 @@ using WE6SIM.utilities;
 
 namespace WE6SIM.unit_A;
 
-internal partial class unit_a_sim
+internal partial class unit_A_sim
 {
     private class throttle_controller
     {
         const int skipped_notch = 3;
         
-        private readonly unit_a_sim _unit;
+        private readonly unit_A_sim _unit;
 
         private bool _camshaft_unlocked = false, _interrupt_movement = false, _roll_over = false;
 
-        public throttle_controller(unit_a_sim unit)
+        public throttle_controller(unit_A_sim unit)
         {
             _unit = unit;
         }
 
         public async void roll_camshafts_over()
         {
-            unit_a_sim unit = _unit;
+            unit_A_sim unit = _unit;
             if (!unit.is_powered)
                 return;
 
@@ -56,7 +56,7 @@ internal partial class unit_a_sim
 
         public async Task finish_secondary_movement(int target_notch)
         {
-            unit_a_sim unit = _unit;
+            unit_A_sim unit = _unit;
 
             assert.test(target_notch >= 1 && target_notch <= roll_over_to_full);
             unit.set_secondary_camshaft_target_notch(target_notch);
@@ -81,7 +81,7 @@ internal partial class unit_a_sim
 
         public async Task notch_down()
         {
-            unit_a_sim unit = _unit;
+            unit_A_sim unit = _unit;
             if (_interrupt_movement || !unit.is_powered)
                 return;
 
@@ -118,7 +118,7 @@ internal partial class unit_a_sim
 
         public async Task notch_up()
         {
-            unit_a_sim unit = _unit;
+            unit_A_sim unit = _unit;
             if (_interrupt_movement || !unit.is_powered)
                 return;
 
@@ -150,7 +150,7 @@ internal partial class unit_a_sim
 
         public async Task unlock_camshafts(bool continuous_run)
         {
-            unit_a_sim unit = _unit;
+            unit_A_sim unit = _unit;
             if (!unit.is_powered || _roll_over || unit._reverser_position > 0.3f && unit._reverser_position < 0.7f)
                 return;
 
@@ -188,7 +188,7 @@ internal partial class unit_a_sim
 
         public async void run_down()
         {
-            unit_a_sim unit = _unit;
+            unit_A_sim unit = _unit;
             if (!unit.is_powered)
                 return;
 
@@ -211,7 +211,7 @@ internal partial class unit_a_sim
 
         public async void run_up()
         {
-            unit_a_sim unit = _unit;
+            unit_A_sim unit = _unit;
             if (!unit.is_powered)
                 return;
 

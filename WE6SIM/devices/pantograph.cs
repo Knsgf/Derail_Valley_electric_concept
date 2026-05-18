@@ -57,6 +57,11 @@ internal class pantograph: electric_device
     private float _side_pivot_relative_position = 0.0f, _side_arm_relative_position = 0.0f;
     private bool  _sidepan_stowed = true, _at_either_end = false;
 
+    public bool stowed         => _stowed;
+    public bool sidepan_stowed => _sidepan_stowed;
+
+    public event Action<bool>? toggled, sidepan_toggled;
+
     private static GameObject? find_pantograph_base(bool is_sidepan, GameObject entity)
     {
         if (string.Equals(entity.name, is_sidepan ? sidepan_base_tag : pantograph_tag, StringComparison.OrdinalIgnoreCase))
@@ -315,11 +320,13 @@ internal class pantograph: electric_device
     {
         check_if_disposed();
         _stowed = stowed;
+        toggled?.Invoke(stowed);
     }
 
     public void sidepan_toggle(bool stowed)
     {
         check_if_disposed();
         _sidepan_stowed = stowed;
+        sidepan_toggled?.Invoke(stowed);
     }
 }

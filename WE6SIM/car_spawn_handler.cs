@@ -30,8 +30,8 @@ internal static class car_spawn_handler
     static Vector3 _last_position;
     */
 
-    private static readonly Dictionary<TrainCar, unit_a_sim> _all_a_units = [];
-    private static readonly Dictionary<TrainCar, unit_b_sim> _all_b_units = [];
+    private static readonly Dictionary<TrainCar, unit_A_sim> _all_a_units = [];
+    private static readonly Dictionary<TrainCar, unit_B_sim> _all_b_units = [];
 
 #if DEBUG
     private static TrainCar?     _mow_vehicle = null;
@@ -134,9 +134,9 @@ internal static class car_spawn_handler
         //if (vehicle.gameObject != null)
         //	print_hierarchy(vehicle.gameObject);
         if (is_unit_a)
-            _all_a_units[vehicle] = new unit_a_sim(all_fuses, all_ports, vehicle, random_seed);
+            _all_a_units[vehicle] = new unit_A_sim(all_fuses, all_ports, vehicle, random_seed);
         else
-            _all_b_units[vehicle] = new unit_b_sim(all_fuses, all_ports, vehicle);
+            _all_b_units[vehicle] = new unit_B_sim(all_fuses, all_ports, vehicle);
     }
 
     /*
@@ -222,14 +222,14 @@ internal static class car_spawn_handler
         }
 #endif
 
-        if (_all_a_units.TryGetValue(vehicle, out unit_a_sim disposed_unit_a))
+        if (_all_a_units.TryGetValue(vehicle, out unit_A_sim disposed_unit_a))
         {
             Main.log("Remove A " + vehicle.ID + " " + vehicle.carLivery.id);
             disposed_unit_a.Dispose();
             _all_a_units.Remove(vehicle);
             Main.diagnostics = Main.diagnostics2 = null;
         }
-        else if (_all_b_units.TryGetValue(vehicle, out unit_b_sim disposed_unit_b))
+        else if (_all_b_units.TryGetValue(vehicle, out unit_B_sim disposed_unit_b))
         {
             Main.log("Remove B " + vehicle.ID + " " + vehicle.carLivery.id);
             disposed_unit_b.Dispose();

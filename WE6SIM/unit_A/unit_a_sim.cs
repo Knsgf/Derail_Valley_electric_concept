@@ -21,7 +21,7 @@ using static WE6SIM.utilities.signal_cable;
 
 namespace WE6SIM.unit_A;
 
-internal partial class unit_a_sim: electric_device
+internal partial class unit_A_sim: electric_device
 {
     const int   motors = 6;
     const float max_exciter_voltage = 120.0f, min_exciter_voltage = 10.0f, max_exciter_current = 2000.0f;
@@ -42,6 +42,7 @@ internal partial class unit_a_sim: electric_device
 
     private readonly pantograph                 _pantograph;
     private readonly roof_busbar                _roof_bus;
+    private readonly main_circuit_breaker       _main_breaker;
     private readonly traction_motor[]           _traction_motors;
     private readonly blower_controller          _blowers;
     private readonly throttle_controller        _throttle_controller;
@@ -63,7 +64,7 @@ internal partial class unit_a_sim: electric_device
 
     public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
 
-    public unit_a_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit, int random_seed)
+    public unit_A_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit, int random_seed)
         : base("unit_A_sim")
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
@@ -98,19 +99,20 @@ internal partial class unit_a_sim: electric_device
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
-        _contactors = new contactors(_appliances, _control_air, _contactor_locations, _contactor_on_sound, _contactor_off_sound);
-        _roof_bus   = new roof_busbar(ports, is_unit_A: true);
-        _pantograph = new pantograph(unit.gameObject, _roof_bus, _appliances, _control_air);
+        _contactors   = new(_appliances, _control_air, _contactor_locations, _contactor_on_sound, _contactor_off_sound);
+        _roof_bus     = new(ports, is_unit_A: true);
+        _pantograph   = new(unit.gameObject, _roof_bus, _appliances, _control_air);
+        _control_AB1  = grab_port(ports, "[internal_MU].CONTROL_AB1");
+        _control_BA1  = grab_port(ports, "[internal_MU].CONTROL_BA1");
+        _control_BA1.ValueUpdatedInternally += MU_BA1_control;
+        _main_breaker = new(_appliances, _control_air, ports, this);
+
         _traction_motors = new traction_motor[motors];
         for (int motor_number = 1; motor_number <= motors / 2; ++motor_number)
             _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
         for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
             _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM_B);
         _blowers = new blower_controller(_appliances, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
-
-        _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
-        _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
-        _control_BA1.ValueUpdatedInternally += MU_BA1_control;
 
         _control_stand       = new control_stand(_appliances, ports);
         _throttle_controller = new throttle_controller(this);
@@ -119,12 +121,14 @@ internal partial class unit_a_sim: electric_device
         _control_stand.register_handler(   "field_handle", field_control_handler);
         _control_stand.register_handler("selector_handle",      selector_handler);
 
-        _control_stand.register_handler("front_pantograph_switch",       toggle_front_pantograph);
-        _control_stand.register_handler( "back_pantograph_switch",        toggle_back_pantograph);
-        _control_stand.register_handler(    "left_sidepan_switch",           toggle_left_sidepan);
-        _control_stand.register_handler(   "right_sidepan_switch",          toggle_right_sidepan);
-        _control_stand.register_handler(   "fast_notching_switch",          fast_notching_toggle);
+        _control_stand.register_handler("front_pantograph_switch", toggle_front_pantograph);
+        _control_stand.register_handler( "back_pantograph_switch",  toggle_back_pantograph);
+        _control_stand.register_handler(    "left_sidepan_switch",     toggle_left_sidepan);
+        _control_stand.register_handler(   "right_sidepan_switch",    toggle_right_sidepan);
+        _control_stand.register_handler(   "fast_notching_switch",    fast_notching_toggle);
 
+        _control_stand.register_handler( "main_breaker_on_button",      _main_breaker.toggle_on );
+        _control_stand.register_handler("main_breaker_off_button",      _main_breaker.toggle_off);
         _control_stand.register_handler(      "independent_brake", synchronise_independent_brake);
         _control_stand.register_handler(                 "sander",            synchronise_sander);
         _red_light_controller = new red_ditch_light_controller(_appliances, ports);
@@ -150,21 +154,29 @@ internal partial class unit_a_sim: electric_device
 
     private void toggle_front_pantograph(float port_value)
     {
+        if (!_pantograph.sidepan_stowed || port_value_signal_active(_control_AB1.Value, (int) AB1_signals.unit_B_sidepan))
+            return;
         _pantograph.toggle(port_value < 0.5f);
     }
 
     private void toggle_back_pantograph(float port_value)
     {
+        if (!_pantograph.sidepan_stowed || port_value_signal_active(_control_AB1.Value, (int) AB1_signals.unit_B_sidepan))
+            return;
         toggle_port_signal(_control_AB1, (int) AB1_signals.unit_B_pantograph, port_value >= 0.5f);
     }
 
     private void toggle_right_sidepan(float port_value)
     {
+        if (!_pantograph.stowed || port_value_signal_active(_control_AB1.Value, (int) AB1_signals.unit_B_pantograph))
+            return;
         _pantograph.sidepan_toggle(port_value < 0.5f);
     }
     
     private void toggle_left_sidepan(float port_value)
     {
+        if (!_pantograph.stowed || port_value_signal_active(_control_AB1.Value, (int) AB1_signals.unit_B_pantograph))
+            return;
         toggle_port_signal(_control_AB1, (int) AB1_signals.unit_B_sidepan, port_value >= 0.5f);
     }
 
@@ -353,7 +365,7 @@ internal partial class unit_a_sim: electric_device
         }
         bool  rheostatic_brake_on = _selector == 2;
         float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
-        _overhead_power.ChangeState(!rheostatic_brake_on && voltage >= 1000.0f);
+        //_overhead_power.ChangeState(!rheostatic_brake_on && voltage >= 1000.0f);
         _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
         if (_selector < 2)
             set_exciter_voltage(_field_position);
@@ -376,6 +388,7 @@ internal partial class unit_a_sim: electric_device
             _motors_volts         = Mathf.Max(Mathf.Abs(_currents["VM56"] * _element_resistances["VM56"]), motor_volts_1_4);
         }
         set_motors_volts(_motors_volts);
+        _main_breaker.trip_if_operating_parameters_exceeded(voltage, _motors_volts, _total_load.Value);
         float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_field = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
         for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
         {
@@ -427,6 +440,7 @@ internal partial class unit_a_sim: electric_device
             base.Dispose();
             _pantograph.Dispose();
             _roof_bus.Dispose();
+            _main_breaker.Dispose();
             _blowers.Dispose();
             _contactors.Dispose();
             _control_stand.Dispose();

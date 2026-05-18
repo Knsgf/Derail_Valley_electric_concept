@@ -17,7 +17,7 @@ using static WE6SIM.utilities.sensor_grabber;
 
 namespace WE6SIM.unit_B;
 
-internal class unit_b_sim: electric_device
+internal class unit_B_sim: electric_device
 {
     private readonly pantograph    _pantograph;
     private readonly roof_busbar   _roof_bus;
@@ -36,7 +36,7 @@ internal class unit_b_sim: electric_device
 
     private int _secondary_camshaft_target_notch = 1;
 
-    public unit_b_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
+    public unit_B_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
         : base("unit_B_sim")
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
@@ -52,7 +52,7 @@ internal class unit_b_sim: electric_device
         _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
         _control_AB1.ValueUpdatedInternally += MU_AB1_control;
 
-        _secondary_controller = new camshaft_motor(unit_a_sim.camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
+        _secondary_controller = new camshaft_motor(unit_A_sim.camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 
         _unit = unit;
         _simulation = simulation;
@@ -88,16 +88,16 @@ internal class unit_b_sim: electric_device
             case 0:
                 break;
 
-            case unit_a_sim.roll_over_to_1:
+            case unit_A_sim.roll_over_to_1:
                 _secondary_controller.roll_over_move(to_1: true);
                 break;
 
-            case unit_a_sim.roll_over_to_full:
+            case unit_A_sim.roll_over_to_full:
                 _secondary_controller.roll_over_move(to_1: false);
                 break;
 
             default:
-                assert.test(_secondary_camshaft_target_notch >= 1 && _secondary_camshaft_target_notch <= unit_a_sim.camshaft_notches);
+                assert.test(_secondary_camshaft_target_notch >= 1 && _secondary_camshaft_target_notch <= unit_A_sim.camshaft_notches);
                 _secondary_controller.target_notch = _secondary_camshaft_target_notch;
                 break;
         }

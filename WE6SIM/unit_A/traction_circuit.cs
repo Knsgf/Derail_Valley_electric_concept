@@ -7,7 +7,7 @@ using WE6SIM.unit_B;
 
 namespace WE6SIM.unit_A;
 
-internal partial class unit_a_sim
+internal partial class unit_A_sim
 {
     private static readonly string circuit_diagram =
 """
@@ -125,7 +125,7 @@ internal partial class unit_a_sim
         ["VM56"] = 1.0E+4f,
     };
 
-    static unit_a_sim()
+    static unit_A_sim()
     {
         for (int resistor_branch = 1; resistor_branch <= 3; ++resistor_branch)
         {

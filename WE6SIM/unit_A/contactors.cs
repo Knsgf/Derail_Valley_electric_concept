@@ -9,7 +9,7 @@ using WE6SIM.devices;
 
 namespace WE6SIM.unit_A;
 
-internal partial class unit_a_sim
+internal partial class unit_A_sim
 {
     private struct contactors: IDisposable
     {

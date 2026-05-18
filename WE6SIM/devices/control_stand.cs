@@ -23,9 +23,6 @@ internal class control_stand: electric_device
         ["right_sidepan_switch"   ] = "[RighttSidePanSwitch].EXT_IN",
         ["fast_notching_switch"   ] = "[FastNotchingSwitch].EXT_IN",
 
-        ["main_breaker_on_button" ] = "[MainBreakerOnButton].EXT_IN",
-        ["main_breaker_off_button"] = "[MainBreakerOffButton].EXT_IN",
-
         ["primary_notch_hand"  ] = "[CustomSimulation].PRIMARY_NOTCH",
         ["secondary_notch_hand"] = "[CustomSimulation].SECONDARY_NOTCH",
         ["supply_volts"        ] = "[CustomGauges].SUPPLY",
@@ -33,8 +30,10 @@ internal class control_stand: electric_device
 
         ["reverse_current_lamp"] = "[CustomGauges].REVERSE_CURRENT",
 
-        ["sander"           ] = "[Sander].CONTROL_EXT_IN",
-        ["independent_brake"] = "[IndependentBrake].EXT_IN"
+        ["main_breaker_on_button" ] = "[MainBreakerOnButton].EXT_IN",
+        ["main_breaker_off_button"] = "[MainBreakerOffButton].EXT_IN",
+        ["sander"                 ] = "[Sander].CONTROL_EXT_IN",
+        ["independent_brake"      ] = "[IndependentBrake].EXT_IN"
     };
     
     static control_stand()
