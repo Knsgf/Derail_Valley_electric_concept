@@ -34,11 +34,14 @@ internal class unit_B_sim: electric_device
     private readonly Port _control_AB1, _control_BA1;
     private readonly Port _total_load;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
+    private readonly Port _reverser_handle, _selector_handle;
 
     private readonly Action<float> set_primary_notch, set_seconday_notch;
     private readonly Action<float> set_independent_brake, set_sander;
+    private readonly Action<float> throttle_relay, field_handle_relay, selector_relay;
 
-    private int _secondary_camshaft_target_notch = 1;
+    private int  _secondary_camshaft_target_notch = 1;
+    private bool _cab_active = false;
 
     public unit_B_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
         : base("unit_B_sim")
@@ -64,12 +67,19 @@ internal class unit_B_sim: electric_device
         _roof_bus        = new(ports, is_unit_A: false);
         _pantograph      = new(unit.gameObject, _roof_bus, _appliances, _control_air);
         
+        
+        throttle_relay     = handle_relay(BA1_signals.throttle, BA1_shift.throttle, control_stand.throttle_notches    );
+        field_handle_relay = handle_relay(BA1_signals.field   , BA1_shift.field   , control_stand.field_handle_notches);
+        selector_relay     = handle_relay(BA1_signals.selector, BA1_shift.selector, control_stand.selector_notches    );
         _control_stand = new(_appliances, ports);
-        _control_stand.register_handler("reverser_handle", reverser_relay);
-        _control_stand.register_handler("throttle_handle", handle_relay(BA1_signals.throttle, BA1_shift.throttle, control_stand.throttle_notches    ));
-        _control_stand.register_handler(   "field_handle", handle_relay(BA1_signals.field   , BA1_shift.field   , control_stand.field_handle_notches));
-        _control_stand.register_handler("selector_handle", handle_relay(BA1_signals.selector, BA1_shift.selector, control_stand.selector_notches    ));
+        _control_stand.register_handler("reverser_handle",     reverser_relay);
+        _control_stand.register_handler("throttle_handle",     throttle_relay);
+        _control_stand.register_handler(   "field_handle", field_handle_relay);
+        _control_stand.register_handler("selector_handle",     selector_relay);
+        _reverser_handle = grab_port(ports, "[Reverser].CONTROL_EXT_IN");
+        _selector_handle = grab_port(ports, "[Selector].EXT_IN"        );
 
+        _control_stand.register_handler(           "brake_cutout",                cab_activation);
         _control_stand.register_handler(      "independent_brake", synchronise_independent_brake);
         _control_stand.register_handler(                 "sander",            synchronise_sander);
         set_independent_brake = _control_stand.create_setter("independent_brake");
@@ -108,6 +118,22 @@ internal class unit_B_sim: electric_device
         {
             set_port_signal(_control_BA1, (int) signal, (int) signal_shift, Mathf.RoundToInt(port_value * multiplier));
         };
+    }
+
+    private void cab_activation(float valve)
+    {
+        if (valve < 0.5f)
+            _cab_active = false;
+        else if (!_cab_active)
+        {
+            _cab_active = true;
+            toggle_port_signal(_control_BA1, (int) BA1_signals.cab_change, true);
+            throttle_relay    (0.0f);
+            field_handle_relay(0.0f);
+            reverser_relay(_reverser_handle.Value);
+            selector_relay(_selector_handle.Value);
+            toggle_port_signal(_control_BA1, (int) BA1_signals.cab_change, false);
+        }
     }
 
     private void MU_AB1_control(float AB1)
