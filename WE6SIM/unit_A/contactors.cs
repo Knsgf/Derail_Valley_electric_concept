@@ -60,7 +60,7 @@ internal partial class unit_A_sim
                 dynamic_brake_closed_contacts[motor + 4] = $"DB{motor}c";
                 dynamic_brake_open_contacts  [motor + 2] = $"DB{motor}o";
             }
-            _dynamic_brake_contactor = new contactor(dynamic_brake_open_contacts, dynamic_brake_closed_contacts, contactor_locations, contactor_on_sound, contactor_off_sound, main_breaker);
+            _dynamic_brake_contactor = new contactor(dynamic_brake_open_contacts, dynamic_brake_closed_contacts, contactor_locations, contactor_on_sound, contactor_off_sound, appliances);
 
             _field_shunt_contactors = new contactor[6];
             for (int field_contactor = 1; field_contactor <= 6; ++field_contactor)
@@ -71,7 +71,7 @@ internal partial class unit_A_sim
                 for (int motor = 1; motor <= motors; ++motor)
                     contacts[motor - 1] = $"FS{motor}.{field_contactor}";
                 _field_shunt_contactors[field_contactor - 1] = new contactor(contacts, null, contactor_locations, contactor_on_sound, 
-                    contactor_off_sound, main_breaker, air_supply);
+                    contactor_off_sound, appliances, air_supply);
             }
             string[] open_contacts = new string[motors], closed_contacts = new string[motors];
             for (int motor = 1; motor <= motors; ++motor)
@@ -80,7 +80,7 @@ internal partial class unit_A_sim
                 closed_contacts[motor - 1] = $"FS{motor}.3c";
             }
             _field_shunt_contactors[3 - 1] = new contactor(open_contacts, closed_contacts, contactor_locations, contactor_on_sound, 
-                contactor_off_sound, main_breaker, air_supply);
+                contactor_off_sound, appliances, air_supply);
         }
 
         public void switch_field_contactors(int field_handle)

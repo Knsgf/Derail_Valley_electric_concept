@@ -66,6 +66,11 @@ internal class unit_B_sim: electric_device
         _pantograph      = new(unit.gameObject, _roof_bus, _appliances, _control_air);
         
         _control_stand = new(_appliances, ports);
+        _control_stand.register_handler("reverser_handle", reverser_relay);
+        _control_stand.register_handler("throttle_handle", handle_relay(BA1_signals.throttle, BA1_shift.throttle, control_stand.throttle_notches    ));
+        _control_stand.register_handler(   "field_handle", handle_relay(BA1_signals.field   , BA1_shift.field   , control_stand.field_handle_notches));
+        _control_stand.register_handler("selector_handle", handle_relay(BA1_signals.selector, BA1_shift.selector, control_stand.selector_notches    ));
+
         _control_stand.register_handler(      "independent_brake", synchronise_independent_brake);
         _control_stand.register_handler(                 "sander",            synchronise_sander);
         set_independent_brake = _control_stand.create_setter("independent_brake");
@@ -78,12 +83,26 @@ internal class unit_B_sim: electric_device
     private void synchronise_independent_brake(float raw_handle_position)
     {
         set_port_signal(_control_BA1, (int) BA1_signals.independent_brake, (int) BA1_shift.independent_brake, 
-            Mathf.RoundToInt(raw_handle_position * 5.0f));
+            Mathf.RoundToInt(raw_handle_position * control_stand.independent_brake_last_notch));
     }
     
     private void synchronise_sander(float sander_switch)
     {
         toggle_port_signal(_control_BA1, (int) BA1_signals.sander, sander_switch >= 0.5f);
+    }
+
+    private void reverser_relay(float raw_reverser)
+    {
+        toggle_port_signal(_control_BA1, (int) BA1_signals.reverser, raw_reverser >= 0.5f);
+    }
+
+    private Action<float> handle_relay(BA1_signals signal, BA1_shift signal_shift, int notches)
+    {
+        float multiplier = notches - 1.0f;
+        return delegate (float port_value)
+        {
+            set_port_signal(_control_BA1, (int) signal, (int) signal_shift, Mathf.RoundToInt(port_value * multiplier));
+        };
     }
 
     private void MU_AB1_control(float AB1)
@@ -97,7 +116,7 @@ internal class unit_B_sim: electric_device
         _pantograph.sidepan_toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan   ));
         
         set_independent_brake(extract_signal_from_port_value(AB1, (int) AB1_signals.independent_brake, 
-            (int) AB1_shift.independent_brake) / 5.0f);
+            (int) AB1_shift.independent_brake) / control_stand.independent_brake_last_notch);
         set_sander(port_value_signal_active(AB1, (int) AB1_signals.sander) ? 1.0f : 0.0f);
 
         _secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_B_camshaft_notch, 

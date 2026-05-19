@@ -10,7 +10,7 @@ namespace WE6SIM.devices;
 
 internal class camshaft_motor: electric_device
 {
-    const int   notch_change_time_ms = 500, notch_change_stages = 2;
+    const int   notch_change_time_ms = 500, notch_change_stages = 3;
     const float notch_lock_threshold = 1.0f / (notch_change_stages * 5.0f);
 
     private readonly int    _num_notches;

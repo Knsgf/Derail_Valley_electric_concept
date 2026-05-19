@@ -90,7 +90,7 @@ internal partial class unit_A_sim
                 return;
             _engage_sound.Value = 1.0f;
             unit._main_breaker_closed.ChangeState(true);
-            unit.selector_handler(unit._selector / 5.0f);
+            //unit.selector_handler(unit._selector / control_stand.selector_last_notch);
             _engaging = false;
         }
 
@@ -113,7 +113,10 @@ internal partial class unit_A_sim
         public void trip_if_operating_parameters_exceeded(float supply_voltage, float motor_voltage, float total_draw)
         {
             if (supply_voltage > 2000.0f || motor_voltage > 2000.0f || total_draw > 4500.0f)
+            {
+                Main.log($"TU {supply_voltage} {motor_voltage} {total_draw}");
                 trip();
+            }
         }
 
 		public override void Dispose()
