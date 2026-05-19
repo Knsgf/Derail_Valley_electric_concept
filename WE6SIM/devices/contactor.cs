@@ -1,8 +1,10 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
+using System;
 using System.Collections.Generic;
 
 using LocoSim.Implementations;
+
 using WE6SIM.circuit_sim;
 
 namespace WE6SIM.devices;
@@ -13,12 +15,11 @@ internal class contactor: electric_device
     private readonly camshaft_contactor_set _contacts;
 
     public contactor(string[]? normally_open, string[]? normally_closed, Dictionary<string, circuit.branch_user> contactor_locations,
-        Port contactor_on_sound, Port contactor_off_sound,
-        Fuse electric_supply, Fuse? air_supply = null): base("contactor", electric_supply, air_supply)
+        Action<bool>? contactor_toggle_sound, Fuse electric_supply, Fuse? air_supply = null)
+        : base("contactor", electric_supply, air_supply)
     {
         _drive    = new camshaft_motor(2, electric_supply, drop_to_1_on_power_loss: true, air_supply);
-        _contacts = camshaft_contactor_set.on_off(normally_open, normally_closed, contactor_locations, _drive,
-            contactor_on_sound, contactor_off_sound);
+        _contacts = camshaft_contactor_set.on_off(normally_open, normally_closed, contactor_locations, _drive, contactor_toggle_sound);
     }
 
     public bool engaged

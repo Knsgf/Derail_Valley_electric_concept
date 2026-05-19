@@ -33,6 +33,7 @@ internal class unit_B_sim: electric_device
     private readonly Fuse _appliances, _overhead_power, _control_air;
     private readonly Port _control_AB1, _control_BA1;
     private readonly Port _total_load;
+    private readonly Port _contactor_on_sound, _contactor_off_sound;
 
     private readonly Action<float> set_primary_notch, set_seconday_notch;
     private readonly Action<float> set_independent_brake, set_sander;
@@ -53,14 +54,12 @@ internal class unit_B_sim: electric_device
 
         _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
         _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
-        _control_AB1.ValueUpdatedInternally += MU_AB1_control;
+        
+        _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
+        _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
 
         _secondary_controller = new camshaft_motor(unit_A_sim.camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 
-        _unit = unit;
-        _simulation = simulation;
-        simulation.SimulationFlow.TickEvent += simulate;
-        
         _battery_cabinet = new(fuses, ports, unit.brakeSystem);
         _roof_bus        = new(ports, is_unit_A: false);
         _pantograph      = new(unit.gameObject, _roof_bus, _appliances, _control_air);
@@ -78,6 +77,12 @@ internal class unit_B_sim: electric_device
 
         set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
         set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
+        
+        _unit       = unit;
+        _simulation = simulation;
+        _control_AB1.ValueUpdatedInternally += MU_AB1_control;
+        simulation.SimulationFlow.TickEvent += simulate;
+        
     }
 
     private void synchronise_independent_brake(float raw_handle_position)
@@ -142,11 +147,15 @@ internal class unit_B_sim: electric_device
 
         set_primary_notch(extract_signal_from_port_value(AB1, (int) AB1_signals.unit_A_camshaft_notch, 
             (int) AB1_shift.unit_A_camshaft_notch));
+
+        _contactor_on_sound.Value  = port_value_signal_active(AB1, (int) AB1_signals.contactor_on ) ? 1.0f : 0.0f;
+        _contactor_off_sound.Value = port_value_signal_active(AB1, (int) AB1_signals.contactor_off) ? 1.0f : 0.0f;
     }
 
     private void simulate()
     {
         check_if_disposed();
+        _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
         _pantograph.simulate(_total_load.Value);
         set_seconday_notch(_secondary_controller.current_position);
         set_port_signal(_control_BA1, (int) BA1_signals.unit_B_camshaft_notch, (int) BA1_shift.unit_B_camshaft_notch,

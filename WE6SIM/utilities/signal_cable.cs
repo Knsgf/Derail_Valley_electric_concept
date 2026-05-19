@@ -14,6 +14,8 @@ internal static class signal_cable
         unit_B_sidepan    = 1, 
         overhead_supply   = 2, 
         sander            = 3,
+        contactor_off     = 4,
+        contactor_on      = 5,
         
         independent_brake     = 14,
         unit_A_camshaft_notch = 17,
@@ -25,6 +27,8 @@ internal static class signal_cable
         unit_B_sidepan    = 0x1 << AB1_shift.unit_B_sidepan,
         overhead_power    = 0x1 << AB1_shift.overhead_supply,
         sander            = 0x1 << AB1_shift.sander,
+        contactor_off     = 0x1 << AB1_shift.contactor_off,
+        contactor_on      = 0x1 << AB1_shift.contactor_on,
         
         independent_brake     = 0x7 << AB1_shift.independent_brake,
         unit_A_camshaft_notch = 0x7 << AB1_shift.unit_A_camshaft_notch,

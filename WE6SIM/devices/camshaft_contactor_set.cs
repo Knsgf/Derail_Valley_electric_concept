@@ -13,10 +13,10 @@ internal class camshaft_contactor_set: electric_device
 {
     const int max_notches = 31;
 
-    private readonly Dictionary<string, int> _contactor_notch_patterns = [];
+    private readonly Dictionary<string,                 int> _contactor_notch_patterns = [];
     private readonly Dictionary<string, circuit.branch_user> _contactor_locations;
     private readonly camshaft_motor? _drive;
-    private readonly Port _contactor_on_sound, _contactor_off_sound;
+    private readonly Action<bool>?   _contactor_toggle_sound = null;
 
     private (string?, int, int) extract_token(string input, int starting_index)
     {
@@ -48,7 +48,7 @@ internal class camshaft_contactor_set: electric_device
     }
 
     public camshaft_contactor_set(string contactor_on_table, Dictionary<string, circuit.branch_user> contactor_locations,
-        camshaft_motor? drive, Port contactor_on_sound, Port contactor_off_sound): base("camshaft_contactor_set")
+        camshaft_motor? drive, Action<bool>? contactor_toggle_sound): base("camshaft_contactor_set")
     {
         string[] lines = contactor_on_table.Split('\n');
         if (lines.Length < 2)
@@ -98,16 +98,15 @@ internal class camshaft_contactor_set: electric_device
             }
         }
 
-        _contactor_locations = contactor_locations;
-        _drive               = drive;
-        _contactor_on_sound  = contactor_on_sound;
-        _contactor_off_sound = contactor_off_sound;
+        _contactor_locations    = contactor_locations;
+        _drive                  = drive;
+        _contactor_toggle_sound = contactor_toggle_sound;
         attach_shaft();
     }
 
     private camshaft_contactor_set(string[]? normally_open_contacts, string[]? normally_closed_contacts,
         Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor? drive, 
-        Port contactor_on_sound, Port contactor_off_sound) : base("camshaft_contactor_set")
+        Action<bool>? contactor_toggle_sound) : base("camshaft_contactor_set")
     {
         if (normally_open_contacts != null)
         {
@@ -130,19 +129,17 @@ internal class camshaft_contactor_set: electric_device
             }
         }
 
-        _contactor_locations = contactor_locations;
-        _drive               = drive;
-        _contactor_on_sound  = contactor_on_sound;
-        _contactor_off_sound = contactor_off_sound;
+        _contactor_locations    = contactor_locations;
+        _drive                  = drive;
+        _contactor_toggle_sound = contactor_toggle_sound;
         attach_shaft();
     }
 
     public static camshaft_contactor_set on_off(string[]? normally_open_contacts, string[]? normally_closed_contacts,
-        Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor? drive, 
-        Port contactor_on_sound, Port contactor_off_sound)
+        Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor? drive, Action<bool>? contactor_toggle_sound)
     {
         return new camshaft_contactor_set(normally_open_contacts, normally_closed_contacts, contactor_locations, drive,
-            contactor_on_sound, contactor_off_sound);
+            contactor_toggle_sound);
     }
 
     public void switch_contactors(int notch)
@@ -156,9 +153,9 @@ internal class camshaft_contactor_set: electric_device
             bool   toggle_on      = (contactor_close_pattern.Value & closed_mask) != 0;
             bool   is_on          = _contactor_locations[contactor_name].is_contactor_on(contactor_name);
             if (toggle_on && !is_on)
-                _contactor_on_sound.Value = 1.0f;
+                _contactor_toggle_sound?.Invoke(true);
             else if (!toggle_on && is_on)
-                _contactor_off_sound.Value = 1.0f;
+                _contactor_toggle_sound?.Invoke(false);
             Main.log($"{contactor_name} {(toggle_on ? "on" : "off")}");
             _contactor_locations[contactor_name].toggle_contactor(contactor_name, toggle_on);
         }

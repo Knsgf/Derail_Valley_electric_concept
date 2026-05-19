@@ -98,15 +98,14 @@ internal partial class unit_A_sim: electric_device
 
         _torque_B    = grab_port(ports, "[internal_MU].TM4-6");
         _wheel_RPM_B = grab_port(ports, "[internal_MU].WHEEL_RPM_FROM_B");
+        _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
+        _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
-        _contactors   = new(_appliances, _control_air, _main_breaker_closed, _contactor_locations, _contactor_on_sound, _contactor_off_sound);
+        _contactors   = new(_appliances, _control_air, _main_breaker_closed, _contactor_locations, _contactor_on_sound, _contactor_off_sound, _control_AB1);
         _roof_bus     = new(ports, is_unit_A: true);
         _pantograph   = new(unit.gameObject, _roof_bus, _appliances, _control_air);
-        _control_AB1  = grab_port(ports, "[internal_MU].CONTROL_AB1");
-        _control_BA1  = grab_port(ports, "[internal_MU].CONTROL_BA1");
-        _control_BA1.ValueUpdatedInternally += MU_BA1_control;
         _main_breaker = new(_appliances, _control_air, ports, this);
 
         _traction_motors = new traction_motor[motors];
@@ -153,9 +152,10 @@ internal partial class unit_A_sim: electric_device
 
         set_reverse_current_lamp = _control_stand.create_setter("reverse_current_lamp");
 
-        _unit = unit;
+        _unit       = unit;
         _simulation = simulation;
         simulation.SimulationFlow.TickEvent += simulate;
+        _control_BA1.ValueUpdatedInternally += MU_BA1_control;
     }
 
     private void toggle_front_pantograph(float port_value)
@@ -413,6 +413,8 @@ internal partial class unit_A_sim: electric_device
             _pantograph.simulate(_total_load.Value);
         }
         _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
+        toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_on , false);
+        toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_off, false);
 
         set_primary_notch(_contactors._primary_controller.current_position);
         set_seconday_notch(_secondary_camshaft_notch);
@@ -504,8 +506,8 @@ internal partial class unit_A_sim: electric_device
             _contactors.Dispose();
             _control_stand.Dispose();
             _red_light_controller.Dispose();
-            _simulation.SimulationFlow.TickEvent      -= simulate;
-            _control_BA1.ValueUpdatedInternally       -= MU_BA1_control;
+            _simulation.SimulationFlow.TickEvent -= simulate;
+            _control_BA1.ValueUpdatedInternally  -= MU_BA1_control;
         }
     }
 }
