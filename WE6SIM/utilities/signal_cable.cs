@@ -10,40 +10,58 @@ internal static class signal_cable
 {
     public enum AB1_shift 
     { 
-        unit_B_pantograph        = 0,
-        unit_B_sidepan           = 1, 
-        unit_B_overhead_supply   = 2, 
-        unit_B_camshaft_notch    = 3, 
-        unit_B_independent_brake = 7,
-        unit_B_sander            = 10,
+        unit_B_pantograph = 0,
+        unit_B_sidepan    = 1, 
+        overhead_supply   = 2, 
+        sander            = 3,
+        
+        independent_brake     = 14,
+        unit_A_camshaft_notch = 17,
+        unit_B_camshaft_notch = 20, 
     };
     public enum AB1_signals
     {
-        unit_B_pantograph        = 0x1 << AB1_shift.unit_B_pantograph,
-        unit_B_sidepan           = 0x1 << AB1_shift.unit_B_sidepan,
-        unit_B_overhead_power    = 0x1 << AB1_shift.unit_B_overhead_supply,
-        unit_B_camshaft_notch    = 0xF << AB1_shift.unit_B_camshaft_notch,
-        unit_B_independent_brake = 0x7 << AB1_shift.unit_B_independent_brake,
-        unit_B_sander            = 0x1 << AB1_shift.unit_B_sander,
+        unit_B_pantograph = 0x1 << AB1_shift.unit_B_pantograph,
+        unit_B_sidepan    = 0x1 << AB1_shift.unit_B_sidepan,
+        overhead_power    = 0x1 << AB1_shift.overhead_supply,
+        sander            = 0x1 << AB1_shift.sander,
+        
+        independent_brake     = 0x7 << AB1_shift.independent_brake,
+        unit_A_camshaft_notch = 0x7 << AB1_shift.unit_A_camshaft_notch,
+        unit_B_camshaft_notch = 0xF << AB1_shift.unit_B_camshaft_notch
     };
     public enum BA1_shift 
     { 
-        battery               = 0,
-        control_air           = 1,
-        jog                   = 2,
-        unit_B_camshaft_notch = 3 
+        battery     = 0,
+        control_air = 1,
+        jog         = 2,
+        sander      = 3,
+        
+        reverser              = 8,
+        throttle              = 9,
+        field                 = 12,
+        selector              = 15,
+        independent_brake     = 18,
+        unit_B_camshaft_notch = 21 
     };
     public enum BA1_signals
     {
         battery               = 0x1 << BA1_shift.battery,
         control_air_usable    = 0x1 << BA1_shift.control_air,
         jog                   = 0x1 << BA1_shift.jog,
+        sander                = 0x1 << BA1_shift.sander,
+
+        reverser              = 0x1 << BA1_shift.reverser,
+        throttle              = 0x7 << BA1_shift.throttle,
+        field                 = 0x7 << BA1_shift.field,
+        selector              = 0x7 << BA1_shift.selector,
+        independent_brake     = 0x7 << BA1_shift.independent_brake,
         unit_B_camshaft_notch = 0x7 << BA1_shift.unit_B_camshaft_notch
     }
 
     private static void check_signal_mask(int signal_mask)
     {
-        if (signal_mask < 0 || signal_mask >= (1 << 24))
+        if (signal_mask is < 0 or >= (1 << 24))
             throw new ArgumentOutOfRangeException("Signal bits cannot go beyond bit #23");
     }
 

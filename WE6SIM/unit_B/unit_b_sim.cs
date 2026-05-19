@@ -8,12 +8,14 @@ using DV.Simulation.Cars;
 
 using LocoSim.Implementations;
 
+using UnityEngine;
+
 using WE6SIM.devices;
 using WE6SIM.unit_A;
 using WE6SIM.utilities;
 
-using static WE6SIM.utilities.signal_cable;
 using static WE6SIM.utilities.sensor_grabber;
+using static WE6SIM.utilities.signal_cable;
 
 namespace WE6SIM.unit_B;
 
@@ -32,6 +34,7 @@ internal class unit_B_sim: electric_device
     private readonly Port _control_AB1, _control_BA1;
     private readonly Port _total_load;
 
+    private readonly Action<float> set_primary_notch, set_seconday_notch;
     private readonly Action<float> set_independent_brake, set_sander;
 
     private int _secondary_camshaft_target_notch = 1;
@@ -63,8 +66,24 @@ internal class unit_B_sim: electric_device
         _pantograph      = new(unit.gameObject, _roof_bus, _appliances, _control_air);
         
         _control_stand = new(_appliances, ports);
+        _control_stand.register_handler(      "independent_brake", synchronise_independent_brake);
+        _control_stand.register_handler(                 "sander",            synchronise_sander);
         set_independent_brake = _control_stand.create_setter("independent_brake");
         set_sander            = _control_stand.create_setter(           "sander");
+
+        set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
+        set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
+    }
+
+    private void synchronise_independent_brake(float raw_handle_position)
+    {
+        set_port_signal(_control_BA1, (int) BA1_signals.independent_brake, (int) BA1_shift.independent_brake, 
+            Mathf.RoundToInt(raw_handle_position * 5.0f));
+    }
+    
+    private void synchronise_sander(float sander_switch)
+    {
+        toggle_port_signal(_control_BA1, (int) BA1_signals.sander, sander_switch >= 0.5f);
     }
 
     private void MU_AB1_control(float AB1)
@@ -72,14 +91,14 @@ internal class unit_B_sim: electric_device
         if (disposed)
             return;
         
-        _overhead_power.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.unit_B_overhead_power));
+        _overhead_power.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.overhead_power));
 
         _pantograph.toggle        (!port_value_signal_active(AB1, (int) AB1_signals.unit_B_pantograph));
         _pantograph.sidepan_toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan   ));
         
-        set_independent_brake(extract_signal_from_port_value(AB1, (int) AB1_signals.unit_B_independent_brake, 
-            (int) AB1_shift.unit_B_independent_brake) / 5.0f);
-        set_sander(port_value_signal_active(AB1, (int) AB1_signals.unit_B_sander) ? 1.0f : 0.0f);
+        set_independent_brake(extract_signal_from_port_value(AB1, (int) AB1_signals.independent_brake, 
+            (int) AB1_shift.independent_brake) / 5.0f);
+        set_sander(port_value_signal_active(AB1, (int) AB1_signals.sander) ? 1.0f : 0.0f);
 
         _secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_B_camshaft_notch, 
             (int) AB1_shift.unit_B_camshaft_notch);
@@ -101,12 +120,16 @@ internal class unit_B_sim: electric_device
                 _secondary_controller.target_notch = _secondary_camshaft_target_notch;
                 break;
         }
+
+        set_primary_notch(extract_signal_from_port_value(AB1, (int) AB1_signals.unit_A_camshaft_notch, 
+            (int) AB1_shift.unit_A_camshaft_notch));
     }
 
     private void simulate()
     {
         check_if_disposed();
         _pantograph.simulate(_total_load.Value);
+        set_seconday_notch(_secondary_controller.current_position);
         set_port_signal(_control_BA1, (int) BA1_signals.unit_B_camshaft_notch, (int) BA1_shift.unit_B_camshaft_notch,
             _secondary_controller.current_notch);
     }

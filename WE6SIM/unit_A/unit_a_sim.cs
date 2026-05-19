@@ -54,6 +54,7 @@ internal partial class unit_A_sim: electric_device
     private readonly Action<float>   set_primary_notch, set_seconday_notch, set_supply_volts, set_motors_volts;
     private readonly Action<float>[] set_motor_group_load, set_motor_group_field;
     private readonly Action<float>   set_reverse_current_lamp;
+    private readonly Action<float>   set_independent_brake, toggle_sander;
 
     private contactors _contactors;
 
@@ -132,8 +133,11 @@ internal partial class unit_A_sim: electric_device
         _control_stand.register_handler("main_breaker_off_button",      _main_breaker.toggle_off);
         _control_stand.register_handler(      "independent_brake", synchronise_independent_brake);
         _control_stand.register_handler(                 "sander",            synchronise_sander);
+        set_independent_brake = _control_stand.create_setter("independent_brake");
+        toggle_sander         = _control_stand.create_setter(           "sander");
         _red_light_controller = new red_ditch_light_controller(_appliances, ports);
 
+        _control_stand.register_handler("primary_notch_hand", signal_primary_camshaft_target_notch);
         set_supply_volts   = _control_stand.create_setter(        "supply_volts");
         set_motors_volts   = _control_stand.create_setter(        "motors_volts");
         set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
@@ -186,6 +190,12 @@ internal partial class unit_A_sim: electric_device
         _fast_notching_enabled = port_value >= 0.5f;
     }
 
+    private void signal_primary_camshaft_target_notch(float target_notch)
+    {
+        set_port_signal(_control_AB1, (int) AB1_signals.unit_A_camshaft_notch,
+            (int) AB1_shift.unit_A_camshaft_notch, Mathf.RoundToInt(target_notch));
+    }
+
     private void set_secondary_camshaft_target_notch(int target_notch)
     {
         set_port_signal(_control_AB1, (int) AB1_signals.unit_B_camshaft_notch,
@@ -200,18 +210,18 @@ internal partial class unit_A_sim: electric_device
 
     private void overhead_power_toggle(bool turn_on)
     {
-        toggle_port_signal(_control_AB1, (int) AB1_signals.unit_B_overhead_power, turn_on);
+        toggle_port_signal(_control_AB1, (int) AB1_signals.overhead_power, turn_on);
     }
 
     private void synchronise_independent_brake(float raw_handle_position)
     {
-        set_port_signal(_control_AB1, (int) AB1_signals.unit_B_independent_brake, (int) AB1_shift.unit_B_independent_brake, 
+        set_port_signal(_control_AB1, (int) AB1_signals.independent_brake, (int) AB1_shift.independent_brake, 
             Mathf.RoundToInt(raw_handle_position * 5.0f));
     }
     
     private void synchronise_sander(float sander_switch)
     {
-        toggle_port_signal(_control_AB1, (int) AB1_signals.unit_B_sander, sander_switch >= 0.5f);
+        toggle_port_signal(_control_AB1, (int) AB1_signals.sander, sander_switch >= 0.5f);
     }
 
     private void reverser_handler(float raw_reverser)
@@ -320,7 +330,12 @@ internal partial class unit_A_sim: electric_device
             return;
         _appliances.ChangeState (port_value_signal_active(BA1, (int) BA1_signals.battery           ));
         _control_air.ChangeState(port_value_signal_active(BA1, (int) BA1_signals.control_air_usable));
-        _jogging_mode_on          = port_value_signal_active(BA1, (int) BA1_signals.jog);
+        
+        _jogging_mode_on = port_value_signal_active(BA1, (int) BA1_signals.jog);
+        set_independent_brake(extract_signal_from_port_value(BA1, (int) BA1_signals.independent_brake, 
+            (int) BA1_shift.independent_brake) / 5.0f);
+        toggle_sander(port_value_signal_active(BA1, (int) BA1_signals.sander) ? 1.0f : 0.0f);
+
         _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
         _contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
     }
