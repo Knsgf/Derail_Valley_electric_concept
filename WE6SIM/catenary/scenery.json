@@ -351,7 +351,7 @@
     "z": 6822667,
     "y": 124.026062,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
     "anchored": false,
     "siding_anchor": false
@@ -368,7 +368,7 @@
     "z": 6796071,
     "y": 124.015945,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
     "anchored": false,
     "siding_anchor": false
@@ -385,7 +385,7 @@
     "z": 6769405,
     "y": 124.027977,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
     "anchored": false,
     "siding_anchor": false
@@ -402,7 +402,7 @@
     "z": 6742718,
     "y": 124.016273,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
     "anchored": false,
     "siding_anchor": false
@@ -419,7 +419,7 @@
     "z": 6716123,
     "y": 124.04052,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
     "anchored": false,
     "siding_anchor": false
@@ -436,7 +436,7 @@
     "z": 6689519,
     "y": 124.046181,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
     "anchored": false,
     "siding_anchor": false
@@ -453,26 +453,9 @@
     "z": 6662927,
     "y": 124.036293,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
     "anchored": true,
-    "siding_anchor": false
-  },
-  {
-    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.447189718,
-      "z": 0.0,
-      "w": -0.8944392
-    },
-    "x": 5935983,
-    "z": 6641241,
-    "y": 124.020012,
-    "pole_type": "Ground",
-    "cantilever_on_near_side": true,
-    "cantilever_on_far_side": false,
-    "anchored": false,
     "siding_anchor": false
   },
   {
@@ -783,24 +766,7 @@
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
-    "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
-    "orientation": {
-      "x": 0.0,
-      "y": -0.447189718,
-      "z": 0.0,
-      "w": -0.8944392
-    },
-    "x": 5935983,
-    "z": 6641241,
-    "y": 124.020012,
-    "dual_wire": false,
-    "wire_attached": false
-  },
-  {
-    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
-    "cantilever_type": "Outer",
+    "cantilever_type": "MiddleInner",
     "is_gantry_registration_arm": false,
     "is_tunnel_registration_arm": false,
     "orientation": {
@@ -1034,5 +1000,158 @@
     "x": 5958451,
     "z": 6659642,
     "y": 124.036293
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.912868261,
+      "z": 0.0,
+      "w": -0.408254266
+    },
+    "x": 5929200,
+    "z": 6639469,
+    "y": 124.0207,
+    "pole_type": "Ground",
+    "cantilever_on_near_side": true,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
+    "cantilever_type": "Outer",
+    "is_gantry_registration_arm": false,
+    "is_tunnel_registration_arm": false,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.912868261,
+      "z": 0.0,
+      "w": -0.408254266
+    },
+    "x": 5929200,
+    "z": 6639469,
+    "y": 124.0207,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
+    "cantilever_type": "Outer",
+    "is_gantry_registration_arm": false,
+    "is_tunnel_registration_arm": false,
+    "orientation": {
+      "x": 0.0,
+      "y": -0.409091979,
+      "z": 0.0,
+      "w": -0.912493169
+    },
+    "x": 5955524,
+    "z": 6662927,
+    "y": 124.036293,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
+    "cantilever_type": "Inner",
+    "is_gantry_registration_arm": false,
+    "is_tunnel_registration_arm": false,
+    "orientation": {
+      "x": 0.0,
+      "y": -0.410917759,
+      "z": 0.0,
+      "w": -0.9116725
+    },
+    "x": 5985422,
+    "z": 6689519,
+    "y": 124.046181,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
+    "cantilever_type": "Outer",
+    "is_gantry_registration_arm": false,
+    "is_tunnel_registration_arm": false,
+    "orientation": {
+      "x": 0.0,
+      "y": -0.411187649,
+      "z": 0.0,
+      "w": -0.91155076
+    },
+    "x": 6015326,
+    "z": 6716123,
+    "y": 124.04052,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
+    "cantilever_type": "Inner",
+    "is_gantry_registration_arm": false,
+    "is_tunnel_registration_arm": false,
+    "orientation": {
+      "x": 0.0,
+      "y": -0.409392565,
+      "z": 0.0,
+      "w": -0.912358344
+    },
+    "x": 6045223,
+    "z": 6742718,
+    "y": 124.016273,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
+    "cantilever_type": "Outer",
+    "is_gantry_registration_arm": false,
+    "is_tunnel_registration_arm": false,
+    "orientation": {
+      "x": 0.0,
+      "y": -0.410076767,
+      "z": 0.0,
+      "w": -0.912051
+    },
+    "x": 6075182,
+    "z": 6769405,
+    "y": 124.027977,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
+    "cantilever_type": "Inner",
+    "is_gantry_registration_arm": false,
+    "is_tunnel_registration_arm": false,
+    "orientation": {
+      "x": 0.0,
+      "y": -0.4093251,
+      "z": 0.0,
+      "w": -0.9123886
+    },
+    "x": 6105174,
+    "z": 6796071,
+    "y": 124.015945,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
+    "cantilever_type": "MiddleInner",
+    "is_gantry_registration_arm": false,
+    "is_tunnel_registration_arm": false,
+    "orientation": {
+      "x": 0.0,
+      "y": -0.40893358,
+      "z": 0.0,
+      "w": -0.912564158
+    },
+    "x": 6135054,
+    "z": 6822667,
+    "y": 124.026062,
+    "dual_wire": false,
+    "wire_attached": false
   }
 ]
