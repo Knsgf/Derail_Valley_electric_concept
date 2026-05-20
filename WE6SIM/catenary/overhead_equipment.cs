@@ -169,7 +169,8 @@ internal partial class overhead_equipment
             ?? throw new FileNotFoundException("Not found " + Path.Combine(system._file_path, "catenary"));
         string[] all_locations =
         [
-            "SM"
+            "SM",
+            "FM"
         ];
         foreach (string location in all_locations)
             _system.load_scenery_from_bundle(catenary, location);
