@@ -403,7 +403,7 @@ internal partial class unit_A_sim: electric_device
             bool cab_changed = port_value_signal_active(BA1, (int) BA1_signals.cab_change);
             reverser_handler(port_value_signal_active(BA1, (int) BA1_signals.reverser) ? 0.0f : 1.0f, cab_changed);
             set_independent_brake(extract_signal_from_port_value(BA1, (int) BA1_signals.independent_brake, 
-                (int) BA1_shift.independent_brake));
+                (int) BA1_shift.independent_brake) / control_stand.independent_brake_last_notch);
             handle_relay(BA1, BA1_signals.throttle, BA1_shift.throttle, control_stand.throttle_last_notch    ,      throttle_handler, cab_changed);
             handle_relay(BA1, BA1_signals.field   , BA1_shift.field   , control_stand.field_handle_last_notch, field_control_handler, cab_changed);
             handle_relay(BA1, BA1_signals.selector, BA1_shift.selector, control_stand.selector_last_notch    ,      selector_handler, cab_changed);
