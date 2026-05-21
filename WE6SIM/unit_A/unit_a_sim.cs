@@ -417,7 +417,6 @@ internal partial class unit_A_sim: electric_device
     private void simulate()
     {
         check_if_disposed();
-        overhead_equipment.system.handle_scenery_visibility(_unit.transform.position);
         Main.diagnostics?.Value = _cab_active ? 1.0f : 0.0f;
         
         bool yard_mode = _selector == 3;

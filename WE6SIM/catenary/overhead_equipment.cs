@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
+using DV.Simulation.Cars;
 using DV.Utils;
 
 using Newtonsoft.Json;
@@ -92,8 +95,11 @@ internal partial class overhead_equipment
 
     private substation[]? _all_substations = null;
 
-    public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
+    private bool           _scenery_refresh = false, _scenery_refresh_suspended = false;
+    private SimController? _simulation      = null;
 
+    public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
+    
     private overhead_equipment(ModEntry mod)
     {
         _file_path = mod.Path;
@@ -112,7 +118,8 @@ internal partial class overhead_equipment
         assert.test(floating_origin != null);
         floating_origin.WorldMoved           += floating_origin_shift;
         UnloadWatcher.UnloadRequested        += dispose;
-        PlayerManager.PlayerTeleportFinished += track_player_movement;
+        PlayerManager.PlayerTeleportStarted  += suspend_tracker;
+        PlayerManager.PlayerTeleportFinished += resume_tracker;
     }
 
     private void stuff_scenery(string raw_scenery, bool no_saving)
@@ -226,10 +233,12 @@ internal partial class overhead_equipment
         editor.disable();
         if (_system == null)
             return;
-        WorldMover floating_origin            = SingletonBehaviour<WorldMover>.Instance;
-        floating_origin?.WorldMoved          -= _system.floating_origin_shift;
-        UnloadWatcher.UnloadRequested        -= dispose;
-        PlayerManager.PlayerTeleportFinished -= _system.track_player_movement;
+        _system._simulation?.SimulationFlow.TickEvent -= _system.player_camera_tracker;
+        WorldMover floating_origin                     = SingletonBehaviour<WorldMover>.Instance;
+        floating_origin?.WorldMoved                   -= _system.floating_origin_shift;
+        UnloadWatcher.UnloadRequested                 -= dispose;
+        PlayerManager.PlayerTeleportStarted           -= _system.suspend_tracker;
+        PlayerManager.PlayerTeleportFinished          -= _system.resume_tracker;
         for (int index = _system._currently_visible_objects.Count - 1; index >= 0; --index)
         {
             catenary_object current_object = _system._currently_visible_objects[index];
@@ -237,6 +246,7 @@ internal partial class overhead_equipment
             current_object.entity = null;
         }
         _system = null;
+        Main.log("catenary_visual.dispose() end");
     }
 
     private void find_objects_within_region(List<catenary_object> found_objects, quad_tree all_objects,
@@ -262,7 +272,6 @@ internal partial class overhead_equipment
             return;
         _remaining_time = 1.0f;
         */
-
         (int x, int z) = get_absolute_position(relative_postion);
         if (!_scenery_changed && Math.Abs(x - _last_x) + Math.Abs(z - _last_z) <= visible_distance_fixed >> 3)
             return;
@@ -301,13 +310,47 @@ internal partial class overhead_equipment
             visible_objects[index].entity!.transform.position -= shift;
     }
 
-    private void track_player_movement()
+    private void refresh_scenery()
     {
-        (int x, int z) = get_absolute_position(PlayerManager.PlayerTransform.position);
+        Transform? player_view = PlayerManager.ActiveCamera?.transform;
+        if (player_view is null)
+        {
+            player_view = PlayerManager.PlayerTransform;
+            if (player_view is null)
+                return;
+        }
+        (int x, int z) = get_absolute_position(player_view.position);
         Main.log($"x={x} z={z}");
-        handle_scenery_visibility(PlayerManager.PlayerTransform.position);
+        handle_scenery_visibility(player_view.position);
     }
 
+    private void suspend_tracker()
+    {
+        Main.log("Tracker suspended");
+        _scenery_refresh_suspended = true;
+    }
+
+    private void resume_tracker()
+    {
+        Main.log("Tracker resumed");
+        _scenery_refresh_suspended = false;
+    }
+
+    private void player_camera_tracker()
+    {
+        if (!_scenery_refresh_suspended)
+            refresh_scenery();
+    }
+
+    public void set_up_player_tracker(SimController simulation)
+    {
+        if (_simulation is null)
+        {
+            Main.log("Tracker started");
+            _simulation                          = simulation;
+            simulation.SimulationFlow.TickEvent += player_camera_tracker;
+        }
+    }
 
     private _type_ add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
         int x, int z, float y, Quaternion orientation)

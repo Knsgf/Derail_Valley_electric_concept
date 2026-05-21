@@ -64,7 +64,10 @@ internal static class car_spawn_handler
 
     private static void on_car_spawned(TrainCar vehicle)
     {
-        if (vehicle == null || !vehicle.IsLoco)
+        if (vehicle == null)
+            return;
+        overhead_equipment.system.set_up_player_tracker(vehicle.SimController);
+        if (!vehicle.IsLoco)
             return;
         Main.log("Spawn " + vehicle.ID + " " + vehicle.carLivery.id);
 
