@@ -104,30 +104,47 @@ internal class camshaft_contactor_set: electric_device
         attach_shaft();
     }
 
+    private void set_up_closed_contacts_at_notch(int notch, string[]? contacts, 
+        Dictionary<string, circuit.branch_user> contactor_locations, bool two_state)
+    {
+        if (contacts == null)
+            return;
+        if (notch is < 1 or > max_notches)
+            throw new ArgumentOutOfRangeException($"Notch must be between 1 and {max_notches}");
+        int notch_pattern = 1 << (notch - 1);
+        foreach (string contact in contacts)
+        {
+            if (!contactor_locations.ContainsKey(contact))
+                throw new ArgumentException($"{contact} not present on circuit diagram");
+            if (!_contactor_notch_patterns.ContainsKey(contact))
+                _contactor_notch_patterns[contact] = notch_pattern;
+            else if (!two_state)
+                _contactor_notch_patterns[contact] |= notch_pattern;
+            else
+                throw new ArgumentException($"{contact} cannot be both normally open and closed");
+        }
+    }
+    
     private camshaft_contactor_set(string[]? normally_open_contacts, string[]? normally_closed_contacts,
         Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor? drive, 
         Action<bool>? contactor_toggle_sound) : base("camshaft_contactor_set")
     {
-        if (normally_open_contacts != null)
-        {
-            foreach (string open_contactor in normally_open_contacts)
-            {
-                if (!contactor_locations.ContainsKey(open_contactor))
-                    throw new ArgumentException($"{open_contactor} not present on circuit diagram");
-                _contactor_notch_patterns[open_contactor] = 0x2;
-            }
-        }
-        if (normally_closed_contacts != null)
-        {
-            foreach (string closed_contactor in normally_closed_contacts)
-            {
-                if (!contactor_locations.ContainsKey(closed_contactor))
-                    throw new ArgumentException($"{closed_contactor} not present on circuit diagram");
-                if (_contactor_notch_patterns.ContainsKey(closed_contactor))
-                    throw new ArgumentException($"{closed_contactor} cannot be both normally open and closed");
-                _contactor_notch_patterns[closed_contactor] = 0x1;
-            }
-        }
+        set_up_closed_contacts_at_notch(1, normally_closed_contacts, contactor_locations, two_state: true);
+        set_up_closed_contacts_at_notch(2, normally_open_contacts  , contactor_locations, two_state: true);
+
+        _contactor_locations    = contactor_locations;
+        _drive                  = drive;
+        _contactor_toggle_sound = contactor_toggle_sound;
+        attach_shaft();
+    }
+
+    private camshaft_contactor_set(string[]? closed_contacts_off, string[]? closed_contacts_intermediate,
+        string[]? closed_contacts_on, Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor? drive, 
+        Action<bool>? contactor_toggle_sound) : base("camshaft_contactor_set")
+    {
+        set_up_closed_contacts_at_notch(1, closed_contacts_off         , contactor_locations, two_state: false);
+        set_up_closed_contacts_at_notch(2, closed_contacts_intermediate, contactor_locations, two_state: false);
+        set_up_closed_contacts_at_notch(3, closed_contacts_on          , contactor_locations, two_state: false);
 
         _contactor_locations    = contactor_locations;
         _drive                  = drive;
@@ -140,6 +157,14 @@ internal class camshaft_contactor_set: electric_device
     {
         return new camshaft_contactor_set(normally_open_contacts, normally_closed_contacts, contactor_locations, drive,
             contactor_toggle_sound);
+    }
+
+    public static camshaft_contactor_set tri_state(string[]? closed_contacts_off, string[]? closed_contacts_intermediate,
+        string[]? closed_contacts_on, Dictionary<string, circuit.branch_user> contactor_locations, camshaft_motor? drive, 
+        Action<bool>? contactor_toggle_sound)
+    {
+        return new camshaft_contactor_set(closed_contacts_off, closed_contacts_intermediate, closed_contacts_on, 
+            contactor_locations, drive, contactor_toggle_sound);
     }
 
     public void switch_contactors(int notch)
