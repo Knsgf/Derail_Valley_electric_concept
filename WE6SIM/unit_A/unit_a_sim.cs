@@ -16,6 +16,7 @@ using WE6SIM.devices;
 using WE6SIM.unit_B;
 using WE6SIM.utilities;
 
+using static WE6SIM.circuit_sim.circuit;
 using static WE6SIM.utilities.sensor_grabber;
 using static WE6SIM.utilities.signal_cable;
 
@@ -27,7 +28,7 @@ internal partial class unit_A_sim: electric_device
     const float max_exciter_voltage = 120.0f, min_exciter_voltage = 10.0f, max_exciter_current = 2000.0f;
     const float max_exciter_power = max_exciter_voltage * max_exciter_current;
 
-    private readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
+    private readonly Dictionary<string, branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
     private readonly Fuse _appliances, _control_air, _main_breaker_closed, _overhead_power;
@@ -57,7 +58,7 @@ internal partial class unit_A_sim: electric_device
     private readonly Action<float>   set_reverse_current_lamp;
     private readonly Action<float>   set_independent_brake, toggle_sander;
 
-    private contactors _contactors;
+    private readonly contactors _contactors;
 
     private bool _fast_notching_enabled = false, _jogging_mode_on = false, _jog = false, _cab_active = false;
     private int  _throttle = -1, _secondary_camshaft_notch, _selector = -1, _field_position = -1;
@@ -417,11 +418,9 @@ internal partial class unit_A_sim: electric_device
     private void simulate()
     {
         check_if_disposed();
-        Main.diagnostics?.Value = _cab_active ? 1.0f : 0.0f;
         
         bool yard_mode = _selector == 3;
         bool jog       = _jogging_mode_on && !is_powered;
-        
         if (jog)
         {
             if (!_jog)
@@ -453,7 +452,8 @@ internal partial class unit_A_sim: electric_device
 
         lock (_currents)
         {
-            foreach (KeyValuePair<string, circuit.branch_user> branch in _named_branches)
+            //circuit_telemetry.log_sorted_currents(_circuit, 10.0f, 4000.0f);
+            foreach (KeyValuePair<string, branch_user> branch in _named_branches)
                 _currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
         }
         bool  rheostatic_brake_on = _selector == 2;
@@ -464,7 +464,7 @@ internal partial class unit_A_sim: electric_device
         traction_motor[] traction_motors = _traction_motors;
         for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
             traction_motors[motor_index].simulate(rheostatic_brake_on, _currents, _named_branches);
-        _circuit.simulate();    // Must be called after all EMFs have been set
+        _circuit.simulate();
 
         set_supply_volts(_named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"]);
         if (yard_mode)

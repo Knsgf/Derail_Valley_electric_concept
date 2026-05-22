@@ -10,7 +10,7 @@ namespace WE6SIM.circuit_sim;
 
 internal partial class sparse_matrix
 {
-    const float EPSILON = 5.0E-5f;
+    const float EPSILON = 1.0E-5f;
 
     private readonly HashSet<int> _indices_set = [];
 
@@ -41,7 +41,7 @@ internal partial class sparse_matrix
         set
         {
             are_indices_in_range(row, column);
-            if (value <= -EPSILON || value >= EPSILON)
+            if (value is <= -EPSILON or >= EPSILON)
                 _contents[row][column] = value;
             else if (_contents[row].ContainsKey(column))
                     _contents[row].Remove(column);
@@ -129,7 +129,7 @@ internal partial class sparse_matrix
             indices.Clear();
             foreach (KeyValuePair<int, float> row_item in row_ref)
             {
-                if (row_item.Value > -EPSILON && row_item.Value < EPSILON)
+                if (row_item.Value is > -EPSILON and < EPSILON)
                     indices.Add(row_item.Key);
             }
             foreach (int index in indices)

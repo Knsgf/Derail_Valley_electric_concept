@@ -19,22 +19,24 @@ internal partial class circuit
     
     private static readonly Dictionary<branch_builder,     branch> __built_branches      = [];
     private static readonly Dictionary<branch        , connection> __connected_terminals = [];
-    
+
     private readonly   node[] _nodes;
     private readonly branch[] _branches;
 
-    private readonly object        _background_blocker, _solver_exchange = new();
+    private readonly object        _background_blocker;
     private readonly sparse_matrix _incidence, _transposed_incidence, _negative_incidence;
-    private readonly sparse_matrix _conductance, _EMFs, _conductance_simulation, _EMFs_simulation;
-    private readonly sparse_matrix _left1 = new(), _left = new(), _right, _virtual_currents = new();
+    private readonly sparse_matrix _conductance, _EMFs, _conductance_staged, _EMFs_staged;
+    private readonly sparse_matrix _left1 = new(), _left = new(), _virtual_currents = new();
     private readonly float[]       _potentials;
     private readonly int           _last_active_node;
 
     private sparse_matrix.linear_solver _solver, _background_solver;
+    private sparse_matrix _right, _background_right;
+    private HashSet<branch> _branch_conductances_changed, _branch_conductances_staged = [], _branch_EMFs_changed = [], _branch_EMFs_staged = [];
     
     private Task? _matrices_recalculation;
-    private bool  _refresh_branches = true, _simulation_in_progress = false;
-    private int   _last_branch      = 0;
+    private bool  _simulation_in_progress = false;
+    private int   _last_branch            = 0;
 
     private void set_up_nodes(circuit_builder circuit_info, Dictionary<string, branch_user> named_branches,
         Dictionary<string, branch_user> contactor_locations)
@@ -114,19 +116,20 @@ internal partial class circuit
         _last_active_node = _nodes.Length - 2;
         assert.test(_last_active_node >= 0);
 
-        _incidence = new(_last_active_node + 1, _branches.Length);
-        _right     = new(_last_active_node + 1, _branches.Length);
+        _incidence        = new(_last_active_node + 1, _branches.Length);
+        _right            = new(_last_active_node + 1, _branches.Length);
+        _background_right = new(_last_active_node + 1, _branches.Length);
         for (int row = _last_active_node; row >= 0; --row)
             _nodes[row].fill_connections_row(_incidence);
         _transposed_incidence = new sparse_matrix().transpose_from(_incidence);
         _negative_incidence   = new sparse_matrix().negate_from   (_incidence);
             
-        _conductance            = new(_branches.Length);
-        _conductance_simulation = new(_branches.Length);
+        _conductance        = new(_branches.Length);
+        _conductance_staged = new(_branches.Length);
         _last_branch = _branches.Length - 1;
         for (int index = _last_branch; index >= 0; --index)
         {
-            _conductance[index, index] = _conductance_simulation[index, index] = _branches[index].conductance;
+            _conductance[index, index] = _conductance_staged[index, index] = _branches[index].future_conductance;
             _branches[index].contactor_toggled += receive_contactor_toggle;
             _branches[index].EMF_changed       += handle_EMF_change;
         }
@@ -135,45 +138,43 @@ internal partial class circuit
         _solver            = new(_left);
         _background_solver = new(_left);
 
-        _EMFs = new(_branches.Length, 1);
-        _EMFs_simulation = new(_branches.Length, 1);
-        _potentials = new float[_last_active_node + 1];
+        _EMFs        = new(_branches.Length, 1);
+        _EMFs_staged = new(_branches.Length, 1);
+        _potentials  = new float[_last_active_node + 1];
         
         node.circuit_setup_finished();
         branch.circuit_setup_finished();
         circuit_info.finish_set_up();
+        _branch_conductances_changed = [.. _branches];
+
+        //circuit_telemetry.set_up(this, named_branches);
     }
 
     private void update_conductances()
     {
-        _left1.multiply(_incidence, _conductance_simulation);
-        _left.multiply (    _left1,   _transposed_incidence);
+        _left1.multiply(_incidence, _conductance_staged  );
+        _left.multiply (    _left1, _transposed_incidence);
         _background_solver.change_coeff_matrix(_left);
-        lock (_solver_exchange)
-        {
-            _right.multiply(_negative_incidence, _conductance_simulation);
-            (_solver, _background_solver) = (_background_solver, _solver);
-        }
+        _background_right.multiply(_negative_incidence, _conductance_staged);
     }
 
     private void receive_contactor_toggle(branch toggling_branch)
     {
-        _conductance[toggling_branch.id, toggling_branch.id] = toggling_branch.conductance;
-        _refresh_branches = true;
+        _conductance[toggling_branch.id, toggling_branch.id] = toggling_branch.future_conductance;
+        _branch_conductances_changed.Add(toggling_branch);
     }
 
     private void handle_EMF_change(branch EMF_source)
     {
-        _EMFs[EMF_source.id, 0] = EMF_source.matrix_EMF;
+        _EMFs[EMF_source.id, 0] = EMF_source.future_EMF;
+        _branch_EMFs_changed.Add(EMF_source);
     }
+
 
     private void run_solver()
     {
-        lock (_solver_exchange)
-        {
-            _virtual_currents.multiply(_right, _EMFs_simulation);
-            _solver.solve(_potentials, _virtual_currents);
-        }
+        _virtual_currents.multiply(_right, _EMFs_staged);
+        _solver.solve(_potentials, _virtual_currents);
     }
 
     public async void simulate()
@@ -181,21 +182,43 @@ internal partial class circuit
         if (_simulation_in_progress)
             return;
         _simulation_in_progress = true;
-        _EMFs_simulation.copy_from(_EMFs);
-        if (_refresh_branches && (_matrices_recalculation == null || _matrices_recalculation.IsCompleted))
+
+        if (_matrices_recalculation != null && _matrices_recalculation.IsCompleted)
         {
-            _conductance_simulation.copy_from(_conductance);
-            _refresh_branches       = false;
+            sparse_matrix conductances = _conductance_staged;
+            foreach (branch current_branch in _branch_conductances_staged)
+            {
+                current_branch.conductance = conductances[current_branch.id, current_branch.id];
+                Main.log($"{current_branch.id} {current_branch.conductance}");
+            }
+            _branch_conductances_staged.Clear();
+            (_right , _background_right ) = (_background_right , _right );
+            (_solver, _background_solver) = (_background_solver, _solver);
+            _matrices_recalculation = null;
+        }
+
+        assert.test(_branch_EMFs_staged.Count == 0);
+        (_branch_EMFs_staged, _branch_EMFs_changed) = (_branch_EMFs_changed, _branch_EMFs_staged);
+        _EMFs_staged.copy_from(_EMFs);
+        if (_branch_conductances_changed.Count > 0 && _branch_conductances_staged.Count == 0)
+        {
+            (_branch_conductances_staged, _branch_conductances_changed) = (_branch_conductances_changed, _branch_conductances_staged);
+            assert.test(_branch_conductances_staged.Count > 0);
+            _conductance_staged.copy_from(_conductance);
             _matrices_recalculation = Task.Run(update_conductances);
         }
-        node [] nodes           = _nodes;
-        float[] node_potentials = _potentials;
+        
         await Task.Run(run_solver);
         lock (_background_blocker)
         {
+            node [] nodes           = _nodes;
+            float[] node_potentials = _potentials;
             for (int node_index = _last_active_node; node_index >= 0; --node_index)
                 nodes[node_index].set_potential(node_potentials[node_index]);
+            sparse_matrix EMFs = _EMFs_staged;
+            foreach (branch current_branch in _branch_EMFs_staged)
+                current_branch.set_current_EMF_from_matrix(EMFs[current_branch.id, 0]);
+            _branch_EMFs_staged.Clear();
         }
-        _simulation_in_progress = false;
     }
 }

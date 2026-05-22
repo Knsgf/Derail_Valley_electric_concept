@@ -28,27 +28,30 @@ internal partial class circuit
 
         private int _contactors_off = int.MaxValue;
 
-        private float _conductance = 0.0f;
-        private float _start_ptential = 0.0f, _end_potential = 0.0f, _EMF = 0.0f;
+        private readonly float _closed_conductance;
+        private readonly bool  _reversed_EMF = false;
 
-        private readonly bool _reversed_EMF = false;
+        private float _current_conductance = 0.0f;
+        private float _start_ptential = 0.0f, _end_potential = 0.0f, _EMF = 0.0f, _future_EMF = 0.0f, _matrix_EMF = 0.0f;
 
-        public float conductance => (_contactors_off != 0) ? 0.0f : _conductance;
-        public float matrix_EMF
+
+        public float future_conductance => (_contactors_off != 0) ? 0.0f : _closed_conductance;
+        public float conductance 
+        { 
+            get => _current_conductance;
+            set
+            {
+                assert.test(value == 0.0f || value == _closed_conductance);
+                _current_conductance = value;
+            }
+        }
+        public float future_EMF => _future_EMF;
+        public float EMF
         {
             get => _EMF;
             set
             {
-                _EMF = _reversed_EMF ? -value : value;
-                EMF_changed?.Invoke(this);
-            }
-        }
-        public float EMF
-        {
-            get => _reversed_EMF ? -_EMF : _EMF;
-            set
-            {
-                _EMF = _reversed_EMF ? -value : value;
+                _future_EMF = _reversed_EMF ? -value : value;
                 EMF_changed?.Invoke(this);
             }
         }
@@ -56,7 +59,7 @@ internal partial class circuit
         {
             get
             {
-                float current = (_start_ptential - _end_potential + _EMF) * conductance;
+                float current = (_start_ptential - _end_potential + _matrix_EMF) * _current_conductance;
                 return _reversed_EMF ? -current : current;
             }
         }
@@ -66,6 +69,12 @@ internal partial class circuit
         public event Action<branch>? contactor_toggled;
         public event Action<branch>? EMF_changed;
 
+        public void set_current_EMF_from_matrix(float EMF)
+        {
+            _matrix_EMF = EMF;
+            _EMF        = _reversed_EMF ? -EMF : EMF;
+        }
+        
         private void copy_dict<_type_>(Dictionary<string, _type_> source, Dictionary<string, _type_> destination)
         {
             foreach (KeyValuePair<string, _type_> item in source)
@@ -81,7 +90,7 @@ internal partial class circuit
                 total_resistance += resistance;
             if (total_resistance < min_branch_resistance)
                 total_resistance = min_branch_resistance;
-            _conductance = 1.0f / total_resistance;
+            _closed_conductance = 1.0f / total_resistance;
 
             _reversed_EMF = reverse_EMF;
 
@@ -128,6 +137,16 @@ internal partial class circuit
         public static void circuit_setup_finished()
         {
             __next_available_id = 0;
+        }
+        
+        public float start_potential => _start_ptential;
+        public float end_potential   => _end_potential;
+        
+        public void contactor_telemetry(Dictionary<string, bool> toggles_list)
+        {
+            toggles_list.Clear();
+            foreach (string current_contactor in _contactors.Keys)
+                toggles_list[current_contactor] = is_contactor_on(current_contactor);
         }
     }
 }

@@ -28,6 +28,12 @@ public static class Main
         _logger?.Log(message);
     }
 
+    // UMM's logger is not thread-safe!
+    public static void background_log(string message)
+    {
+        Console.WriteLine($"[WE6SIM background] {message}");
+    }
+
     public static bool Load(ModEntry mod)
     {
         Harmony? code_injector = null;
