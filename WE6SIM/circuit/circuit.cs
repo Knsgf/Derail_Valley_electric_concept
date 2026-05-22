@@ -146,8 +146,6 @@ internal partial class circuit
         branch.circuit_setup_finished();
         circuit_info.finish_set_up();
         _branch_conductances_changed = [.. _branches];
-
-        //circuit_telemetry.set_up(this, named_branches);
     }
 
     private void update_conductances()
@@ -220,5 +218,6 @@ internal partial class circuit
                 current_branch.set_current_EMF_from_matrix(EMFs[current_branch.id, 0]);
             _branch_EMFs_staged.Clear();
         }
+        _simulation_in_progress = false;
     }
 }

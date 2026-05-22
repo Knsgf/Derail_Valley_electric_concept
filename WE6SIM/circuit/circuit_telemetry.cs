@@ -47,7 +47,7 @@ internal partial class circuit
                     return 0;
                 }
             );
-            if (_branches_sorted_by_current.Count <= 0 || _branches_sorted_by_current[0].current < minimum_current)
+            if (_branches_sorted_by_current.Count <= 0 || Mathf.Abs(_branches_sorted_by_current[0].current) < minimum_current)
                 return false;
 
             bool log_started = false;
