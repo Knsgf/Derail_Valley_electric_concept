@@ -416,15 +416,15 @@
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
     "orientation": {
       "x": 0.0,
-      "y": 0.9685438,
+      "y": 0.9833627,
       "z": 0.0,
-      "w": -0.2488432
+      "w": -0.181653291
     },
     "x": 9501591,
     "z": 13613583,
     "y": 119.387238,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -433,15 +433,15 @@
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
     "orientation": {
       "x": 0.0,
-      "y": 0.969600558,
+      "y": 0.9833627,
       "z": 0.0,
-      "w": -0.2446933
+      "w": -0.181653291
     },
     "x": 9520776,
     "z": 13648714,
     "y": 119.364731,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -458,7 +458,7 @@
     "z": 13673833,
     "y": 119.388176,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -479,5 +479,61 @@
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
+    "tracks": 4,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9833627,
+      "z": 0.0,
+      "w": -0.181653291
+    },
+    "x": 9520776,
+    "z": 13648714,
+    "y": 119.364731,
+    "stretch": 0.95
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
+    "tracks": 3,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9833627,
+      "z": 0.0,
+      "w": -0.181653291
+    },
+    "x": 9501591,
+    "z": 13613583,
+    "y": 119.387238,
+    "stretch": 0.97
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
+    "tracks": 3,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9833627,
+      "z": 0.0,
+      "w": -0.181653291
+    },
+    "x": 9513604,
+    "z": 13608988,
+    "y": 119.387238,
+    "stretch": 1.0
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
+    "tracks": 2,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.97914964,
+      "z": 0.0,
+      "w": -0.203140438
+    },
+    "x": 9533827,
+    "z": 13673833,
+    "y": 119.388176,
+    "stretch": 1.0
   }
 ]
