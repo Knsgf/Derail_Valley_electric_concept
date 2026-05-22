@@ -176,8 +176,10 @@ internal partial class overhead_equipment
             ?? throw new FileNotFoundException("Not found " + Path.Combine(system._file_path, "catenary"));
         string[] all_locations =
         [
+            "FM",
+            "FF-SM",
+            "FM-SM",
             "SM",
-            "FM"
         ];
         foreach (string location in all_locations)
             _system.load_scenery_from_bundle(catenary, location);
@@ -313,14 +315,14 @@ internal partial class overhead_equipment
     private void refresh_scenery()
     {
         Transform? player_view = PlayerManager.ActiveCamera?.transform;
-        if (player_view is null)
+        //if (player_view is null)
         {
             player_view = PlayerManager.PlayerTransform;
             if (player_view is null)
                 return;
         }
-        (int x, int z) = get_absolute_position(player_view.position);
-        Main.log($"x={x} z={z}");
+        //(int x, int z) = get_absolute_position(player_view.position);
+        //Main.log($"x={x} z={z}");
         handle_scenery_visibility(player_view.position);
     }
 
