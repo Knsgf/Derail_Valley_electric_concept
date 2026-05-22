@@ -1,6 +1,34 @@
 [
   {
     "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
+    "tracks": 3,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9835591,
+      "z": 0.0,
+      "w": -0.18058674
+    },
+    "x": 9388917,
+    "z": 13335192,
+    "y": 119.366417,
+    "stretch": 1.06
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
+    "tracks": 3,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9835591,
+      "z": 0.0,
+      "w": -0.18058674
+    },
+    "x": 9402056,
+    "z": 13330199,
+    "y": 119.366417,
+    "stretch": 1.07
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
     "tracks": 2,
     "orientation": {
       "x": 0.0,
@@ -540,15 +568,15 @@
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
     "orientation": {
       "x": 0.0,
-      "y": 0.9938029,
+      "y": 0.9835591,
       "z": 0.0,
-      "w": -0.111156732
+      "w": -0.18058674
     },
     "x": 9388917,
     "z": 13335192,
     "y": 119.366417,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -557,15 +585,15 @@
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
     "orientation": {
       "x": 0.0,
-      "y": 0.9931448,
+      "y": 0.9835591,
       "z": 0.0,
-      "w": -0.116890967
+      "w": -0.18058674
     },
     "x": 9379593,
     "z": 13296198,
     "y": 119.381882,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -574,15 +602,15 @@
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
     "orientation": {
       "x": 0.0,
-      "y": 0.99298054,
+      "y": 0.9835591,
       "z": 0.0,
-      "w": -0.118277878
+      "w": -0.18058674
     },
     "x": 9370298,
     "z": 13257290,
     "y": 119.37751,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -591,15 +619,15 @@
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
     "orientation": {
       "x": 0.0,
-      "y": 0.987678051,
+      "y": 0.9835591,
       "z": 0.0,
-      "w": -0.156499609
+      "w": -0.18058674
     },
     "x": 9362334,
     "z": 13226926,
     "y": 119.381371,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -616,7 +644,7 @@
     "z": 13193433,
     "y": 119.353378,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -637,5 +665,61 @@
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
+    "tracks": 2,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.981876135,
+      "z": 0.0,
+      "w": -0.189523786
+    },
+    "x": 9349538,
+    "z": 13193433,
+    "y": 119.353378,
+    "stretch": 1.0
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
+    "tracks": 4,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9835591,
+      "z": 0.0,
+      "w": -0.18058674
+    },
+    "x": 9362334,
+    "z": 13226926,
+    "y": 119.381371,
+    "stretch": 0.9
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
+    "tracks": 2,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9835591,
+      "z": 0.0,
+      "w": -0.18058674
+    },
+    "x": 9370298,
+    "z": 13257290,
+    "y": 119.37751,
+    "stretch": 1.0
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+gantry, WE6SIM",
+    "tracks": 4,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9835591,
+      "z": 0.0,
+      "w": -0.18058674
+    },
+    "x": 9379593,
+    "z": 13296198,
+    "y": 119.381882,
+    "stretch": 1.02
   }
 ]
