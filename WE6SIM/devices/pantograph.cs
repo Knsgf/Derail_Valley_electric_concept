@@ -175,7 +175,7 @@ internal class pantograph: electric_device
     private void move()
     {
         float height_difference = _target_height - _current_height;
-        float movement_speed    = Mathf.Min(head_movement_speed, Mathf.Abs(height_difference) / 0.5f);
+        float movement_speed    = Mathf.Min(head_movement_speed, Mathf.Abs(height_difference) / 0.1f);
         if (height_difference > 0.006f)
         {
             _current_height   = Mathf.Min(_current_height + movement_speed * Time.deltaTime, maximum_head_height);
