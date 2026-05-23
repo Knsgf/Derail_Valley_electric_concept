@@ -74,6 +74,7 @@ internal partial class overhead_equipment
         "TunnelPole",
         "WireDual",
         "WireDualEnd",
+        "WireDualFixedEnd",
         "WireMidpointAnchorDual",
         "WireSingle",
         "WireSingleEnd",
@@ -95,7 +96,7 @@ internal partial class overhead_equipment
 
     private substation[]? _all_substations = null;
 
-    private bool           _scenery_refresh = false, _scenery_refresh_suspended = false;
+    private bool           _scenery_refresh_suspended = false;
     private SimController? _simulation      = null;
 
     public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
@@ -144,7 +145,7 @@ internal partial class overhead_equipment
             {
                 if (_all_objects[index1] is pole pole1 && _all_objects[index2] is pole pole2
                     && pole1.pole_type == pole_kind.Bracket && pole2.pole_type == pole_kind.Bracket
-                    && Math.Abs(pole1.x - pole2.x) < fixed_divider && Math.Abs(pole1.z - pole2.z) < fixed_divider)
+                    && Math.Abs(pole1.x - pole2.x) < fixed_divider / 10 && Math.Abs(pole1.z - pole2.z) < fixed_divider / 10)
                 { 
                     _all_objects.RemoveAt(index1);
                     _store_scenery = true;

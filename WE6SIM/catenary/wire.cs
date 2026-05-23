@@ -108,14 +108,14 @@ internal partial class overhead_equipment
             bool  is_side_rail              = wire_type is wire_kind.side_rail or wire_kind.termination_rail;
             float template_section_length   = is_side_rail ? default_side_rail_length : default_section_length;
             float shear_angle               = Mathf.Atan(previous_pole_vertical_offset / length);
-            if (wire_type != wire_kind.end_anchor_single)
+            if (wire_type is not wire_kind.end_anchor_single and not wire_kind.end_anchor_dual)
             {
                 (_primary_vertical_orientation, _primary_vertical_scale, _secondary_vertical_scale) 
                     = compute_shear_scale_transform(shear_angle, length, template_section_length);
             }
             else
             {
-                _fixed_part_template = system._templates["WireSingleFixedEnd"];
+                _fixed_part_template = system._templates[(wire_type == wire_kind.end_anchor_single) ?  "WireSingleFixedEnd" : "WireDualFixedEnd"];
                 (_fixed_part_primary_vertical_orientation, _fixed_part_primary_vertical_scale, _fixed_part_secondary_vertical_scale)
                     = compute_shear_scale_transform(shear_angle, end_achor_fixed_part_length, end_achor_fixed_part_length);
                 float lengthwise_offset = length - default_section_length;

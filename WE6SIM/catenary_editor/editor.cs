@@ -227,17 +227,16 @@ internal static class editor
                 Vector3? possible_bracket_position = gantry.cross_point(last_relative_position, relative_position - last_relative_position);
                 if (possible_bracket_position == null)
                     continue;
-                var bracket_position = (Vector3) possible_bracket_position;
-                pole_user? closest_bracket = get_closest(nearby_objects, bracket_position, 
-                    (pole_user pole) => pole.pole_type == pole_kind.Bracket);
-                Vector3? closest_bracket_position = closest_bracket?.get_relative_position();
-                if (closest_bracket_position == null || ((Vector3) closest_bracket_position - bracket_position).sqrMagnitude >= 1.0f)
-                {
-                    Quaternion orientation = gantry.get_orientation();
-                    if (part_placement == placement.FlippedBracket)
-                        orientation *= flip_around_vertical;
+                var        bracket_position = (Vector3) possible_bracket_position;
+                Quaternion orientation      = gantry.get_orientation();
+                if (part_placement == placement.FlippedBracket)
+                    orientation *= flip_around_vertical;
+                Vector3    bracket_true_position = bracket_position + orientation * Vector3.left * default_pole_offset;
+                pole_user? closest_bracket       = get_closest(nearby_objects, bracket_true_position, 
+                                                               (pole_user pole) => pole.pole_type == pole_kind.Bracket);
+                Vector3? closest_bracket_position = closest_bracket?.get_pole_true_position();
+                if (closest_bracket_position == null || ((Vector3) closest_bracket_position - bracket_true_position).sqrMagnitude >= 0.01f)
                     place_pole(bracket_position, orientation);
-                }
             }
         }
     }
@@ -279,24 +278,35 @@ internal static class editor
         if (!place_on_near_side && !place_on_far_side)
             return false;
 
+        Vector3 pole_chord;
         if (_first_cantilever)
         {
             _first_cantilever                = false;
             _last_registration_arm_direction = registration_arm_direction;
+            (_last_pole_x, _last_pole_z)     = get_absolute_position(pole_position);
+            pole_chord                       = Vector3.zero;
         }
-        float angle_between_arms = Vector3.Angle(registration_arm_direction, _last_registration_arm_direction);
-        if (angle_between_arms > 90.0f)
-            cantilever_type = (cantilever_type == cantilever_kind.Inner) ? cantilever_kind.Outer : cantilever_kind.Inner;
         else
         { 
-            float sweep_angle = Mathf.Rad2Deg * Mathf.Atan(maximum_sweep / distance_between_poles);
-            if (angle_between_arms > 3.0f * sweep_angle)
-            {
-                var     turn_axis  = Vector3.Cross(_last_pole_orientation * Vector3.forward, pole_orientation * Vector3.forward);
-                Vector3 pole_chord = pole_position - get_relative_position(_last_pole_x, _last_pole_z, pole_position.y);
-                var     turn_into  = Vector3.Cross(turn_axis, pole_chord);
-                cantilever_type = (Vector3.Dot(turn_into, pole_orientation * Vector3.right) > 0.0f) 
-                    ? cantilever_kind.Outer : cantilever_kind.Inner;
+            pole_chord = pole_position - get_relative_position(_last_pole_x, _last_pole_z, pole_position.y);
+            if (pole_chord.sqrMagnitude < 64.0f)
+                return false;
+        }
+        if (zigzag)
+        {
+            float angle_between_arms = Vector3.Angle(registration_arm_direction, _last_registration_arm_direction);
+            if (angle_between_arms > 90.0f)
+                cantilever_type = (cantilever_type is cantilever_kind.Inner or cantilever_kind.MiddleInner) ? cantilever_kind.Outer : cantilever_kind.Inner;
+            else
+            { 
+                float sweep_angle = Mathf.Rad2Deg * Mathf.Atan(maximum_sweep / distance_between_poles);
+                if (angle_between_arms > 3.0f * sweep_angle)
+                {
+                    var turn_axis   = Vector3.Cross(_last_pole_orientation * Vector3.forward, pole_orientation * Vector3.forward);
+                    var turn_into   = Vector3.Cross(turn_axis, pole_chord);
+                    cantilever_type = (Vector3.Dot(turn_into, pole_orientation * Vector3.right) > 0.0f) 
+                        ? cantilever_kind.Outer : cantilever_kind.Inner;
+                }
             }
         }
 
@@ -316,6 +326,7 @@ internal static class editor
             Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
         }
         _last_registration_arm_direction = registration_arm_direction;
+        (_last_pole_x, _last_pole_z)     = get_absolute_position(pole_position);
         return true;
     }
 
@@ -545,7 +556,7 @@ internal static class editor
                     ref _next_cantilever_type, relative_position);
                 if (cantilever_placed && zigzag)
                 {
-                    _next_cantilever_type = (_next_cantilever_type == cantilever_kind.Inner) 
+                    _next_cantilever_type = (_next_cantilever_type is cantilever_kind.Inner or cantilever_kind.MiddleInner) 
                         ? cantilever_kind.Outer : cantilever_kind.Inner;
                 }
                 cantilever_type = _next_cantilever_type;
