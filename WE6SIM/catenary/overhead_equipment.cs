@@ -178,7 +178,8 @@ internal partial class overhead_equipment
         string[] all_locations =
         [
             "FM",
-            "FF-SM",
+            "FF",
+            //"FF-SM",
             "FM-SM",
             "SM",
         ];
