@@ -296,17 +296,18 @@ internal static class editor
         {
             float angle_between_arms = Vector3.Angle(registration_arm_direction, _last_registration_arm_direction);
             if (angle_between_arms > 90.0f)
-                cantilever_type = (cantilever_type is cantilever_kind.Inner or cantilever_kind.MiddleInner) ? cantilever_kind.Outer : cantilever_kind.Inner;
-            else
-            { 
-                float sweep_angle = Mathf.Rad2Deg * Mathf.Atan(maximum_sweep / distance_between_poles);
-                if (angle_between_arms > 3.0f * sweep_angle)
-                {
-                    var turn_axis   = Vector3.Cross(_last_registration_arm_direction, registration_arm_direction);
-                    var turn_into   = Vector3.Cross(turn_axis, pole_chord);
-                    cantilever_type = (Vector3.Dot(turn_into, pole_orientation * Vector3.right) > 0.0f) 
-                        ? cantilever_kind.Outer : cantilever_kind.Inner;
-                }
+            {
+                cantilever_type                  = (cantilever_type is cantilever_kind.Inner or cantilever_kind.MiddleInner) ? cantilever_kind.Outer : cantilever_kind.Inner;
+                angle_between_arms               = Mathf.Abs(angle_between_arms - 180.0f);
+                _last_registration_arm_direction = -_last_registration_arm_direction;
+            }
+            float sweep_angle = Mathf.Rad2Deg * Mathf.Atan(maximum_sweep / distance_between_poles);
+            if (angle_between_arms > 3.0f * sweep_angle)
+            {
+                var turn_axis   = Vector3.Cross(_last_registration_arm_direction, registration_arm_direction);
+                var turn_into   = Vector3.Cross(turn_axis, pole_chord);
+                cantilever_type = (Vector3.Dot(turn_into, pole_orientation * Vector3.right) > 0.0f) 
+                    ? cantilever_kind.Outer : cantilever_kind.Inner;
             }
         }
 
