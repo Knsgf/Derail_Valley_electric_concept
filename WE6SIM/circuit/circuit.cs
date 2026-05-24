@@ -185,10 +185,7 @@ internal partial class circuit
         {
             sparse_matrix conductances = _conductance_staged;
             foreach (branch current_branch in _branch_conductances_staged)
-            {
                 current_branch.conductance = conductances[current_branch.id, current_branch.id];
-                Main.log($"{current_branch.id} {current_branch.conductance}");
-            }
             _branch_conductances_staged.Clear();
             (_right , _background_right ) = (_background_right , _right );
             (_solver, _background_solver) = (_background_solver, _solver);

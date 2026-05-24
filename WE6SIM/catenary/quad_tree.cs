@@ -11,7 +11,9 @@ internal partial class overhead_equipment
 {
     private class quad_tree
     {
-        public const int node_objects_limit = 64;
+        //public const int node_objects_limit = 64;
+
+        public int node_objects_limit { get; private set; }
 
         private class tree_node
         {
@@ -22,7 +24,7 @@ internal partial class overhead_equipment
 
         private readonly tree_node _root = new();
 
-        private void divide_node(tree_node node)
+        private void divide_node(int node_objects_limit, tree_node node)
         {
             List<catenary_object> remaining_objects       = node.remaining_objects;
             int                   remaining_objects_count = remaining_objects.Count;
@@ -72,13 +74,14 @@ internal partial class overhead_equipment
             remaining_objects.Clear();
 
             for (int quadrant_index = 3; quadrant_index >= 0; --quadrant_index)
-                divide_node(quadrants[quadrant_index]);
+                divide_node(node_objects_limit, quadrants[quadrant_index]);
         }
 
-        public quad_tree(List<catenary_object> objects)
+        public quad_tree(List<catenary_object> objects, int node_objects_limit)
         {
+            this.node_objects_limit = node_objects_limit;
             _root.remaining_objects.AddRange(objects);
-            divide_node(_root);
+            divide_node(node_objects_limit, _root);
         }
 
         private void search_node(tree_node current_node, List<catenary_object> found_objects, bool do_bounds_check, 

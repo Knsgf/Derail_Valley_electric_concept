@@ -40,7 +40,7 @@ internal static class car_spawn_handler
 
     public static void Postfix(CarSpawner __instance)
     {
-        Main.log("car_spawn_handler.Postfix");
+        //Main.log("car_spawn_handler.Postfix");
         if (Main.mod_info == null)
             throw new Exception("Run-time mod information unavailable");
         overhead_equipment.set_up(Main.mod_info);
@@ -64,17 +64,14 @@ internal static class car_spawn_handler
 
     private static void on_car_spawned(TrainCar vehicle)
     {
-        if (vehicle == null)
+        if (vehicle == null || !vehicle.IsLoco)
             return;
-        overhead_equipment.system.set_up_player_tracker(vehicle.SimController);
-        if (!vehicle.IsLoco)
-            return;
-        Main.log("Spawn " + vehicle.ID + " " + vehicle.carLivery.id);
+        //Main.log("Spawn " + vehicle.ID + " " + vehicle.carLivery.id);
 
 #if DEBUG
         if ((vehicle.carType == TrainCarType.LocoDM1U || vehicle.carType == TrainCarType.LocoMicroshunter) && _mow_tracker == null)
         {
-            Main.log($"MOW vehicle {vehicle.ID}");
+            //Main.log($"MOW vehicle {vehicle.ID}");
             _mow_vehicle = vehicle;
             _mow_tracker = new mow_follower(overhead_equipment.system, vehicle);
             return;
@@ -97,9 +94,7 @@ internal static class car_spawn_handler
         {
             if (fuse != null)
             {
-                Main.log(fuse.id);
-                //if (string.Equals(fuse.id, "fusebox.ELECTRICS_MAIN", StringComparison.Ordinal))
-                //	new_unit_a.appliances = fuse;
+                //Main.log(fuse.id);
                 all_fuses[fuse.id] = fuse;
             }
         }
@@ -109,7 +104,7 @@ internal static class car_spawn_handler
         {
             if (port == null)
                 continue;
-            Main.log($"{port.id} {port.type} {port.valueType}");
+            //Main.log($"{port.id} {port.type} {port.valueType}");
             all_ports[port.id] = port;
             if (is_unit_a)
             {
@@ -218,7 +213,7 @@ internal static class car_spawn_handler
 #if DEBUG
         if (_mow_vehicle == vehicle)
         {
-            Main.log("Remove MOW " + vehicle.ID);
+            //Main.log("Remove MOW " + vehicle.ID);
             _mow_tracker?.Dispose();
             _mow_vehicle = null;
             _mow_tracker = null;
@@ -227,14 +222,14 @@ internal static class car_spawn_handler
 
         if (_all_a_units.TryGetValue(vehicle, out unit_A_sim disposed_unit_a))
         {
-            Main.log("Remove A " + vehicle.ID + " " + vehicle.carLivery.id);
+            //Main.log("Remove A " + vehicle.ID + " " + vehicle.carLivery.id);
             disposed_unit_a.Dispose();
             _all_a_units.Remove(vehicle);
             Main.diagnostics = Main.diagnostics2 = null;
         }
         else if (_all_b_units.TryGetValue(vehicle, out unit_B_sim disposed_unit_b))
         {
-            Main.log("Remove B " + vehicle.ID + " " + vehicle.carLivery.id);
+            //Main.log("Remove B " + vehicle.ID + " " + vehicle.carLivery.id);
             disposed_unit_b.Dispose();
             _all_b_units.Remove(vehicle);
         }

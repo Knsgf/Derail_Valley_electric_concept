@@ -69,7 +69,7 @@ internal class camshaft_contactor_set: electric_device
                 break;
             if (!contactor_locations.ContainsKey(contactor_name))
                 throw new ArgumentException($"{contactor_name} not present on circuit diagram");
-            Main.log($"camshaft_contactor_set <{contactor_name}>");
+            //Main.log($"camshaft_contactor_set <{contactor_name}>");
             left_margins[contactor_name] = name_left_margin;
             right_margins[contactor_name] = name_right_margin;
             _contactor_notch_patterns[contactor_name] = 0;

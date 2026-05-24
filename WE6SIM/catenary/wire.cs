@@ -78,7 +78,7 @@ internal partial class overhead_equipment
             var   primary_vertical_orientation = Quaternion.Euler(Mathf.Rad2Deg * (-primary_orientation_angle), 0.0f, 0.0f);
             var   primary_vertical_scale       = new Vector3(1.0f, Mathf.Cos(primary_orientation_angle), Mathf.Sin(primary_orientation_angle));
             var   secondary_vertical_scale     = new Vector3(1.0f, y_scale, length / template_section_length * y_scale / Mathf.Cos(shear_angle));
-            Main.log($"wire {shear_angle} {primary_orientation_angle} {primary_vertical_scale} {secondary_vertical_scale}");
+            //Main.log($"wire {shear_angle} {primary_orientation_angle} {primary_vertical_scale} {secondary_vertical_scale}");
             return (primary_vertical_orientation, primary_vertical_scale, secondary_vertical_scale);
         }
         
@@ -132,7 +132,7 @@ internal partial class overhead_equipment
             _pantograph_strip_intersection = new line_cross(x, z, 
                 x + world_position.float_to_fixed(wire_top_view.x), z + world_position.float_to_fixed(wire_top_view.z), 0.01f);
             _other_end_y = y + previous_pole_vertical_offset;
-            Main.log($"WTV = {wire_top_view} h0 = {y} h1 = {_other_end_y}");
+            //Main.log($"WTV = {wire_top_view} h0 = {y} h1 = {_other_end_y}");
 
             _contact_height = is_side_rail ? default_side_rail_height : default_wire_height;
         }

@@ -69,7 +69,6 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 
     public editor_settings()
     {
-        Main.log("Settings set");
         OnChange();
     }
     

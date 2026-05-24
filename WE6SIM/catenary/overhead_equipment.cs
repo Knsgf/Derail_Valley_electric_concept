@@ -25,6 +25,8 @@ namespace WE6SIM.catenary;
 
 internal partial class overhead_equipment
 {
+    const int scenery_tree_objects_per_node = 64, wires_tree_objects_per_node = 4;
+    
     public enum pole_kind { Ground, Bridge, Tunnel, Bracket, SideRail };
     public enum cantilever_kind { Inner, OutwardsInner, MiddleInner, Middle, Outer };
     public enum wire_kind { plain_dual, plain_single, end_anchor_dual, end_anchor_single, wall_anchor_single,
@@ -91,13 +93,13 @@ internal partial class overhead_equipment
     private readonly Dictionary<string, GameObject> _templates = [];
     private readonly string _file_path;
     private readonly List<catenary_object> _all_objects = [], _freshly_added_objects = [], _nearby_wires = [];
+
+    private GameObject? _player_tracker;
+
     private List<catenary_object> _previously_visible_objects = [], _currently_visible_objects = [];
-    private quad_tree _object_tree = new([]), _wires_tree = new([]);
+    private quad_tree _object_tree = new([], scenery_tree_objects_per_node), _wires_tree = new([], wires_tree_objects_per_node);
 
     private substation[]? _all_substations = null;
-
-    private bool           _scenery_refresh_suspended = false;
-    private SimController? _simulation      = null;
 
     public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
     
@@ -107,8 +109,6 @@ internal partial class overhead_equipment
         AssetBundle catenary_assets = AssetBundle.LoadFromFile(Path.Combine(_file_path, "catenary_parts"))
                 ?? throw new FileNotFoundException("Not found " + Path.Combine(_file_path, "catenary_parts"));
         string[] all_assets = catenary_assets.GetAllAssetNames();
-        foreach (string name in all_assets)
-            Main.log(name);
         foreach (string template_name in _template_names)
         {
             _templates[template_name] = catenary_assets.LoadAsset<GameObject>($"Assets/Catenary/{template_name}.prefab")
@@ -117,10 +117,8 @@ internal partial class overhead_equipment
 
         WorldMover floating_origin = SingletonBehaviour<WorldMover>.Instance;
         assert.test(floating_origin != null);
-        floating_origin.WorldMoved           += floating_origin_shift;
-        UnloadWatcher.UnloadRequested        += dispose;
-        PlayerManager.PlayerTeleportStarted  += suspend_tracker;
-        PlayerManager.PlayerTeleportFinished += resume_tracker;
+        floating_origin.WorldMoved    += floating_origin_shift;
+        UnloadWatcher.UnloadRequested += dispose;
     }
 
     private void stuff_scenery(string raw_scenery, bool no_saving)
@@ -129,7 +127,7 @@ internal partial class overhead_equipment
             new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
         if (loaded_objects != null)
         {
-            Main.log($"Added objects: {loaded_objects.Count}");
+            //Main.log($"Added objects: {loaded_objects.Count}");
             if (no_saving)
             {
                 foreach (catenary_object current_object in loaded_objects)
@@ -166,7 +164,6 @@ internal partial class overhead_equipment
 
     public static void set_up(ModEntry mod)
     {
-        Main.log("catenary_visual.set_up()");
         if (_system != null)
             throw new InvalidOperationException("Attempt to create a duplicate catenary in the world");
         _system = new overhead_equipment(mod);
@@ -227,22 +224,32 @@ internal partial class overhead_equipment
             [..
                 from   current_wire in all_wires
                 select current_wire
-            ]
+            ], 
+            wires_tree_objects_per_node
         );
+
+        _system._player_tracker = new GameObject("WE6SIM.catenary.overhead_equpment._player_tracker", typeof(player_tracker));
+        var tracker = _system._player_tracker.GetComponent<player_tracker>();
+        PlayerManager.PlayerTeleportStarted  += tracker.suspend_tracker;
+        PlayerManager.PlayerTeleportFinished += tracker.resume_tracker;
     }
 
     public static void dispose()
     {
-        Main.log("catenary_visual.dispose()");
         editor.disable();
         if (_system == null)
             return;
-        _system._simulation?.SimulationFlow.TickEvent -= _system.player_camera_tracker;
-        WorldMover floating_origin                     = SingletonBehaviour<WorldMover>.Instance;
-        floating_origin?.WorldMoved                   -= _system.floating_origin_shift;
-        UnloadWatcher.UnloadRequested                 -= dispose;
-        PlayerManager.PlayerTeleportStarted           -= _system.suspend_tracker;
-        PlayerManager.PlayerTeleportFinished          -= _system.resume_tracker;
+        if (_system._player_tracker is not null)
+        {
+            var tracker = _system._player_tracker.GetComponent<player_tracker>();
+            PlayerManager.PlayerTeleportStarted  -= tracker.suspend_tracker;
+            PlayerManager.PlayerTeleportFinished -= tracker.resume_tracker;
+            GameObject.Destroy(_system._player_tracker);
+            _system._player_tracker = null;
+        }
+        WorldMover floating_origin     = SingletonBehaviour<WorldMover>.Instance;
+        floating_origin?.WorldMoved   -= _system.floating_origin_shift;
+        UnloadWatcher.UnloadRequested -= dispose;
         for (int index = _system._currently_visible_objects.Count - 1; index >= 0; --index)
         {
             catenary_object current_object = _system._currently_visible_objects[index];
@@ -250,7 +257,6 @@ internal partial class overhead_equipment
             current_object.entity = null;
         }
         _system = null;
-        Main.log("catenary_visual.dispose() end");
     }
 
     private void find_objects_within_region(List<catenary_object> found_objects, quad_tree all_objects,
@@ -267,7 +273,7 @@ internal partial class overhead_equipment
 
     public void handle_scenery_visibility(Vector3 relative_postion)
     {
-        const float visible_distance       = 100.0f;
+        const float visible_distance       = 500.0f;
         const int   visible_distance_fixed = (int) (visible_distance * fixed_multiplier);
 
         /*
@@ -300,13 +306,13 @@ internal partial class overhead_equipment
 
     private void reconstruct_tree()
     {
-        _object_tree = new quad_tree(_all_objects);
+        _object_tree = new quad_tree(_all_objects, scenery_tree_objects_per_node);
         _freshly_added_objects.Clear();
     }
 
     private void floating_origin_shift(WorldMover floating_origin, Vector3 shift)
     {
-        if (_freshly_added_objects.Count >= quad_tree.node_objects_limit)
+        if (_freshly_added_objects.Count >= _object_tree.node_objects_limit)
             reconstruct_tree();
         
         List<catenary_object> visible_objects = _currently_visible_objects;
@@ -314,6 +320,7 @@ internal partial class overhead_equipment
             visible_objects[index].entity!.transform.position -= shift;
     }
 
+    /*
     private void refresh_scenery()
     {
         Transform? player_view = PlayerManager.ActiveCamera?.transform;
@@ -340,21 +347,22 @@ internal partial class overhead_equipment
         _scenery_refresh_suspended = false;
     }
 
+    
     private void player_camera_tracker()
     {
         if (!_scenery_refresh_suspended)
             refresh_scenery();
     }
 
-    public void set_up_player_tracker(SimController simulation)
+    private void set_up_player_tracker(SimController simulation)
     {
         if (_simulation is null)
         {
             Main.log("Tracker started");
-            _simulation                          = simulation;
-            simulation.SimulationFlow.TickEvent += player_camera_tracker;
+
         }
     }
+    */
 
     private _type_ add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
         int x, int z, float y, Quaternion orientation)
@@ -363,7 +371,7 @@ internal partial class overhead_equipment
         _type_ new_object = constructor(x, z, y, orientation);
         _all_objects.Add(new_object);
         _freshly_added_objects.Add(new_object);
-        Main.log($"x={new_object.x / fixed_multiplier} z={new_object.z / fixed_multiplier} y={new_object.y} c={_all_objects.Count}");
+        //Main.log($"x={new_object.x / fixed_multiplier} z={new_object.z / fixed_multiplier} y={new_object.y} c={_all_objects.Count}");
         _scenery_changed = true;
         return new_object;
     }

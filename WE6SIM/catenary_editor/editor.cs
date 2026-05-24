@@ -316,7 +316,7 @@ internal static class editor
             system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type == pole_kind.Tunnel,
                 dual_wire, pole.get_relative_position(), pole_orientation);
             pole.cantilever_on_near_side = true;
-            Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
+            //Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
         }
         else
         {
@@ -324,7 +324,7 @@ internal static class editor
                 dual_wire, pole.get_relative_position() + registration_arm_direction * (default_pole_offset * 2.0f),
                 pole_orientation * flip_around_vertical);
             pole.cantilever_on_far_side = true;
-            Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
+            //Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
         }
         _last_registration_arm_direction = registration_arm_direction;
         (_last_pole_x, _last_pole_z)     = get_absolute_position(pole_position);
@@ -368,7 +368,7 @@ internal static class editor
             if (closest_pole == null)
                 return false;
             _anchor_pole = closest_pole;
-            Main.log($"Staring anchor at {closest_pole.get_world_position()} {relative_position} {pole_type_to_search}");
+            //Main.log($"Staring anchor at {closest_pole.get_world_position()} {relative_position} {pole_type_to_search}");
         }
         
         cantilever_user? closest_registration_arm = get_closest(nearby_objects, relative_position,
@@ -384,10 +384,7 @@ internal static class editor
                 assert.test(closest_registration_arm != null);
                 beginning_attachment_point = _anchor_pole.get_pole_true_position();
                 if (wire_type != wire_kind.side_rail)
-                {
                     wire_type = dual_wire ? wire_kind.end_anchor_dual : wire_kind.end_anchor_single;
-                    Main.log($"Anchor start: {(dual_wire ? "dual" : "single")}");
-                }
                 else
                 {
                     wire_type                                          = wire_kind.termination_rail;
@@ -397,7 +394,6 @@ internal static class editor
             Vector3 end_attachment_point; 
             if (terminate_at_next_pole)
             {
-                Main.log("Anchor end");
                 assert.test(closest_pole != null);
                 end_attachment_point  = closest_pole.get_pole_true_position();
                 if (wire_type != wire_kind.side_rail)
@@ -411,18 +407,16 @@ internal static class editor
             }
             else
             {
-                Main.log("Intermediate");
                 assert.test(closest_registration_arm != null);
                 if (closest_registration_arm.dual_wire != dual_wire)
                     return false;
                 end_attachment_point = closest_registration_arm.relative_wire_attachment_point();
                 closest_registration_arm.wire_attached = true;
-                Main.log("Intermediate registered");
             }
 
             Vector3 wire_direction = end_attachment_point - beginning_attachment_point;
             float   wire_length    = wire_direction.magnitude;
-            Main.log($"{end_attachment_point} {beginning_attachment_point} {wire_direction} {wire_length}");
+            //Main.log($"{end_attachment_point} {beginning_attachment_point} {wire_direction} {wire_length}");
             if (wire_length < default_pole_offset * 4.0f)
                 return false;
             var wire_horizontal_direction = new Vector3(wire_direction.x, 0.0f, wire_direction.z);
