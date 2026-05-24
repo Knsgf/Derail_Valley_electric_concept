@@ -302,7 +302,7 @@ internal static class editor
                 float sweep_angle = Mathf.Rad2Deg * Mathf.Atan(maximum_sweep / distance_between_poles);
                 if (angle_between_arms > 3.0f * sweep_angle)
                 {
-                    var turn_axis   = Vector3.Cross(_last_pole_orientation * Vector3.forward, pole_orientation * Vector3.forward);
+                    var turn_axis   = Vector3.Cross(_last_registration_arm_direction, registration_arm_direction);
                     var turn_into   = Vector3.Cross(turn_axis, pole_chord);
                     cantilever_type = (Vector3.Dot(turn_into, pole_orientation * Vector3.right) > 0.0f) 
                         ? cantilever_kind.Outer : cantilever_kind.Inner;
