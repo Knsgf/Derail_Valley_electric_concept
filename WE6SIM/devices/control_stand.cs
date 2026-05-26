@@ -55,6 +55,8 @@ internal class control_stand: electric_device
     private readonly Dictionary<string,          Port?> _port_map      = [];
     private readonly Dictionary<string, Action<float>?> _port_handlers = [];
 
+    private selector_interlock? _selector_interlock;
+
     public control_stand(Fuse electric_supply, Dictionary<string, Port> ports): base("Control stand", electric_supply)
     {
         foreach (KeyValuePair<string, string> port_pair in _port_id_map)
@@ -92,11 +94,24 @@ internal class control_stand: electric_device
             throw new ArgumentException($"Unknown device {device}");
         if (hooked_port == null)
             throw new ArgumentException($"No {device} installed");
-        Action<float> new_handler = delegate (float port_value)
+        Action<float> new_handler;
+        if (string.Equals(device, "selector_handle", StringComparison.Ordinal))
         {
-            if (!disposed && is_powered)
-                handler(port_value);
-        };
+            _selector_interlock = new(handler);
+            new_handler = delegate (float port_value)
+            {
+                if (!disposed && is_powered)
+                    _selector_interlock.interlocked_handler(port_value);
+            };
+        }
+        else
+        {
+            new_handler = delegate (float port_value)
+            {
+                if (!disposed && is_powered)
+                    handler(port_value);
+            };
+        }
         _port_handlers[device]              = new_handler;
         hooked_port.ValueUpdatedInternally += new_handler;
         handler(hooked_port.Value);

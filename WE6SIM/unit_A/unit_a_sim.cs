@@ -119,12 +119,12 @@ internal partial class unit_A_sim: electric_device
 
         _control_stand       = new control_stand(_appliances, ports);
         _throttle_controller = new throttle_controller(this);
+        _reverser_handle     = grab_port(ports, "[Reverser].CONTROL_EXT_IN");
+        _selector_handle     = grab_port(ports, "[Selector].EXT_IN"        );
         _control_stand.register_handler("reverser_handle",      reverser_handler);
         _control_stand.register_handler("throttle_handle",      throttle_handler);
         _control_stand.register_handler(   "field_handle", field_control_handler);
         _control_stand.register_handler("selector_handle",      selector_handler);
-        _reverser_handle = grab_port(ports, "[Reverser].CONTROL_EXT_IN");
-        _selector_handle = grab_port(ports, "[Selector].EXT_IN"        );
 
         _control_stand.register_handler("front_pantograph_switch", toggle_front_pantograph);
         _control_stand.register_handler( "back_pantograph_switch",  toggle_back_pantograph);
@@ -233,11 +233,6 @@ internal partial class unit_A_sim: electric_device
 
     private void reverser_handler(float raw_reverser, bool selector_switched)
     {
-        if (!is_powered || disposed)
-        {
-            _reverser_position = 0.5f;
-            return;
-        }
         if (!selector_switched && Mathf.Abs(raw_reverser - _reverser_position) < 0.1f)
             return;
         _reverser_position = raw_reverser;
@@ -256,11 +251,6 @@ internal partial class unit_A_sim: electric_device
 
     private void throttle_handler(float raw_throttle, bool cab_changed)
     {
-        if (!is_powered || disposed)
-        {
-            _throttle = -1;
-            return;
-        }
         int wheel_position = Mathf.RoundToInt(raw_throttle * control_stand.throttle_last_notch);
         if (!cab_changed && wheel_position == _throttle)
             return;
@@ -327,11 +317,6 @@ internal partial class unit_A_sim: electric_device
     private void field_control_handler(float raw_field_position, bool cab_changed)
     {
         int handle_postion = Mathf.RoundToInt(raw_field_position * control_stand.field_handle_last_notch);
-        if (!is_powered || disposed)
-        { 
-            _field_position = -1;
-            return;
-        }
         if (!cab_changed && _field_position == handle_postion)
             return;
         _field_position = handle_postion;
@@ -352,11 +337,6 @@ internal partial class unit_A_sim: electric_device
     private void selector_handler(float raw_selector_position, bool cab_changed)
     {
         int handle_postion = Mathf.RoundToInt(raw_selector_position * control_stand.selector_last_notch);
-        if (!is_powered || disposed)
-        { 
-            _selector = -1;
-            return;
-        }
         if (!cab_changed && _selector == handle_postion)
             return;
         _selector = handle_postion;
