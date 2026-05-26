@@ -115,7 +115,8 @@ internal class control_stand: electric_device
         }
         else if (string.Equals(device, "selector_handle", StringComparison.Ordinal))
         {
-            _selector_interlock = new(handler, hooked_port.Value);
+            _raw_selector       = hooked_port.Value;
+            _selector_interlock = new(handler, _raw_selector);
             new_handler = delegate (float raw_selector)
             {
                 if (!disposed && is_powered)
