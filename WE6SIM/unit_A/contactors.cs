@@ -13,7 +13,7 @@ namespace WE6SIM.unit_A;
 
 internal partial class unit_A_sim
 {
-    private struct contactors: IDisposable
+    private class contactors: IDisposable
     {
         public readonly camshaft_motor           _reverser, _primary_controller, _selector_motor;
         public readonly camshaft_contactor_set   _reverser_shaft, _primary_camshaft, _secondary_camshaft;
@@ -22,6 +22,8 @@ internal partial class unit_A_sim
         public readonly camshaft_contactor_set[] _motor_cutouts;
         public readonly contactor                _line_contactor, _line_contactor2, _dynamic_brake_contactor;
         public readonly contactor[]              _field_shunt_contactors;
+
+        public Action<float>? set_transition_lamp;
 
         public contactors(Fuse appliances, Fuse air_supply, Fuse main_breaker, Dictionary<string, circuit.branch_user> contactor_locations, 
             Port contactor_on_sound, Port contactor_off_sound, Port control_cable)
@@ -52,6 +54,7 @@ internal partial class unit_A_sim
             _selector_traction_shaft     = new(_selector_traction_toggles, contactor_locations, _selector_motor, contactor_click_on_both);
             _selector_regenerative_shaft = new(_selector_regenerative_toggles, contactor_locations, _selector_motor, contactor_click_on_both);
             _jogging_switch              = camshaft_contactor_set.on_off(["JOG1", "JOG2"], null, contactor_locations, null, null);
+            _selector_motor.notch_changed += extinguish_transition_lamp;
             
             _line_contactor = new contactor(["LC1", "VMC12", "VMC34", "VMC56"], null, contactor_locations, contactor_click_on_A, 
                 main_breaker, air_supply);
@@ -121,6 +124,13 @@ internal partial class unit_A_sim
             }
             _dynamic_brake_contactor.toggle(selector == 2);
             _selector_motor.target_notch = (selector >= 5) ? 8 : (selector + 1);
+            set_transition_lamp?.Invoke(_selector_motor.current_notch != _selector_motor.target_notch ? 0.5f : 0.0f);
+        }
+
+        private void extinguish_transition_lamp(int selector_notch)
+        {
+            if (selector_notch is not 6 and not 7)
+                set_transition_lamp?.Invoke(0.0f);
         }
 
         public void toggle_traction_motors(bool turn_on)

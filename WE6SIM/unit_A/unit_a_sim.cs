@@ -112,10 +112,10 @@ internal partial class unit_A_sim: electric_device
 
         _traction_motors = new traction_motor[motors];
         for (int motor_number = 1; motor_number <= motors / 2; ++motor_number)
-            _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM);
+            _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM);
         for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
-            _traction_motors[motor_number - 1] = new traction_motor(motor_number, _wheel_RPM_B);
-        _blowers = new blower_controller(_main_breaker_closed, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
+            _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM_B);
+        _blowers = new(_main_breaker_closed, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
 
         _control_stand       = new control_stand(_appliances, ports);
         _throttle_controller = new throttle_controller(this);
@@ -154,7 +154,8 @@ internal partial class unit_A_sim: electric_device
             set_motor_group_field[group - 1] = _control_stand.create_setter($"field_meter_{group}");
         }
 
-        set_reverse_current_lamp = _control_stand.create_setter("reverse_current_lamp");
+        set_reverse_current_lamp        = _control_stand.create_setter("reverse_current_lamp");
+        _contactors.set_transition_lamp = _control_stand.create_setter(     "transition_lamp");
 
         _unit       = unit;
         _simulation = simulation;

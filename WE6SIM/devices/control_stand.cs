@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 
+using UnityEngine;
+
 using LocoSim.Implementations;
 using WE6SIM.utilities;
 
@@ -35,6 +37,7 @@ internal class control_stand: electric_device
         ["motors_volts"        ] = "[CustomGauges].ALL_MOTOR_TERMINAL",
 
         ["reverse_current_lamp"] = "[CustomGauges].REVERSE_CURRENT",
+        ["transition_lamp"     ] = "[CustomGauges].TRANSITION",
 
         ["main_breaker_on_button" ] = "[MainBreakerOnButton].EXT_IN",
         ["main_breaker_off_button"] = "[MainBreakerOffButton].EXT_IN",
@@ -56,6 +59,8 @@ internal class control_stand: electric_device
     private readonly Dictionary<string, Action<float>?> _port_handlers = [];
 
     private selector_interlock? _selector_interlock;
+    private Port? _transition_lamp;
+    private float _raw_throttle, _raw_selector, _primary_notch, _secondary_notch;
 
     public control_stand(Fuse electric_supply, Dictionary<string, Port> ports): base("Control stand", electric_supply)
     {
@@ -95,13 +100,30 @@ internal class control_stand: electric_device
         if (hooked_port == null)
             throw new ArgumentException($"No {device} installed");
         Action<float> new_handler;
-        if (string.Equals(device, "selector_handle", StringComparison.Ordinal))
+        if (string.Equals(device, "throttle_handle", StringComparison.Ordinal))
         {
-            _selector_interlock = new(handler);
-            new_handler = delegate (float port_value)
+            new_handler = delegate (float raw_throttle)
             {
                 if (!disposed && is_powered)
-                    _selector_interlock.interlocked_handler(port_value);
+                {
+                    _raw_throttle = raw_throttle;
+                    _selector_interlock?.interlocked_handler(_raw_selector, raw_throttle, 
+                        Mathf.CeilToInt(_primary_notch), Mathf.CeilToInt(_secondary_notch), _transition_lamp);
+                    handler(raw_throttle);
+                }
+            };
+        }
+        else if (string.Equals(device, "selector_handle", StringComparison.Ordinal))
+        {
+            _selector_interlock = new(handler, hooked_port.Value);
+            new_handler = delegate (float raw_selector)
+            {
+                if (!disposed && is_powered)
+                {
+                    _raw_selector = raw_selector;
+                    _selector_interlock.interlocked_handler(raw_selector, _raw_throttle, 
+                        Mathf.CeilToInt(_primary_notch), Mathf.CeilToInt(_secondary_notch), _transition_lamp);
+                }
             };
         }
         else
@@ -123,7 +145,23 @@ internal class control_stand: electric_device
             throw new ArgumentException($"Unknown device {device}");
         if (hooked_port == null)
             throw new ArgumentException($"No {device} installed");
-        Action<float> new_setter = (float new_value) => hooked_port.Value = new_value;
+        Action<float> new_setter; 
+        if (string.Equals(device, "primary_notch_hand", StringComparison.Ordinal))
+            new_setter = (float   primary_notch) => hooked_port.Value = _primary_notch   = primary_notch;
+        else if (string.Equals(device, "secondary_notch_hand", StringComparison.Ordinal))
+            new_setter = (float secondary_notch) => hooked_port.Value = _secondary_notch = secondary_notch;
+        else if (string.Equals(device, "transition_lamp", StringComparison.Ordinal))
+        {
+            _transition_lamp = hooked_port;
+            new_setter = delegate (float lamp_state)
+            {
+                assert.test(lamp_state < 0.7f);
+                if (hooked_port.Value < 0.7f)
+                    hooked_port.Value = lamp_state;
+            };
+        }
+        else
+            new_setter = (float new_value) => hooked_port.Value = new_value;
         return new_setter;
     }
 

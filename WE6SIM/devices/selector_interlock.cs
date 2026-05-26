@@ -6,14 +6,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using LocoSim.Implementations;
+
+using UnityEngine;
 namespace WE6SIM.devices;
 
-internal class selector_interlock(Action<float> unit_selector_handler)
+internal class selector_interlock(Action<float> unit_selector_handler, float handle_initial_position)
 {
     private readonly Action<float> unit_selector_handler = unit_selector_handler;
 
-    public void interlocked_handler(float raw_selector)
+    private float _current_selector = handle_initial_position;
+
+    public void interlocked_handler(float raw_selector, float raw_throttle, int primary_notch, int secondary_notch,
+        Port? transition_lamp)
     {
-        unit_selector_handler(raw_selector);
+        if (   raw_throttle                                < 0.5f / control_stand.throttle_notches 
+            || Mathf.Abs(raw_selector - _current_selector) < 0.5f / control_stand.selector_notches)
+        {
+            _current_selector = raw_selector;
+            if (transition_lamp != null && transition_lamp.Value >= 0.7f)
+                transition_lamp.Value = 0.0f;
+            unit_selector_handler(raw_selector);
+        }
+        else if (transition_lamp != null && transition_lamp.Value < 0.7f)
+        {
+            int     selector = Mathf.RoundToInt(_current_selector * control_stand.selector_last_notch);
+            int new_selector = Mathf.RoundToInt(     raw_selector * control_stand.selector_last_notch);
+            if (selector is 4 or 5 && new_selector is 4 or 5 && (primary_notch <= 6 || secondary_notch <= 6))
+                unit_selector_handler(raw_selector);
+            else
+                transition_lamp.Value = 1.0f;
+        }
     }
 }
