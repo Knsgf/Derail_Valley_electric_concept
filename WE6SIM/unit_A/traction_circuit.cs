@@ -132,7 +132,7 @@ internal partial class unit_A_sim
             _base_element_resistances[$"SR{resistor_branch}.1"] = 1.1f;
             _base_element_resistances[$"SR{resistor_branch}.2"] = 1.1f;
             _base_element_resistances[$"SR{resistor_branch}.3"] = 3.6f;
-            _base_element_resistances[$"SR{resistor_branch}.4"] = 0.2f;
+            _base_element_resistances[$"SR{resistor_branch}.4"] = 0.065f;
             _base_element_resistances[$"SR{resistor_branch}.5"] = 0.2f;
             _base_element_resistances[$"SR{resistor_branch}.6"] = 0.4f;
         }
