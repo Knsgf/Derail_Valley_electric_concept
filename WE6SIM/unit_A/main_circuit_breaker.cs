@@ -25,7 +25,7 @@ internal partial class unit_A_sim
         
         private readonly Port _arm_sound, _engage_sound, _trip_sound;
 
-        private bool _engaging = false;
+        private bool _engaging = false, _switched_on = false;
 
         public main_circuit_breaker(Fuse electric_supply, Fuse air_supply, Dictionary<string, Port> ports,
             unit_A_sim unit)
@@ -41,6 +41,7 @@ internal partial class unit_A_sim
             unit._control_AB1.ValueUpdatedInternally += trip_if_all_pantographs_retracted;
             unit._pantograph.toggled                 += trip_if_all_pantographs_retracted;
             unit._pantograph.sidepan_toggled         += trip_if_all_pantographs_retracted;
+            unit._main_breaker_closed.StateUpdated   += trip_on_external_trigger;
         }
 
         private void trip_on_power_loss(bool powered)
@@ -61,17 +62,6 @@ internal partial class unit_A_sim
             return !unit_A_pantograph.sidepan_stowed || port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan);
         }
         
-        public void trip_if_all_pantographs_retracted()
-        {
-            if (!ready_to_run())
-                trip();
-        }
-
-        private void trip_if_all_pantographs_retracted(float _)
-        {
-            trip_if_all_pantographs_retracted();
-        }
-
         public async void toggle_on(float button_press)
         {
             unit_A_sim unit = _unit;
@@ -90,8 +80,8 @@ internal partial class unit_A_sim
                 return;
             _engage_sound.Value = 1.0f;
             unit._main_breaker_closed.ChangeState(true);
-            //unit.selector_handler(unit._selector / control_stand.selector_last_notch);
-            _engaging = false;
+            _engaging    = false;
+            _switched_on = true;
         }
 
         public void toggle_off(float button_press)
@@ -102,9 +92,9 @@ internal partial class unit_A_sim
 
         public void trip()
         {
-            if (!_engaging && !_unit._main_breaker_closed.State)
+            if (!_engaging && !_switched_on)
                 return;
-            _engaging = false;
+            _engaging = _switched_on = false;
             _unit._main_breaker_closed.ChangeState(false);
             _unit._contactors.toggle_traction_motors(turn_on: false);
             _trip_sound.Value = 1.0f;
@@ -117,6 +107,23 @@ internal partial class unit_A_sim
                 Main.log($"TU {supply_voltage} {motor_voltage} {total_draw}");
                 trip();
             }
+        }
+        
+        public void trip_if_all_pantographs_retracted()
+        {
+            if (!ready_to_run())
+                trip();
+        }
+
+        private void trip_if_all_pantographs_retracted(float _)
+        {
+            trip_if_all_pantographs_retracted();
+        }
+
+        private void trip_on_external_trigger(bool remain_on)
+        {
+            if (!remain_on)
+                trip();
         }
 
 		public override void Dispose()
