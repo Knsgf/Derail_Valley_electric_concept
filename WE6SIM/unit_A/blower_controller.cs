@@ -10,7 +10,7 @@ namespace WE6SIM.unit_A;
 
 internal class blower_controller: electric_device
 {
-    const float acceleration_ratio = 0.95f, slowdown_ratio = 0.999f;
+    const float speedup_rate = 0.1f, slowdown_rate = 0.95f;
     const float series_3_parallel_2 = 1.0f / 3.0f, series_2_parallel_3 = 1.0f / 2.0f, parallel_6 = 1.0f;
 
     const float dynamic_braking_parallel_maximum_voltage  = 950.0f;
@@ -20,12 +20,12 @@ internal class blower_controller: electric_device
 
     private readonly Port _blower_audio, _contactor_on_sound, _contactor_off_sound;
     
-    private float _relative_speed = 0.0f, _line_voltage = 0.0f, _motor_current = 0.0f;
+    private float _line_voltage = 0.0f, _motor_current = 0.0f;
     private float _line_voltage_multiplier = series_3_parallel_2;
     private bool  _reconfiguration = false, _previously_active = false;
 
-    public bool active { get; set; }
-    public bool full_speed_mode { get; set; }
+    public bool active                { get; set; }
+    public bool full_speed_mode       { get; set; }
     public bool rheostatic_braking_on { get; set; }
     public float line_voltage
     {
@@ -37,6 +37,7 @@ internal class blower_controller: electric_device
         get => _motor_current;
         set => _motor_current = Mathf.Abs(value);
     }
+    public float relative_speed { get; private set; } = 0.0f;
 
     public blower_controller(Fuse electric_supply, Port audio, Port contactor_on_sound, Port contactor_off_sound)
         : base("blower", electric_supply)
@@ -113,10 +114,8 @@ internal class blower_controller: electric_device
         }
 
         float final_relative_speed = fan_motor_voltage / 1000.0f;
-        if (_relative_speed <= final_relative_speed)
-            _relative_speed = acceleration_ratio * _relative_speed + (1.0f - acceleration_ratio) * final_relative_speed;
-        else
-            _relative_speed =     slowdown_ratio * _relative_speed + (1.0f -     slowdown_ratio) * final_relative_speed;
-        _blower_audio.Value = _relative_speed;
+        float acceleration_ratio   = Mathf.Pow((relative_speed <= final_relative_speed) ? speedup_rate : slowdown_rate, Time.deltaTime);
+        relative_speed             = Mathf.LerpUnclamped(final_relative_speed, relative_speed, acceleration_ratio);
+        _blower_audio.Value        = relative_speed;
     }
 }
