@@ -17,6 +17,12 @@ internal class control_stand: electric_device
     public const float independent_brake_last_notch = independent_brake_notches - 1;
     public const float reverser_last_notch          =          reverser_notches - 1, throttle_last_notch = throttle_notches - 1;
     public const float field_handle_last_notch      =      field_handle_notches - 1, selector_last_notch = selector_notches - 1;
+
+    public enum selector_modes 
+    { 
+        series_regenerative = 0, parallel_regenerative = 1, rheostatic_brake = 2,
+        yard_power          = 3, series_power          = 4, parallel_power   = 5 
+    };
     
     private static readonly Dictionary<string, string> _port_id_map = new()
     {

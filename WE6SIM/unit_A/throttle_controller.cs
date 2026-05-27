@@ -5,6 +5,8 @@ using UnityEngine;
 
 using WE6SIM.utilities;
 
+using static WE6SIM.devices.control_stand;
+
 namespace WE6SIM.unit_A;
 
 internal partial class unit_A_sim
@@ -157,10 +159,10 @@ internal partial class unit_A_sim
                 return;
             }
 
-            bool enable_line_contactor2 = unit._selector != 3;
+            bool enable_line_contactor2 = unit._selector is not (int) selector_modes.yard_power;
             if (!unit._contactors._line_contactor.engaged || enable_line_contactor2 && !!unit._contactors._line_contactor2.engaged)
             {
-                int primary_target_notch = (unit._selector != 2) ? 1 : 5;
+                int primary_target_notch = (unit._selector is not (int) selector_modes.rheostatic_brake) ? 1 : 5;
                 while (unit._throttle == 3 && !unit._contactors._line_contactor.engaged 
                     || enable_line_contactor2 && !unit._contactors._line_contactor2.engaged)
                 {
@@ -177,7 +179,7 @@ internal partial class unit_A_sim
                         unit.set_secondary_camshaft_target_notch(1);
                     }
                     await Task.Delay(300);
-                    primary_target_notch = (unit._selector != 2) ? 1 : 5;
+                    primary_target_notch = (unit._selector is not (int) selector_modes.rheostatic_brake) ? 1 : 5;
                 }
             }
 

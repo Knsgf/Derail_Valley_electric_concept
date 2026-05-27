@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using LocoSim.Implementations;
 
 using UnityEngine;
+
+using static WE6SIM.devices.control_stand;
+
 namespace WE6SIM.devices;
 
 internal class selector_interlock(Action<float> unit_selector_handler, float handle_initial_position)
@@ -32,7 +35,9 @@ internal class selector_interlock(Action<float> unit_selector_handler, float han
         {
             int     selector = Mathf.RoundToInt(_current_selector * control_stand.selector_last_notch);
             int new_selector = Mathf.RoundToInt(     raw_selector * control_stand.selector_last_notch);
-            if (selector is 4 or 5 && new_selector is 4 or 5 && (primary_notch <= 6 || secondary_notch <= 6))
+            if (       selector is (int) selector_modes.series_power or (int) selector_modes.parallel_power 
+                && new_selector is (int) selector_modes.series_power or (int) selector_modes.parallel_power 
+                && (primary_notch <= 6 || secondary_notch <= 6))
             {
                 _current_selector = raw_selector;
                 unit_selector_handler(raw_selector);

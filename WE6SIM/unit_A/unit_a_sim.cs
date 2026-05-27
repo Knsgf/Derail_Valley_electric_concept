@@ -17,6 +17,7 @@ using WE6SIM.unit_B;
 using WE6SIM.utilities;
 
 using static WE6SIM.circuit_sim.circuit;
+using static WE6SIM.devices.control_stand;
 using static WE6SIM.utilities.sensor_grabber;
 using static WE6SIM.utilities.signal_cable;
 
@@ -117,8 +118,8 @@ internal partial class unit_A_sim: electric_device
             _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM_B);
         _blowers = new(_main_breaker_closed, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
 
-        _control_stand       = new control_stand(_appliances, ports);
-        _throttle_controller = new throttle_controller(this);
+        _control_stand       = new(_appliances, ports);
+        _throttle_controller = new(this);
         _reverser_handle     = grab_port(ports, "[Reverser].CONTROL_EXT_IN");
         _selector_handle     = grab_port(ports, "[Selector].EXT_IN"        );
         _control_stand.register_handler("reverser_handle",      reverser_handler);
@@ -224,7 +225,7 @@ internal partial class unit_A_sim: electric_device
     private void synchronise_independent_brake(float raw_handle_position)
     {
         set_port_signal(_control_AB1, (int) AB1_signals.independent_brake, (int) AB1_shift.independent_brake, 
-            Mathf.RoundToInt(raw_handle_position * control_stand.independent_brake_last_notch));
+            Mathf.RoundToInt(raw_handle_position * independent_brake_last_notch));
     }
     
     private void synchronise_sander(float sander_switch)
@@ -237,7 +238,7 @@ internal partial class unit_A_sim: electric_device
         if (!selector_switched && Mathf.Abs(raw_reverser - _reverser_position) < 0.1f)
             return;
         _reverser_position = raw_reverser;
-        if (_selector == 2)
+        if (_selector is (int) selector_modes.rheostatic_brake)
             raw_reverser = 1.0f - raw_reverser;
         if (raw_reverser >= 0.7f)
             _contactors._reverser.target_notch = 1;
@@ -252,7 +253,7 @@ internal partial class unit_A_sim: electric_device
 
     private void throttle_handler(float raw_throttle, bool cab_changed)
     {
-        int wheel_position = Mathf.RoundToInt(raw_throttle * control_stand.throttle_last_notch);
+        int wheel_position = Mathf.RoundToInt(raw_throttle * throttle_last_notch);
         if (!cab_changed && wheel_position == _throttle)
             return;
         _throttle = wheel_position;
@@ -304,7 +305,7 @@ internal partial class unit_A_sim: electric_device
             exciter_EMF = 0.0f;
         else
         {
-            float raw_field_position = field_handle_postion / control_stand.field_handle_last_notch;
+            float raw_field_position = field_handle_postion / field_handle_last_notch;
             float voltage_adjust = (1.0f - _motors_volts / line_voltage) * max_exciter_voltage;
             exciter_EMF = Mathf.Clamp(min_exciter_voltage * (1.0f - raw_field_position) 
                 + max_exciter_voltage * raw_field_position + voltage_adjust, min_exciter_voltage, max_exciter_voltage);
@@ -317,11 +318,11 @@ internal partial class unit_A_sim: electric_device
 
     private void field_control_handler(float raw_field_position, bool cab_changed)
     {
-        int handle_postion = Mathf.RoundToInt(raw_field_position * control_stand.field_handle_last_notch);
+        int handle_postion = Mathf.RoundToInt(raw_field_position * field_handle_last_notch);
         if (!cab_changed && _field_position == handle_postion)
             return;
         _field_position = handle_postion;
-        if (_selector < 2)
+        if (_selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative)
             set_exciter_voltage(handle_postion);
         else
         {
@@ -337,7 +338,7 @@ internal partial class unit_A_sim: electric_device
 
     private void selector_handler(float raw_selector_position, bool cab_changed)
     {
-        int handle_postion = Mathf.RoundToInt(raw_selector_position * control_stand.selector_last_notch);
+        int handle_postion = Mathf.RoundToInt(raw_selector_position * selector_last_notch);
         if (!cab_changed && _selector == handle_postion)
             return;
         _selector = handle_postion;
@@ -387,10 +388,10 @@ internal partial class unit_A_sim: electric_device
             bool cab_changed = port_value_signal_active(BA1, (int) BA1_signals.cab_change);
             reverser_handler(port_value_signal_active(BA1, (int) BA1_signals.reverser) ? 0.0f : 1.0f, cab_changed);
             set_independent_brake(extract_signal_from_port_value(BA1, (int) BA1_signals.independent_brake, 
-                (int) BA1_shift.independent_brake) / control_stand.independent_brake_last_notch);
-            handle_relay(BA1, BA1_signals.throttle, BA1_shift.throttle, control_stand.throttle_last_notch    ,      throttle_handler, cab_changed);
-            handle_relay(BA1, BA1_signals.field   , BA1_shift.field   , control_stand.field_handle_last_notch, field_control_handler, cab_changed);
-            handle_relay(BA1, BA1_signals.selector, BA1_shift.selector, control_stand.selector_last_notch    ,      selector_handler, cab_changed);
+                (int) BA1_shift.independent_brake) / independent_brake_last_notch);
+            handle_relay(BA1, BA1_signals.throttle, BA1_shift.throttle, throttle_last_notch    ,      throttle_handler, cab_changed);
+            handle_relay(BA1, BA1_signals.field   , BA1_shift.field   , field_handle_last_notch, field_control_handler, cab_changed);
+            handle_relay(BA1, BA1_signals.selector, BA1_shift.selector, selector_last_notch    ,      selector_handler, cab_changed);
             toggle_sander(port_value_signal_active(BA1, (int) BA1_signals.sander) ? 1.0f : 0.0f);
         }
 
@@ -402,7 +403,7 @@ internal partial class unit_A_sim: electric_device
     {
         check_if_disposed();
         
-        bool yard_mode = _selector == 3;
+        bool yard_mode = _selector is (int) selector_modes.yard_power;
         bool jog       = _jogging_mode_on && !is_powered;
         if (jog)
         {
@@ -439,10 +440,10 @@ internal partial class unit_A_sim: electric_device
             foreach (KeyValuePair<string, branch_user> branch in _named_branches)
                 _currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
         }
-        bool  rheostatic_brake_on = _selector == 2;
+        bool  rheostatic_brake_on = _selector is (int) selector_modes.rheostatic_brake;
         float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
         _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
-        if (_selector < 2)
+        if (_selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative)
             set_exciter_voltage(_field_position);
         traction_motor[] traction_motors = _traction_motors;
         for (int motor_index = motors - 1; motor_index >= 0; --motor_index)

@@ -13,6 +13,7 @@ using WE6SIM.devices;
 using WE6SIM.utilities;
 
 using static UnityEngine.UI.CanvasScaler;
+using static WE6SIM.devices.control_stand;
 using static WE6SIM.utilities.signal_cable;
 
 namespace WE6SIM.unit_A;
@@ -53,7 +54,7 @@ internal partial class unit_A_sim
         private bool ready_to_run()
         {
             unit_A_sim unit = _unit;
-            if (unit._selector == 2)
+            if (unit._selector is (int) selector_modes.rheostatic_brake)
                 return true;
             pantograph unit_A_pantograph = unit._pantograph;
             float      AB1               = unit._control_AB1.Value;

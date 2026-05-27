@@ -7,6 +7,7 @@ using LocoSim.Implementations;
 using WE6SIM.circuit_sim;
 using WE6SIM.devices;
 
+using static WE6SIM.devices.control_stand;
 using static WE6SIM.utilities.signal_cable;
 
 namespace WE6SIM.unit_A;
@@ -113,7 +114,7 @@ internal partial class unit_A_sim
 
         public void switch_selector_contactors(int selector)
         {
-            if (selector is 0 or 1)
+            if (selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative)
             {
                 _field_shunt_contactors[0].toggle(turn_on: true);
                 _field_shunt_contactors[1].toggle(turn_on: true);
@@ -122,8 +123,8 @@ internal partial class unit_A_sim
                 _field_shunt_contactors[4].toggle(turn_on: true);
                 _field_shunt_contactors[5].toggle(turn_on: true);
             }
-            _dynamic_brake_contactor.toggle(selector == 2);
-            _selector_motor.target_notch = (selector >= 5) ? 8 : (selector + 1);
+            _dynamic_brake_contactor.toggle(selector is (int) selector_modes.rheostatic_brake);
+            _selector_motor.target_notch = (selector is (int) selector_modes.parallel_power  ) ? 8 : (selector + 1);
             set_transition_lamp?.Invoke(_selector_motor.current_notch != _selector_motor.target_notch ? 0.5f : 0.0f);
         }
 
