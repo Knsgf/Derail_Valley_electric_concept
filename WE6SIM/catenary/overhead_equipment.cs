@@ -232,6 +232,12 @@ internal partial class overhead_equipment
         var tracker = _system._player_tracker.GetComponent<player_tracker>();
         PlayerManager.PlayerTeleportStarted  += tracker.suspend_tracker;
         PlayerManager.PlayerTeleportFinished += tracker.resume_tracker;
+        PlayerManager.PlayerChanged          += _system.restart_tracker;
+    }
+
+    private void restart_tracker()
+    {
+        _player_tracker?.GetComponent<player_tracker>().resume_tracker();
     }
 
     public static void dispose()
@@ -244,6 +250,7 @@ internal partial class overhead_equipment
             var tracker = _system._player_tracker.GetComponent<player_tracker>();
             PlayerManager.PlayerTeleportStarted  -= tracker.suspend_tracker;
             PlayerManager.PlayerTeleportFinished -= tracker.resume_tracker;
+            PlayerManager.PlayerChanged          -= _system.restart_tracker;
             GameObject.Destroy(_system._player_tracker);
             _system._player_tracker = null;
         }
@@ -319,50 +326,6 @@ internal partial class overhead_equipment
         for (int index = visible_objects.Count - 1; index >= 0; --index)
             visible_objects[index].entity!.transform.position -= shift;
     }
-
-    /*
-    private void refresh_scenery()
-    {
-        Transform? player_view = PlayerManager.ActiveCamera?.transform;
-        //if (player_view is null)
-        {
-            player_view = PlayerManager.PlayerTransform;
-            if (player_view is null)
-                return;
-        }
-        //(int x, int z) = get_absolute_position(player_view.position);
-        //Main.log($"x={x} z={z}");
-        handle_scenery_visibility(player_view.position);
-    }
-
-    private void suspend_tracker()
-    {
-        Main.log("Tracker suspended");
-        _scenery_refresh_suspended = true;
-    }
-
-    private void resume_tracker()
-    {
-        Main.log("Tracker resumed");
-        _scenery_refresh_suspended = false;
-    }
-
-    
-    private void player_camera_tracker()
-    {
-        if (!_scenery_refresh_suspended)
-            refresh_scenery();
-    }
-
-    private void set_up_player_tracker(SimController simulation)
-    {
-        if (_simulation is null)
-        {
-            Main.log("Tracker started");
-
-        }
-    }
-    */
 
     private _type_ add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
         int x, int z, float y, Quaternion orientation)

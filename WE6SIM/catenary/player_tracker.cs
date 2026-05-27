@@ -8,26 +8,22 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using WE6SIM.utilities;
+
 namespace WE6SIM.catenary;
 
 internal partial class overhead_equipment
 {
     private class player_tracker: MonoBehaviour
     {
-        private bool _scenery_refresh_suspended = false;
         
         void Start()
         {
             //Main.log("Player tracker started");
+            gameObject.SetActive(false);
         }
         
         void Update()
-        {
-            if (!_scenery_refresh_suspended)
-                refresh_scenery();
-        }
-
-        private void refresh_scenery()
         {
             Transform? player_view = PlayerManager.ActiveCamera?.transform;
             if (player_view is null)
@@ -36,19 +32,19 @@ internal partial class overhead_equipment
                 if (player_view is null)
                     return;
             }
-            //(int x, int z) = get_absolute_position(player_view.position);
+            //(int x, int z) = world_position.get_absolute_position(player_view.position);
             //Main.log($"x={x} z={z}");
             _system?.handle_scenery_visibility(player_view.position);
         }
 
         public void suspend_tracker()
         {
-            _scenery_refresh_suspended = true;
+            gameObject.SetActive(false);
         }
 
         public void resume_tracker()
         {
-            _scenery_refresh_suspended = false;
+            gameObject.SetActive(true);
         }
     }
 }
