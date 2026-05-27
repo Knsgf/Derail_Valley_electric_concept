@@ -129,7 +129,7 @@ internal partial class unit_A_sim
 
         private void extinguish_transition_lamp(int selector_notch)
         {
-            if (selector_notch is not 6 and not 7)
+            if (selector_notch == _selector_motor.target_notch)
                 set_transition_lamp?.Invoke(0.0f);
         }
 
