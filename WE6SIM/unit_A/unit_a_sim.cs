@@ -72,10 +72,10 @@ internal partial class unit_A_sim: electric_device
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-        _appliances          = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"    );
-        _control_air         = grab_fuse(fuses, "fusebox.CONTROL_AIR"         );
-        _main_breaker_closed = grab_fuse(fuses, "[MainBreakerContacts].CLOSED");
-        _overhead_power      = grab_fuse(fuses, "fusebox.OVERHEAD_POWER"      );
+        _appliances          = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"            );
+        _control_air         = grab_fuse(fuses, "fusebox.CONTROL_AIR"                 );
+        _main_breaker_closed = grab_fuse(fuses, "[MainBreakerContacts].CLOSED"        );
+        _overhead_power      = grab_fuse(fuses, "[MainBreakerContacts].OVERHEAD_POWER");
         set_up_fuses(_appliances);
         _overhead_power.StateUpdated += overhead_power_toggle;
 

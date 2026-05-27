@@ -48,9 +48,9 @@ internal class unit_B_sim: electric_device
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-        _overhead_power = grab_fuse(fuses, "fusebox.OVERHEAD_POWER"  );
-        _control_air    = grab_fuse(fuses, "fusebox.CONTROL_AIR"     );
-        _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN");
+        _overhead_power = grab_fuse(fuses, "[MainBreakerContacts].OVERHEAD_POWER");
+        _control_air    = grab_fuse(fuses, "fusebox.CONTROL_AIR"                 );
+        _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"            );
         set_up_fuses(_appliances);
 
         _total_load = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD");
