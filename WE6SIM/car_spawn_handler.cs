@@ -10,6 +10,8 @@ using DV.ThingTypes;
 using WE6SIM.catenary;
 using WE6SIM.unit_A;
 using WE6SIM.unit_B;
+using System.Diagnostics;
+
 
 
 #if DEBUG
@@ -50,7 +52,7 @@ internal static class car_spawn_handler
         __instance.CarAboutToBeDeleted += on_car_purged;
     }
 
-#if DEBUG   
+    [Conditional("DEBUG")]
     private static void print_hierarchy(GameObject entity, int indent = 0)
     {
         if (indent <= 0)
@@ -60,7 +62,6 @@ internal static class car_spawn_handler
         foreach (Transform child in entity.transform)
             print_hierarchy(child.gameObject, indent + 4);
     }
-#endif
 
     private static void on_car_spawned(TrainCar vehicle)
     {
@@ -89,6 +90,7 @@ internal static class car_spawn_handler
         else if (!string.Equals(vehicle.carLivery.id.Substring(0, "WE6981B".Length), "WE6981B", StringComparison.Ordinal))
             return;
 
+        print_hierarchy(vehicle.gameObject);
         Dictionary<string, Fuse> all_fuses = [];
         foreach (Fuse? fuse in vehicle.SimController.SimulationFlow.AllFuses)
         {
