@@ -64,18 +64,15 @@ internal class pantograph: electric_device
 
     private static GameObject? find_pantograph_base(bool is_sidepan, GameObject entity)
     {
-        if (string.Equals(entity.name, is_sidepan ? sidepan_base_tag : pantograph_tag, StringComparison.OrdinalIgnoreCase))
-            return entity;
-        foreach (Transform child in entity.transform)
+        foreach (GameObject current_object in entity.AllChildren())
         {
-            GameObject? candidate = find_pantograph_base(is_sidepan, child.gameObject);
-            if (candidate != null)
-                return candidate;
+            if (string.Equals(current_object.name, is_sidepan ? sidepan_base_tag : pantograph_tag, StringComparison.OrdinalIgnoreCase))
+                return current_object;
         }
         return null;
     }
 
-    private void assign_parts(GameObject entity)
+    private void assign_part(GameObject entity)
     {
         Transform entity_location = entity.transform;
         //Main.log(entity.name);
@@ -115,11 +112,13 @@ internal class pantograph: electric_device
             _sidepan_inner_contact = entity_location;
         else if (string.Equals(entity.name, sidepan_outer_contact_tag, StringComparison.OrdinalIgnoreCase))
             _sidepan_outer_contact = entity_location;
+    }
 
-        foreach (Transform child_location in entity_location)
-        {
-            assign_parts(child_location.gameObject);
-        }
+    private void assign_parts(GameObject pantograph_base)
+    {
+        assign_part(pantograph_base);
+        foreach (GameObject current_part in pantograph_base.AllChildren())
+            assign_part(current_part);
     }
 
     public pantograph(GameObject unit, roof_busbar roof_bus, Fuse electric_supply, Fuse air_supply)
