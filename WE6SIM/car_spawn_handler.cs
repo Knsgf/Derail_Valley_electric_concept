@@ -2,17 +2,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 using HarmonyLib;
 using UnityEngine;
 
-using LocoSim.Implementations;
 using DV.ThingTypes;
+using LocoSim.Implementations;
+
 using WE6SIM.catenary;
 using WE6SIM.unit_A;
 using WE6SIM.unit_B;
-using System.Diagnostics;
-
-
 
 #if DEBUG
 using WE6SIM.catenary_editor;
