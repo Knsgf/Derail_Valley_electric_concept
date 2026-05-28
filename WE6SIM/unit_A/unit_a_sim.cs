@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DV.Simulation.Cars;
 
 using LocoSim.Implementations;
+using LocoSim.Implementations.Wheels;
 
 using UnityEngine;
 
@@ -51,6 +52,8 @@ internal partial class unit_A_sim: electric_device
     private readonly throttle_controller        _throttle_controller;
     private readonly control_stand              _control_stand;
     private readonly red_ditch_light_controller _red_light_controller;
+    private readonly dummy_voltage_regulator    _traction_motor_temperature;
+    private readonly PoweredWheelsManager?      _driving_axles;
     
     private readonly TrainCar _unit;
 
@@ -111,11 +114,27 @@ internal partial class unit_A_sim: electric_device
         _pantograph   = new(unit.gameObject, _roof_bus, _appliances, _control_air);
         _main_breaker = new(_appliances, _control_air, ports, this);
 
+        foreach (GameObject current_object in unit.gameObject.AllChildren())
+        {
+            PoweredWheelsManager? driving_axles = current_object.GetComponent<PoweredWheelsManager>();
+            if (driving_axles is not null)
+            {
+                Main.log($"PoweredWheelsManager {driving_axles.poweredWheels.Length}");
+                foreach (PoweredWheel? axle in driving_axles.poweredWheels)
+                {
+                    if (axle is not null)
+                        Main.log($"{axle.index} {axle.state}");
+                }
+                _driving_axles = driving_axles;
+                break;
+            }
+        }
         _traction_motors = new traction_motor[motors];
         for (int motor_number = 1; motor_number <= motors / 2; ++motor_number)
-            _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM);
+            _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM  , _named_branches);
         for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
-            _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM_B);
+            _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM_B, _named_branches);
+        _traction_motor_temperature = new(ports);
         _blowers = new(_main_breaker_closed, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
 
         _control_stand       = new(_appliances, ports);
@@ -466,16 +485,19 @@ internal partial class unit_A_sim: electric_device
         set_motors_volts(_motors_volts);
         _main_breaker.trip_if_operating_parameters_exceeded(voltage, _motors_volts, _total_load.Value);
         _overhead_power.ChangeState(voltage >= 1000.0f && _main_breaker_closed.State);
-        float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_field = 0.0f, average_EMF = 0.0f, total_torque = 0.0f;
+        float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_field = 0.0f, average_EMF = 0.0f;
+        float total_torque = 0.0f, total_heat_emission = 0.0f;
         for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
         {
             traction_motor motor = traction_motors[motor_index];
-            total_torque  += motor.wheel_torque;
-            average_RPM   += motor.RPM;
-            average_load  += motor.load_current;
-            maximum_load   = Mathf.Max(maximum_load, Mathf.Abs(motor.load_current));
-            average_field += motor.field_current;
-            average_EMF   += motor.EMF;
+            total_torque        += motor.wheel_torque;
+            average_RPM         += motor.RPM;
+            average_load        += motor.load_current;
+            maximum_load         = Mathf.Max(maximum_load, Mathf.Abs(motor.load_current));
+            average_field       += motor.field_current;
+            average_EMF         += motor.EMF;
+            total_heat_emission += motor.heat_emission;
+            assert.test(motor.heat_emission >= 0.0f);
         }
         average_RPM   /= traction_motors.Length;
         average_EMF   /= traction_motors.Length;
@@ -500,6 +522,7 @@ internal partial class unit_A_sim: electric_device
         _blowers.line_voltage          = rheostatic_brake_on ? _motors_volts : voltage;
         //_blowers.full_speed_mode = true;
         _blowers.simulate();
+        _traction_motor_temperature.simulate(total_heat_emission / 2.0f);
 
         if (!jog || yard_mode)
             _torque_A.Value = _torque_B.Value = total_torque / 2.0f;

@@ -138,9 +138,9 @@ internal partial class unit_A_sim
         }
         for (int motor_branch = 1; motor_branch <= motors; ++motor_branch)
         {
-            _base_element_resistances[$"MA{motor_branch}"  ] = 0.21f * 0.65f;   // Includes both rotor and compensating winding
-            _base_element_resistances[$"MF{motor_branch}a" ] = 0.21f * 0.35f * (1.0f - traction_motor.field_partitioning);
-            _base_element_resistances[$"MF{motor_branch}b" ] = 0.21f * 0.35f * (       traction_motor.field_partitioning);
+            _base_element_resistances[$"MA{motor_branch}"  ] = traction_motor.internal_resistance *         traction_motor.armature_part;   // Includes both rotor and compensating winding
+            _base_element_resistances[$"MF{motor_branch}a" ] = traction_motor.internal_resistance * (1.0f - traction_motor.armature_part) * (1.0f - traction_motor.field_partitioning);
+            _base_element_resistances[$"MF{motor_branch}b" ] = traction_motor.internal_resistance * (1.0f - traction_motor.armature_part) * (       traction_motor.field_partitioning);
 
             _base_element_resistances[$"RT{motor_branch}"  ] = 3.0f;
             _base_element_resistances[$"FR{motor_branch}.1"] = 0.00988f;
