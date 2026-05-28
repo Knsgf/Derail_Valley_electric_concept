@@ -11,9 +11,10 @@ internal partial class circuit
 {
     public interface branch_user
     {
-        float conductance { get; }
-        float current     { get; }
-        float EMF         { get; set; }
+        float closed_conductance { get; }
+        float conductance        { get; }
+        float current            { get; }
+        float EMF                { get; set; }
         void toggle_contactor(string designation, bool switch_on);
         bool is_contactor_on(string designation);
     }
@@ -36,6 +37,7 @@ internal partial class circuit
 
 
         public float future_conductance => (_contactors_off != 0) ? 0.0f : _closed_conductance;
+        public float closed_conductance => _closed_conductance;
         public float conductance 
         { 
             get => _current_conductance;
