@@ -135,7 +135,13 @@ internal partial class unit_A_sim: electric_device
         for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
             _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM_B, _named_branches);
         _traction_motor_temperature = new(ports);
-        _blowers = new(_main_breaker_closed, grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"), _contactor_on_sound, _contactor_off_sound);
+        _blowers = new(
+            _main_breaker_closed, 
+            grab_port(ports, "[Blowers].BLOWERS_RELATIVE_SPEED"), 
+            grab_port(ports, "tmHeat.TEMPERATURE"), 
+            grab_port(ports, "[Blowers].BLOWERS_COOLING_RATE"), 
+            _contactor_on_sound, _contactor_off_sound
+        );
 
         _control_stand       = new(_appliances, ports);
         _throttle_controller = new(this);

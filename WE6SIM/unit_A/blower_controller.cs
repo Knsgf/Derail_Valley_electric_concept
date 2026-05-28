@@ -10,6 +10,8 @@ namespace WE6SIM.unit_A;
 
 internal class blower_controller: electric_device
 {
+    const float full_cooling_power_at_1C = 750.0f, ambient_temperature_C = 25.0f;
+    
     const float speedup_rate = 0.1f, slowdown_rate = 0.95f;
     const float series_3_parallel_2 = 1.0f / 3.0f, series_2_parallel_3 = 1.0f / 2.0f, parallel_6 = 1.0f;
 
@@ -19,6 +21,7 @@ internal class blower_controller: electric_device
     const float traction_high_speed_minimum_motor_current = 250.0f;
 
     private readonly Port _blower_audio, _contactor_on_sound, _contactor_off_sound;
+    private readonly Port _traction_motor_temperature, _cooling_rate;
     
     private float _line_voltage = 0.0f, _motor_current = 0.0f;
     private float _line_voltage_multiplier = series_3_parallel_2;
@@ -39,12 +42,15 @@ internal class blower_controller: electric_device
     }
     public float relative_speed { get; private set; } = 0.0f;
 
-    public blower_controller(Fuse electric_supply, Port audio, Port contactor_on_sound, Port contactor_off_sound)
-        : base("blower", electric_supply)
+    public blower_controller(Fuse electric_supply, Port audio, Port traction_motor_temperature, Port cooling_rate, 
+        Port contactor_on_sound, Port contactor_off_sound): base("blower", electric_supply)
     {
         _blower_audio        = audio;
         _contactor_on_sound  = contactor_on_sound;
         _contactor_off_sound = contactor_off_sound;
+
+        _traction_motor_temperature = traction_motor_temperature;
+        _cooling_rate               = cooling_rate;
     }
 
     private float voltage_divider()
@@ -117,5 +123,7 @@ internal class blower_controller: electric_device
         float acceleration_ratio   = Mathf.Pow((relative_speed <= final_relative_speed) ? speedup_rate : slowdown_rate, Time.deltaTime);
         relative_speed             = Mathf.LerpUnclamped(final_relative_speed, relative_speed, acceleration_ratio);
         _blower_audio.Value        = relative_speed;
+
+        _cooling_rate.Value = relative_speed * (ambient_temperature_C - _traction_motor_temperature.Value) * full_cooling_power_at_1C;
     }
 }
