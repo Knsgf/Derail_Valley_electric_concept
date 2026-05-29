@@ -129,12 +129,12 @@ internal partial class unit_A_sim
     {
         for (int resistor_branch = 1; resistor_branch <= 3; ++resistor_branch)
         {
-            _base_element_resistances[$"SR{resistor_branch}.1"] = 0.77f;
-            _base_element_resistances[$"SR{resistor_branch}.2"] = 1.95f;
-            _base_element_resistances[$"SR{resistor_branch}.3"] = 2.655f;
-            _base_element_resistances[$"SR{resistor_branch}.4"] = 0.066f;
-            _base_element_resistances[$"SR{resistor_branch}.5"] = 0.146f;
-            _base_element_resistances[$"SR{resistor_branch}.6"] = 0.203f;
+            _base_element_resistances[$"SR{resistor_branch}.1"] = 0.65f;
+            _base_element_resistances[$"SR{resistor_branch}.2"] = 2.2f;
+            _base_element_resistances[$"SR{resistor_branch}.3"] = 2.565f;
+            _base_element_resistances[$"SR{resistor_branch}.4"] = 0.063f;
+            _base_element_resistances[$"SR{resistor_branch}.5"] = 0.129f;
+            _base_element_resistances[$"SR{resistor_branch}.6"] = 0.183f;
         }
         for (int motor_branch = 1; motor_branch <= motors; ++motor_branch)
         {
