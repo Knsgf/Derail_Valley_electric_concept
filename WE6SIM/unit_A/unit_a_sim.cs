@@ -53,7 +53,6 @@ internal partial class unit_A_sim: electric_device
     private readonly control_stand              _control_stand;
     private readonly red_ditch_light_controller _red_light_controller;
     private readonly dummy_voltage_regulator    _traction_motor_temperature;
-    private readonly PoweredWheelsManager?      _driving_axles;
     
     private readonly TrainCar _unit;
 
@@ -109,26 +108,11 @@ internal partial class unit_A_sim: electric_device
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
-        _contactors   = new(_appliances, _control_air, _main_breaker_closed, _contactor_locations, _contactor_on_sound, _contactor_off_sound, _control_AB1);
+        _contactors   = new(unit, _appliances, _control_air, _main_breaker_closed, _contactor_locations, _contactor_on_sound, _contactor_off_sound, _control_AB1);
         _roof_bus     = new(ports, is_unit_A: true);
         _pantograph   = new(unit.gameObject, _roof_bus, _appliances, _control_air);
         _main_breaker = new(_appliances, _control_air, ports, this);
 
-        foreach (GameObject current_object in unit.gameObject.AllChildren())
-        {
-            PoweredWheelsManager? driving_axles = current_object.GetComponent<PoweredWheelsManager>();
-            if (driving_axles is not null)
-            {
-                Main.log($"PoweredWheelsManager {driving_axles.poweredWheels.Length}");
-                foreach (PoweredWheel? axle in driving_axles.poweredWheels)
-                {
-                    if (axle is not null)
-                        Main.log($"{axle.index} {axle.state}");
-                }
-                _driving_axles = driving_axles;
-                break;
-            }
-        }
         _traction_motors = new traction_motor[motors];
         for (int motor_number = 1; motor_number <= motors / 2; ++motor_number)
             _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM  , _named_branches);
@@ -424,6 +408,27 @@ internal partial class unit_A_sim: electric_device
         _contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
     }
 
+    private void calculate_combined_unit_motor_performance(bool is_unit_A, traction_motor[] traction_motors, 
+        ref float RPM_sum, ref float load_sum, ref float maximum_load, ref float field_sum, ref float EMF_sum,
+        out float total_torque, out float total_heat)
+    {
+        int first_motor = is_unit_A ? 0 : 3;
+        int last_motor  = first_motor + 2;
+        
+        total_torque = total_heat = 0.0f;
+        for (int motor_index = first_motor; motor_index <= last_motor; ++motor_index)
+        {
+            traction_motor motor = traction_motors[motor_index];
+            total_torque += motor.wheel_torque;
+            RPM_sum      += motor.RPM;
+            load_sum     += motor.load_current;
+            maximum_load  = Mathf.Max(maximum_load, Mathf.Abs(motor.load_current));
+            field_sum    += motor.field_current;
+            EMF_sum      += motor.EMF;
+            total_heat   += motor.heat_emission;
+        }
+    }
+    
     private void simulate()
     {
         check_if_disposed();
@@ -492,19 +497,13 @@ internal partial class unit_A_sim: electric_device
         _main_breaker.trip_if_operating_parameters_exceeded(voltage, _motors_volts, _total_load.Value);
         _overhead_power.ChangeState(voltage >= 1000.0f && _main_breaker_closed.State);
         float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_field = 0.0f, average_EMF = 0.0f;
-        float total_torque = 0.0f, total_heat_emission = 0.0f;
-        for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
-        {
-            traction_motor motor = traction_motors[motor_index];
-            total_torque        += motor.wheel_torque;
-            average_RPM         += motor.RPM;
-            average_load        += motor.load_current;
-            maximum_load         = Mathf.Max(maximum_load, Mathf.Abs(motor.load_current));
-            average_field       += motor.field_current;
-            average_EMF         += motor.EMF;
-            total_heat_emission += motor.heat_emission;
-            assert.test(motor.heat_emission >= 0.0f);
-        }
+        float total_torque_A, total_heat_emission_A, total_torque_B, total_heat_emission_B;
+        calculate_combined_unit_motor_performance(is_unit_A:  true, traction_motors, ref average_RPM, 
+            ref average_load, ref maximum_load, ref average_field, ref average_EMF,
+            out total_torque_A, out total_heat_emission_A);
+        calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref average_RPM, 
+            ref average_load, ref maximum_load, ref average_field, ref average_EMF,
+            out total_torque_B, out total_heat_emission_B);
         average_RPM   /= traction_motors.Length;
         average_EMF   /= traction_motors.Length;
         average_load  /= traction_motors.Length;
@@ -528,15 +527,10 @@ internal partial class unit_A_sim: electric_device
         _blowers.line_voltage          = rheostatic_brake_on ? _motors_volts : voltage;
         //_blowers.full_speed_mode = true;
         _blowers.simulate();
-        _traction_motor_temperature.simulate(total_heat_emission / 2.0f);
+        _traction_motor_temperature.simulate(total_heat_emission_A);
 
-        if (!jog || yard_mode)
-            _torque_A.Value = _torque_B.Value = total_torque / 2.0f;
-        else
-        {
-            _torque_A.Value = 0.0f;
-            _torque_B.Value = total_torque;
-        }
+        _torque_A.Value = total_torque_A;
+        _torque_B.Value = total_torque_B;
     }
 
     public override void Dispose()

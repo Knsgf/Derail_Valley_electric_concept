@@ -4,9 +4,15 @@ using System;
 using System.Collections.Generic;
 
 using LocoSim.Implementations;
+using LocoSim.Implementations.Wheels;
+
+using UnityEngine;
+
 using WE6SIM.circuit_sim;
 using WE6SIM.devices;
+using WE6SIM.utilities;
 
+using static UnityEngine.UI.CanvasScaler;
 using static WE6SIM.devices.control_stand;
 using static WE6SIM.utilities.signal_cable;
 
@@ -16,6 +22,8 @@ internal partial class unit_A_sim
 {
     private class contactors: IDisposable
     {
+        private readonly PoweredWheelsManager    _driving_axles;
+
         public readonly camshaft_motor           _reverser, _primary_controller, _selector_motor;
         public readonly camshaft_contactor_set   _reverser_shaft, _primary_camshaft, _secondary_camshaft;
         public readonly camshaft_contactor_set   _selector_traction_shaft, _selector_regenerative_shaft;
@@ -26,9 +34,30 @@ internal partial class unit_A_sim
 
         public Action<float>? set_transition_lamp;
 
-        public contactors(Fuse appliances, Fuse air_supply, Fuse main_breaker, Dictionary<string, circuit.branch_user> contactor_locations, 
+        public contactors(TrainCar unit, Fuse appliances, Fuse air_supply, Fuse main_breaker, 
+            Dictionary<string, circuit.branch_user> contactor_locations, 
             Port contactor_on_sound, Port contactor_off_sound, Port control_cable)
         {
+            foreach (GameObject current_object in unit.gameObject.AllChildren())
+            {
+                PoweredWheelsManager? driving_axles = current_object.GetComponent<PoweredWheelsManager>();
+                if (driving_axles is not null)
+                {
+                    /*
+                    Main.log($"PoweredWheelsManager {driving_axles.poweredWheels.Length}");
+                    foreach (PoweredWheel? axle in driving_axles.poweredWheels)
+                    {
+                        if (axle is not null)
+                            Main.log($"{axle.index} {axle.state}");
+                    }
+                    */
+                    _driving_axles = driving_axles;
+                    break;
+                }
+            }
+            if (_driving_axles is null)
+                throw new Exception("No powered wheels manager");
+
             Action<bool> contactor_click_on_A = delegate (bool engage)
             {
                 if (engage)
@@ -137,8 +166,16 @@ internal partial class unit_A_sim
         public void toggle_traction_motors(bool turn_on)
         {
             int notch = turn_on ? 2 : 1;
-            for (int motor = motors - 1; motor >= 0; --motor)
-                _motor_cutouts[motor].switch_contactors(notch);
+            for (int motor = 0; motor <= 2; ++motor)
+            {
+                if (!turn_on || _driving_axles.poweredWheels[motor].IsPowered)
+                    _motor_cutouts[motor].switch_contactors(notch);
+            }
+            for (int motor = 3; motor <= 5; ++motor)
+            {
+                //if (!turn_on || _driving_axles.poweredWheels[motor].IsPowered)
+                    _motor_cutouts[motor].switch_contactors(notch);
+            }
         }
 
         public void toggle_jogging(bool turn_on)
