@@ -38,6 +38,6 @@ internal class dummy_voltage_regulator
         if (!float.IsNaN(effective_resistance) && !float.IsInfinity(effective_resistance))
             dummy_voltage = effective_resistance * Mathf.Sqrt(single_motor_heat_emission / traction_motor.internal_resistance);
         _effective_voltage_drop.Value = dummy_voltage;
-        Main.diagnostics?.Value = single_motor_heat_emission;
+        //Main.diagnostics?.Value = single_motor_heat_emission;
     }
 }
