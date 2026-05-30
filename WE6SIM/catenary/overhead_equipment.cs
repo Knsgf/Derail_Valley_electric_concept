@@ -176,10 +176,11 @@ internal partial class overhead_equipment
         [
             "FM",
             "FF",
-            "FF-SM",
-            "FM-SM",
+            "FF-SM[FF]",
+            "FM-SM[SM]",
             "IME",
-            "SM",
+            "IME-FF[CME-IME]",
+            "SM"
         ];
         foreach (string location in all_locations)
             _system.load_scenery_from_bundle(catenary, location);
