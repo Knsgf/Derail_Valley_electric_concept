@@ -456,7 +456,7 @@ internal static class editor
         forward_direction.y = 0.0f;
         if (forward_direction.sqrMagnitude < 1.0E-5f)
             return Quaternion.identity;
-        if (Mathf.Abs(forward_direction.z + 1.0f) < 1.0E-5f)
+        if (Mathf.Abs(forward_direction.z + 1.0f) < 1.0E-3f)
             return flip_around_vertical;
         return Quaternion.FromToRotation(Vector3.forward, forward_direction);
     }
