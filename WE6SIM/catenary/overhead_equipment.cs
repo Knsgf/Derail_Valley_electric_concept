@@ -176,7 +176,7 @@ internal partial class overhead_equipment
         [
             "FM",
             "FF",
-            //"FF-SM",
+            "FF-SM",
             "FM-SM",
             "SM",
         ];
