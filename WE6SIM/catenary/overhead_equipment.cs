@@ -178,6 +178,7 @@ internal partial class overhead_equipment
             "FF",
             "FF-SM",
             "FM-SM",
+            "IME",
             "SM",
         ];
         foreach (string location in all_locations)
