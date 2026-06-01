@@ -202,7 +202,7 @@ internal class pantograph: electric_device
     private void move()
     {
         float height_difference = _target_height - _current_height;
-        float movement_speed    = Mathf.Min(head_movement_speed, Mathf.Abs(height_difference) / 0.1f);
+        float movement_speed    = Mathf.Min(head_movement_speed, Mathf.Abs(height_difference) / 0.5f);
         if (height_difference > 0.006f)
         {
             _current_height   = Mathf.Min(_current_height + movement_speed * Time.deltaTime, maximum_head_height);
@@ -331,7 +331,7 @@ internal class pantograph: electric_device
                 Vector3 target_head_world_position = _base.position;
                 target_head_world_position.y       = (float) wire_height;
                 _target_height                     = _unit.transform.InverseTransformPoint(target_head_world_position).y;
-                _roof_bus.pantograph_voltage       = (Mathf.Abs(_current_height - _target_height) < 0.015f) ? supply_voltage : 0.0f;
+                _roof_bus.pantograph_voltage       = (Mathf.Abs(_current_height - _target_height) < 0.2f) ? supply_voltage : 0.0f;
             }
         }
         move();
