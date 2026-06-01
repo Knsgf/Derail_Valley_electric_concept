@@ -37,6 +37,7 @@ internal partial class unit_A_sim
                 unit._contactors._line_contactor2.toggle(false);
                 await Task.Delay(300);
             }
+            unit._contactors.toggle_traction_motors(turn_on: false);
             unit._contactors._primary_controller.roll_over_move(to_1: true);
             unit.set_secondary_camshaft_target_notch(roll_over_to_1);
             while (unit.is_powered && unit._contactors._primary_controller.current_notch != 1)

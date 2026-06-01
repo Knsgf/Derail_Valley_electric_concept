@@ -14,21 +14,25 @@ internal class contactor: electric_device
     private readonly camshaft_motor         _drive;
     private readonly camshaft_contactor_set _contacts;
 
-    public contactor(string[]? normally_open, string[]? normally_closed, Dictionary<string, circuit.branch_user> contactor_locations,
-        Action<bool>? contactor_toggle_sound, Fuse electric_supply, Fuse? air_supply = null)
-        : base("contactor", electric_supply, air_supply)
-    {
-        _drive    = new camshaft_motor(2, electric_supply, drop_to_1_on_power_loss: true, air_supply);
-        _contacts = camshaft_contactor_set.on_off(normally_open, normally_closed, contactor_locations, _drive, contactor_toggle_sound);
-    }
+    private bool _engaged;
 
     public bool engaged
     {
         get
         {
             check_if_disposed();
-            return _drive.current_notch == 2;
+            return _engaged;
         }
+    }
+
+    public contactor(string[]? normally_open, string[]? normally_closed, Dictionary<string, circuit.branch_user> contactor_locations,
+        Action<bool>? contactor_toggle_sound, Fuse electric_supply, Fuse? air_supply = null)
+        : base("contactor", electric_supply, air_supply)
+    {
+        _drive    = new camshaft_motor(2, electric_supply, drop_to_1_on_power_loss: true, air_supply);
+        _contacts = camshaft_contactor_set.on_off(normally_open, normally_closed, contactor_locations, _drive, contactor_toggle_sound);
+        _engaged  = _drive.current_notch == 2;
+        _drive.notch_changed += (int notch) => _engaged = _drive.current_notch == 2;
     }
 
     public void toggle(bool turn_on)
