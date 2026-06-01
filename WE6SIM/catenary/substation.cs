@@ -15,6 +15,9 @@ internal partial class overhead_equipment
     [JsonObject]
     private class substation: catenary_object, power_supply
     {
+        [JsonIgnore]
+        private float _current_voltage;
+        
         [JsonProperty]
         public string map_location;
         [JsonProperty]
@@ -28,7 +31,7 @@ internal partial class overhead_equipment
             int x, int z, float y, Quaternion orientation): base("GantryArrow", x, z, y, orientation)
         { 
             this.map_location   = map_location;
-            this.supply_voltage = supply_voltage;
+            this.supply_voltage = _current_voltage = supply_voltage;
             this.maximum_load   = maximum_load;
             this.has_inverter   = has_inverter;
         }
@@ -42,12 +45,13 @@ internal partial class overhead_equipment
             float voltage = supply_voltage;
             if (load_current < -100.0f)
             {
-                if (!has_inverter)
-                    voltage -= load_current * 10.0f;
+                if (has_inverter)
+                    voltage += load_current / 3000.0f * 350.0f;
             }
-            Main.diagnostics?.Value = distance;
-            Main.diagnostics2?.Value = supply_voltage - maximum_load * wire_1m_resistance * distance;
-            return voltage - load_current * wire_1m_resistance * distance;
+            _current_voltage = voltage * 0.01f + _current_voltage * 0.99f;
+            //Main.diagnostics?.Value = distance;
+            //Main.diagnostics2?.Value = supply_voltage - maximum_load * wire_1m_resistance * distance;
+            return _current_voltage - load_current * wire_1m_resistance * distance;
         }
         
         public override void reveal()

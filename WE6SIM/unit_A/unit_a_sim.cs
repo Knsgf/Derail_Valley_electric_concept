@@ -27,7 +27,7 @@ namespace WE6SIM.unit_A;
 internal partial class unit_A_sim: electric_device
 {
     const int   motors = 6;
-    const float max_exciter_voltage = 120.0f, min_exciter_voltage = 10.0f, max_exciter_current = 2000.0f;
+    const float max_exciter_voltage = 90.0f, min_exciter_voltage = 10.0f, max_exciter_current = 2000.0f;
     const float max_exciter_power = max_exciter_voltage * max_exciter_current;
 
     private readonly Dictionary<string, branch_user> _named_branches, _contactor_locations;
@@ -269,7 +269,6 @@ internal partial class unit_A_sim: electric_device
         switch (wheel_position)
         {
             case 0:
-                _contactors.toggle_traction_motors(turn_on: false);
                 _throttle_controller.roll_camshafts_over();
                 break;
 
@@ -467,6 +466,7 @@ internal partial class unit_A_sim: electric_device
         lock (_currents)
         {
             //circuit_telemetry.log_sorted_currents(_circuit, -1.0f, -1.0f);
+            //circuit_telemetry.log_sorted_voltages(_circuit);
             foreach (KeyValuePair<string, branch_user> branch in _named_branches)
                 _currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
         }
