@@ -42,9 +42,9 @@ internal static class signal_cable
         jog         = 3,
         sander      = 4,
         
-        reverser              = 8,
-        throttle              = 9,
-        field                 = 12,
+        reverser              = 7,
+        throttle              = 6,
+        field                 = 11,
         selector              = 15,
         independent_brake     = 18,
         unit_B_camshaft_notch = 21 
@@ -59,7 +59,7 @@ internal static class signal_cable
 
         reverser              = 0x1 << BA1_shift.reverser,
         throttle              = 0x7 << BA1_shift.throttle,
-        field                 = 0x7 << BA1_shift.field,
+        field                 = 0xF << BA1_shift.field,
         selector              = 0x7 << BA1_shift.selector,
         independent_brake     = 0x7 << BA1_shift.independent_brake,
         unit_B_camshaft_notch = 0x7 << BA1_shift.unit_B_camshaft_notch

@@ -13,7 +13,7 @@ namespace WE6SIM.devices;
 internal class control_stand: electric_device
 {
     public const int   independent_brake_notches = 6;
-    public const int   reverser_notches          = 3, throttle_notches = 6, field_handle_notches = 7, selector_notches = 6;
+    public const int   reverser_notches          = 3, throttle_notches = 6, field_handle_notches = 11, selector_notches = 6;
     public const float independent_brake_last_notch = independent_brake_notches - 1;
     public const float reverser_last_notch          =          reverser_notches - 1, throttle_last_notch = throttle_notches - 1;
     public const float field_handle_last_notch      =      field_handle_notches - 1, selector_last_notch = selector_notches - 1;

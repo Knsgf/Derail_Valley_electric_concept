@@ -135,9 +135,10 @@ internal partial class unit_A_sim
 
         public void switch_field_contactors(int field_handle)
         {
-            for (int field_contactor_on = 0; field_contactor_on < field_handle; ++field_contactor_on)
+            int off_contactor_number = Math.Min(field_handle, 6);
+            for (int field_contactor_on = 0; field_contactor_on < off_contactor_number; ++field_contactor_on)
                 _field_shunt_contactors[field_contactor_on].toggle(turn_on: true);
-            for (int field_contactor_off = field_handle; field_contactor_off < 6; ++field_contactor_off)
+            for (int field_contactor_off = off_contactor_number; field_contactor_off < 6; ++field_contactor_off)
                 _field_shunt_contactors[field_contactor_off].toggle(turn_on: false);
         }
 
