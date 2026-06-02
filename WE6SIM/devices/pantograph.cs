@@ -13,69 +13,66 @@ using WE6SIM.utilities;
 
 namespace WE6SIM.devices;
 
+[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+public class pantograph_part(string part_name): Attribute
+{
+	public string name { get; private set; } = part_name;
+}
+
 internal class pantograph: electric_device
 {
-    const string pantograph_tag          =  "PantographBase", head_tag                 = "Head";
-    const string lower_front_frame_tag   = "LowerFrontFrame", upper_front_frame_tag    = "UpperFrontFrame";
-    const string lower_back_frame_tag    =  "LowerBackFrame", upper_back_frame_tag     = "UpperBackFrame";
-    const string front_piston_tag        =     "FrontPiston", back_piston_tag          = "BackPiston";
-    const string rollers_offset_tag      =   "RollersOffset", top_pivot_tag            = "UpperFrameTopPivot";
-    const string first_contact_strip_tag =       "StripEnd1", second_contact_strip_tag = "StripEnd2";
-    const string first_horn_tag          =        "HornTip1", second_horn_tag          =  "HornTip2";
-    const string piston_lever_tag        =        "LeverTip";
-
-    const string sidepan_base_tag          = "SidepanBase";
-    const string sidepan_pivot_tag         = "SidepanPivot", sidepan_arm_tag           = "SidepanArm";
-    const string sidepan_inner_contact_tag = "SidepanInner", sidepan_outer_contact_tag = "SidepanOuter";
+    const string pantograph_tag = "PantographBase", sidepan_tag = "SidepanBase";
 
     const float maximum_head_height = 6.6f, frame_thickness = 0.085f, head_movement_speed = 0.5f;
     const float sidepan_relative_movement_speed = 0.5f;
     const int   max_iterations_before_sleep = 6;
 
-    private static readonly Dictionary<string, FieldInfo> _pantograph_anchors = [];
-    private static readonly Dictionary<string, FieldInfo>    _sidepan_anchors = [];
-    private static readonly Dictionary<string, string> _pantograph_transform_names = new()
-    {
-        [pantograph_tag] = "_base",
-
-        [             head_tag] = "_head",
-        [lower_front_frame_tag] = "_front_lower_frame",
-        [upper_front_frame_tag] = "_front_upper_frame",
-        [ lower_back_frame_tag] = "_back_lower_frame",
-        [ upper_back_frame_tag] = "_back_upper_frame",
-        [   rollers_offset_tag] = "_head_rollers",
-        [        top_pivot_tag] = "_top_pivot",
-
-        [front_piston_tag] = "_front_piston",
-        [ back_piston_tag] = "_back_piston",
-        [piston_lever_tag] = "_piston_lever_tip",
-
-        [ first_contact_strip_tag] = "_contact_strip_end1",
-        [second_contact_strip_tag] = "_contact_strip_end2",
-        [          first_horn_tag] = "_horn_tip1",
-        [         second_horn_tag] = "_horn_tip2"
-    };
-    private static readonly Dictionary<string, string> _sidepan_transform_names = new()
-    {
-        [ sidepan_base_tag] = "_sidepan_base",
-        [sidepan_pivot_tag] = "_sidepan_pivot",
-        [  sidepan_arm_tag] = "_sidepan_arm",
-
-        [sidepan_inner_contact_tag] = "_sidepan_inner_contact",
-        [sidepan_outer_contact_tag] = "_sidepan_outer_contact"
-    };
-    
+    private static readonly Dictionary<string, FieldInfo> _pantograph_parts = [];
     private static readonly Quaternion _sidepan_pivot_deployed_orientation = Quaternion.AngleAxis(90.0f  , Vector3.up   );
     private static readonly Quaternion   _sidepan_arm_deployed_orientation = Quaternion.AngleAxis(15.456f, Vector3.right);
 
     private readonly roof_busbar _roof_bus;
 
-    private Transform _base, _front_lower_frame, _front_upper_frame, _back_lower_frame, _back_upper_frame, _head;
-    private Transform _front_piston, _back_piston;
-    private Transform _head_rollers, _top_pivot, _piston_lever_tip;
-    private Transform _contact_strip_end1, _contact_strip_end2, _horn_tip1, _horn_tip2;
+    [pantograph_part(pantograph_tag)]
+    private Transform _base; 
+    [pantograph_part("LowerFrontFrame")]
+    private Transform _front_lower_frame; 
+    [pantograph_part("UpperFrontFrame")]
+    private Transform _front_upper_frame; 
+    [pantograph_part("LowerBackFrame")]
+    private Transform _back_lower_frame; 
+    [pantograph_part("UpperBackFrame")]
+    private Transform _back_upper_frame; 
+    [pantograph_part("Head")]
+    private Transform _head;
 
-    private Transform _sidepan_base, _sidepan_pivot, _sidepan_arm, _sidepan_inner_contact, _sidepan_outer_contact;
+    [pantograph_part("FrontPiston")]
+    private Transform _front_piston; 
+    [pantograph_part("BackPiston")]
+    private Transform  _back_piston;
+
+    [pantograph_part("RollersOffset")]
+    private Transform _head_rollers; 
+    [pantograph_part("UpperFrameTopPivot")]
+    private Transform _top_pivot; 
+    [pantograph_part("LeverTip")]
+    private Transform _piston_lever_tip;
+    
+    [pantograph_part("StripEnd1")]
+    private Transform _contact_strip_end1; 
+    [pantograph_part("StripEnd2")]
+    private Transform _contact_strip_end2; 
+
+    [pantograph_part(sidepan_tag)]
+    private Transform _sidepan_base; 
+    [pantograph_part("SidepanPivot")]
+    private Transform _sidepan_pivot; 
+    [pantograph_part("SidepanArm")]
+    private Transform _sidepan_arm; 
+    [pantograph_part("SidepanInner")]
+    private Transform _sidepan_inner_contact; 
+    [pantograph_part("SidepanOuter")]
+    private Transform _sidepan_outer_contact;
 
     private readonly Quaternion _initial_front_lower_frame_orientation, _initial_front_upper_frame_orientation;
     private readonly Quaternion _initial_back_lower_frame_orientation, _initial_back_upper_frame_orientation;
@@ -98,35 +95,22 @@ internal class pantograph: electric_device
 
     public event Action? toggled, sidepan_toggled;
 
-    private static void tie_fields_to_tags(
-        Dictionary<string,    string> tagged_names, 
-        Dictionary<string, FieldInfo>  named_fields,
-        Dictionary<string, FieldInfo> tagged_fields)
-    {
-        foreach (KeyValuePair<string, string> tag_and_name in tagged_names)
-        {
-            if (!named_fields.TryGetValue(tag_and_name.Value, out FieldInfo field))
-                throw new Exception($"Field {tag_and_name.Value} not declared");
-            //Main.log($"Field {field.FieldType} {tag_and_name.Value} [{tag_and_name.Key}]");
-            tagged_fields[tag_and_name.Key] = field;
-        }
-    }
-    
     static pantograph()
     {
         FieldInfo[] all_fields = typeof(pantograph).GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-        Dictionary<string, FieldInfo> named_fields = [];
         foreach (FieldInfo field in all_fields)
-            named_fields[field.Name] = field;
-        tie_fields_to_tags(_pantograph_transform_names, named_fields, _pantograph_anchors);
-        tie_fields_to_tags(   _sidepan_transform_names, named_fields,    _sidepan_anchors);
+        {
+            var part = (pantograph_part?) Attribute.GetCustomAttribute(field, typeof(pantograph_part), inherit: false);
+            if (part is not null)
+                _pantograph_parts[part.name] = field;
+        }
     }
 
     private static GameObject? find_pantograph_base(bool is_sidepan, GameObject entity)
     {
         foreach (GameObject current_object in entity.AllChildren())
         {
-            if (string.Equals(current_object.name, is_sidepan ? sidepan_base_tag : pantograph_tag, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(current_object.name, is_sidepan ? sidepan_tag : pantograph_tag, StringComparison.OrdinalIgnoreCase))
                 return current_object;
         }
         return null;
@@ -154,12 +138,11 @@ internal class pantograph: electric_device
         _roof_bus = roof_bus;
         
         GameObject pantograph_base = find_pantograph_base(is_sidepan: false, unit) ?? throw new Exception("Missing pantograph");
-        assign_parts(_pantograph_anchors, pantograph_base);
+        assign_parts(_pantograph_parts, pantograph_base);
         if (_base == null || _head == null || _front_lower_frame == null || _front_upper_frame == null
             || _back_lower_frame == null || _back_upper_frame == null || _front_piston == null || _back_piston == null
             || _head_rollers == null || _top_pivot == null || _piston_lever_tip == null
-            || _contact_strip_end1 == null || _contact_strip_end2 == null
-            || _horn_tip1 == null || _horn_tip2 == null)
+            || _contact_strip_end1 == null || _contact_strip_end2 == null)
         {
             throw new Exception("Incomplete pantograph");
         }
@@ -191,7 +174,7 @@ internal class pantograph: electric_device
         _initial_back_upper_frame_orientation  =  _back_upper_frame.localRotation * Quaternion.AngleAxis(upper_frame_rest_angle, Vector3.right);
 
         GameObject sidepan_base = find_pantograph_base(is_sidepan: true, unit) ?? throw new Exception("Missing sidepan");
-        assign_parts(_sidepan_anchors, sidepan_base);
+        assign_parts(_pantograph_parts, sidepan_base);
         if (_sidepan_base == null || _sidepan_pivot == null || _sidepan_arm == null 
             || _sidepan_inner_contact == null || _sidepan_outer_contact == null)
         {
