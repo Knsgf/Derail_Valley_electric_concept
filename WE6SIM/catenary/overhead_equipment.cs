@@ -28,7 +28,7 @@ internal partial class overhead_equipment
     const int scenery_tree_objects_per_node = 64, wires_tree_objects_per_node = 4;
     
     public enum pole_kind { Ground, Bridge, Tunnel, Bracket, SideRail };
-    public enum cantilever_kind { Inner, OutwardsInner, MiddleInner, Middle, Outer };
+    public enum cantilever_kind { Inner, OutwardsInner, MiddleInner, Middle, InwardsOuter, Outer };
     public enum wire_kind { plain_dual, plain_single, end_anchor_dual, end_anchor_single, wall_anchor_single,
         middle_anchor_dual, middle_anchor_single, side_rail, termination_rail };
 
@@ -52,6 +52,8 @@ internal partial class overhead_equipment
         "MiddleInwardCantileverSingle",
         "OuterCantileverDual",
         "OuterCantileverSingle",
+        "OuterInwardCantileverDual",
+        "OuterInwardCantileverSingle",
         "Pole",
         "PoleAnchor",
         "PoleFoundation",
@@ -83,6 +85,21 @@ internal partial class overhead_equipment
         "WireSingleFixedEnd",
         "WireMidpointAnchorSingle",
         "WireSingleWallEnd",
+
+        "Signs/DropPantographs",
+        "Signs/DropPantographsOtherSide",
+        "Signs/DropPantographsWarning",
+        "Signs/DropPantographsWarningOtherSide",
+        "Signs/RaisePantographs",
+        "Signs/RaisePantographsOtherSide",
+        "Signs/NeutralBegin",
+        "Signs/NeutralBeginOtherSide",
+        "Signs/NeutralEnd",
+        "Signs/NeutralEndOtherSide",
+        "Signs/NeutralEndNoRegen",
+        "Signs/NeutralEndNoRegenOtherSide",
+        "Signs/NeutralWarning",
+        "Signs/NeutralWarningOtherSide",
     };
     private static overhead_equipment? _system;
 

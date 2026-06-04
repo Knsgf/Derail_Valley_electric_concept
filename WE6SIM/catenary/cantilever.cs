@@ -68,6 +68,7 @@ internal partial class overhead_equipment
                 cantilever_kind.OutwardsInner => "InnerOutwardCantilever",
                 cantilever_kind.MiddleInner   => "MiddleInwardCantilever",
                 cantilever_kind.Middle        => "MiddleCantilever",
+                cantilever_kind.InwardsOuter  => "OuterInwardCantilever",
                 cantilever_kind.Outer         => "OuterCantilever",
                 _ => throw new ArgumentOutOfRangeException($"Invalid cantilever type {cantilever_type}")
             } + (dual_wire ? "Dual" : "Single");
@@ -104,6 +105,7 @@ internal partial class overhead_equipment
                     cantilever_kind.OutwardsInner => sweep,
                     cantilever_kind.MiddleInner   => 0.0f,
                     cantilever_kind.Middle        => 0.0f,
+                    cantilever_kind.InwardsOuter  => -sweep,
                     cantilever_kind.Outer         => -sweep,
                     _ => throw new ArgumentOutOfRangeException($"Unknown cantilever type {cantilever_type}")
                 };
