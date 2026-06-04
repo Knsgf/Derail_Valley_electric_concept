@@ -5305,7 +5305,7 @@
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
-    "cantilever_type": "Outer",
+    "cantilever_type": "InwardsOuter",
     "is_gantry_registration_arm": false,
     "is_tunnel_registration_arm": false,
     "orientation": {
@@ -5356,7 +5356,7 @@
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
-    "cantilever_type": "Outer",
+    "cantilever_type": "InwardsOuter",
     "is_gantry_registration_arm": false,
     "is_tunnel_registration_arm": false,
     "orientation": {
@@ -7948,7 +7948,7 @@
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
-    "cantilever_type": "Outer",
+    "cantilever_type": "InwardsOuter",
     "is_gantry_registration_arm": false,
     "is_tunnel_registration_arm": false,
     "orientation": {
@@ -11075,5 +11075,96 @@
     "x": 10524435,
     "z": 11437486,
     "y": 123.031578
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "Signs/RaisePantographs",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9833696,
+      "z": 0.0,
+      "w": -0.18161571
+    },
+    "x": 9564107,
+    "z": 13752475,
+    "y": 119.379364
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "Signs/RaisePantographs",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9863336,
+      "z": 0.0,
+      "w": -0.164760649
+    },
+    "x": 9574543,
+    "z": 13780616,
+    "y": 119.349457
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "Signs/DropPantographsOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9863336,
+      "z": 0.0,
+      "w": -0.164760649
+    },
+    "x": 9574543,
+    "z": 13780616,
+    "y": 119.349457
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "Signs/DropPantographs",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.183341071,
+      "z": 0.0,
+      "w": 0.9830494
+    },
+    "x": 10511898,
+    "z": 11456546,
+    "y": 123.256454
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "Signs/RaisePantographsOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.183341071,
+      "z": 0.0,
+      "w": 0.9830494
+    },
+    "x": 10511898,
+    "z": 11456546,
+    "y": 123.256454
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "Signs/DropPantographsWarning",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0824796259,
+      "z": 0.0,
+      "w": 0.99659276
+    },
+    "x": 10506858,
+    "z": 11625238,
+    "y": 125.211037
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "Signs/DropPantographsWarningOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.7244821,
+      "z": 0.0,
+      "w": 0.6892936
+    },
+    "x": 9682231,
+    "z": 13895165,
+    "y": 120.372375
   }
 ]
