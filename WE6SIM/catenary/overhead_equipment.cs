@@ -367,7 +367,7 @@ internal partial class overhead_equipment
         return new_object;
     }
 
-    public (float?, float) wire_height_and_voltage(int strip_end1_x, int strip_end1_z, int strip_end2_x, int strip_end2_z, 
+    public (float? contact_height, float contact_voltage) wire_height_and_voltage(int strip_end1_x, int strip_end1_z, int strip_end2_x, int strip_end2_z, 
         float pantograph_base_y, float load_current)
     {
         const int wire_search_half_area = (int) (60.0f * fixed_multiplier);
@@ -378,9 +378,9 @@ internal partial class overhead_equipment
         find_objects_within_region(_nearby_wires, _wires_tree, do_bounds_check: true, 
             strip_centre_x - wire_search_half_area, strip_centre_z - wire_search_half_area, 
             strip_centre_x + wire_search_half_area, strip_centre_z + wire_search_half_area, search_tree_only: true);
-        float lowest_height = float.MaxValue;
+        float lowest_height = float.MaxValue, lowest_energised_height = float.MaxValue;
         //Main.log($"{_nearby_wires.Count} wires");
-        wire? wire_in_contact = null;
+        wire? wire_in_contact = null, energised_wire = null;
         foreach (catenary_object current_object in _nearby_wires)
         {
             var    current_wire   = (wire) current_object;
@@ -393,14 +393,20 @@ internal partial class overhead_equipment
                     lowest_height   = wire_height;
                     wire_in_contact = current_wire;
                 }
+                if (current_wire.substation_index > 0 && lowest_energised_height > wire_height)
+                {
+                    lowest_energised_height = wire_height;
+                    energised_wire          = current_wire;
+                }
             }
         }
 
         if (wire_in_contact == null)
             return (null, 0.0f);
-
-        substation supplying_substation = _all_substations![wire_in_contact.substation_index];
-        return (lowest_height, supplying_substation.wire_voltage(wire_in_contact.x, wire_in_contact.z, 
-            wire_in_contact.y, load_current, wire_in_contact.length_1m_resistance));
+        if (energised_wire == null || lowest_energised_height - lowest_height >= 0.2f)
+            return (lowest_height, 0.0f);
+        substation supplying_substation = _all_substations![energised_wire.substation_index];
+        return (lowest_height, supplying_substation.wire_voltage(energised_wire.x, energised_wire.z, 
+            energised_wire.y, load_current, energised_wire.length_1m_resistance));
     }
 }
