@@ -193,11 +193,15 @@ internal partial class overhead_equipment
         [
             "FM",
             "FF",
+            "IME",
+            "SM",
+
+            "FF-IME[FF]",
             "FF-SM[FF]",
             "FM-SM[SM]",
-            "IME",
             "IME-FF[CME-IME]",
-            "SM"
+
+            "[FF]![CME-IME]"
         ];
         foreach (string location in all_locations)
             _system.load_scenery_from_bundle(catenary, location);
@@ -286,15 +290,20 @@ internal partial class overhead_equipment
     }
 
     private void find_objects_within_region(List<catenary_object> found_objects, quad_tree all_objects,
-        bool do_bounds_check, int left, int top, int right, int bottom)
+        bool do_bounds_check, int left, int top, int right, int bottom, bool search_tree_only = false)
     {
         found_objects.Clear();
         all_objects.find_objects(found_objects, do_bounds_check, left, top, right, bottom);
-        foreach (catenary_object current_object in _freshly_added_objects)
+    #if DEBUG
+        if (!search_tree_only)
         {
-            if (current_object.x >= left && current_object.x <= right && current_object.z >= top && current_object.z <= bottom)
-                found_objects.Add(current_object);
+            foreach (catenary_object current_object in _freshly_added_objects)
+            {
+                if (current_object.x >= left && current_object.x <= right && current_object.z >= top && current_object.z <= bottom)
+                    found_objects.Add(current_object);
+            }
         }
+    #endif
     }
 
     public void handle_scenery_visibility(Vector3 relative_postion)
@@ -368,7 +377,7 @@ internal partial class overhead_equipment
         _nearby_wires.Clear();
         find_objects_within_region(_nearby_wires, _wires_tree, do_bounds_check: true, 
             strip_centre_x - wire_search_half_area, strip_centre_z - wire_search_half_area, 
-            strip_centre_x + wire_search_half_area, strip_centre_z + wire_search_half_area);
+            strip_centre_x + wire_search_half_area, strip_centre_z + wire_search_half_area, search_tree_only: true);
         float lowest_height = float.MaxValue;
         //Main.log($"{_nearby_wires.Count} wires");
         wire? wire_in_contact = null;
