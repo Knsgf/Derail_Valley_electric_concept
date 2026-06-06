@@ -43,7 +43,7 @@ internal static class signal_cable
         sander      = 4,
         
         reverser              = 7,
-        throttle              = 6,
+        throttle              = 8,
         field                 = 11,
         selector              = 15,
         independent_brake     = 18,
