@@ -141,6 +141,7 @@ internal partial class unit_A_sim: electric_device
         _control_stand.register_handler(    "left_sidepan_switch",     toggle_left_sidepan);
         _control_stand.register_handler(   "right_sidepan_switch",    toggle_right_sidepan);
         _control_stand.register_handler(   "fast_notching_switch",    fast_notching_toggle);
+        _control_stand.register_handler(    "blower_speed_switch",     blower_speed_toggle);
 
         _control_stand.register_handler( "main_breaker_on_button",      _main_breaker.toggle_on );
         _control_stand.register_handler("main_breaker_off_button",      _main_breaker.toggle_off);
@@ -206,6 +207,12 @@ internal partial class unit_A_sim: electric_device
     private void fast_notching_toggle(float port_value)
     {
         _fast_notching_enabled = port_value >= 0.5f;
+    }
+
+    private void blower_speed_toggle(float port_value)
+    {
+        Main.log($"BLW {port_value}");
+        _blowers.full_speed_mode = port_value >= 0.5f;
     }
 
     private void signal_primary_camshaft_target_notch(float target_notch)
@@ -525,7 +532,6 @@ internal partial class unit_A_sim: electric_device
         _blowers.rheostatic_braking_on = rheostatic_brake_on;
         _blowers.motor_current         = maximum_load;
         _blowers.line_voltage          = rheostatic_brake_on ? _motors_volts : voltage;
-        //_blowers.full_speed_mode = true;
         _blowers.simulate();
         _traction_motor_temperature.simulate(total_heat_emission_A);
 

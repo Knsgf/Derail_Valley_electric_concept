@@ -36,6 +36,7 @@ internal class control_stand: electric_device
         ["left_sidepan_switch"    ] = "[LeftSidePanSwitch].EXT_IN",
         ["right_sidepan_switch"   ] = "[RighttSidePanSwitch].EXT_IN",
         ["fast_notching_switch"   ] = "[FastNotchingSwitch].EXT_IN",
+        ["blower_speed_switch"    ] = "[BlowerSpeedSwitch].EXT_IN",
 
         ["primary_notch_hand"  ] = "[CustomSimulation].PRIMARY_NOTCH",
         ["secondary_notch_hand"] = "[CustomSimulation].SECONDARY_NOTCH",
