@@ -20,7 +20,7 @@ namespace WE6SIM.unit_A;
 
 internal partial class unit_A_sim
 {
-    internal class main_circuit_breaker: electric_device
+    private class main_circuit_breaker: electric_device
     {
         private readonly unit_A_sim _unit;
         
