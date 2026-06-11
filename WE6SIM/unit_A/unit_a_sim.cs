@@ -396,6 +396,7 @@ internal partial class unit_A_sim: electric_device
 
         _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
         _contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
+        set_seconday_notch(_secondary_camshaft_notch);
     }
 
     private void calculate_combined_unit_motor_performance(bool is_unit_A, traction_motor[] traction_motors, 
@@ -423,8 +424,7 @@ internal partial class unit_A_sim: electric_device
     {
         check_if_disposed();
         
-        bool yard_mode = _selector is (int) selector_modes.yard_power;
-        bool jog       = _jogging_mode_on && !is_powered;
+        bool jog = _jogging_mode_on && !is_powered;
         if (jog)
         {
             if (!_jog)
@@ -447,81 +447,93 @@ internal partial class unit_A_sim: electric_device
             _jog_volts.Value  = 0.0f;
             _pantograph.simulate(_total_load.Value);
         }
+        
+        set_primary_notch(_contactors._primary_controller.current_position);
         _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_on , false);
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_off, false);
 
-        set_primary_notch(_contactors._primary_controller.current_position);
-        set_seconday_notch(_secondary_camshaft_notch);
-
-        lock (_currents)
+        blower_controller blowers = _blowers;
+        if (!jog && !_main_breaker_closed.State && _roof_bus.voltage < 10.0f && _named_branches["EPS"].EMF < 10.0f && _wheel_RPM.Value < 20.0f 
+            && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && _regenerative_field.relative_speed < 0.01f)
         {
-            //circuit_telemetry.log_sorted_currents(_circuit, -1.0f, -1.0f);
-            //circuit_telemetry.log_sorted_voltages(_circuit);
-            foreach (KeyValuePair<string, branch_user> branch in _named_branches)
-                _currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
-        }
-        bool  rheostatic_brake_on = _selector is (int) selector_modes.rheostatic_brake;
-        float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
-        _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
-        bool regenerative_on = _selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
-        if (regenerative_on || _regenerative_field.relative_speed > 0.01f)
-            _regenerative_field.simulate(regenerative_on, _field_position, _roof_bus.voltage, _motors_volts);
-        traction_motor[] traction_motors = _traction_motors;
-        for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
-            traction_motors[motor_index].simulate(rheostatic_brake_on, _currents, _named_branches);
-        _circuit.simulate();
-
-        set_supply_volts(_named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"]);
-        if (yard_mode)
-        {
-            _motors_volts = Mathf.Abs(_currents["VM12"] * _element_resistances["VM12"])
-                          + Mathf.Abs(_currents["VM34"] * _element_resistances["VM34"])
-                          + Mathf.Abs(_currents["VM56"] * _element_resistances["VM56"]);
+            Main.diagnostics?.Value = 0.0f;
+            _torque_A.Value = _torque_B.Value = 0.0f;
+            //_traction_motor_temperature.simulate(0.0f);
         }
         else
         {
-            float motor_volts_1_4 = Mathf.Max(Mathf.Abs(_currents["VM12"] * _element_resistances["VM12"]), 
-                                              Mathf.Abs(_currents["VM34"] * _element_resistances["VM34"]));
-            _motors_volts         = Mathf.Max(Mathf.Abs(_currents["VM56"] * _element_resistances["VM56"]), motor_volts_1_4);
-        }
-        set_motors_volts(_motors_volts);
-        _main_breaker.trip_if_operating_parameters_exceeded(voltage, _motors_volts, _total_load.Value);
-        _overhead_power.ChangeState(voltage >= 1000.0f && _main_breaker_closed.State);
-        float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_field = 0.0f, average_EMF = 0.0f;
-        float total_torque_A, total_heat_emission_A, total_torque_B, total_heat_emission_B;
-        calculate_combined_unit_motor_performance(is_unit_A:  true, traction_motors, ref average_RPM, 
-            ref average_load, ref maximum_load, ref average_field, ref average_EMF,
-            out total_torque_A, out total_heat_emission_A);
-        calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref average_RPM, 
-            ref average_load, ref maximum_load, ref average_field, ref average_EMF,
-            out total_torque_B, out total_heat_emission_B);
-        average_RPM   /= traction_motors.Length;
-        average_EMF   /= traction_motors.Length;
-        average_load  /= traction_motors.Length;
-        average_field /= traction_motors.Length;
-        _traction_motor_RPM.Value   = average_RPM;
-        _traction_motor_load.Value  = average_load;
-        if (maximum_load < 10.0f)
-            set_reverse_current_lamp(0.0f);
-        else
-            set_reverse_current_lamp((average_load * average_field * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f);
-        for (int group_index = 2; group_index >= 0; --group_index)
-        {
-            set_motor_group_load [group_index](traction_motors[group_index << 1].load_current );
-            set_motor_group_field[group_index](traction_motors[group_index << 1].field_current);
-        }
-        _traction_motor_EMF.Value = average_EMF;
+            Main.diagnostics?.Value = 1.0f;
+            lock (_currents)
+            {
+                //circuit_telemetry.log_sorted_currents(_circuit, -1.0f, -1.0f);
+                //circuit_telemetry.log_sorted_voltages(_circuit);
+                foreach (KeyValuePair<string, branch_user> branch in _named_branches)
+                    _currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
+            }
+            bool  rheostatic_brake_on = _selector is (int) selector_modes.rheostatic_brake;
+            float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
+            _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
+            bool regenerative_on = _selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
+            if (regenerative_on || _regenerative_field.relative_speed >= 0.01f)
+                _regenerative_field.simulate(regenerative_on, _field_position, _roof_bus.voltage, _motors_volts);
         
-        _blowers.active                = rheostatic_brake_on || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
-        _blowers.rheostatic_braking_on = rheostatic_brake_on;
-        _blowers.motor_current         = maximum_load;
-        _blowers.line_voltage          = rheostatic_brake_on ? _motors_volts : voltage;
-        _blowers.simulate();
-        _traction_motor_temperature.simulate(total_heat_emission_A);
+            traction_motor[] traction_motors = _traction_motors;
+            for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
+                traction_motors[motor_index].simulate(rheostatic_brake_on, _currents, _named_branches);
+            _circuit.simulate();
 
-        _torque_A.Value = total_torque_A;
-        _torque_B.Value = total_torque_B;
+            set_supply_volts(_named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"]);
+            if (_selector is (int) selector_modes.yard_power)
+            {
+                _motors_volts = Mathf.Abs(_currents["VM12"] * _element_resistances["VM12"])
+                              + Mathf.Abs(_currents["VM34"] * _element_resistances["VM34"])
+                              + Mathf.Abs(_currents["VM56"] * _element_resistances["VM56"]);
+            }
+            else
+            {
+                float motor_volts_1_4 = Mathf.Max(Mathf.Abs(_currents["VM12"] * _element_resistances["VM12"]), 
+                                                  Mathf.Abs(_currents["VM34"] * _element_resistances["VM34"]));
+                _motors_volts         = Mathf.Max(Mathf.Abs(_currents["VM56"] * _element_resistances["VM56"]), motor_volts_1_4);
+            }
+            set_motors_volts(_motors_volts);
+            _main_breaker.trip_if_operating_parameters_exceeded(voltage, _motors_volts, _total_load.Value);
+            _overhead_power.ChangeState(voltage >= 1000.0f && _main_breaker_closed.State);
+            float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_field = 0.0f, average_EMF = 0.0f;
+            float total_torque_A, total_heat_emission_A, total_torque_B, total_heat_emission_B;
+            calculate_combined_unit_motor_performance(is_unit_A:  true, traction_motors, ref average_RPM, 
+                ref average_load, ref maximum_load, ref average_field, ref average_EMF,
+                out total_torque_A, out total_heat_emission_A);
+            calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref average_RPM, 
+                ref average_load, ref maximum_load, ref average_field, ref average_EMF,
+                out total_torque_B, out total_heat_emission_B);
+            average_RPM   /= traction_motors.Length;
+            average_EMF   /= traction_motors.Length;
+            average_load  /= traction_motors.Length;
+            average_field /= traction_motors.Length;
+            _traction_motor_RPM.Value   = average_RPM;
+            _traction_motor_load.Value  = average_load;
+            if (maximum_load < 10.0f)
+                set_reverse_current_lamp(0.0f);
+            else
+                set_reverse_current_lamp((average_load * average_field * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f);
+            for (int group_index = 2; group_index >= 0; --group_index)
+            {
+                set_motor_group_load [group_index](traction_motors[group_index << 1].load_current );
+                set_motor_group_field[group_index](traction_motors[group_index << 1].field_current);
+            }
+            _traction_motor_EMF.Value = average_EMF;
+        
+            blowers.active                = rheostatic_brake_on || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
+            blowers.rheostatic_braking_on = rheostatic_brake_on;
+            blowers.motor_current         = maximum_load;
+            blowers.line_voltage          = rheostatic_brake_on ? _motors_volts : voltage;
+            blowers.simulate();
+            _traction_motor_temperature.simulate(total_heat_emission_A);
+
+            _torque_A.Value = total_torque_A;
+            _torque_B.Value = total_torque_B;
+        }
     }
 
     public override void Dispose()

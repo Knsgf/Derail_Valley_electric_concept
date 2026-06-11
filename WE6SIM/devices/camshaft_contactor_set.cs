@@ -18,6 +18,8 @@ internal class camshaft_contactor_set: electric_device
     private readonly camshaft_motor? _drive;
     private readonly Action<bool>?   _contactor_toggle_sound = null;
 
+    private int _last_notch = -1;
+
     private (string?, int, int) extract_token(string input, int starting_index)
     {
         int left_margin = starting_index;
@@ -171,6 +173,9 @@ internal class camshaft_contactor_set: electric_device
     {
         check_if_disposed();
         Main.log($"N={notch}");
+        if (_last_notch == notch)
+            return;
+        _last_notch = notch;
         int closed_mask = 1 << (notch - 1);
         foreach (KeyValuePair<string, int> contactor_close_pattern in _contactor_notch_patterns)
         {
