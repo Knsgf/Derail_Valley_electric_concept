@@ -31,21 +31,25 @@ internal partial class unit_A_sim
                 return;
 
             _interrupt_movement = _roll_over = true;
-            while (unit.is_powered && (unit._contactors._line_contactor.engaged || unit._contactors._line_contactor2.engaged))
+            contactors all_contactors = unit._contactors;
+            while (unit.is_powered && (all_contactors._line_contactor.engaged 
+                                    || all_contactors._line_contactor2.engaged
+                                    || all_contactors._voltmeters.engaged))
             {
-                unit._contactors._line_contactor.toggle(false);
-                unit._contactors._line_contactor2.toggle(false);
+                all_contactors._line_contactor.toggle(false);
+                all_contactors._line_contactor2.toggle(false);
+                all_contactors._voltmeters.toggle(false);
                 await Task.Delay(300);
             }
-            unit._contactors.toggle_traction_motors(turn_on: false);
-            unit._contactors._primary_controller.roll_over_move(to_1: true);
+            all_contactors.toggle_traction_motors(turn_on: false);
+            all_contactors._primary_controller.roll_over_move(to_1: true);
             unit.set_secondary_camshaft_target_notch(roll_over_to_1);
-            while (unit.is_powered && unit._contactors._primary_controller.current_notch != 1)
+            while (unit.is_powered && all_contactors._primary_controller.current_notch != 1)
             {
                 await Task.Delay(300);
-                if (unit._contactors._primary_controller.current_notch == 1)
+                if (all_contactors._primary_controller.current_notch == 1)
                     break;
-                unit._contactors._primary_controller.roll_over_move(to_1: true);	// restart if previous call terminated before a fuse switched on
+                all_contactors._primary_controller.roll_over_move(to_1: true);	// restart if previous call terminated before a fuse switched on
             }
             while (unit.is_powered && unit.get_secondary_camshaft_current_notch(unit._control_BA1.Value) != 1)
             {
@@ -161,23 +165,24 @@ internal partial class unit_A_sim
                 return;
             }
 
+            contactors all_contactors = unit._contactors;
             bool enable_line_contactor2 = unit._selector is not (int) selector_modes.yard_power;
-            if (!unit._contactors._line_contactor.engaged || enable_line_contactor2 && !!unit._contactors._line_contactor2.engaged)
+            if (!all_contactors._line_contactor.engaged || enable_line_contactor2 && !!all_contactors._line_contactor2.engaged)
             {
                 int primary_target_notch = (unit._selector is not (int) selector_modes.rheostatic_brake) ? 1 : 5;
-                while (unit._throttle == 3 && !unit._contactors._line_contactor.engaged 
-                    || enable_line_contactor2 && !unit._contactors._line_contactor2.engaged)
+                while (unit._throttle == 3 && !all_contactors._line_contactor.engaged 
+                    || enable_line_contactor2 && !all_contactors._line_contactor2.engaged)
                 {
-                    if (unit._contactors._primary_controller.current_notch == primary_target_notch
+                    if (all_contactors._primary_controller.current_notch == primary_target_notch
                         && unit.get_secondary_camshaft_current_notch(unit._control_BA1.Value) == 1)
                     {
-                        unit._contactors._line_contactor.toggle(true);
+                        all_contactors._line_contactor.toggle(true);
                         if (enable_line_contactor2)
-                            unit._contactors._line_contactor2.toggle(true);
+                            all_contactors._line_contactor2.toggle(true);
                     }
                     else
                     {
-                        unit._contactors._primary_controller.target_notch = primary_target_notch;
+                        all_contactors._primary_controller.target_notch = primary_target_notch;
                         unit.set_secondary_camshaft_target_notch(1);
                     }
                     await Task.Delay(300);

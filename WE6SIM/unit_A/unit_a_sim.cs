@@ -27,9 +27,6 @@ namespace WE6SIM.unit_A;
 internal partial class unit_A_sim: electric_device
 {
     const int   motors = 6;
-    const float max_exciter_voltage = 90.0f, min_exciter_voltage = 10.0f, max_exciter_current = 2000.0f;
-    const float max_exciter_power = max_exciter_voltage * max_exciter_current;
-
     private readonly Dictionary<string, branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
@@ -48,6 +45,7 @@ internal partial class unit_A_sim: electric_device
     private readonly roof_busbar                _roof_bus;
     private readonly main_circuit_breaker       _main_breaker;
     private readonly traction_motor[]           _traction_motors;
+    private readonly exciter                    _regenerative_field;
     private readonly blower_controller          _blowers;
     private readonly throttle_controller        _throttle_controller;
     private readonly control_stand              _control_stand;
@@ -119,6 +117,7 @@ internal partial class unit_A_sim: electric_device
         for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
             _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM_B, _named_branches);
         _traction_motor_temperature = new(ports);
+        _regenerative_field = new(this, ports);
         _blowers = new(
             _main_breaker_closed, 
             grab_port(ports, "[Blowers].BLOWERS_RELATIVE_SPEED"), 
@@ -211,7 +210,6 @@ internal partial class unit_A_sim: electric_device
 
     private void blower_speed_toggle(float port_value)
     {
-        Main.log($"BLW {port_value}");
         _blowers.full_speed_mode = port_value >= 0.5f;
     }
 
@@ -267,6 +265,12 @@ internal partial class unit_A_sim: electric_device
         reverser_handler(raw_reverser, selector_switched: false);
     }
 
+    private void toggle_traction_motors(bool turn_on)
+    {
+        _contactors.toggle_traction_motors(turn_on);
+        _contactors._voltmeters.toggle(turn_on);
+    }
+    
     private void throttle_handler(float raw_throttle, bool cab_changed)
     {
         int wheel_position = Mathf.RoundToInt(raw_throttle * throttle_last_notch);
@@ -280,29 +284,29 @@ internal partial class unit_A_sim: electric_device
                 break;
 
             case 1:
-                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
+                toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 _throttle_controller.run_down();
                 break;
 
             case 2:
-                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
+                toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 if (_single_notch_movement == null || _single_notch_movement.IsCompleted)
                     _single_notch_movement = _throttle_controller.notch_down();
                 break;
 
             case 3:
-                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
+                toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 _ = _throttle_controller.unlock_camshafts(continuous_run: false);
                 break;
 
             case 4:
-                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
+                toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 if (_single_notch_movement == null || _single_notch_movement.IsCompleted)
                     _single_notch_movement = _throttle_controller.notch_up();
                 break;
 
             case 5:
-                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
+                toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 _throttle_controller.run_up();
                 break;
         }
@@ -313,33 +317,13 @@ internal partial class unit_A_sim: electric_device
         throttle_handler(raw_throttle, cab_changed: false);
     }
 
-    private void set_exciter_voltage(int field_handle_postion)
-    {
-        float line_voltage = _roof_bus.voltage, exciter_EMF;
-        if (line_voltage < 1000.0f || !_main_breaker_closed.State)
-            exciter_EMF = 0.0f;
-        else
-        {
-            float raw_field_position = field_handle_postion / field_handle_last_notch;
-            float voltage_adjust = (1.0f - _motors_volts / line_voltage) * max_exciter_voltage;
-            exciter_EMF = Mathf.Clamp(min_exciter_voltage * (1.0f - raw_field_position) 
-                + max_exciter_voltage * raw_field_position + voltage_adjust, min_exciter_voltage, max_exciter_voltage);
-            float exciter_power = _currents["EXT"] * exciter_EMF;
-            if (exciter_power > max_exciter_power)
-                exciter_EMF *= max_exciter_power / exciter_power;
-        }
-        _named_branches["EXT"].EMF = exciter_EMF;
-    }
-
     private void field_control_handler(float raw_field_position, bool cab_changed)
     {
         int handle_postion = Mathf.RoundToInt(raw_field_position * field_handle_last_notch);
         if (!cab_changed && _field_position == handle_postion)
             return;
         _field_position = handle_postion;
-        if (_selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative)
-            set_exciter_voltage(handle_postion);
-        else
+        if (_selector is not (int) selector_modes.series_regenerative and not (int) selector_modes.parallel_regenerative)
         {
             _named_branches["EXT"].EMF = 0.0f;
             _contactors.switch_field_contactors(handle_postion);
@@ -480,8 +464,9 @@ internal partial class unit_A_sim: electric_device
         bool  rheostatic_brake_on = _selector is (int) selector_modes.rheostatic_brake;
         float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
         _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
-        if (_selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative)
-            set_exciter_voltage(_field_position);
+        bool regenerative_on = _selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
+        if (regenerative_on || _regenerative_field.relative_speed > 0.01f)
+            _regenerative_field.simulate(regenerative_on, _field_position, _roof_bus.voltage, _motors_volts);
         traction_motor[] traction_motors = _traction_motors;
         for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
             traction_motors[motor_index].simulate(rheostatic_brake_on, _currents, _named_branches);

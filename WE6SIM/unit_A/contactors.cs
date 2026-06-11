@@ -29,7 +29,7 @@ internal partial class unit_A_sim
         public readonly camshaft_contactor_set   _selector_traction_shaft, _selector_regenerative_shaft;
         public readonly camshaft_contactor_set   _jogging_switch;
         public readonly camshaft_contactor_set[] _motor_cutouts;
-        public readonly contactor                _line_contactor, _line_contactor2, _dynamic_brake_contactor;
+        public readonly contactor                _line_contactor, _line_contactor2, _dynamic_brake_contactor, _voltmeters;
         public readonly contactor[]              _field_shunt_contactors;
 
         public Action<float>? set_transition_lamp;
@@ -86,10 +86,9 @@ internal partial class unit_A_sim
             _jogging_switch              = camshaft_contactor_set.on_off(["JOG1", "JOG2"], null, contactor_locations, null, null);
             _selector_motor.notch_changed += extinguish_transition_lamp;
             
-            _line_contactor = new contactor(["LC1", "VMC12", "VMC34", "VMC56"], null, contactor_locations, contactor_click_on_A, 
-                main_breaker, air_supply);
-            _line_contactor2 = new contactor(["LC2", "LC3"], null, contactor_locations, contactor_click_on_A, 
-                main_breaker, air_supply);
+            _line_contactor  = new([                    "LC1"], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
+            _line_contactor2 = new([           "LC2",   "LC3"], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
+            _voltmeters      = new(["VMC12", "VMC34", "VMC56"], null, contactor_locations, contactor_click_on_both, main_breaker, air_supply);
             
             _motor_cutouts = new camshaft_contactor_set[motors];
             for (int motor = 1; motor <= motors; ++motor)
