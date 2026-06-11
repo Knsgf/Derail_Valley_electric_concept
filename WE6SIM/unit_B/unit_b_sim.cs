@@ -81,9 +81,9 @@ internal class unit_B_sim: electric_device
         _reverser_handle = grab_port(ports, "[Reverser].CONTROL_EXT_IN");
         _selector_handle = grab_port(ports, "[Selector].EXT_IN"        );
 
-        _control_stand.register_handler(           "brake_cutout",                cab_activation);
-        _control_stand.register_handler(      "independent_brake", synchronise_independent_brake);
-        _control_stand.register_handler(                 "sander",            synchronise_sander);
+        _control_stand.register_handler(     "brake_cutout",                cab_activation);
+        _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false);
+        _control_stand.register_handler(           "sander",            synchronise_sander);
         set_independent_brake = _control_stand.create_setter("independent_brake");
         set_sander            = _control_stand.create_setter(           "sander");
 

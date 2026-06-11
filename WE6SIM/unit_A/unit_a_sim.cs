@@ -145,7 +145,7 @@ internal partial class unit_A_sim: electric_device
 
         _control_stand.register_handler( "main_breaker_on_button",      _main_breaker.toggle_on );
         _control_stand.register_handler("main_breaker_off_button",      _main_breaker.toggle_off);
-        _control_stand.register_handler(      "independent_brake", synchronise_independent_brake);
+        _control_stand.register_handler(      "independent_brake", synchronise_independent_brake, needs_power: false);
         _control_stand.register_handler(           "brake_cutout",                cab_activation);
         _control_stand.register_handler(                 "sander",            synchronise_sander);
         set_independent_brake = _control_stand.create_setter("independent_brake");
@@ -387,13 +387,13 @@ internal partial class unit_A_sim: electric_device
         {
             bool cab_changed = port_value_signal_active(BA1, (int) BA1_signals.cab_change);
             reverser_handler(port_value_signal_active(BA1, (int) BA1_signals.reverser) ? 0.0f : 1.0f, cab_changed);
-            set_independent_brake(extract_signal_from_port_value(BA1, (int) BA1_signals.independent_brake, 
-                (int) BA1_shift.independent_brake) / independent_brake_last_notch);
             handle_relay(BA1, BA1_signals.throttle, BA1_shift.throttle, throttle_last_notch    ,      throttle_handler, cab_changed);
             handle_relay(BA1, BA1_signals.field   , BA1_shift.field   , field_handle_last_notch, field_control_handler, cab_changed);
             handle_relay(BA1, BA1_signals.selector, BA1_shift.selector, selector_last_notch    ,      selector_handler, cab_changed);
-            toggle_sander(port_value_signal_active(BA1, (int) BA1_signals.sander) ? 1.0f : 0.0f);
         }
+        set_independent_brake(extract_signal_from_port_value(BA1, (int) BA1_signals.independent_brake, 
+            (int) BA1_shift.independent_brake) / independent_brake_last_notch);
+        toggle_sander(port_value_signal_active(BA1, (int) BA1_signals.sander) ? 1.0f : 0.0f);
 
         _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
         _contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);

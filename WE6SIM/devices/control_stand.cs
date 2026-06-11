@@ -98,7 +98,7 @@ internal class control_stand: electric_device
         }
     }
 
-    public void register_handler(string device, Action<float> handler)
+    public void register_handler(string device, Action<float> handler, bool needs_power = true)
     {
         if (_port_handlers.ContainsKey(device))
             throw new InvalidOperationException($"Cannot attach {device} handler more than once");
@@ -138,7 +138,7 @@ internal class control_stand: electric_device
         {
             new_handler = delegate (float port_value)
             {
-                if (!disposed && is_powered)
+                if (!disposed && (is_powered || !needs_power))
                     handler(port_value);
             };
         }
