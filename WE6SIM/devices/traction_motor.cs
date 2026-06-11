@@ -15,7 +15,7 @@ internal class traction_motor
 {
     const float max_flux = 300.0f, min_flux = 1.0f, kickstarter_winding_flux = 10.0f;
     const float kickstarter_on_maximum_current = 50.0f, kickstarter_off_minimum_current = 100.0f;
-    const float gear_ratio = 5.36f, torque_factor = 0.0347f, EMF_factor = 0.003634f;
+    const float torque_factor = 0.0347f, EMF_factor = 0.003634f;
 
     private readonly Port   _wheel_RPM;
     private readonly string _armature_name, _field1_name, _field2_name;
@@ -23,7 +23,7 @@ internal class traction_motor
 
     private bool _dynamic_brake_kickstarter_winding_on = false;
 
-    public const float internal_resistance = 0.21f, armature_part = 0.65f, field_partitioning = 0.65f;
+    public const float gear_ratio = 5.36f, internal_resistance = 0.21f, armature_part = 0.65f, field_partitioning = 0.65f;
 
     public float RPM           { get; private set; }
     public float wheel_torque  { get; private set; }

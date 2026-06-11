@@ -36,7 +36,7 @@ internal partial class unit_A_sim: electric_device
     private readonly Port _total_load;
     private readonly Port _reverser_handle, _selector_handle;
 
-    private readonly Port _control_AB1, _control_BA1, _torque_B, _wheel_RPM_B;
+    private readonly Port _control_AB1, _control_BA1, _torque_B, _wheel_RPM_B, _traction_motor_load_B;
 
     private readonly SimController _simulation;
     private readonly circuit       _circuit;
@@ -99,10 +99,11 @@ internal partial class unit_A_sim: electric_device
             _currents[branch_name] = 0.0f;
         _named_branches["BAT"].EMF = battery_panel.battery_EMF;
 
-        _torque_B    = grab_port(ports, "[internal_MU].TM4-6");
-        _wheel_RPM_B = grab_port(ports, "[internal_MU].WHEEL_RPM_FROM_B");
-        _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
-        _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
+        _torque_B              = grab_port(ports, "[internal_MU].TM4-6");
+        _wheel_RPM_B           = grab_port(ports, "[internal_MU].WHEEL_RPM_FROM_B");
+        _traction_motor_load_B = grab_port(ports, "[CustomSimulation].MOTOR_LOAD_B");
+        _control_AB1           = grab_port(ports, "[internal_MU].CONTROL_AB1");
+        _control_BA1           = grab_port(ports, "[internal_MU].CONTROL_BA1");
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
@@ -499,30 +500,33 @@ internal partial class unit_A_sim: electric_device
             set_motors_volts(_motors_volts);
             _main_breaker.trip_if_operating_parameters_exceeded(voltage, _motors_volts, _total_load.Value);
             _overhead_power.ChangeState(voltage >= 1000.0f && _main_breaker_closed.State);
-            float average_RPM = 0.0f, average_load = 0.0f, maximum_load = 0.0f, average_field = 0.0f, average_EMF = 0.0f;
+            float average_RPM = 0.0f, average_load_A = 0.0f, average_load_B = 0.0f, maximum_load = 0.0f; 
+            float average_field_A = 0.0f, average_field_B = 0.0f, average_EMF = 0.0f;
             float total_torque_A, total_heat_emission_A, total_torque_B, total_heat_emission_B;
             calculate_combined_unit_motor_performance(is_unit_A:  true, traction_motors, ref average_RPM, 
-                ref average_load, ref maximum_load, ref average_field, ref average_EMF,
+                ref average_load_A, ref maximum_load, ref average_field_A, ref average_EMF,
                 out total_torque_A, out total_heat_emission_A);
             calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref average_RPM, 
-                ref average_load, ref maximum_load, ref average_field, ref average_EMF,
+                ref average_load_B, ref maximum_load, ref average_field_B, ref average_EMF,
                 out total_torque_B, out total_heat_emission_B);
-            average_RPM   /= traction_motors.Length;
-            average_EMF   /= traction_motors.Length;
-            average_load  /= traction_motors.Length;
-            average_field /= traction_motors.Length;
-            _traction_motor_RPM.Value   = average_RPM;
-            _traction_motor_load.Value  = average_load;
+            average_RPM     /= motors;
+            average_EMF     /= motors;
+            average_load_A  /= (motors >> 1);
+            average_load_B  /= (motors >> 1);
+            average_field_A /= (motors >> 1);
             if (maximum_load < 10.0f)
                 set_reverse_current_lamp(0.0f);
             else
-                set_reverse_current_lamp((average_load * average_field * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f);
+                set_reverse_current_lamp((average_load_A * average_field_A * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f);
             for (int group_index = 2; group_index >= 0; --group_index)
             {
                 set_motor_group_load [group_index](traction_motors[group_index << 1].load_current );
                 set_motor_group_field[group_index](traction_motors[group_index << 1].field_current);
             }
-            _traction_motor_EMF.Value = average_EMF;
+            _traction_motor_load.Value   = average_load_A;
+            _traction_motor_load_B.Value = average_load_B;
+            _traction_motor_RPM.Value    = average_RPM;
+            _traction_motor_EMF.Value    = average_EMF;
         
             blowers.active                = rheostatic_brake_on || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
             blowers.rheostatic_braking_on = rheostatic_brake_on;

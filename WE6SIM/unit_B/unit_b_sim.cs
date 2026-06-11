@@ -32,7 +32,7 @@ internal class unit_B_sim: electric_device
 
     private readonly Fuse _appliances, _overhead_power, _control_air;
     private readonly Port _control_AB1, _control_BA1;
-    private readonly Port _total_load;
+    private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _reverser_handle, _selector_handle;
 
@@ -53,7 +53,9 @@ internal class unit_B_sim: electric_device
         _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"            );
         set_up_fuses(_appliances);
 
-        _total_load = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD");
+        _total_load         = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD");
+        _wheel_RPM          = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"     );
+        _traction_motor_RPM = grab_port(ports, "[CustomSimulation].MOTOR_RPM"  );
 
         _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
         _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
@@ -182,6 +184,7 @@ internal class unit_B_sim: electric_device
     {
         check_if_disposed();
         _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
+        _traction_motor_RPM.Value = _wheel_RPM.Value * traction_motor.gear_ratio;
         _pantograph.simulate(_total_load.Value);
         set_seconday_notch(_secondary_controller.current_position);
         set_port_signal(_control_BA1, (int) BA1_signals.unit_B_camshaft_notch, (int) BA1_shift.unit_B_camshaft_notch,
