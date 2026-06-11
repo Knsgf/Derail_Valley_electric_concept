@@ -420,7 +420,7 @@ internal static class editor
             if (wire_length < default_pole_offset * 4.0f)
                 return false;
             var wire_horizontal_direction = new Vector3(wire_direction.x, 0.0f, wire_direction.z);
-            var wire_orientation          = Quaternion.FromToRotation(Vector3.back, wire_horizontal_direction);
+            var wire_orientation          = safe_from_to_rotation(Vector3.back, wire_horizontal_direction, Vector3.up);
             wire_user new_section         = system.add_wire(wire_type, substation, wire_length, beginning_attachment_point.y - end_attachment_point.y, 
                 end_attachment_point, wire_orientation);
             
@@ -451,16 +451,21 @@ internal static class editor
         return false;
     }
 
-    private static Quaternion get_orientation_from_forward_vector(Vector3 forward_direction)
+    private static Quaternion safe_from_to_rotation(Vector3 from_direction, Vector3 to_direction, Vector3 default_axis)
     {
-        forward_direction.y = 0.0f;
-        if (forward_direction.sqrMagnitude < 1.0E-5f)
-            return Quaternion.identity;
-        if (Mathf.Abs(forward_direction.z + 1.0f) < 1.0E-3f)
-            return flip_around_vertical;
-        return Quaternion.FromToRotation(Vector3.forward, forward_direction);
+        float lengths_product        = Mathf.Sqrt(from_direction.sqrMagnitude * to_direction.sqrMagnitude);
+        float angle_cos              = Vector3.Dot(from_direction, to_direction) / lengths_product;
+        float half_angle_cos_squared = (1.0f + angle_cos) / 2.0f;
+        if (angle_cos is < -0.9999f or > 0.9999f)
+        {
+            float half_angle_sin = Mathf.Sqrt((1.0f - angle_cos) / 2.0f);
+            return new Quaternion(half_angle_sin * default_axis.x, half_angle_sin * default_axis.y, half_angle_sin * default_axis.z,
+                Mathf.Sqrt(half_angle_cos_squared));
+        }
+        var rotation_axis = Vector3.Cross(from_direction, to_direction) / (2.0f * lengths_product);
+        return new Quaternion(rotation_axis.x, rotation_axis.y, rotation_axis.z, half_angle_cos_squared).normalized;
     }
-    
+
     public static void process_location(Vector3 relative_position, Vector3 forward_direction)
     {
         if (erase_scenery)
@@ -485,7 +490,7 @@ internal static class editor
                 _last_registration_arm = null;
                 _first_cantilever      = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
-                orientation = get_orientation_from_forward_vector(forward_direction);
+                orientation = safe_from_to_rotation(Vector3.forward, forward_direction, Vector3.up);
                 place_many_poles_in_succession(relative_position, orientation);
                 break;
 
@@ -493,7 +498,7 @@ internal static class editor
                 _last_registration_arm          = null;
                 _first_cantilever               = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
-                orientation = get_orientation_from_forward_vector(forward_direction);
+                orientation = safe_from_to_rotation(Vector3.forward, forward_direction, Vector3.up);
                 place_pole(relative_position - 1.05f * Vector3.up, orientation);
                 break;
 
@@ -513,7 +518,7 @@ internal static class editor
                 _last_registration_arm = null;
                 _first_cantilever      = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
-                orientation = get_orientation_from_forward_vector(forward_direction);
+                orientation = safe_from_to_rotation(Vector3.forward, forward_direction, Vector3.up);
                 align_gantry(PlayerManager.PlayerTransform.position, orientation);
                 break;
 
