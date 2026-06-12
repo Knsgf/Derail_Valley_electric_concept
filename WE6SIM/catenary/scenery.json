@@ -444,23 +444,6 @@
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
     "orientation": {
       "x": 0.0,
-      "y": -0.1350134,
-      "z": 0.0,
-      "w": -0.9908438
-    },
-    "x": 14986000,
-    "z": 15277986,
-    "y": 248.240768,
-    "pole_type": "Ground",
-    "cantilever_on_near_side": false,
-    "cantilever_on_far_side": false,
-    "anchored": false,
-    "siding_anchor": false
-  },
-  {
-    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
-    "orientation": {
-      "x": 0.0,
       "y": -0.135090977,
       "z": 0.0,
       "w": -0.9908332
@@ -2431,5 +2414,73 @@
     "x": 15064917,
     "z": 15281140,
     "y": 248.243958
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": -3.78655746E-10,
+      "y": 0.84036994,
+      "z": 0.008662634,
+      "w": -0.5419442
+    },
+    "x": 14828328,
+    "z": 14895665,
+    "y": 248.4673,
+    "pole_type": "Ground",
+    "cantilever_on_near_side": true,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
+    "cantilever_type": "OutwardsInner",
+    "is_gantry_registration_arm": false,
+    "is_tunnel_registration_arm": false,
+    "orientation": {
+      "x": -3.78655746E-10,
+      "y": 0.84036994,
+      "z": 0.008662634,
+      "w": -0.5419442
+    },
+    "x": 14828328,
+    "z": 14895665,
+    "y": 248.4673,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": -0.0002823872,
+      "y": 0.1349393,
+      "z": 0.0,
+      "w": 0.990853846
+    },
+    "x": 14985224,
+    "z": 15275142,
+    "y": 248.227478,
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": -5.99521155E-10,
+      "y": 0.803529859,
+      "z": 0.0137154451,
+      "w": -0.5951065
+    },
+    "x": 14791871,
+    "z": 14881784,
+    "y": 249.228867,
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
   }
 ]
