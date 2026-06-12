@@ -663,7 +663,7 @@
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
-    "cantilever_type": "Inner",
+    "cantilever_type": "Outer",
     "is_gantry_registration_arm": false,
     "is_tunnel_registration_arm": false,
     "orientation": {
@@ -680,7 +680,7 @@
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
-    "cantilever_type": "Outer",
+    "cantilever_type": "Inner",
     "is_gantry_registration_arm": false,
     "is_tunnel_registration_arm": false,
     "orientation": {
@@ -697,7 +697,7 @@
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
-    "cantilever_type": "Inner",
+    "cantilever_type": "Outer",
     "is_gantry_registration_arm": false,
     "is_tunnel_registration_arm": false,
     "orientation": {
@@ -714,7 +714,7 @@
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
-    "cantilever_type": "OutwardsInner",
+    "cantilever_type": "Outer",
     "is_gantry_registration_arm": false,
     "is_tunnel_registration_arm": false,
     "orientation": {
@@ -2482,5 +2482,39 @@
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.8693971,
+      "z": 0.0,
+      "w": -0.494113952
+    },
+    "x": 14846574,
+    "z": 14905313,
+    "y": 248.238022,
+    "pole_type": "Ground",
+    "cantilever_on_near_side": true,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
+    "cantilever_type": "Outer",
+    "is_gantry_registration_arm": false,
+    "is_tunnel_registration_arm": false,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.8693971,
+      "z": 0.0,
+      "w": -0.494113952
+    },
+    "x": 14846574,
+    "z": 14905313,
+    "y": 248.238022,
+    "dual_wire": false,
+    "wire_attached": false
   }
 ]
