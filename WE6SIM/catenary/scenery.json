@@ -4916,19 +4916,6 @@
     "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
     "orientation": {
       "x": 0.0,
-      "y": 0.9876572,
-      "z": 0.0,
-      "w": -0.156630918
-    },
-    "x": 14979080,
-    "z": 15285048,
-    "y": 248.245544,
-    "wire_attached": false
-  },
-  {
-    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
-    "orientation": {
-      "x": 0.0,
       "y": 0.984847546,
       "z": 0.0,
       "w": -0.173422381
@@ -6412,5 +6399,18 @@
     "z": 15304297,
     "y": 248.245819,
     "wire_type": "termination_rail"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+side_rail_pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9881235,
+      "z": 0.0,
+      "w": -0.153662264
+    },
+    "x": 14978491,
+    "z": 15283257,
+    "y": 248.241669,
+    "wire_attached": false
   }
 ]
