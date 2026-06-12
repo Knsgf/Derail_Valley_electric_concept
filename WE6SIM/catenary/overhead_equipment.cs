@@ -191,16 +191,20 @@ internal partial class overhead_equipment
             ?? throw new FileNotFoundException("Not found " + Path.Combine(system._file_path, "catenary"));
         string[] all_locations =
         [
+            // Yards
             "FM",
             "FF",
-            "IME",
+            //"IME",
             "SM",
 
+            // Mainlines
+            "CME-IME",
             "FF-IME[FF]",
             "FF-SM[FF]",
             "FM-SM[SM]",
             "IME-FF[CME-IME]",
 
+            // Neutral sections
             "[FF]![CME-IME]"
         ];
         foreach (string location in all_locations)
