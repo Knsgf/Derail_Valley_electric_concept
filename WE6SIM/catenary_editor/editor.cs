@@ -417,7 +417,7 @@ internal static class editor
             Vector3 wire_direction = end_attachment_point - beginning_attachment_point;
             float   wire_length    = wire_direction.magnitude;
             //Main.log($"{end_attachment_point} {beginning_attachment_point} {wire_direction} {wire_length}");
-            if (wire_length < default_pole_offset * 4.0f)
+            if (wire_length < default_pole_offset * ((wire_type != wire_kind.side_rail) ? 4.0f : 2.5f))
                 return false;
             var wire_horizontal_direction = new Vector3(wire_direction.x, 0.0f, wire_direction.z);
             var wire_orientation          = safe_from_to_rotation(Vector3.back, wire_horizontal_direction, Vector3.up);
