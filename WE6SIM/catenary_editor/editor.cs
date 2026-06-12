@@ -455,13 +455,23 @@ internal static class editor
     {
         float lengths_product        = Mathf.Sqrt(from_direction.sqrMagnitude * to_direction.sqrMagnitude);
         float angle_cos              = Vector3.Dot(from_direction, to_direction) / lengths_product;
-        float half_angle_cos_squared = (1.0f + angle_cos) / 2.0f;
         if (angle_cos is < -0.9999f or > 0.9999f)
         {
-            float half_angle_sin = Mathf.Sqrt((1.0f - angle_cos) / 2.0f);
+            var     to_projection_on_from    = Vector3.Project(to_direction, from_direction);
+            float   projection_signed_length = to_projection_on_from.magnitude;
+            Vector3 to_rejection_from        = to_direction - to_projection_on_from;
+            float   rejection_signed_length  = to_rejection_from.magnitude;
+            var     axis_direction           = Vector3.Cross(from_direction, to_rejection_from);
+            if (angle_cos < 0.0f)
+                projection_signed_length = -projection_signed_length;
+            if (Vector3.Dot(default_axis, axis_direction) < 0.0f)
+                rejection_signed_length = -rejection_signed_length;
+            float half_angle     = Mathf.Atan2(rejection_signed_length, projection_signed_length) / 2.0f;
+            float half_angle_sin = Mathf.Sin(half_angle);
             return new Quaternion(half_angle_sin * default_axis.x, half_angle_sin * default_axis.y, half_angle_sin * default_axis.z,
-                Mathf.Sqrt(half_angle_cos_squared));
+                Mathf.Cos(half_angle));
         }
+        float half_angle_cos_squared = (1.0f + angle_cos) / 2.0f;
         var rotation_axis = Vector3.Cross(from_direction, to_direction) / (2.0f * lengths_product);
         return new Quaternion(rotation_axis.x, rotation_axis.y, rotation_axis.z, half_angle_cos_squared).normalized;
     }
