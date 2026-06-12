@@ -475,6 +475,7 @@ internal static class editor
         }
 
         Quaternion orientation;
+        forward_direction = new Vector3(forward_direction.x, 0.0f, forward_direction.z).normalized;
         switch (part_placement)
         {
             case placement.Disabled:
