@@ -170,23 +170,6 @@
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
     "orientation": {
       "x": 0.0,
-      "y": 0.0163283385,
-      "z": 0.0,
-      "w": 0.999866664
-    },
-    "x": 15556741,
-    "z": 11104555,
-    "y": 204.4281,
-    "pole_type": "Ground",
-    "cantilever_on_near_side": false,
-    "cantilever_on_far_side": false,
-    "anchored": false,
-    "siding_anchor": false
-  },
-  {
-    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
-    "orientation": {
-      "x": 0.0,
       "y": 0.02301854,
       "z": 0.0,
       "w": 0.999735057
@@ -1014,5 +997,175 @@
     "z": 11700995,
     "y": 204.435867,
     "stretch": 1.03
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9890237,
+      "z": 0.0,
+      "w": 0.147757187
+    },
+    "x": 15567091,
+    "z": 11698930,
+    "y": 204.435867,
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.110799164,
+      "z": 0.0,
+      "w": -0.9938428
+    },
+    "x": 15575500,
+    "z": 11668221,
+    "y": 204.412766,
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0514673851,
+      "z": 0.0,
+      "w": -0.998674631
+    },
+    "x": 15578698,
+    "z": 11648236,
+    "y": 204.4228,
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0230394583,
+      "z": 0.0,
+      "w": 0.9997346
+    },
+    "x": 15578508,
+    "z": 11619257,
+    "y": 204.4416,
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.999735057,
+      "z": 0.0,
+      "w": -0.0230185837
+    },
+    "x": 15577019,
+    "z": 11584038,
+    "y": 204.436615,
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.999735057,
+      "z": 0.0,
+      "w": -0.0230185837
+    },
+    "x": 15575334,
+    "z": 11544409,
+    "y": 204.42038,
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.023018552,
+      "z": 0.0,
+      "w": 0.999735057
+    },
+    "x": 15562585,
+    "z": 11244722,
+    "y": 204.426941,
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0221033152,
+      "z": 0.0,
+      "w": 0.9997557
+    },
+    "x": 15561439,
+    "z": 11217472,
+    "y": 204.421509,
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0194406975,
+      "z": 0.0,
+      "w": 0.999811
+    },
+    "x": 15560515,
+    "z": 11195795,
+    "y": 204.43634,
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.6938206,
+      "z": 0.0,
+      "w": 0.7201478
+    },
+    "x": 15556275,
+    "z": 11092025,
+    "y": 204.427078,
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": true
   }
 ]
