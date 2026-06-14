@@ -5296,8 +5296,8 @@
       "z": 0.0,
       "w": 0.999735057
     },
-    "x": 15575609,
-    "z": 11283878,
+    "x": 15575909,
+    "z": 11283864,
     "y": 204.429153,
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
@@ -5392,7 +5392,7 @@
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
-    "cantilever_type": "Middle",
+    "cantilever_type": "OutwardsInner",
     "is_gantry_registration_arm": true,
     "is_tunnel_registration_arm": false,
     "orientation": {
@@ -5401,8 +5401,8 @@
       "z": 0.0,
       "w": 0.999735057
     },
-    "x": 15575609,
-    "z": 11283878,
+    "x": 15575909,
+    "z": 11283864,
     "y": 204.429153,
     "dual_wire": false,
     "wire_attached": true
