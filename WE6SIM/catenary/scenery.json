@@ -6478,7 +6478,7 @@
     "z": 11618425,
     "y": 204.409042,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
@@ -6495,7 +6495,7 @@
     "z": 11580597,
     "y": 204.393661,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
@@ -6512,7 +6512,7 @@
     "z": 11542740,
     "y": 204.448013,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
@@ -6529,7 +6529,7 @@
     "z": 11504847,
     "y": 204.433121,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
@@ -6546,7 +6546,7 @@
     "z": 11466926,
     "y": 204.411453,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+cantilever, WE6SIM",
@@ -6563,7 +6563,7 @@
     "z": 11429093,
     "y": 204.4179,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
@@ -6579,7 +6579,7 @@
     "pole_type": "Ground",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": false,
-    "anchored": false,
+    "anchored": true,
     "siding_anchor": false
   },
   {
@@ -6614,7 +6614,7 @@
     "z": 11393152,
     "y": 204.444458,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
@@ -6648,7 +6648,7 @@
     "z": 11660815,
     "y": 204.424454,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "WE6SIM.catenary.overhead_equipment+pole, WE6SIM",
@@ -6664,7 +6664,177 @@
     "pole_type": "Ground",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": false,
-    "anchored": false,
+    "anchored": true,
     "siding_anchor": false
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 28.5901489,
+    "previous_pole_vertical_offset": -0.003692627,
+    "substation": "CME/IME1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.210214645,
+      "z": 0.0,
+      "w": 0.977655232
+    },
+    "x": 15604056,
+    "z": 11660815,
+    "y": 204.424454,
+    "wire_type": "end_anchor_single"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "PoleAnchor",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.181814164,
+      "z": 0.0,
+      "w": -0.9833329
+    },
+    "x": 15590250,
+    "z": 11686092,
+    "y": 204.420761
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 46.5359077,
+    "previous_pole_vertical_offset": 0.015411377,
+    "substation": "CME/IME1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.211057425,
+      "z": 0.0,
+      "w": 0.9774737
+    },
+    "x": 15623257,
+    "z": 11618425,
+    "y": 204.409042,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 40.02517,
+    "previous_pole_vertical_offset": 0.0153808594,
+    "substation": "CME/IME1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.161895439,
+      "z": 0.0,
+      "w": 0.9868079
+    },
+    "x": 15636046,
+    "z": 11580498,
+    "y": 204.393661,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 40.03215,
+    "previous_pole_vertical_offset": -0.0543518066,
+    "substation": "CME/IME1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.172164261,
+      "z": 0.0,
+      "w": 0.9850682
+    },
+    "x": 15649624,
+    "z": 11542839,
+    "y": 204.448013,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 40.0789566,
+    "previous_pole_vertical_offset": 0.0148925781,
+    "substation": "CME/IME1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.157559991,
+      "z": 0.0,
+      "w": 0.9875094
+    },
+    "x": 15662096,
+    "z": 11504750,
+    "y": 204.433121,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 40.1056366,
+    "previous_pole_vertical_offset": 0.02166748,
+    "substation": "CME/IME1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.172185659,
+      "z": 0.0,
+      "w": 0.985064566
+    },
+    "x": 15675701,
+    "z": 11467022,
+    "y": 204.411453,
+    "wire_type": "middle_anchor_single"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 40.0096245,
+    "previous_pole_vertical_offset": -0.006439209,
+    "substation": "CME/IME1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.161232784,
+      "z": 0.0,
+      "w": 0.986916363
+    },
+    "x": 15688434,
+    "z": 11429093,
+    "y": 204.4179,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 37.55149,
+    "previous_pole_vertical_offset": -0.0265655518,
+    "substation": "CME/IME1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.149415836,
+      "z": 0.0,
+      "w": 0.9887745
+    },
+    "x": 15699530,
+    "z": 11393218,
+    "y": 204.444458,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+wire, WE6SIM",
+    "length": 46.9084549,
+    "previous_pole_vertical_offset": -0.0242767334,
+    "substation": "CME/IME1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.995502055,
+      "z": 0.0,
+      "w": 0.09474007
+    },
+    "x": 15699530,
+    "z": 11393218,
+    "y": 204.444458,
+    "wire_type": "end_anchor_single"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "PoleAnchor",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9763282,
+      "z": 0.0,
+      "w": 0.216294572
+    },
+    "x": 15710372,
+    "z": 11348081,
+    "y": 204.420181
   }
 ]
