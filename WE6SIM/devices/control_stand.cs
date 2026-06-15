@@ -7,6 +7,7 @@ using UnityEngine;
 
 using LocoSim.Implementations;
 using WE6SIM.utilities;
+using WE6SIM.unit_A;
 
 namespace WE6SIM.devices;
 
@@ -42,9 +43,11 @@ internal class control_stand: electric_device
         ["secondary_notch_hand"] = "[CustomSimulation].SECONDARY_NOTCH",
         ["supply_volts"        ] = "[CustomGauges].SUPPLY",
         ["motors_volts"        ] = "[CustomGauges].ALL_MOTOR_TERMINAL",
+        //["total_load"          ] = "[CustomGauges].CURRENT_DRAW",
 
-        ["reverse_current_lamp"] = "[CustomGauges].REVERSE_CURRENT",
-        ["transition_lamp"     ] = "[CustomGauges].TRANSITION",
+        ["reverse_current_lamp" ] = "[CustomGauges].REVERSE_CURRENT",
+        ["transition_lamp"      ] = "[CustomGauges].TRANSITION",
+        ["resistance_notch_lamp"] = "[CustomGauges].RESISTANCE_NOTCH",
 
         ["main_breaker_on_button" ] = "[MainBreakerOnButton].EXT_IN",
         ["main_breaker_off_button"] = "[MainBreakerOffButton].EXT_IN",
@@ -68,6 +71,7 @@ internal class control_stand: electric_device
     private selector_interlock? _selector_interlock;
     private Port? _transition_lamp;
     private float _raw_throttle, _raw_selector, _primary_notch, _secondary_notch;
+    private bool  _throttle_moved = false;
 
     public control_stand(Fuse electric_supply, Dictionary<string, Port> ports): base("Control stand", electric_supply)
     {
@@ -113,7 +117,8 @@ internal class control_stand: electric_device
             {
                 if (!disposed && is_powered)
                 {
-                    _raw_throttle = raw_throttle;
+                    _raw_throttle   = raw_throttle;
+                    _throttle_moved = true;
                     _selector_interlock?.interlocked_handler(_raw_selector, raw_throttle, 
                         Mathf.CeilToInt(_primary_notch), Mathf.CeilToInt(_secondary_notch), _transition_lamp);
                     handler(raw_throttle);
@@ -153,11 +158,35 @@ internal class control_stand: electric_device
             throw new ArgumentException($"Unknown device {device}");
         if (hooked_port == null)
             throw new ArgumentException($"No {device} installed");
-        Action<float> new_setter; 
+        Action<float> new_setter;
         if (string.Equals(device, "primary_notch_hand", StringComparison.Ordinal))
-            new_setter = (float   primary_notch) => hooked_port.Value = _primary_notch   = primary_notch;
+        {
+            _port_map.TryGetValue("resistance_notch_lamp", out Port? resistance_light);
+            new_setter = delegate (float primary_notch)
+            {
+                if (_primary_notch != primary_notch || _throttle_moved)
+                {
+                    _throttle_moved   = false;
+                    hooked_port.Value = _primary_notch = primary_notch;
+                    resistance_light?.Value = (_raw_throttle >= 0.5f / throttle_last_notch
+                            && (_primary_notch < unit_A_sim.camshaft_notches || _secondary_notch < unit_A_sim.camshaft_notches)) ? 1.0f : 0.0f;
+                }
+            };
+        }
         else if (string.Equals(device, "secondary_notch_hand", StringComparison.Ordinal))
-            new_setter = (float secondary_notch) => hooked_port.Value = _secondary_notch = secondary_notch;
+        {
+            _port_map.TryGetValue("resistance_notch_lamp", out Port? resistance_light);
+            new_setter = delegate (float secondary_notch)
+            {
+                if (_secondary_notch != secondary_notch || _throttle_moved)
+                {
+                    _throttle_moved   = false;
+                    hooked_port.Value = _secondary_notch = secondary_notch;
+                    resistance_light?.Value = (_raw_throttle >= 0.5f / throttle_last_notch
+                            && (_primary_notch < unit_A_sim.camshaft_notches || _secondary_notch < unit_A_sim.camshaft_notches)) ? 1.0f : 0.0f;
+                }
+            };
+        }
         else if (string.Equals(device, "transition_lamp", StringComparison.Ordinal))
         {
             _transition_lamp = hooked_port;
