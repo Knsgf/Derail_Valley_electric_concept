@@ -10,7 +10,9 @@ namespace WE6SIM.unit_A;
 
 internal class blower_controller: electric_device
 {
-    const float full_cooling_power_at_1C = 750.0f, ambient_temperature_C = 25.0f;
+    const float full_motor_cooling_power_at_1C = 750.0f, ambient_temperature_C = 25.0f;
+    const float resistor_group_continous_power = 1.0E+6f, resistor_max_temeprature_C = 950.0f;
+    const float full_resistor_cooling_power_at_1C = resistor_group_continous_power / (resistor_max_temeprature_C - ambient_temperature_C);
     
     const float speedup_rate = 0.1f, slowdown_rate = 0.95f;     // Bigger is slower
     const float series_3_parallel_2 = 1.0f / 3.0f, series_2_parallel_3 = 1.0f / 2.0f, parallel_6 = 1.0f;
@@ -22,7 +24,7 @@ internal class blower_controller: electric_device
     const float traction_high_speed_minimum_motor_current = 250.0f;
 
     private readonly Port _blower_audio, _contactor_on_sound, _contactor_off_sound;
-    private readonly Port _traction_motor_temperature, _cooling_rate;
+    private readonly Port _traction_motor_temperature, _motor_cooling_rate, _resistor_temperature, _resistor_cooling_rate;
     
     private float _line_voltage = 0.0f, _motor_current = 0.0f;
     private float _line_voltage_multiplier = series_3_parallel_2;
@@ -44,7 +46,8 @@ internal class blower_controller: electric_device
     public float relative_speed { get; private set; } = 0.0f;
     public float current_draw   { get; private set; }
 
-    public blower_controller(Fuse electric_supply, Port audio, Port traction_motor_temperature, Port cooling_rate, 
+    public blower_controller(Fuse electric_supply, Port audio, Port traction_motor_temperature, Port motor_cooling_rate, 
+        Port resistor_temperature, Port resistor_cooling_rate, 
         Port contactor_on_sound, Port contactor_off_sound): base("blower", electric_supply)
     {
         _blower_audio        = audio;
@@ -52,7 +55,9 @@ internal class blower_controller: electric_device
         _contactor_off_sound = contactor_off_sound;
 
         _traction_motor_temperature = traction_motor_temperature;
-        _cooling_rate               = cooling_rate;
+        _motor_cooling_rate         = motor_cooling_rate;
+        _resistor_temperature       = resistor_temperature;
+        _resistor_cooling_rate      = resistor_cooling_rate;
     }
 
     private float voltage_divider()
@@ -127,10 +132,16 @@ internal class blower_controller: electric_device
         relative_speed             = Mathf.LerpUnclamped(final_relative_speed, relative_speed, acceleration_ratio);
         _blower_audio.Value        = this.relative_speed = relative_speed;
 
-        current_draw = (fan_motor_voltage < 1.0f) ? 0.0f : (fan_motor_power / fan_motor_voltage) * (6 * _line_voltage_multiplier);
-        if (relative_speed > 0.0f)
-            current_draw *= Mathf.Min(7.0f, final_relative_speed / relative_speed);
+        if (rheostatic_braking_on)
+            current_draw = 0.0f;
+        else
+        {
+            current_draw = (fan_motor_voltage < 1.0f) ? 0.0f : (fan_motor_power / fan_motor_voltage) * (6 * _line_voltage_multiplier);
+            if (relative_speed > 0.0f)
+                current_draw *= Mathf.Min(7.0f, final_relative_speed / relative_speed);
+        }
 
-        _cooling_rate.Value = relative_speed * (ambient_temperature_C - _traction_motor_temperature.Value) * full_cooling_power_at_1C;
+        _motor_cooling_rate.Value    = relative_speed * (ambient_temperature_C - _traction_motor_temperature.Value) * full_motor_cooling_power_at_1C;
+        _resistor_cooling_rate.Value = relative_speed * (ambient_temperature_C -       _resistor_temperature.Value) * full_resistor_cooling_power_at_1C;
     }
 }

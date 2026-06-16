@@ -42,6 +42,7 @@ internal partial class unit_A_sim: electric_device
 
     private readonly SimController _simulation;
     private readonly circuit       _circuit;
+    private readonly resistor_heat _resistor_grid;
 
     private readonly pantograph                 _pantograph;
     private readonly roof_busbar                _roof_bus;
@@ -99,6 +100,7 @@ internal partial class unit_A_sim: electric_device
             _element_resistances[element.Key] = element.Value * UnityEngine.Random.Range(1.0f - variation, 1.0f + variation);
         UnityEngine.Random.state = old_state;
         _circuit = circuit_compiler.trace(_element_resistances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations, _currents);
+        _resistor_grid = new(ports, _element_resistances);
         foreach (string branch_name in _named_branches.Keys)
             _currents[branch_name] = 0.0f;
         _named_branches["BAT"].EMF = battery_panel.battery_EMF;
@@ -127,7 +129,9 @@ internal partial class unit_A_sim: electric_device
             _main_breaker_closed, 
             grab_port(ports, "[Blowers].BLOWERS_RELATIVE_SPEED"), 
             grab_port(ports, "tmHeat.TEMPERATURE"), 
-            grab_port(ports, "[Blowers].BLOWERS_COOLING_RATE"), 
+            grab_port(ports, "[Blowers].MOTOR_COOLING_RATE"), 
+            grab_port(ports, "[ResistorHeat].TEMPERATURE"), 
+            grab_port(ports, "[Blowers].RESISTOR_COOLING_RATE"), 
             _contactor_on_sound, _contactor_off_sound
         );
 
@@ -469,13 +473,16 @@ internal partial class unit_A_sim: electric_device
         }
         else
         {
-            lock (_currents)
+            Dictionary<string, float> currents = _currents;
+            lock (currents)
             {
                 //circuit_telemetry.log_sorted_currents(_circuit, -1.0f, -1.0f);
                 //circuit_telemetry.log_sorted_voltages(_circuit);
                 foreach (KeyValuePair<string, branch_user> branch in _named_branches)
-                    _currents[branch.Key] = _currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
+                    currents[branch.Key] = currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
             }
+            _resistor_grid.simulate(currents);
+
             bool  rheostatic_brake_on = _selector is (int) selector_modes.rheostatic_brake;
             float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
             _named_branches["EPS"].EMF = _named_branches["EPS"].EMF * 0.9f + voltage * 0.1f;
@@ -485,24 +492,24 @@ internal partial class unit_A_sim: electric_device
         
             traction_motor[] traction_motors = _traction_motors;
             for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
-                traction_motors[motor_index].simulate(rheostatic_brake_on, _currents, _named_branches);
+                traction_motors[motor_index].simulate(rheostatic_brake_on, currents, _named_branches);
             _circuit.simulate();
 
-            float voltmeter_reading = _named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"];
+            float voltmeter_reading = _named_branches["EPS"].EMF - currents["EPS"] * _element_resistances["EPS"];
             set_supply_volts(voltmeter_reading);
             _relative_voltage.Value = voltmeter_reading / 1500.0f;
             
             if (_selector is (int) selector_modes.yard_power)
             {
-                _motors_volts = Mathf.Abs(_currents["VM12"] * _element_resistances["VM12"])
-                              + Mathf.Abs(_currents["VM34"] * _element_resistances["VM34"])
-                              + Mathf.Abs(_currents["VM56"] * _element_resistances["VM56"]);
+                _motors_volts = Mathf.Abs(currents["VM12"] * _element_resistances["VM12"])
+                              + Mathf.Abs(currents["VM34"] * _element_resistances["VM34"])
+                              + Mathf.Abs(currents["VM56"] * _element_resistances["VM56"]);
             }
             else
             {
-                float motor_volts_1_4 = Mathf.Max(Mathf.Abs(_currents["VM12"] * _element_resistances["VM12"]), 
-                                                  Mathf.Abs(_currents["VM34"] * _element_resistances["VM34"]));
-                _motors_volts         = Mathf.Max(Mathf.Abs(_currents["VM56"] * _element_resistances["VM56"]), motor_volts_1_4);
+                float motor_volts_1_4 = Mathf.Max(Mathf.Abs(currents["VM12"] * _element_resistances["VM12"]), 
+                                                  Mathf.Abs(currents["VM34"] * _element_resistances["VM34"]));
+                _motors_volts         = Mathf.Max(Mathf.Abs(currents["VM56"] * _element_resistances["VM56"]), motor_volts_1_4);
             }
             set_motors_volts(_motors_volts);
             _main_breaker.trip_if_operating_parameters_exceeded(voltage, _motors_volts, _total_load.Value);
