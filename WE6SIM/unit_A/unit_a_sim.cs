@@ -67,7 +67,7 @@ internal partial class unit_A_sim: electric_device
     private bool _fast_notching_enabled = false, _jogging_mode_on = false, _jog = false, _cab_active = false;
     private int  _throttle = -1, _secondary_camshaft_notch, _selector = -1, _field_position = -1;
     private Task? _single_notch_movement;
-    private float _reverser_position = 0.5f, _motors_volts;
+    private float _reverser_position = 0.5f, _motors_volts, _fast_notching_current_limit = 250.0f;
 
     public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
 
@@ -355,6 +355,17 @@ internal partial class unit_A_sim: electric_device
         _contactors.switch_selector_contactors(handle_postion);
         if (handle_postion >= 2)
             _contactors.switch_field_contactors(_field_position);
+        _fast_notching_current_limit = handle_postion switch
+        {
+            (int) selector_modes.yard_power            => 400.0f,
+            (int) selector_modes.series_power          => 300.0f,
+            (int) selector_modes.parallel_power        => 250.0f,
+            (int) selector_modes.rheostatic_brake      => 250.0f,
+            (int) selector_modes.series_regenerative   => 250.0f,
+            (int) selector_modes.parallel_regenerative => 250.0f,
+            _ => throw new InvalidOperationException($"Improper selector position {handle_postion}")
+        };
+        Main.log($"FNCL = {_fast_notching_current_limit}");
     }
 
     private void selector_handler(float raw_selector_position)

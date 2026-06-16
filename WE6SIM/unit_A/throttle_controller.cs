@@ -137,7 +137,7 @@ internal partial class unit_A_sim
                 return;
             _camshaft_unlocked = false;
             if (unit._fast_notching_enabled && current_primary_notch < camshaft_notches && current_secondary_notch == 1 
-                && Mathf.Abs(unit._traction_motor_load.Value) <= 250.0f)
+                && Mathf.Abs(unit._traction_motor_load.Value) <= unit._fast_notching_current_limit)
             {
                 unit._contactors._primary_controller.target_notch = next_up_notch(current_primary_notch);
                 //await finish_secondary_movement(next_up_notch(current_secondary_notch));
