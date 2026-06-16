@@ -14,7 +14,7 @@ namespace WE6SIM.unit_A;
 
 internal class resistor_heat
 {
-    const int groups = 3, resistors_in_group = 6;
+    const int groups = 3, resistors_in_group = 7;
     
     private static readonly string[][] _resistor_groups = new string[groups][];
 
@@ -26,8 +26,9 @@ internal class resistor_heat
         for (int current_group = 1; current_group <= groups; ++current_group)
         {
             _resistor_groups[current_group - 1] = new string[resistors_in_group];
-            for (int current_resitor = 1; current_resitor <= resistors_in_group; ++current_resitor)
+            for (int current_resitor = 1; current_resitor < resistors_in_group; ++current_resitor)
                 _resistor_groups[current_group - 1][current_resitor - 1] = $"SR{current_group}.{current_resitor}";
+            _resistor_groups[current_group - 1][resistors_in_group - 1] = $"SR{current_group}S";
         }
     }
 
