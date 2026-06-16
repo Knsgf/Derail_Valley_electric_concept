@@ -96,7 +96,7 @@ internal static class car_spawn_handler
         {
             if (fuse != null)
             {
-                //Main.log(fuse.id);
+                Main.log(fuse.id);
                 all_fuses[fuse.id] = fuse;
             }
         }
@@ -106,7 +106,7 @@ internal static class car_spawn_handler
         {
             if (port == null)
                 continue;
-            //Main.log($"{port.id} {port.type} {port.valueType}");
+            Main.log($"{port.id} {port.type} {port.valueType}");
             all_ports[port.id] = port;
             if (is_unit_a)
             {

@@ -32,7 +32,7 @@ internal class unit_B_sim: electric_device
 
     private readonly Fuse _appliances, _overhead_power, _control_air;
     private readonly Port _control_AB1, _control_BA1;
-    private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM;
+    private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _relative_voltage;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _reverser_handle, _selector_handle;
 
@@ -53,9 +53,10 @@ internal class unit_B_sim: electric_device
         _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"            );
         set_up_fuses(_appliances);
 
-        _total_load         = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD");
-        _wheel_RPM          = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"     );
-        _traction_motor_RPM = grab_port(ports, "[CustomSimulation].MOTOR_RPM"  );
+        _total_load         = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD"            );
+        _wheel_RPM          = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
+        _traction_motor_RPM = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
+        _relative_voltage   = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
 
         _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
         _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
@@ -87,6 +88,7 @@ internal class unit_B_sim: electric_device
         set_independent_brake = _control_stand.create_setter("independent_brake");
         set_sander            = _control_stand.create_setter(           "sander");
 
+        _control_stand.register_handler("supply_volts", (float voltage) => _relative_voltage.Value = voltage / 1500.0f);
         set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
         set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
         

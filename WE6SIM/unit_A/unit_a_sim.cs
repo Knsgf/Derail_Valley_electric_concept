@@ -26,14 +26,16 @@ namespace WE6SIM.unit_A;
 
 internal partial class unit_A_sim: electric_device
 {
-    const int   motors = 6;
+    const int   motors           = 6;
+    const float compressor_power = 50.0E+3f;
+
     private readonly Dictionary<string, branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
     private readonly Fuse _appliances, _control_air, _main_breaker_closed, _overhead_power;
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
-    private readonly Port _total_load;
+    private readonly Port _total_load, _relative_voltage, _compressor_power;
     private readonly Port _reverser_handle, _selector_handle;
 
     private readonly Port _control_AB1, _control_BA1, _torque_B, _wheel_RPM_B, _traction_motor_load_B;
@@ -80,13 +82,15 @@ internal partial class unit_A_sim: electric_device
         set_up_fuses(_appliances);
         _overhead_power.StateUpdated += overhead_power_toggle;
 
-        _torque_A            = grab_port(ports, "traction.TORQUE_IN"           );
-        _wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"    );
-        _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD");
-        _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM" );
-        _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF" );
-        _total_load          = grab_port(ports, "[CustomGauges].CURRENT_DRAW"  );
-        _jog_volts           = grab_port(ports, "[CustomSimulation].JOG_VOLTS" );
+        _torque_A            = grab_port(ports, "traction.TORQUE_IN"                        );
+        _wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
+        _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD"             );
+        _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
+        _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF"              );
+        _total_load          = grab_port(ports, "[CustomGauges].CURRENT_DRAW"               );
+        _jog_volts           = grab_port(ports, "[CustomSimulation].JOG_VOLTS"              );
+        _relative_voltage    = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
+        _compressor_power    = grab_port(ports, "compressor.POWER_CONSUMPTION"              );
 
         const float variation = 0.1f;
         UnityEngine.Random.State old_state = UnityEngine.Random.state;
@@ -444,7 +448,9 @@ internal partial class unit_A_sim: electric_device
                 _contactors.toggle_jogging(turn_on: false);
                 _jog = false;
             }
-            _total_load.Value = _currents["EPS"];
+            _total_load.Value = _currents["EPS"] + _blowers.current_draw;
+            if (_named_branches["EPS"].EMF > 1.0f)
+                _total_load.Value += _compressor_power.Value / _named_branches["EPS"].EMF;
             _jog_volts.Value  = 0.0f;
             _pantograph.simulate(_total_load.Value);
         }
@@ -458,13 +464,11 @@ internal partial class unit_A_sim: electric_device
         if (!jog && !_main_breaker_closed.State && _roof_bus.voltage < 10.0f && _named_branches["EPS"].EMF < 10.0f && _wheel_RPM.Value < 20.0f 
             && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && _regenerative_field.relative_speed < 0.01f)
         {
-            Main.diagnostics?.Value = 0.0f;
             _torque_A.Value = _torque_B.Value = 0.0f;
             //_traction_motor_temperature.simulate(0.0f);
         }
         else
         {
-            Main.diagnostics?.Value = 1.0f;
             lock (_currents)
             {
                 //circuit_telemetry.log_sorted_currents(_circuit, -1.0f, -1.0f);
@@ -484,7 +488,10 @@ internal partial class unit_A_sim: electric_device
                 traction_motors[motor_index].simulate(rheostatic_brake_on, _currents, _named_branches);
             _circuit.simulate();
 
-            set_supply_volts(_named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"]);
+            float voltmeter_reading = _named_branches["EPS"].EMF - _currents["EPS"] * _element_resistances["EPS"];
+            set_supply_volts(voltmeter_reading);
+            _relative_voltage.Value = voltmeter_reading / 1500.0f;
+            
             if (_selector is (int) selector_modes.yard_power)
             {
                 _motors_volts = Mathf.Abs(_currents["VM12"] * _element_resistances["VM12"])

@@ -12,8 +12,9 @@ internal class blower_controller: electric_device
 {
     const float full_cooling_power_at_1C = 750.0f, ambient_temperature_C = 25.0f;
     
-    const float speedup_rate = 0.1f, slowdown_rate = 0.95f;
+    const float speedup_rate = 0.1f, slowdown_rate = 0.95f;     // Bigger is slower
     const float series_3_parallel_2 = 1.0f / 3.0f, series_2_parallel_3 = 1.0f / 2.0f, parallel_6 = 1.0f;
+    const float fan_motor_power = 40.0E+3f;
 
     const float dynamic_braking_parallel_maximum_voltage  = 950.0f;
     const float dynamic_braking_series_minimum_voltage    = 900.0f;
@@ -41,6 +42,7 @@ internal class blower_controller: electric_device
         set => _motor_current = Mathf.Abs(value);
     }
     public float relative_speed { get; private set; } = 0.0f;
+    public float current_draw   { get; private set; }
 
     public blower_controller(Fuse electric_supply, Port audio, Port traction_motor_temperature, Port cooling_rate, 
         Port contactor_on_sound, Port contactor_off_sound): base("blower", electric_supply)
@@ -119,10 +121,15 @@ internal class blower_controller: electric_device
             }
         }
 
+        float relative_speed       = this.relative_speed;
         float final_relative_speed = fan_motor_voltage / 1000.0f;
         float acceleration_ratio   = Mathf.Pow((relative_speed <= final_relative_speed) ? speedup_rate : slowdown_rate, Time.deltaTime);
         relative_speed             = Mathf.LerpUnclamped(final_relative_speed, relative_speed, acceleration_ratio);
-        _blower_audio.Value        = relative_speed;
+        _blower_audio.Value        = this.relative_speed = relative_speed;
+
+        current_draw = (fan_motor_voltage < 1.0f) ? 0.0f : (fan_motor_power / fan_motor_voltage) * (6 * _line_voltage_multiplier);
+        if (relative_speed > 0.0f)
+            current_draw *= Mathf.Min(7.0f, final_relative_speed / relative_speed);
 
         _cooling_rate.Value = relative_speed * (ambient_temperature_C - _traction_motor_temperature.Value) * full_cooling_power_at_1C;
     }
