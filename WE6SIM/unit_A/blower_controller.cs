@@ -136,9 +136,10 @@ internal class blower_controller: electric_device
             current_draw = 0.0f;
         else
         {
-            current_draw = (fan_motor_voltage < 1.0f) ? 0.0f : (fan_motor_power / fan_motor_voltage) * (6 * _line_voltage_multiplier);
+            float current = (fan_motor_voltage < 1.0f) ? 0.0f : (fan_motor_power / fan_motor_voltage) * (6 * _line_voltage_multiplier);
             if (relative_speed > 0.0f)
-                current_draw *= Mathf.Min(7.0f, final_relative_speed / relative_speed);
+                current *= Mathf.Min(7.0f, final_relative_speed / relative_speed);
+            current_draw = Mathf.LerpUnclamped(current_draw, current, 0.1f);
         }
 
         _motor_cooling_rate.Value    = relative_speed * (ambient_temperature_C - _traction_motor_temperature.Value) * full_motor_cooling_power_at_1C;
