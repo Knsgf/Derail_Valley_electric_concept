@@ -365,7 +365,6 @@ internal partial class unit_A_sim: electric_device
             (int) selector_modes.parallel_regenerative => 250.0f,
             _ => throw new InvalidOperationException($"Improper selector position {handle_postion}")
         };
-        Main.log($"FNCL = {_fast_notching_current_limit}");
     }
 
     private void selector_handler(float raw_selector_position)
@@ -444,7 +443,8 @@ internal partial class unit_A_sim: electric_device
     {
         check_if_disposed();
         
-        bool jog = _jogging_mode_on && !is_powered;
+        blower_controller blowers = _blowers;
+        bool                  jog = _jogging_mode_on && !is_powered;
         if (jog)
         {
             if (!_jog)
@@ -463,7 +463,7 @@ internal partial class unit_A_sim: electric_device
                 _contactors.toggle_jogging(turn_on: false);
                 _jog = false;
             }
-            _total_load.Value = _currents["EPS"] + _blowers.current_draw;
+            _total_load.Value = _currents["EPS"] + blowers.current_draw;
             if (_named_branches["EPS"].EMF > 1.0f)
                 _total_load.Value += _compressor_power.Value / _named_branches["EPS"].EMF;
             _jog_volts.Value  = 0.0f;
@@ -475,7 +475,6 @@ internal partial class unit_A_sim: electric_device
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_on , false);
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_off, false);
 
-        blower_controller blowers = _blowers;
         if (!jog && !_main_breaker_closed.State && _roof_bus.voltage < 10.0f && _named_branches["EPS"].EMF < 10.0f && _wheel_RPM.Value < 20.0f 
             && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && _regenerative_field.relative_speed < 0.01f)
         {
@@ -506,7 +505,7 @@ internal partial class unit_A_sim: electric_device
                 traction_motors[motor_index].simulate(rheostatic_brake_on, currents, _named_branches);
             _circuit.simulate();
 
-            float voltmeter_reading = _named_branches["EPS"].EMF - currents["EPS"] * _element_resistances["EPS"];
+            float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : (_named_branches["EPS"].EMF - currents["EPS"] * _element_resistances["EPS"]);
             set_supply_volts(voltmeter_reading);
             _relative_voltage.Value = voltmeter_reading / 1500.0f;
             

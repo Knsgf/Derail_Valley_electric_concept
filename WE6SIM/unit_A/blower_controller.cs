@@ -45,6 +45,7 @@ internal class blower_controller: electric_device
     }
     public float relative_speed { get; private set; } = 0.0f;
     public float current_draw   { get; private set; }
+    public float fan_voltage    { get; private set; }
 
     public blower_controller(Fuse electric_supply, Port audio, Port traction_motor_temperature, Port motor_cooling_rate, 
         Port resistor_temperature, Port resistor_cooling_rate, 
@@ -125,6 +126,7 @@ internal class blower_controller: electric_device
                 switch_configuration();
             }
         }
+        fan_voltage = Mathf.LerpUnclamped(fan_voltage, fan_motor_voltage, 0.1f);
 
         float relative_speed       = this.relative_speed;
         float final_relative_speed = fan_motor_voltage / 1000.0f;
