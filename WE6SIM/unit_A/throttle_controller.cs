@@ -169,7 +169,7 @@ internal partial class unit_A_sim
             bool enable_line_contactor2 = unit._selector is not (int) selector_modes.yard_power;
             if (!all_contactors._line_contactor.engaged || enable_line_contactor2 && !!all_contactors._line_contactor2.engaged)
             {
-                int primary_target_notch = (unit._selector is not (int) selector_modes.rheostatic_brake) ? 1 : 5;
+                int primary_target_notch = (unit._selector is (int) selector_modes.rheostatic_brake) ? 4 : 1;
                 while (unit._throttle == 3 && !all_contactors._line_contactor.engaged 
                     || enable_line_contactor2 && !all_contactors._line_contactor2.engaged)
                 {
@@ -186,7 +186,7 @@ internal partial class unit_A_sim
                         unit.set_secondary_camshaft_target_notch(1);
                     }
                     await Task.Delay(300);
-                    primary_target_notch = (unit._selector is not (int) selector_modes.rheostatic_brake) ? 1 : 5;
+                    primary_target_notch = (unit._selector is (int) selector_modes.rheostatic_brake) ? 4 : 1;
                 }
             }
 
