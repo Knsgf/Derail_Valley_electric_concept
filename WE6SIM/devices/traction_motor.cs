@@ -33,6 +33,7 @@ internal class traction_motor
     public float heat_emission { get; private set; }
 
     //private readonly int _motor_number;
+    private readonly bool _has_kickstarter;
 
     public traction_motor(int motor_number, Port wheel_RPM, Dictionary<string, circuit.branch_user> named_branches)
     {
@@ -50,6 +51,7 @@ internal class traction_motor
         _field2_resistance   = 1.0f / named_branches[  _field2_name].closed_conductance;
 
         //_motor_number = motor_number;
+        _has_kickstarter = (motor_number & 1) != 0;
     }
     
     public void simulate(bool rheostatic_braking, Dictionary<string, float> currents, Dictionary<string, circuit.branch_user> named_branches)
@@ -66,7 +68,7 @@ internal class traction_motor
         if (!rheostatic_braking || load_current >= kickstarter_off_minimum_current)
             _dynamic_brake_kickstarter_winding_on = false;
         else if (load_current < kickstarter_on_maximum_current)
-            _dynamic_brake_kickstarter_winding_on = true;
+            _dynamic_brake_kickstarter_winding_on = _has_kickstarter;
         if (field2_current < -10.0f)
             magnetic_flux = -magnetic_flux;
         if (_dynamic_brake_kickstarter_winding_on)
