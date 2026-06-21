@@ -79,15 +79,19 @@ internal static class car_spawn_handler
         }
 #endif
 
+        string car_type = vehicle.carLivery.id;
+        if (car_type.Length < "WE6981A".Length)
+            return;
+        car_type         = car_type.Substring(0, "WE6981A".Length);
         bool is_unit_a   = false;
         int  random_seed = 0;
-        if (string.Equals(vehicle.carLivery.id.Substring(0, "WE6981A".Length), "WE6981A", StringComparison.Ordinal))
+        if (string.Equals(car_type, "WE6981A", StringComparison.Ordinal))
         {
             is_unit_a = true;
             for (int letter_index = 0; letter_index < vehicle.ID.Length; ++letter_index)
                 random_seed += vehicle.ID[letter_index] << (letter_index & 0x7);
         }
-        else if (!string.Equals(vehicle.carLivery.id.Substring(0, "WE6981B".Length), "WE6981B", StringComparison.Ordinal))
+        else if (!string.Equals(car_type, "WE6981B", StringComparison.Ordinal))
             return;
 
         print_hierarchy(vehicle.gameObject);

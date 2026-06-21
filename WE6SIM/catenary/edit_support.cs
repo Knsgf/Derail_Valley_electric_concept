@@ -172,21 +172,24 @@ internal partial class overhead_equipment
                 File.WriteAllText(Path.Combine(_file_path, "compacted_scenery.json"), compact_scenery);
             }
 
-            Vector3 player_position = PlayerManager.PlayerTransform.position;
-            (int player_x, int player_z) = get_absolute_position(player_position);
-            var player_location = (catenary_object) add_miscellaneous_object("GantryArrow", PlayerManager.PlayerTransform.position, Quaternion.identity);
-            player_location.placed_procedurally = true;
-            objects_to_store =
-            [..
-                from    current_object in _all_objects
-                let     x_offset = Math.Abs(current_object.x - player_x)
-                let     z_offset = Math.Abs(current_object.z - player_z)
-                where   x_offset <= 10 * fixed_divider && z_offset <= 10 * fixed_divider
-                orderby (long) x_offset * x_offset + (long) z_offset * z_offset
-                select  current_object
-            ];
-            formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented, write_types);
-            File.WriteAllText(Path.Combine(_file_path, "nearby_objects.json"), formatted_scenery);
+            if (PlayerManager.PlayerTransform != null)
+            {
+                Vector3 player_position = PlayerManager.PlayerTransform.position;
+                (int player_x, int player_z) = get_absolute_position(player_position);
+                var player_location = (catenary_object) add_miscellaneous_object("GantryArrow", PlayerManager.PlayerTransform.position, Quaternion.identity);
+                player_location.placed_procedurally = true;
+                objects_to_store =
+                [..
+                    from    current_object in _all_objects
+                    let     x_offset = Math.Abs(current_object.x - player_x)
+                    let     z_offset = Math.Abs(current_object.z - player_z)
+                    where   x_offset <= 10 * fixed_divider && z_offset <= 10 * fixed_divider
+                    orderby (long) x_offset * x_offset + (long) z_offset * z_offset
+                    select  current_object
+                ];
+                formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented, write_types);
+                File.WriteAllText(Path.Combine(_file_path, "nearby_objects.json"), formatted_scenery);
+            }
             
             _store_scenery = false;
         }
