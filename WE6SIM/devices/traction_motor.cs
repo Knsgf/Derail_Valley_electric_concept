@@ -58,16 +58,17 @@ internal class traction_motor
     {
         float motor_RPM = _wheel_RPM.Value * gear_ratio, armature_current, field1_current, field2_current;
         
-        string armature_name = _armature_name;
-        load_current         = armature_current = currents[armature_name];
-        field1_current                          = currents[ _field1_name];
-        field_current        = field2_current   = currents[ _field2_name];
-        float magnetic_flux1 = (min_flux + Mathf.Clamp(Mathf.Abs(field1_current), 0.0f, max_flux - min_flux)) * (1.0f - field_partitioning);
-        float magnetic_flux2 = (min_flux + Mathf.Clamp(Mathf.Abs(field2_current), 0.0f, max_flux - min_flux)) *         field_partitioning;
-        float magnetic_flux  = magnetic_flux1 + magnetic_flux2;
-        if (!rheostatic_braking || load_current >= kickstarter_off_minimum_current)
+        string armature_name   = _armature_name;
+        load_current           = armature_current = currents[armature_name];
+        field1_current                            = currents[ _field1_name];
+        field_current          = field2_current   = currents[ _field2_name];
+        float magnetic_flux1   = (min_flux + Mathf.Clamp(Mathf.Abs(field1_current), 0.0f, max_flux - min_flux)) * (1.0f - field_partitioning);
+        float magnetic_flux2   = (min_flux + Mathf.Clamp(Mathf.Abs(field2_current), 0.0f, max_flux - min_flux)) *         field_partitioning;
+        float magnetic_flux    = magnetic_flux1 + magnetic_flux2;
+        float absolute_current = Mathf.Abs(armature_current);
+        if (!rheostatic_braking || absolute_current >= kickstarter_off_minimum_current)
             _dynamic_brake_kickstarter_winding_on = false;
-        else if (load_current < kickstarter_on_maximum_current)
+        else if (absolute_current < kickstarter_on_maximum_current)
             _dynamic_brake_kickstarter_winding_on = _has_kickstarter;
         if (field2_current < -10.0f)
             magnetic_flux = -magnetic_flux;
@@ -85,9 +86,10 @@ internal class traction_motor
         /*
         if (_motor_number == 1)
         {
-            Main.diagnostics?.Value = field_current;
-            Main.diagnostics2?.Value = magnetic_flux;
+            Main.diagnostics?.Value = armature_current;
         }
+        else if (_motor_number == 2)
+            Main.diagnostics2?.Value = armature_current;
         */
     }
 }
