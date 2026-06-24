@@ -23,7 +23,7 @@ internal class traction_motor
 
     private bool _dynamic_brake_kickstarter_winding_on = false;
 
-    public const float gear_ratio = 5.36f, internal_resistance = 0.21f, armature_part = 0.65f, field_partitioning = 0.65f;
+    public const float gear_ratio = 5.36f, internal_resistance = 0.21f, armature_part = 0.65f, field_partitioning = 0.75f;
 
     public float RPM           { get; private set; }
     public float wheel_torque  { get; private set; }

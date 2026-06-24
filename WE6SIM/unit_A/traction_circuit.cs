@@ -144,11 +144,11 @@ internal partial class unit_A_sim
             _base_element_resistances[$"MF{motor_branch}b" ] = traction_motor.internal_resistance * (1.0f - traction_motor.armature_part) * (       traction_motor.field_partitioning);
 
             _base_element_resistances[$"RT{motor_branch}"  ] = 3.0f;
-            _base_element_resistances[$"FR{motor_branch}.1"] = 0.00988f;
-            _base_element_resistances[$"FR{motor_branch}.2"] = 0.00532f;
-            _base_element_resistances[$"FR{motor_branch}.4"] = 0.11f;
-            _base_element_resistances[$"FR{motor_branch}.5"] = 0.0483f;
-            _base_element_resistances[$"FR{motor_branch}.6"] = 0.0764f;
+            _base_element_resistances[$"FR{motor_branch}.1"] = 0.00766f;
+            _base_element_resistances[$"FR{motor_branch}.2"] = 0.00459f;
+            _base_element_resistances[$"FR{motor_branch}.4"] = 0.015f;
+            _base_element_resistances[$"FR{motor_branch}.5"] = 0.0115f;
+            _base_element_resistances[$"FR{motor_branch}.6"] = 0.0368f;
         }
     }
 
