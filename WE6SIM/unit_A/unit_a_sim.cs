@@ -502,7 +502,7 @@ internal partial class unit_A_sim: electric_device
         
             traction_motor[] traction_motors = _traction_motors;
             for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
-                traction_motors[motor_index].simulate(rheostatic_brake_on, currents, _named_branches);
+                traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, currents, _named_branches);
             _circuit.simulate();
 
             float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : (_named_branches["EPS"].EMF - currents["EPS"] * _element_resistances["EPS"]);
