@@ -18,8 +18,9 @@ internal partial class unit_A_sim
 {
     private class exciter
 	{
-        const float max_exciter_voltage = 90.0f, min_exciter_voltage = 40.0f, max_exciter_current = 2000.0f;
+        const float max_exciter_voltage = 75.0f, min_exciter_voltage = 25.0f, max_exciter_current = 2000.0f;
         const float max_exciter_power = max_exciter_voltage * max_exciter_current;
+        const float min_exciter_power = min_exciter_voltage * max_exciter_current / 2.0f;
 
         private unit_A_sim _unit;
         
@@ -50,7 +51,7 @@ internal partial class unit_A_sim
                 exciter_EMF = Mathf.Clamp(min_exciter_voltage * (1.0f - raw_field_position) 
                     + max_exciter_voltage * raw_field_position + voltage_adjust, min_exciter_voltage, max_exciter_voltage);
                 float exciter_power = unit._currents["EXT"] * exciter_EMF;
-                float handle_power  = max_exciter_power * (field_handle_postion + 1) / control_stand.field_handle_notches;
+                float handle_power  = Mathf.LerpUnclamped(min_exciter_power, max_exciter_power, field_handle_postion / control_stand.field_handle_last_notch);
                 if (relative_speed < 1.0f)
                     handle_power *= relative_speed;
                 if (exciter_power > handle_power)
