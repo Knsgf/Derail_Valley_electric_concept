@@ -20,7 +20,7 @@ internal class blower_controller: electric_device
 
     const float dynamic_braking_parallel_maximum_voltage  = 950.0f;
     const float dynamic_braking_series_minimum_voltage    = 900.0f;
-    const float traction_low_speed_maximum_motor_current  = 300.0f;
+    const float traction_low_speed_maximum_motor_current  = 350.0f;
     const float traction_high_speed_minimum_motor_current = 250.0f;
 
     private readonly Port _blower_audio, _contactor_on_sound, _contactor_off_sound;
