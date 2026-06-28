@@ -522,7 +522,6 @@ internal partial class unit_A_sim: electric_device
                 _motors_volts         = Mathf.Max(Mathf.Abs(currents["VM56"] * _element_resistances["VM56"]), motor_volts_1_4);
             }
             set_motors_volts(_motors_volts);
-            _main_breaker.trip_if_operating_parameters_exceeded(voltage, _motors_volts, _total_load.Value);
             _overhead_power.ChangeState(voltage >= 1000.0f && _main_breaker_closed.State);
             float average_RPM = 0.0f, average_load_A = 0.0f, average_load_B = 0.0f, maximum_load = 0.0f; 
             float average_field_A = 0.0f, average_field_B = 0.0f, average_EMF = 0.0f;
@@ -533,6 +532,7 @@ internal partial class unit_A_sim: electric_device
             calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref average_RPM, 
                 ref average_load_B, ref maximum_load, ref average_field_B, ref average_EMF,
                 out total_torque_B, out total_heat_emission_B);
+            _main_breaker.trip_if_operating_parameters_exceeded(voltage, _motors_volts, maximum_load, _total_load.Value);
             average_RPM     /= motors;
             average_EMF     /= motors;
             average_load_A  /= (motors >> 1);

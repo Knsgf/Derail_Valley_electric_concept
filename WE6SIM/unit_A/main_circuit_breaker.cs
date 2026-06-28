@@ -91,7 +91,7 @@ internal partial class unit_A_sim
                 trip();
         }
 
-        public void trip()
+        public async void trip()
         {
             if (!_engaging && !_switched_on)
                 return;
@@ -99,14 +99,17 @@ internal partial class unit_A_sim
             _unit._main_breaker_closed.ChangeState(false);
             _unit._contactors.toggle_traction_motors(turn_on: false);
             _trip_sound.Value = 1.0f;
+            await Task.Delay(500);
+            _trip_sound.Value = 0.0f;
         }
 
-        public void trip_if_operating_parameters_exceeded(float supply_voltage, float motor_voltage, float total_draw)
+        public void trip_if_operating_parameters_exceeded(float supply_voltage, float motor_voltage, float motor_load, float total_draw)
         {
-            if (supply_voltage > 2000.0f || motor_voltage > 2000.0f || total_draw > 4500.0f)
+            if (_switched_on && supply_voltage >= 2000.0f || motor_voltage >= 2000.0f || motor_load >= 850.0f || total_draw >= 4800.0f)
             {
-                Main.log($"TU {supply_voltage} {motor_voltage} {total_draw}");
-                trip();
+                Main.log($"TU {supply_voltage} {motor_voltage} {motor_load} {total_draw}");
+                //trip();
+                _trip_sound.Value = 1.0f;   // Trigger instant fuse blow in vanilla TractionMotorSet via "water" detection
             }
         }
         
