@@ -27,6 +27,7 @@ internal class pantograph: electric_device
     const float maximum_head_height = 6.6f, frame_thickness = 0.085f, head_movement_speed = 0.5f;
     const float sidepan_relative_movement_speed = 0.5f;
     const int   max_iterations_before_sleep = 6;
+    const float wear_per_metre = 5.0E-6f, nominal_current = 2200.0f, wear_per_second_at_full_current = 5.0E-5f;
 
     private static readonly Dictionary<string, FieldInfo> _pantograph_parts = [];
     private static readonly Quaternion _sidepan_pivot_deployed_orientation = Quaternion.AngleAxis(90.0f  , Vector3.up   );
@@ -75,7 +76,7 @@ internal class pantograph: electric_device
     [pantograph_part("SidepanOuter")]
     private Transform _sidepan_outer_contact;
 
-    private readonly Port _arcing_damage, _dropper_hit_damage;
+    private readonly Port _arcing_damage, _dropper_hit_damage, _regular_damage;
 
     private readonly Quaternion _initial_front_lower_frame_orientation, _initial_front_upper_frame_orientation;
     private readonly Quaternion _initial_back_lower_frame_orientation, _initial_back_upper_frame_orientation;
@@ -87,7 +88,7 @@ internal class pantograph: electric_device
 
     private Vector2 _head_rollers_offset;
     private float   _current_height, _target_height, _current_upper_frame_angle;
-    private int     _interations_left = max_iterations_before_sleep;
+    private int     _interations_left = max_iterations_before_sleep, _last_x, _last_z;
     private bool    _stowed = true;
 
     private float _side_pivot_relative_position = 0.0f, _side_arm_relative_position = 0.0f;
@@ -186,8 +187,10 @@ internal class pantograph: electric_device
             throw new Exception("Incomplete sidepan");
         }
 
-        _arcing_damage      = sensor_grabber.grab_port(ports, "[Pantograph].ARCING"     );
-        _dropper_hit_damage = sensor_grabber.grab_port(ports, "[Pantograph].DROPPER_HIT");
+        _arcing_damage      = sensor_grabber.grab_port(ports, "[Pantograph].ARCING"        );
+        _dropper_hit_damage = sensor_grabber.grab_port(ports, "[Pantograph].DROPPER_HIT"   );
+        _regular_damage     = sensor_grabber.grab_port(ports, "[Pantograph].REGULAR_DAMAGE");
+        Main.log($"PNT.ctor {unit.name}");
     }
 
     private void move()
@@ -307,10 +310,14 @@ internal class pantograph: electric_device
     public void simulate(float load_current)
     {
         check_if_disposed();
+        bool        raised   = false;
+        roof_busbar roof_bus = _roof_bus;
+        if (roof_bus.halved_current)
+            load_current /= 2.0f;
         if (_stowed || !is_powered)
         {
             _target_height               = _initial_head_height;
-            _roof_bus.pantograph_voltage = _last_pantograph_voltage = 0.0f;
+            roof_bus.pantograph_voltage = _last_pantograph_voltage = 0.0f;
         }
         else
         {
@@ -322,38 +329,67 @@ internal class pantograph: electric_device
                                                                                 strip_end2_x, stripe_end2_z, base_world_position.y);
             */
             (float? wire_height, float supply_voltage) = get_wire_height_and_voltage(_base, _contact_strip_end1, _contact_strip_end2, load_current);
+            float bus_voltage;
             if (wire_height == null)
             {
-                _target_height               = maximum_head_height;
-                _roof_bus.pantograph_voltage = _last_pantograph_voltage = 0.0f;
-                if (load_current >= 500.0f)
+                _target_height              = maximum_head_height;
+                roof_bus.pantograph_voltage = 0.0f;
+                bus_voltage                 = roof_bus.voltage;
+                if (bus_voltage < _last_pantograph_voltage && load_current >= 200.0f 
+                    && _last_pantograph_voltage > 0.0f && bus_voltage / _last_pantograph_voltage < 0.1f
+                    || roof_bus.short_circuited)
+                {
                     explode(_arcing_damage);
+                }
             }
             else
             {
                 Vector3 target_head_world_position = _base.position;
                 target_head_world_position.y       = (float) wire_height;
                 _target_height                     = _unit.transform.InverseTransformPoint(target_head_world_position).y;
-                float voltage                      = (Mathf.Abs(_current_height - _target_height) < 0.2f) ? supply_voltage : 0.0f;
-                _roof_bus.pantograph_voltage       = voltage;
-
+                raised                             = Mathf.Abs(_current_height - _target_height) < 0.2f;
+                roof_bus.pantograph_voltage        = raised ? supply_voltage : 0.0f;
+                bus_voltage                        = roof_bus.voltage;
+                
                 if (_current_height - _target_height > 0.3f)
                     explode(_dropper_hit_damage);
-                else if (voltage < _last_pantograph_voltage && load_current >= 200.0f 
-                    && _last_pantograph_voltage > 0.0f && voltage / _last_pantograph_voltage < 0.1f)
+                else if (bus_voltage < _last_pantograph_voltage && load_current >= 200.0f 
+                    && _last_pantograph_voltage > 0.0f && bus_voltage / _last_pantograph_voltage < 0.1f
+                    || roof_bus.short_circuited)
                 {
                     explode(_arcing_damage);
                 }
-                _last_pantograph_voltage = voltage;
             }
+            _last_pantograph_voltage = Mathf.Min(roof_bus.pantograph_voltage, roof_bus.voltage);    // No arcing if the other pantograph is still live
         }
         move();
 
         if (_sidepan_stowed || _side_pivot_relative_position < 1.0f || _side_arm_relative_position < 1.0f)
-            _roof_bus.sidepan_voltage = 0.0f;
+            roof_bus.sidepan_voltage = 0.0f;
         else
-            (_, _roof_bus.sidepan_voltage) = get_wire_height_and_voltage(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact, load_current);
+        {
+            (float? rail_height, roof_bus.sidepan_voltage) = get_wire_height_and_voltage(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact, load_current);
+            raised |= rail_height != null;
+        }
         sidepan_move();
+
+        /*
+        if (_unit.name[6] == 'A')
+            Main.diagnostics?.Value = raised ? load_current : 0.0f;
+        else
+            Main.diagnostics2?.Value = raised ? load_current : 0.0f;
+        */
+        (int x, int z) = world_position.get_absolute_position(_base.position);
+        if (!raised)
+            _regular_damage.Value = 0.0f;
+        else
+        {
+            float current_ratio = load_current / nominal_current;
+            _regular_damage.Value = wear_per_metre * Mathf.Sqrt(world_position.get_distance_squared(x, z, _last_x, _last_z))
+                                  + wear_per_second_at_full_current * current_ratio * current_ratio * Time.deltaTime;
+        }
+        _last_x = x;
+        _last_z = z;
     }
 
     public void toggle(bool stowed)
