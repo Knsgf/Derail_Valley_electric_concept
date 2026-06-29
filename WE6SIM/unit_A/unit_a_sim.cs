@@ -115,7 +115,7 @@ internal partial class unit_A_sim: electric_device
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
         _contactors   = new(unit, _appliances, _control_air, _main_breaker_closed, _contactor_locations, _contactor_on_sound, _contactor_off_sound, _control_AB1);
         _roof_bus     = new(ports, is_unit_A: true);
-        _pantograph   = new(unit.gameObject, _roof_bus, _appliances, _control_air);
+        _pantograph   = new(unit.gameObject, _roof_bus, _appliances, _control_air, ports);
         _main_breaker = new(_appliances, _control_air, ports, this);
 
         _traction_motors = new traction_motor[motors];

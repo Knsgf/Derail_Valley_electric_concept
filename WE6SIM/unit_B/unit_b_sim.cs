@@ -68,8 +68,7 @@ internal class unit_B_sim: electric_device
 
         _battery_cabinet = new(fuses, ports, unit.brakeSystem);
         _roof_bus        = new(ports, is_unit_A: false);
-        _pantograph      = new(unit.gameObject, _roof_bus, _appliances, _control_air);
-        
+        _pantograph      = new(unit.gameObject, _roof_bus, _appliances, _control_air, ports);
         
         throttle_relay     = handle_relay(BA1_signals.throttle, BA1_shift.throttle, control_stand.throttle_notches    );
         field_handle_relay = handle_relay(BA1_signals.field   , BA1_shift.field   , control_stand.field_handle_notches);

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 
 using LocoSim.Implementations;
 
@@ -74,6 +75,8 @@ internal class pantograph: electric_device
     [pantograph_part("SidepanOuter")]
     private Transform _sidepan_outer_contact;
 
+    private readonly Port _arcing_damage, _dropper_hit_damage;
+
     private readonly Quaternion _initial_front_lower_frame_orientation, _initial_front_upper_frame_orientation;
     private readonly Quaternion _initial_back_lower_frame_orientation, _initial_back_upper_frame_orientation;
     private readonly GameObject _unit;
@@ -89,6 +92,8 @@ internal class pantograph: electric_device
 
     private float _side_pivot_relative_position = 0.0f, _side_arm_relative_position = 0.0f;
     private bool  _sidepan_stowed = true, _at_either_end = false;
+
+    private float _last_pantograph_voltage = 0.0f;
 
     public bool stowed         => _stowed;
     public bool sidepan_stowed => _sidepan_stowed;
@@ -132,7 +137,7 @@ internal class pantograph: electric_device
             assign_part(tagged_anchors, current_part);
     }
 
-    public pantograph(GameObject unit, roof_busbar roof_bus, Fuse electric_supply, Fuse air_supply)
+    public pantograph(GameObject unit, roof_busbar roof_bus, Fuse electric_supply, Fuse air_supply, Dictionary<string, Port> ports)
         : base("pantograph", electric_supply, air_supply)
     {
         _roof_bus = roof_bus;
@@ -180,6 +185,9 @@ internal class pantograph: electric_device
         {
             throw new Exception("Incomplete sidepan");
         }
+
+        _arcing_damage      = sensor_grabber.grab_port(ports, "[Pantograph].ARCING"     );
+        _dropper_hit_damage = sensor_grabber.grab_port(ports, "[Pantograph].DROPPER_HIT");
     }
 
     private void move()
@@ -286,13 +294,23 @@ internal class pantograph: electric_device
                                                      strip_end2_x, stripe_end2_z, pantograph_base.position.y, load_current);
     }
     
+    private async void explode(Port trigger)
+    {
+        if (trigger.Value != 1.0f)
+        {
+            trigger.Value = 1.0f;
+            await Task.Delay(2000);
+            trigger.Value = 0.0f;
+        }
+    }
+    
     public void simulate(float load_current)
     {
         check_if_disposed();
         if (_stowed || !is_powered)
         {
             _target_height               = _initial_head_height;
-            _roof_bus.pantograph_voltage = 0.0f;
+            _roof_bus.pantograph_voltage = _last_pantograph_voltage = 0.0f;
         }
         else
         {
@@ -307,14 +325,26 @@ internal class pantograph: electric_device
             if (wire_height == null)
             {
                 _target_height               = maximum_head_height;
-                _roof_bus.pantograph_voltage = 0.0f;
+                _roof_bus.pantograph_voltage = _last_pantograph_voltage = 0.0f;
+                if (load_current >= 500.0f)
+                    explode(_arcing_damage);
             }
             else
             {
                 Vector3 target_head_world_position = _base.position;
                 target_head_world_position.y       = (float) wire_height;
                 _target_height                     = _unit.transform.InverseTransformPoint(target_head_world_position).y;
-                _roof_bus.pantograph_voltage       = (Mathf.Abs(_current_height - _target_height) < 0.2f) ? supply_voltage : 0.0f;
+                float voltage                      = (Mathf.Abs(_current_height - _target_height) < 0.2f) ? supply_voltage : 0.0f;
+                _roof_bus.pantograph_voltage       = voltage;
+
+                if (_current_height - _target_height > 0.3f)
+                    explode(_dropper_hit_damage);
+                else if (voltage < _last_pantograph_voltage && load_current >= 200.0f 
+                    && _last_pantograph_voltage > 0.0f && voltage / _last_pantograph_voltage < 0.1f)
+                {
+                    explode(_arcing_damage);
+                }
+                _last_pantograph_voltage = voltage;
             }
         }
         move();
