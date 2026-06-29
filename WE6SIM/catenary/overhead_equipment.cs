@@ -111,7 +111,7 @@ internal partial class overhead_equipment
     private readonly string _file_path;
     private readonly List<catenary_object> _all_objects = [], _freshly_added_objects = [], _nearby_wires = [];
 
-    private GameObject? _player_tracker;
+    private GameObject? _OCS_ticker;
 
     private List<catenary_object> _previously_visible_objects = [], _currently_visible_objects = [];
     private quad_tree _object_tree = new([], scenery_tree_objects_per_node), _wires_tree = new([], wires_tree_objects_per_node);
@@ -255,8 +255,8 @@ internal partial class overhead_equipment
             wires_tree_objects_per_node
         );
 
-        _system._player_tracker = new GameObject("WE6SIM.catenary.overhead_equpment._player_tracker", typeof(player_tracker));
-        var tracker = _system._player_tracker.GetComponent<player_tracker>();
+        _system._OCS_ticker = new GameObject("WE6SIM.catenary.overhead_equpment._player_tracker", typeof(OCS_ticker));
+        var tracker = _system._OCS_ticker.GetComponent<OCS_ticker>();
         PlayerManager.PlayerTeleportStarted  += tracker.suspend_tracker;
         PlayerManager.PlayerTeleportFinished += tracker.resume_tracker;
         PlayerManager.PlayerChanged          += _system.restart_tracker;
@@ -264,7 +264,7 @@ internal partial class overhead_equipment
 
     private void restart_tracker()
     {
-        _player_tracker?.GetComponent<player_tracker>().resume_tracker();
+        _OCS_ticker?.GetComponent<OCS_ticker>().resume_tracker();
     }
 
     public static void dispose()
@@ -272,14 +272,14 @@ internal partial class overhead_equipment
         editor.disable();
         if (_system == null)
             return;
-        if (_system._player_tracker is not null)
+        if (_system._OCS_ticker is not null)
         {
-            var tracker = _system._player_tracker.GetComponent<player_tracker>();
+            var tracker = _system._OCS_ticker.GetComponent<OCS_ticker>();
             PlayerManager.PlayerTeleportStarted  -= tracker.suspend_tracker;
             PlayerManager.PlayerTeleportFinished -= tracker.resume_tracker;
             PlayerManager.PlayerChanged          -= _system.restart_tracker;
-            GameObject.Destroy(_system._player_tracker);
-            _system._player_tracker = null;
+            GameObject.Destroy(_system._OCS_ticker);
+            _system._OCS_ticker = null;
         }
         WorldMover floating_origin     = SingletonBehaviour<WorldMover>.Instance;
         floating_origin?.WorldMoved   -= _system.floating_origin_shift;
@@ -369,6 +369,12 @@ internal partial class overhead_equipment
         //Main.log($"x={new_object.x / fixed_multiplier} z={new_object.z / fixed_multiplier} y={new_object.y} c={_all_objects.Count}");
         _scenery_changed = true;
         return new_object;
+    }
+
+    private void simulate_all_substations_load()
+    {
+        foreach (substation current_substation in _all_substations!)
+            current_substation.simulate_load();
     }
 
     public (float? contact_height, float contact_voltage) wire_height_and_voltage(int strip_end1_x, int strip_end1_z, int strip_end2_x, int strip_end2_z, 

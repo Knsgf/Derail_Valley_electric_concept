@@ -16,7 +16,7 @@ internal partial class overhead_equipment
     private class substation: catenary_object, power_supply
     {
         [JsonIgnore]
-        private float _current_voltage;
+        private float _current_voltage, _current_load = 0.0f, _new_load;
         
         [JsonProperty]
         public string map_location;
@@ -42,16 +42,28 @@ internal partial class overhead_equipment
             float y_offset = y - wire_y;
             float distance = Mathf.Sqrt(((long) x_offset * x_offset + (long) z_offset + z_offset) 
                 / (world_position.fixed_multiplier * world_position.fixed_multiplier) + y_offset * y_offset);
+            _new_load += load_current;
+            return _current_voltage - _current_load * wire_1m_resistance * distance;
+        }
+
+        public void simulate_load()
+        {
+            _current_load = _new_load;
+            _new_load     = 0.0f;
             float voltage = supply_voltage;
-            if (load_current < -100.0f)
+            if (_current_load < -100.0f)
             {
                 if (has_inverter)
-                    voltage += load_current / 3000.0f * 350.0f;
+                    voltage += _current_load / 3000.0f * 350.0f;
             }
             _current_voltage = voltage * 0.01f + _current_voltage * 0.99f;
-            //Main.diagnostics?.Value = distance;
-            //Main.diagnostics2?.Value = supply_voltage - maximum_load * wire_1m_resistance * distance;
-            return _current_voltage - load_current * wire_1m_resistance * distance;
+            /*
+            if (string.Equals(map_location, "SM1500", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Main.diagnostics?.Value = _current_load;
+                //Main.diagnostics2?.Value = _current_voltage;
+            }
+            */
         }
         
         public override void reveal()
