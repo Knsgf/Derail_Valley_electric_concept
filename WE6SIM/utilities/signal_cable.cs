@@ -12,7 +12,7 @@ internal static class signal_cable
     { 
         unit_B_pantograph = 0,
         unit_B_sidepan    = 1, 
-        overhead_supply   = 2, 
+        compressor_supply = 2, 
         sander            = 3,
         contactor_off     = 4,
         contactor_on      = 5,
@@ -25,7 +25,7 @@ internal static class signal_cable
     {
         unit_B_pantograph = 0x1 << AB1_shift.unit_B_pantograph,
         unit_B_sidepan    = 0x1 << AB1_shift.unit_B_sidepan,
-        overhead_power    = 0x1 << AB1_shift.overhead_supply,
+        compressor_power  = 0x1 << AB1_shift.compressor_supply,
         sander            = 0x1 << AB1_shift.sander,
         contactor_off     = 0x1 << AB1_shift.contactor_off,
         contactor_on      = 0x1 << AB1_shift.contactor_on,

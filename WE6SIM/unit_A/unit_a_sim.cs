@@ -32,7 +32,7 @@ internal partial class unit_A_sim: electric_device
     private readonly Dictionary<string, branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
-    private readonly Fuse _appliances, _control_air, _main_breaker_closed, _overhead_power;
+    private readonly Fuse _appliances, _control_air, _main_breaker_closed, _compressor_on;
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _total_load, _relative_voltage, _compressor_power;
@@ -76,12 +76,12 @@ internal partial class unit_A_sim: electric_device
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-        _appliances          = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"            );
-        _control_air         = grab_fuse(fuses, "fusebox.CONTROL_AIR"                 );
-        _main_breaker_closed = grab_fuse(fuses, "[MainBreakerContacts].CLOSED"        );
-        _overhead_power      = grab_fuse(fuses, "[MainBreakerContacts].OVERHEAD_POWER");
+        _appliances          = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"              );
+        _control_air         = grab_fuse(fuses, "fusebox.CONTROL_AIR"                   );
+        _main_breaker_closed = grab_fuse(fuses, "[MainBreakerContacts].CLOSED"          );
+        _compressor_on       = grab_fuse(fuses, "[MainBreakerContacts].COMPRESSOR_POWER");
         set_up_fuses(_appliances);
-        _overhead_power.StateUpdated += overhead_power_toggle;
+        _compressor_on.StateUpdated += compressor_power_toggle;
 
         _torque_A            = grab_port(ports, "traction.TORQUE_IN"                        );
         _wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
@@ -240,9 +240,9 @@ internal partial class unit_A_sim: electric_device
             (int) BA1_shift.unit_B_camshaft_notch);
     }
 
-    private void overhead_power_toggle(bool turn_on)
+    private void compressor_power_toggle(bool turn_on)
     {
-        toggle_port_signal(_control_AB1, (int) AB1_signals.overhead_power, turn_on);
+        toggle_port_signal(_control_AB1, (int) AB1_signals.compressor_power, turn_on);
     }
 
     private void synchronise_independent_brake(float raw_handle_position)
@@ -522,7 +522,7 @@ internal partial class unit_A_sim: electric_device
                 _motors_volts         = Mathf.Max(Mathf.Abs(currents["VM56"] * _element_resistances["VM56"]), motor_volts_1_4);
             }
             set_motors_volts(_motors_volts);
-            _overhead_power.ChangeState(voltage >= 1000.0f && _main_breaker_closed.State);
+            _compressor_on.ChangeState(voltage >= 1000.0f && _main_breaker_closed.State);
             float average_RPM = 0.0f, average_load_A = 0.0f, average_load_B = 0.0f, maximum_load = 0.0f; 
             float average_field_A = 0.0f, average_field_B = 0.0f, average_EMF = 0.0f;
             float total_torque_A, total_heat_emission_A, total_torque_B, total_heat_emission_B;

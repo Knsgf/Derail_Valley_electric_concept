@@ -30,7 +30,7 @@ internal class unit_B_sim: electric_device
     private readonly camshaft_motor _secondary_controller;
     private readonly control_stand  _control_stand;
 
-    private readonly Fuse _appliances, _overhead_power, _control_air;
+    private readonly Fuse _appliances, _compressor_on, _control_air;
     private readonly Port _control_AB1, _control_BA1;
     private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _relative_voltage;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
@@ -48,9 +48,9 @@ internal class unit_B_sim: electric_device
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-        _overhead_power = grab_fuse(fuses, "[MainBreakerContacts].OVERHEAD_POWER");
-        _control_air    = grab_fuse(fuses, "fusebox.CONTROL_AIR"                 );
-        _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"            );
+        _compressor_on  = grab_fuse(fuses, "[MainBreakerContacts].COMPRESSOR_POWER");
+        _control_air    = grab_fuse(fuses, "fusebox.CONTROL_AIR"                   );
+        _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"              );
         set_up_fuses(_appliances);
 
         _total_load         = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD"            );
@@ -144,7 +144,7 @@ internal class unit_B_sim: electric_device
         if (disposed)
             return;
         
-        _overhead_power.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.overhead_power));
+        _compressor_on.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.compressor_power));
 
         _pantograph.toggle        (!port_value_signal_active(AB1, (int) AB1_signals.unit_B_pantograph));
         _pantograph.sidepan_toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan   ));
