@@ -81,6 +81,7 @@ internal partial class unit_A_sim
                 return;
             _engage_sound.Value = 1.0f;
             unit._main_breaker_closed.ChangeState(true);
+            toggle_port_signal(_unit._control_AB1, (int) AB1_signals.main_breaker, true);
             _engaging    = false;
             _switched_on = true;
         }
@@ -97,6 +98,7 @@ internal partial class unit_A_sim
                 return;
             _engaging = _switched_on = false;
             _unit._main_breaker_closed.ChangeState(false);
+            toggle_port_signal(_unit._control_AB1, (int) AB1_signals.main_breaker, false);
             _unit._contactors.toggle_traction_motors(turn_on: false);
             _trip_sound.Value = 1.0f;
             await Task.Delay(500);

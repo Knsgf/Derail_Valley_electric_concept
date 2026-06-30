@@ -12,10 +12,11 @@ internal static class signal_cable
     { 
         unit_B_pantograph = 0,
         unit_B_sidepan    = 1, 
-        compressor_supply = 2, 
-        sander            = 3,
-        contactor_off     = 4,
-        contactor_on      = 5,
+        main_breaker      = 2,
+        compressor_supply = 3, 
+        sander            = 4,
+        contactor_off     = 5,
+        contactor_on      = 6,
         
         independent_brake     = 14,
         unit_A_camshaft_notch = 17,
@@ -25,6 +26,7 @@ internal static class signal_cable
     {
         unit_B_pantograph = 0x1 << AB1_shift.unit_B_pantograph,
         unit_B_sidepan    = 0x1 << AB1_shift.unit_B_sidepan,
+        main_breaker      = 0x1 << AB1_shift.main_breaker,
         compressor_power  = 0x1 << AB1_shift.compressor_supply,
         sander            = 0x1 << AB1_shift.sander,
         contactor_off     = 0x1 << AB1_shift.contactor_off,
