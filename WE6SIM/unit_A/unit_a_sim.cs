@@ -35,7 +35,7 @@ internal partial class unit_A_sim: electric_device
     private readonly Fuse _appliances, _control_air, _main_breaker_closed, _compressor_on;
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
-    private readonly Port _total_load, _relative_voltage, _compressor_power;
+    private readonly Port _total_load, _relative_voltage, _compressor_power, _traction_motor_heat_B, _motor_cooling_rate;
     private readonly Port _reverser_handle, _selector_handle;
 
     private readonly Port _control_AB1, _control_BA1, _torque_B, _wheel_RPM_B, _traction_motor_load_B;
@@ -83,15 +83,16 @@ internal partial class unit_A_sim: electric_device
         set_up_fuses(_appliances);
         _compressor_on.StateUpdated += compressor_power_toggle;
 
-        _torque_A            = grab_port(ports, "traction.TORQUE_IN"                        );
-        _wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
-        _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD"             );
-        _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
-        _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF"              );
-        _total_load          = grab_port(ports, "[CustomGauges].CURRENT_DRAW"               );
-        _jog_volts           = grab_port(ports, "[CustomSimulation].JOG_VOLTS"              );
-        _relative_voltage    = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
-        _compressor_power    = grab_port(ports, "compressor.POWER_CONSUMPTION"              );
+        _torque_A              = grab_port(ports, "traction.TORQUE_IN"                        );
+        _wheel_RPM             = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
+        _traction_motor_load   = grab_port(ports, "[CustomSimulation].MOTOR_LOAD"             );
+        _traction_motor_RPM    = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
+        _traction_motor_EMF    = grab_port(ports, "[CustomSimulation].MOTOR_EMF"              );
+        _total_load            = grab_port(ports, "[CustomGauges].CURRENT_DRAW"               );
+        _jog_volts             = grab_port(ports, "[CustomSimulation].JOG_VOLTS"              );
+        _relative_voltage      = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
+        _compressor_power      = grab_port(ports, "compressor.POWER_CONSUMPTION"              );
+        _traction_motor_heat_B = grab_port(ports, "[CustomSimulation].MOTOR_HEAT_B"           );
 
         const float variation = 0.1f;
         UnityEngine.Random.State old_state = UnityEngine.Random.state;
@@ -105,11 +106,11 @@ internal partial class unit_A_sim: electric_device
             _currents[branch_name] = 0.0f;
         _named_branches["BAT"].EMF = battery_panel.battery_EMF;
 
-        _torque_B              = grab_port(ports, "[internal_MU].TM4-6");
-        _wheel_RPM_B           = grab_port(ports, "[internal_MU].WHEEL_RPM_FROM_B");
+        _torque_B              = grab_port(ports, "[internal_MU].TM4-6"            );
+        _wheel_RPM_B           = grab_port(ports, "[internal_MU].WHEEL_RPM_FROM_B" );
         _traction_motor_load_B = grab_port(ports, "[CustomSimulation].MOTOR_LOAD_B");
-        _control_AB1           = grab_port(ports, "[internal_MU].CONTROL_AB1");
-        _control_BA1           = grab_port(ports, "[internal_MU].CONTROL_BA1");
+        _control_AB1           = grab_port(ports, "[internal_MU].CONTROL_AB1"      );
+        _control_BA1           = grab_port(ports, "[internal_MU].CONTROL_BA1"      );
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
@@ -128,10 +129,10 @@ internal partial class unit_A_sim: electric_device
         _blowers = new(
             _main_breaker_closed, 
             grab_port(ports, "[Blowers].BLOWERS_RELATIVE_SPEED"), 
-            grab_port(ports, "tmHeat.TEMPERATURE"), 
-            grab_port(ports, "[Blowers].MOTOR_COOLING_RATE"), 
-            grab_port(ports, "[ResistorHeat].TEMPERATURE"), 
-            grab_port(ports, "[Blowers].RESISTOR_COOLING_RATE"), 
+            grab_port(ports, "tmHeat.TEMPERATURE"              ), 
+            grab_port(ports, "[Blowers].MOTOR_COOLING_RATE"    ), 
+            grab_port(ports, "[ResistorHeat].TEMPERATURE"      ), 
+            grab_port(ports, "[Blowers].RESISTOR_COOLING_RATE" ), 
             _contactor_on_sound, _contactor_off_sound
         );
 
@@ -549,6 +550,7 @@ internal partial class unit_A_sim: electric_device
             }
             _traction_motor_load.Value   = average_load_A;
             _traction_motor_load_B.Value = average_load_B;
+            _traction_motor_heat_B.Value = total_heat_emission_B;
             _traction_motor_RPM.Value    = average_RPM;
             _traction_motor_EMF.Value    = average_EMF;
         
@@ -557,7 +559,7 @@ internal partial class unit_A_sim: electric_device
             blowers.motor_current         = maximum_load;
             blowers.line_voltage          = rheostatic_brake_on ? _motors_volts : voltage;
             blowers.simulate();
-            _traction_motor_temperature.simulate(total_heat_emission_A);
+            _traction_motor_temperature.simulate(total_heat_emission_A, average_RPM);
 
             _torque_A.Value = total_torque_A;
             _torque_B.Value = total_torque_B;

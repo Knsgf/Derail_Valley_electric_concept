@@ -21,18 +21,19 @@ namespace WE6SIM.unit_B;
 
 internal class unit_B_sim: electric_device
 {
-    private readonly pantograph    _pantograph;
-    private readonly roof_busbar   _roof_bus;
-    private readonly battery_panel _battery_cabinet;
+    private readonly pantograph              _pantograph;
+    private readonly roof_busbar             _roof_bus;
+    private readonly battery_panel           _battery_cabinet;
+    private readonly dummy_voltage_regulator _traction_motor_temperature;
 
     private readonly TrainCar       _unit;
     private readonly SimController  _simulation;
     private readonly camshaft_motor _secondary_controller;
     private readonly control_stand  _control_stand;
 
-    private readonly Fuse _appliances, _compressor_on, _control_air;
+    private readonly Fuse _appliances, _main_breaker, _compressor_on, _control_air;
     private readonly Port _control_AB1, _control_BA1;
-    private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _relative_voltage;
+    private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _relative_voltage, _traction_motor_heat;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _reverser_handle, _selector_handle;
 
@@ -48,15 +49,17 @@ internal class unit_B_sim: electric_device
     {
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
+        _main_breaker   = grab_fuse(fuses, "[MainBreakerContacts].CLOSED"          );
         _compressor_on  = grab_fuse(fuses, "[MainBreakerContacts].COMPRESSOR_POWER");
         _control_air    = grab_fuse(fuses, "fusebox.CONTROL_AIR"                   );
         _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"              );
         set_up_fuses(_appliances);
 
-        _total_load         = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD"            );
-        _wheel_RPM          = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
-        _traction_motor_RPM = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
-        _relative_voltage   = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
+        _total_load          = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD"            );
+        _wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
+        _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
+        _relative_voltage    = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
+        _traction_motor_heat = grab_port(ports, "[CustomSimulation].MOTOR_HEAT_B"           );
 
         _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
         _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
@@ -66,9 +69,10 @@ internal class unit_B_sim: electric_device
 
         _secondary_controller = new camshaft_motor(unit_A_sim.camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 
-        _battery_cabinet = new(fuses, ports, unit.brakeSystem);
-        _roof_bus        = new(ports, is_unit_A: false);
-        _pantograph      = new(unit.gameObject, _roof_bus, _appliances, _control_air, ports);
+        _battery_cabinet            = new(fuses, ports, unit.brakeSystem);
+        _roof_bus                   = new(ports, is_unit_A: false);
+        _pantograph                 = new(unit.gameObject, _roof_bus, _appliances, _control_air, ports);
+        _traction_motor_temperature = new(ports);
         
         throttle_relay     = handle_relay(BA1_signals.throttle, BA1_shift.throttle, control_stand.throttle_notches    );
         field_handle_relay = handle_relay(BA1_signals.field   , BA1_shift.field   , control_stand.field_handle_notches);
@@ -144,11 +148,13 @@ internal class unit_B_sim: electric_device
         if (disposed)
             return;
         
-        _compressor_on.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.compressor_power));
-
         _pantograph.toggle        (!port_value_signal_active(AB1, (int) AB1_signals.unit_B_pantograph));
         _pantograph.sidepan_toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan   ));
         
+        Main.log($"MUAB1 {port_value_signal_active(AB1, (int) AB1_signals.main_breaker    )}");
+        _main_breaker.ChangeState (port_value_signal_active(AB1, (int) AB1_signals.main_breaker    ));
+        _compressor_on.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.compressor_power));
+
         set_independent_brake(extract_signal_from_port_value(AB1, (int) AB1_signals.independent_brake, 
             (int) AB1_shift.independent_brake) / control_stand.independent_brake_last_notch);
         set_sander(port_value_signal_active(AB1, (int) AB1_signals.sander) ? 1.0f : 0.0f);
@@ -186,7 +192,9 @@ internal class unit_B_sim: electric_device
         check_if_disposed();
         _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
         _traction_motor_RPM.Value = _wheel_RPM.Value * traction_motor.gear_ratio;
+        _traction_motor_temperature.simulate(_traction_motor_heat.Value, _traction_motor_RPM.Value);
         _pantograph.simulate(_total_load.Value);
+
         set_seconday_notch(_secondary_controller.current_position);
         set_port_signal(_control_BA1, (int) BA1_signals.unit_B_camshaft_notch, (int) BA1_shift.unit_B_camshaft_notch,
             _secondary_controller.current_notch);
