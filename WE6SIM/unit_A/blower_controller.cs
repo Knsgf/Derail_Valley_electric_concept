@@ -10,7 +10,7 @@ namespace WE6SIM.unit_A;
 
 internal class blower_controller: electric_device
 {
-    const float full_motor_cooling_power_at_1C = 750.0f, ambient_temperature_C = 25.0f;
+    public const float full_motor_cooling_power_at_1C = 750.0f, ambient_temperature_C = 25.0f;
     const float resistor_group_continous_power = 1.0E+6f, resistor_max_temeprature_C = 950.0f;
     const float full_resistor_cooling_power_at_1C = resistor_group_continous_power / (resistor_max_temeprature_C - ambient_temperature_C);
     
