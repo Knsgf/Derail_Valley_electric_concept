@@ -22,6 +22,7 @@ internal partial class unit_A_sim
 {
     private class contactors: IDisposable
     {
+        private readonly unit_A_sim              _unit;
         private readonly PoweredWheelsManager    _driving_axles;
 
         public readonly camshaft_motor           _reverser, _primary_controller, _selector_motor;
@@ -34,10 +35,11 @@ internal partial class unit_A_sim
 
         public Action<float>? set_transition_lamp;
 
-        public contactors(TrainCar unit, Fuse appliances, Fuse air_supply, Fuse main_breaker, 
+        public contactors(TrainCar unit, unit_A_sim simulation, Fuse appliances, Fuse air_supply, Fuse main_breaker, 
             Dictionary<string, circuit.branch_user> contactor_locations, 
-            Port contactor_on_sound, Port contactor_off_sound, Port control_cable)
+            Port contactor_on_sound, Port contactor_off_sound)
         {
+            _unit = simulation;
             foreach (GameObject current_object in unit.gameObject.AllChildren())
             {
                 PoweredWheelsManager? driving_axles = current_object.GetComponent<PoweredWheelsManager>();
@@ -67,7 +69,7 @@ internal partial class unit_A_sim
             };
             Action<bool> contactor_click_on_B = delegate (bool engage)
             {
-                toggle_port_signal(control_cable, (int) (engage ? AB1_signals.contactor_on : AB1_signals.contactor_off), true);
+                toggle_port_signal(_unit._control_AB1, (int) (engage ? AB1_signals.contactor_on : AB1_signals.contactor_off), true);
             };
             Action<bool> contactor_click_on_both = delegate (bool engage)
             {
@@ -171,10 +173,14 @@ internal partial class unit_A_sim
                 if (!turn_on || _driving_axles.poweredWheels[motor].IsPowered)
                     _motor_cutouts[motor].switch_contactors(notch);
             }
+            int   unit_B_motor_status = 1 << ((int) BA2_shift.unit_B_active_motors);
+            float BA2                 = _unit._control_BA2.Value;
+            Main.log($"TTM {BA2} {unit_B_motor_status}");
             for (int motor = 3; motor <= 5; ++motor)
             {
-                //if (!turn_on || _driving_axles.poweredWheels[motor].IsPowered)
+                if (!turn_on || port_value_signal_active(BA2, unit_B_motor_status))
                     _motor_cutouts[motor].switch_contactors(notch);
+                unit_B_motor_status <<= 1;
             }
         }
 

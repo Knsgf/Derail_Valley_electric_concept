@@ -60,6 +60,10 @@ internal class unit_B_sim: electric_device
         set_up_fuses(_appliances);
         _main_breaker.StateUpdated += main_breaker_trip_relay;
 
+        _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
+        _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
+        _control_BA2 = grab_port(ports, "[internal_MU].CONTROL_BA2");
+        
         _total_load                = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD"            );
         _wheel_RPM                 = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
         _traction_motor_RPM        = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
@@ -87,11 +91,14 @@ internal class unit_B_sim: electric_device
         }
         if (_driving_axles is null)
             throw new Exception("No powered wheels manager");
+        assert.test(_driving_axles.poweredWheels.Length == 3);
+        int motor_status = 1 << ((int) BA2_shift.unit_B_active_motors);
+        for (int axle = 0; axle < 3; ++axle)
+        {
+            toggle_port_signal(_control_BA2, motor_status, _driving_axles.poweredWheels[axle].IsPowered);
+            motor_status <<= 1;
+        }
 
-        _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
-        _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
-        _control_BA2 = grab_port(ports, "[internal_MU].CONTROL_BA2");
-        
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
 

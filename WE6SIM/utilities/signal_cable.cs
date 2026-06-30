@@ -69,6 +69,14 @@ internal static class signal_cable
         independent_brake     = 0x7 << BA1_shift.independent_brake,
         unit_B_camshaft_notch = 0x7 << BA1_shift.unit_B_camshaft_notch
     }
+    public enum BA2_shift
+    {
+        unit_B_active_motors = 0
+    }
+    public enum BA2_signals
+    {
+        unit_B_active_motors = 0x7 << BA2_shift.unit_B_active_motors
+    }
 
     private static void check_signal_mask(int signal_mask)
     {
