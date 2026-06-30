@@ -7,6 +7,7 @@ using DV.Simulation.Brake;
 using DV.Simulation.Cars;
 
 using LocoSim.Implementations;
+using LocoSim.Implementations.Wheels;
 
 using UnityEngine;
 
@@ -25,6 +26,7 @@ internal class unit_B_sim: electric_device
     private readonly roof_busbar             _roof_bus;
     private readonly battery_panel           _battery_cabinet;
     private readonly dummy_voltage_regulator _traction_motor_temperature;
+    private readonly PoweredWheelsManager    _driving_axles;
 
     private readonly TrainCar       _unit;
     private readonly SimController  _simulation;
@@ -32,10 +34,10 @@ internal class unit_B_sim: electric_device
     private readonly control_stand  _control_stand;
 
     private readonly Fuse _appliances, _main_breaker, _compressor_on, _control_air;
-    private readonly Port _control_AB1, _control_BA1;
+    private readonly Port _control_AB1, _control_BA1, _control_BA2;
     private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _relative_voltage, _traction_motor_heat;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
-    private readonly Port _reverser_handle, _selector_handle;
+    private readonly Port _reverser_handle, _selector_handle, _throttle_handle;
 
     private readonly Action<float> set_primary_notch, set_seconday_notch;
     private readonly Action<float> set_independent_brake, set_sander;
@@ -60,9 +62,29 @@ internal class unit_B_sim: electric_device
         _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
         _relative_voltage    = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
         _traction_motor_heat = grab_port(ports, "[CustomSimulation].MOTOR_HEAT_B"           );
+        foreach (GameObject current_object in unit.gameObject.AllChildren())
+        {
+            PoweredWheelsManager? driving_axles = current_object.GetComponent<PoweredWheelsManager>();
+            if (driving_axles is not null)
+            {
+                /*
+                Main.log($"PoweredWheelsManager {driving_axles.poweredWheels.Length}");
+                foreach (PoweredWheel? axle in driving_axles.poweredWheels)
+                {
+                    if (axle is not null)
+                        Main.log($"{axle.index} {axle.state}");
+                }
+                */
+                _driving_axles = driving_axles;
+                break;
+            }
+        }
+        if (_driving_axles is null)
+            throw new Exception("No powered wheels manager");
 
         _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
         _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
+        _control_BA2 = grab_port(ports, "[internal_MU].CONTROL_BA2");
         
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
@@ -84,6 +106,11 @@ internal class unit_B_sim: electric_device
         _control_stand.register_handler("selector_handle",     selector_relay);
         _reverser_handle = grab_port(ports, "[Reverser].CONTROL_EXT_IN");
         _selector_handle = grab_port(ports, "[Selector].EXT_IN"        );
+        _throttle_handle = grab_port(ports, "[Throttle].EXT_IN"        );
+
+        _control_stand.register_handler( "main_breaker_on_button", enable_main_breaker);
+        _control_stand.register_handler("main_breaker_off_button", (float button_port) 
+            => toggle_port_signal(_control_BA1, (int) BA1_signals.breaker_trip, button_port >= 0.5f));
 
         _control_stand.register_handler(     "brake_cutout",                cab_activation);
         _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false);
@@ -125,6 +152,12 @@ internal class unit_B_sim: electric_device
         {
             set_port_signal(_control_BA1, (int) signal, (int) signal_shift, Mathf.RoundToInt(port_value * multiplier));
         };
+    }
+
+    private void enable_main_breaker(float button_port)
+    {
+        toggle_port_signal(_control_BA1, (int) BA1_signals.breaker_engage, 
+            button_port >= 0.5f && _cab_active && _throttle_handle.Value < 1.0f / control_stand.throttle_notches);
     }
 
     private void cab_activation(float valve)

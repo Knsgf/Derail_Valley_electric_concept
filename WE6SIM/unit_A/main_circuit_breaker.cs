@@ -63,10 +63,11 @@ internal partial class unit_A_sim
             return !unit_A_pantograph.sidepan_stowed || port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan);
         }
         
-        public async void toggle_on(float button_press)
+        public async void toggle_on()
         {
             unit_A_sim unit = _unit;
-            if (button_press < 0.5f || unit._main_breaker_closed.State || _engaging || !is_powered 
+            if (port_value_signal_active(unit._control_BA1.Value, (int) BA1_signals.breaker_trip) 
+                || unit._main_breaker_closed.State || _engaging || !is_powered 
                 || unit._throttle != 0 || !ready_to_run())
             {
                 return;

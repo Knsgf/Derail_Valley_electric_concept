@@ -35,10 +35,10 @@ internal partial class unit_A_sim: electric_device
     private readonly Fuse _appliances, _control_air, _main_breaker_closed, _compressor_on;
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
-    private readonly Port _total_load, _relative_voltage, _compressor_power, _traction_motor_heat_B, _motor_cooling_rate;
+    private readonly Port _total_load, _relative_voltage, _compressor_power, _traction_motor_heat_B;
     private readonly Port _reverser_handle, _selector_handle;
 
-    private readonly Port _control_AB1, _control_BA1, _torque_B, _wheel_RPM_B, _traction_motor_load_B;
+    private readonly Port _control_AB1, _control_BA1, _control_BA2, _torque_B, _wheel_RPM_B, _traction_motor_load_B;
 
     private readonly SimController _simulation;
     private readonly circuit       _circuit;
@@ -83,16 +83,15 @@ internal partial class unit_A_sim: electric_device
         set_up_fuses(_appliances);
         _compressor_on.StateUpdated += compressor_power_toggle;
 
-        _torque_A              = grab_port(ports, "traction.TORQUE_IN"                        );
-        _wheel_RPM             = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
-        _traction_motor_load   = grab_port(ports, "[CustomSimulation].MOTOR_LOAD"             );
-        _traction_motor_RPM    = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
-        _traction_motor_EMF    = grab_port(ports, "[CustomSimulation].MOTOR_EMF"              );
-        _total_load            = grab_port(ports, "[CustomGauges].CURRENT_DRAW"               );
-        _jog_volts             = grab_port(ports, "[CustomSimulation].JOG_VOLTS"              );
-        _relative_voltage      = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
-        _compressor_power      = grab_port(ports, "compressor.POWER_CONSUMPTION"              );
-        _traction_motor_heat_B = grab_port(ports, "[CustomSimulation].MOTOR_HEAT_B"           );
+        _torque_A            = grab_port(ports, "traction.TORQUE_IN"                        );
+        _wheel_RPM           = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
+        _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD"             );
+        _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
+        _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF"              );
+        _total_load          = grab_port(ports, "[CustomGauges].CURRENT_DRAW"               );
+        _jog_volts           = grab_port(ports, "[CustomSimulation].JOG_VOLTS"              );
+        _relative_voltage    = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
+        _compressor_power    = grab_port(ports, "compressor.POWER_CONSUMPTION"              );
 
         const float variation = 0.1f;
         UnityEngine.Random.State old_state = UnityEngine.Random.state;
@@ -109,8 +108,10 @@ internal partial class unit_A_sim: electric_device
         _torque_B              = grab_port(ports, "[internal_MU].TM4-6"            );
         _wheel_RPM_B           = grab_port(ports, "[internal_MU].WHEEL_RPM_FROM_B" );
         _traction_motor_load_B = grab_port(ports, "[CustomSimulation].MOTOR_LOAD_B");
+        _traction_motor_heat_B = grab_port(ports, "[CustomSimulation].MOTOR_HEAT_B");
         _control_AB1           = grab_port(ports, "[internal_MU].CONTROL_AB1"      );
         _control_BA1           = grab_port(ports, "[internal_MU].CONTROL_BA1"      );
+        _control_BA2           = grab_port(ports, "[internal_MU].CONTROL_BA2"      );
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
@@ -145,15 +146,15 @@ internal partial class unit_A_sim: electric_device
         _control_stand.register_handler(   "field_handle", field_control_handler);
         _control_stand.register_handler("selector_handle",      selector_handler);
 
-        _control_stand.register_handler("front_pantograph_switch", toggle_front_pantograph);
-        _control_stand.register_handler( "back_pantograph_switch",  toggle_back_pantograph);
-        _control_stand.register_handler(    "left_sidepan_switch",     toggle_left_sidepan);
-        _control_stand.register_handler(   "right_sidepan_switch",    toggle_right_sidepan);
-        _control_stand.register_handler(   "fast_notching_switch",    fast_notching_toggle);
-        _control_stand.register_handler(    "blower_speed_switch",     blower_speed_toggle);
+        _control_stand.register_handler("front_pantograph_switch", toggle_front_pantograph );
+        _control_stand.register_handler( "back_pantograph_switch", toggle_back_pantograph  );
+        _control_stand.register_handler(    "left_sidepan_switch", toggle_left_sidepan     );
+        _control_stand.register_handler(   "right_sidepan_switch", toggle_right_sidepan    );
+        _control_stand.register_handler( "main_breaker_on_button", enable_main_breaker     );
+        _control_stand.register_handler("main_breaker_off_button", _main_breaker.toggle_off);
+        _control_stand.register_handler(   "fast_notching_switch", fast_notching_toggle    );
+        _control_stand.register_handler(    "blower_speed_switch", blower_speed_toggle     );
 
-        _control_stand.register_handler( "main_breaker_on_button",      _main_breaker.toggle_on );
-        _control_stand.register_handler("main_breaker_off_button",      _main_breaker.toggle_off);
         _control_stand.register_handler(      "independent_brake", synchronise_independent_brake, needs_power: false);
         _control_stand.register_handler(           "brake_cutout",                cab_activation);
         _control_stand.register_handler(                 "sander",            synchronise_sander);
@@ -211,6 +212,12 @@ internal partial class unit_A_sim: electric_device
         if (!_pantograph.stowed || port_value_signal_active(_control_AB1.Value, (int) AB1_signals.unit_B_pantograph))
             return;
         toggle_port_signal(_control_AB1, (int) AB1_signals.unit_B_sidepan, port_value >= 0.5f);
+    }
+
+    private void enable_main_breaker(float button_port)
+    {
+        if (button_port >= 0.5f && _cab_active)
+            _main_breaker.toggle_on();
     }
 
     private void fast_notching_toggle(float port_value)
@@ -402,8 +409,15 @@ internal partial class unit_A_sim: electric_device
         
         _jogging_mode_on = port_value_signal_active(BA1, (int) BA1_signals.jog);
 
+        bool breaker_trip = port_value_signal_active(BA1, (int) BA1_signals.breaker_trip);
+        if (breaker_trip)
+            _main_breaker.trip();
+
         if (!_cab_active)
         {
+            if (!breaker_trip && port_value_signal_active(BA1, (int) BA1_signals.breaker_engage))
+                _main_breaker.toggle_on();
+            
             bool cab_changed = port_value_signal_active(BA1, (int) BA1_signals.cab_change);
             reverser_handler(port_value_signal_active(BA1, (int) BA1_signals.reverser) ? 0.0f : 1.0f, cab_changed);
             handle_relay(BA1, BA1_signals.throttle, BA1_shift.throttle, throttle_last_notch    ,      throttle_handler, cab_changed);
