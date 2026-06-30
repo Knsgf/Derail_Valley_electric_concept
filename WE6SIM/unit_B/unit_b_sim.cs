@@ -98,6 +98,9 @@ internal class unit_B_sim: electric_device
             toggle_port_signal(_control_BA2, motor_status, _driving_axles.poweredWheels[axle].IsPowered);
             motor_status <<= 1;
         }
+        _driving_axles.PoweredWheelKilled    += motor_cut_out;
+        _driving_axles.PoweredWheelSetOnFire += motor_cut_out;
+        _driving_axles.PoweredWheelRepaired  += motor_cut_in;
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
@@ -182,6 +185,18 @@ internal class unit_B_sim: electric_device
             await Task.Delay(500);
         while (_total_load.Value >= 10.0f);
         toggle_port_signal(_control_BA1, (int) BA1_signals.breaker_trip, false);
+    }
+
+    private void motor_cut_out(PoweredWheel axle)
+    {
+        assert.test(axle.index is >= 0 and < 3);
+        toggle_port_signal(_control_BA2, 1 << ((int) BA2_shift.unit_B_active_motors + axle.index), false);
+    }
+
+    private void motor_cut_in(PoweredWheel axle)
+    {
+        assert.test(axle.index is >= 0 and < 3);
+        toggle_port_signal(_control_BA2, 1 << ((int) BA2_shift.unit_B_active_motors + axle.index), true);
     }
 
     private void cab_activation(float valve)
@@ -271,6 +286,9 @@ internal class unit_B_sim: electric_device
             _simulation.SimulationFlow.TickEvent -= simulate;
             _control_AB1.ValueUpdatedInternally  -= MU_AB1_control;
             _main_breaker.StateUpdated           -= main_breaker_trip_relay;
+            _driving_axles.PoweredWheelKilled    -= motor_cut_out;
+            _driving_axles.PoweredWheelSetOnFire -= motor_cut_out;
+            _driving_axles.PoweredWheelRepaired  -= motor_cut_in;
         }
     }
 }

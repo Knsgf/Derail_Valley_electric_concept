@@ -176,7 +176,7 @@ internal partial class unit_A_sim
             int   unit_B_motor_status = 1 << ((int) BA2_shift.unit_B_active_motors);
             float BA2                 = _unit._control_BA2.Value;
             Main.log($"TTM {BA2} {unit_B_motor_status}");
-            for (int motor = 3; motor <= 5; ++motor)
+            for (int motor = 5; motor >= 3; --motor)
             {
                 if (!turn_on || port_value_signal_active(BA2, unit_B_motor_status))
                     _motor_cutouts[motor].switch_contactors(notch);
