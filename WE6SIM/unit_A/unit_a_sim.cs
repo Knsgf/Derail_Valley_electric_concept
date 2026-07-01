@@ -354,7 +354,7 @@ internal partial class unit_A_sim: electric_device
             return;
         _selector = handle_postion;
         _main_breaker.trip_if_all_pantographs_retracted();
-        reverser_handler(_reverser_handle.Value, selector_switched: true);
+        reverser_handler(_reverser_position, selector_switched: true);  // Reverser needs to be flipped when changing to or from rheostatic braking mode
         _contactors.switch_selector_contactors(handle_postion);
         if (handle_postion >= 2)
             _contactors.switch_field_contactors(_field_position);
