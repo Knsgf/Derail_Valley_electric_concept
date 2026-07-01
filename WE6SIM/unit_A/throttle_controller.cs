@@ -34,11 +34,11 @@ internal partial class unit_A_sim
             contactors all_contactors = unit._contactors;
             while (unit.is_powered && (all_contactors._line_contactor.engaged 
                                     || all_contactors._line_contactor2.engaged
-                                    || all_contactors._voltmeters.engaged))
+                                    || all_contactors._voltmeter.engaged))
             {
                 all_contactors._line_contactor.toggle(false);
                 all_contactors._line_contactor2.toggle(false);
-                all_contactors._voltmeters.toggle(false);
+                all_contactors._voltmeter.toggle(false);
                 await Task.Delay(300);
             }
             all_contactors.toggle_traction_motors(turn_on: false);

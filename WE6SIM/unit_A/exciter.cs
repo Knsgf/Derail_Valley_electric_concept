@@ -35,7 +35,7 @@ internal partial class unit_A_sim
         {
             unit_A_sim unit = _unit;
             float exciter_EMF;
-            if (!regenerative_on || line_voltage < 1200.0f || !unit._main_breaker_closed.State || !unit._contactors._voltmeters.engaged)
+            if (!regenerative_on || line_voltage < 1200.0f || !unit._main_breaker_closed.State || !unit._contactors._voltmeter.engaged)
             {
                 exciter_EMF     = 0.0f;
                 relative_speed *= Mathf.Pow(0.95f, Time.deltaTime);
