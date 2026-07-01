@@ -546,7 +546,20 @@ internal partial class unit_A_sim: electric_device
             if (maximum_load < 10.0f)
                 set_reverse_current_lamp(0.0f);
             else
-                set_reverse_current_lamp((average_load_A * average_field_A * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f);
+            {
+                float average_load, average_field;
+                if (average_load_A > average_load_B)
+                {
+                    average_load  = average_load_A;
+                    average_field = average_field_A;
+                }
+                else
+                {
+                    average_load  = average_load_B;
+                    average_field = average_field_B;
+                }
+                set_reverse_current_lamp((average_load * average_field * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f);
+            }
             for (int group_index = 2; group_index >= 0; --group_index)
             {
                 set_motor_group_load [group_index](traction_motors[group_index << 1].load_current );
