@@ -71,11 +71,23 @@ internal static class signal_cable
     }
     public enum BA2_shift
     {
-        unit_B_active_motors = 0
+        unit_B_active_motors = 0,
+        front_pantograph     = 3,
+        back_pantograph      = 4,
+        right_sidepan        = 5,
+        left_sidepan         = 6,
+        fast_notching        = 7,
+        blower_mode          = 8
     }
     public enum BA2_signals
     {
-        unit_B_active_motors = 0x7 << BA2_shift.unit_B_active_motors
+        unit_B_active_motors = 0x7 << BA2_shift.unit_B_active_motors,
+        front_pantograph     = 0x1 << BA2_shift.front_pantograph,
+        back_pantograph      = 0x1 << BA2_shift.back_pantograph,
+        right_sidepan        = 0x1 << BA2_shift.right_sidepan,
+        left_sidepan         = 0x1 << BA2_shift.left_sidepan,
+        fast_notching        = 0x1 << BA2_shift.fast_notching,
+        blower_mode          = 0x1 << BA2_shift.blower_mode
     }
 
     private static void check_signal_mask(int signal_mask)

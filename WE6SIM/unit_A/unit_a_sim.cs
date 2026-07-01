@@ -182,6 +182,7 @@ internal partial class unit_A_sim: electric_device
         _simulation = simulation;
         simulation.SimulationFlow.TickEvent += simulate;
         _control_BA1.ValueUpdatedInternally += MU_BA1_control;
+        _control_BA2.ValueUpdatedInternally += MU_BA2_control;
 
         //circuit_telemetry.set_up(_circuit, _named_branches);
     }
@@ -428,6 +429,17 @@ internal partial class unit_A_sim: electric_device
         set_seconday_notch(_secondary_camshaft_notch);
     }
 
+    private void MU_BA2_control(float BA2)
+    {
+        if (!_cab_active)
+        {
+            toggle_front_pantograph(port_value_signal_active(BA2, (int) BA2_signals.back_pantograph ) ? 1.0f : 0.0f);
+            toggle_back_pantograph (port_value_signal_active(BA2, (int) BA2_signals.front_pantograph) ? 1.0f : 0.0f);
+            toggle_right_sidepan   (port_value_signal_active(BA2, (int) BA2_signals.left_sidepan    ) ? 1.0f : 0.0f);
+            toggle_left_sidepan    (port_value_signal_active(BA2, (int) BA2_signals.right_sidepan   ) ? 1.0f : 0.0f);
+        }
+    }
+
     private void calculate_combined_unit_motor_performance(bool is_unit_A, traction_motor[] traction_motors, 
         ref float RPM_sum, ref float load_sum, ref float maximum_load, ref float field_sum, ref float EMF_sum,
         out float total_torque, out float total_heat)
@@ -591,6 +603,7 @@ internal partial class unit_A_sim: electric_device
             _red_light_controller.Dispose();
             _simulation.SimulationFlow.TickEvent -= simulate;
             _control_BA1.ValueUpdatedInternally  -= MU_BA1_control;
+            _control_BA2.ValueUpdatedInternally  -= MU_BA2_control;
         }
     }
 }

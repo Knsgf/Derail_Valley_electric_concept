@@ -124,6 +124,10 @@ internal class unit_B_sim: electric_device
         _selector_handle = grab_port(ports, "[Selector].EXT_IN"        );
         _throttle_handle = grab_port(ports, "[Throttle].EXT_IN"        );
 
+        _control_stand.register_handler("front_pantograph_switch", switch_relay(BA2_signals.front_pantograph));
+        _control_stand.register_handler( "back_pantograph_switch", switch_relay(BA2_signals.back_pantograph ));
+        _control_stand.register_handler(    "left_sidepan_switch", switch_relay(BA2_signals.left_sidepan    ));
+        _control_stand.register_handler(   "right_sidepan_switch", switch_relay(BA2_signals.right_sidepan   ));
         _control_stand.register_handler( "main_breaker_on_button", enable_main_breaker);
         _control_stand.register_handler("main_breaker_off_button", (float button_port) 
             => toggle_port_signal(_control_BA1, (int) BA1_signals.breaker_trip, button_port >= 0.5f), needs_power: false);
@@ -166,7 +170,17 @@ internal class unit_B_sim: electric_device
         float multiplier = notches - 1.0f;
         return delegate (float port_value)
         {
-            set_port_signal(_control_BA1, (int) signal, (int) signal_shift, Mathf.RoundToInt(port_value * multiplier));
+            if (_cab_active)
+                set_port_signal(_control_BA1, (int) signal, (int) signal_shift, Mathf.RoundToInt(port_value * multiplier));
+        };
+    }
+
+    private Action<float> switch_relay(BA2_signals signal)
+    {
+        return delegate (float port_value)
+        {
+            if (_cab_active)
+                toggle_port_signal(_control_BA2, (int) signal, port_value >= 0.5f);
         };
     }
 
