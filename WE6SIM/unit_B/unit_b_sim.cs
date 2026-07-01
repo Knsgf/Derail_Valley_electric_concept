@@ -141,6 +141,7 @@ internal class unit_B_sim: electric_device
         _control_stand.register_handler("supply_volts", (float voltage) => _relative_voltage.Value = voltage / 1500.0f, needs_power: false);
         set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
         set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
+        _secondary_controller.notch_changed += signal_secondary_camshaft_notch;
         
         _unit       = unit;
         _simulation = simulation;
@@ -229,6 +230,13 @@ internal class unit_B_sim: electric_device
         }
     }
 
+    private void signal_secondary_camshaft_notch(int current_notch)
+    {
+        set_seconday_notch(_secondary_controller.current_position);
+        set_port_signal(_control_BA1, (int) BA1_signals.unit_B_camshaft_notch, (int) BA1_shift.unit_B_camshaft_notch,
+            _secondary_controller.current_notch);
+    }
+
     private void MU_AB1_control(float AB1)
     {
         if (disposed)
@@ -283,8 +291,6 @@ internal class unit_B_sim: electric_device
         _pantograph.simulate(_total_load.Value);
 
         set_seconday_notch(_secondary_controller.current_position);
-        set_port_signal(_control_BA1, (int) BA1_signals.unit_B_camshaft_notch, (int) BA1_shift.unit_B_camshaft_notch,
-            _secondary_controller.current_notch);
     }
 
     public override void Dispose()

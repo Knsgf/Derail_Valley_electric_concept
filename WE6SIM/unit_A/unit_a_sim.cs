@@ -162,7 +162,6 @@ internal partial class unit_A_sim: electric_device
         toggle_sander         = _control_stand.create_setter(           "sander");
         _red_light_controller = new red_ditch_light_controller(_appliances, ports);
 
-        _control_stand.register_handler("primary_notch_hand", signal_primary_camshaft_target_notch);
         set_supply_volts   = _control_stand.create_setter(        "supply_volts");
         set_motors_volts   = _control_stand.create_setter(        "motors_volts");
         set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
@@ -174,6 +173,7 @@ internal partial class unit_A_sim: electric_device
             set_motor_group_load [group - 1] = _control_stand.create_setter( $"load_meter_{group}");
             set_motor_group_field[group - 1] = _control_stand.create_setter($"field_meter_{group}");
         }
+        _contactors._primary_controller.notch_changed += signal_primary_camshaft_notch;
 
         set_reverse_current_lamp        = _control_stand.create_setter("reverse_current_lamp");
         _contactors.set_transition_lamp = _control_stand.create_setter(     "transition_lamp");
@@ -225,10 +225,10 @@ internal partial class unit_A_sim: electric_device
         _blowers.full_speed_mode = port_value >= 0.5f;
     }
 
-    private void signal_primary_camshaft_target_notch(float target_notch)
+    private void signal_primary_camshaft_notch(int current_notch)
     {
-        set_port_signal(_control_AB1, (int) AB1_signals.unit_A_camshaft_notch,
-            (int) AB1_shift.unit_A_camshaft_notch, Mathf.RoundToInt(Mathf.Clamp(target_notch, 1.0f, camshaft_notches)));
+        set_primary_notch(current_notch);
+        set_port_signal(_control_AB1, (int) AB1_signals.unit_A_camshaft_notch, (int) AB1_shift.unit_A_camshaft_notch, current_notch);
     }
 
     private void set_secondary_camshaft_target_notch(int target_notch)
