@@ -36,7 +36,7 @@ internal class unit_B_sim: electric_device
 
     private readonly Fuse _appliances, _main_breaker, _compressor_on, _control_air;
     private readonly Port _control_AB1, _control_BA1, _control_BA2;
-    private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _relative_voltage, _traction_motor_heat;
+    private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _relative_voltage, _traction_motor_heat, _resistors_heat;
     private readonly Port _blower_speed, _motor_cooling, _motor_current_temperature;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _reverser_handle, _selector_handle, _throttle_handle;
@@ -64,14 +64,15 @@ internal class unit_B_sim: electric_device
         _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
         _control_BA2 = grab_port(ports, "[internal_MU].CONTROL_BA2");
         
-        _total_load                = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD"            );
-        _wheel_RPM                 = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
-        _traction_motor_RPM        = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
-        _relative_voltage          = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
-        _traction_motor_heat       = grab_port(ports, "[CustomSimulation].MOTOR_HEAT_B"           );
-        _motor_current_temperature = grab_port(ports, "tmHeat.TEMPERATURE"                        );
-        _blower_speed              = grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED" );
-        _motor_cooling             = grab_port(ports, "[CustomSimulation].MOTOR_COOLING_B"        );
+        _total_load                = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD"             );
+        _wheel_RPM                 = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                  );
+        _traction_motor_RPM        = grab_port(ports, "[CustomSimulation].MOTOR_RPM"               );
+        _relative_voltage          = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE" );
+        _traction_motor_heat       = grab_port(ports, "[CustomSimulation].MOTOR_HEAT_B"            );
+        _motor_current_temperature = grab_port(ports, "tmHeat.TEMPERATURE"                         );
+        _blower_speed              = grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"  );
+        _motor_cooling             = grab_port(ports, "[CustomSimulation].MOTOR_COOLING_B"         );
+        _resistors_heat            = grab_port(ports, "[CustomGauges].RESISTORS_TEMPERATURE_SCALED");
         foreach (GameObject current_object in unit.gameObject.AllChildren())
         {
             PoweredWheelsManager? driving_axles = current_object.GetComponent<PoweredWheelsManager>();
@@ -282,6 +283,8 @@ internal class unit_B_sim: electric_device
             (int) AB1_shift.unit_A_camshaft_notch));
         set_reverse_current_lamp(port_value_signal_active(AB1, (int) AB1_signals.reverse_current) ? 1.0f : 0.0f);
         set_transition_lamp     (port_value_signal_active(AB1, (int) AB1_signals.transition     ) ? 0.5f : 0.0f);
+        _resistors_heat.Value = extract_signal_from_port_value(AB1, (int) AB1_signals.resistors_temperature, (int) AB1_shift.resistors_temperature);
+        Main.diagnostics2?.Value = _resistors_heat.Value;
 
         _contactor_on_sound.Value  = port_value_signal_active(AB1, (int) AB1_signals.contactor_on ) ? 1.0f : 0.0f;
         _contactor_off_sound.Value = port_value_signal_active(AB1, (int) AB1_signals.contactor_off) ? 1.0f : 0.0f;

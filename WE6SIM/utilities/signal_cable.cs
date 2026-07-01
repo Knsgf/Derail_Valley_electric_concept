@@ -20,6 +20,7 @@ internal static class signal_cable
         reverse_current   = 7,
         transition        = 8,
         
+        resistors_temperature = 9,
         independent_brake     = 14,
         unit_A_camshaft_notch = 17,
         unit_B_camshaft_notch = 20, 
@@ -36,9 +37,10 @@ internal static class signal_cable
         reverse_current   = 0x1 << AB1_shift.reverse_current,
         transition        = 0x1 << AB1_shift.transition,
 
-        independent_brake     = 0x7 << AB1_shift.independent_brake,
-        unit_A_camshaft_notch = 0x7 << AB1_shift.unit_A_camshaft_notch,
-        unit_B_camshaft_notch = 0xF << AB1_shift.unit_B_camshaft_notch
+        resistors_temperature = 0x1F << AB1_shift.resistors_temperature,
+        independent_brake     = 0x07 << AB1_shift.independent_brake,
+        unit_A_camshaft_notch = 0x07 << AB1_shift.unit_A_camshaft_notch,
+        unit_B_camshaft_notch = 0x0F << AB1_shift.unit_B_camshaft_notch
     };
     public enum BA1_shift 
     { 
