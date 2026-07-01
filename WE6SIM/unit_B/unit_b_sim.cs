@@ -131,6 +131,8 @@ internal class unit_B_sim: electric_device
         _control_stand.register_handler( "main_breaker_on_button", enable_main_breaker);
         _control_stand.register_handler("main_breaker_off_button", (float button_port) 
             => toggle_port_signal(_control_BA1, (int) BA1_signals.breaker_trip, button_port >= 0.5f), needs_power: false);
+        _control_stand.register_handler(   "fast_notching_switch", switch_relay(BA2_signals.fast_notching));
+        _control_stand.register_handler(    "blower_speed_switch", switch_relay(BA2_signals.blower_mode  ));
 
         _control_stand.register_handler(     "brake_cutout",                cab_activation);
         _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);

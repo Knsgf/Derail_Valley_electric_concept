@@ -437,6 +437,9 @@ internal partial class unit_A_sim: electric_device
             toggle_back_pantograph (port_value_signal_active(BA2, (int) BA2_signals.front_pantograph) ? 1.0f : 0.0f);
             toggle_right_sidepan   (port_value_signal_active(BA2, (int) BA2_signals.left_sidepan    ) ? 1.0f : 0.0f);
             toggle_left_sidepan    (port_value_signal_active(BA2, (int) BA2_signals.right_sidepan   ) ? 1.0f : 0.0f);
+            
+            fast_notching_toggle(port_value_signal_active(BA2, (int) BA2_signals.fast_notching) ? 1.0f : 0.0f);
+            blower_speed_toggle (port_value_signal_active(BA2, (int) BA2_signals.blower_mode  ) ? 1.0f : 0.0f);
         }
     }
 
