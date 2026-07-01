@@ -137,7 +137,7 @@ internal class unit_B_sim: electric_device
 
         _control_stand.register_handler(     "brake_cutout",                cab_activation);
         _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);
-        _control_stand.register_handler(           "sander",            synchronise_sander);
+        _control_stand.register_handler(           "sander",            synchronise_sander, needs_power: false);
         set_independent_brake = _control_stand.create_setter("independent_brake");
         set_sander            = _control_stand.create_setter(           "sander");
 
