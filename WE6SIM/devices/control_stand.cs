@@ -71,7 +71,7 @@ internal class control_stand: electric_device
     private selector_interlock? _selector_interlock;
     private Port? _transition_lamp;
     private float _raw_throttle, _raw_selector, _primary_notch, _secondary_notch;
-    private bool  _throttle_moved = false;
+    private bool  _throttle_moved = false, _stand_active = false, _reset_all_controls = false;
 
     public control_stand(Fuse electric_supply, Dictionary<string, Port> ports): base("Control stand", electric_supply)
     {
@@ -102,7 +102,7 @@ internal class control_stand: electric_device
         }
     }
 
-    public void register_handler(string device, Action<float> handler, bool needs_power = true)
+    public void register_handler(string device, Action<float> handler, bool needs_power = true, float default_setting = 0.0f)
     {
         if (_port_handlers.ContainsKey(device))
             throw new InvalidOperationException($"Cannot attach {device} handler more than once");
@@ -117,6 +117,8 @@ internal class control_stand: electric_device
             {
                 if (!disposed && is_powered)
                 {
+                    if (!_stand_active)
+                        raw_throttle = 0.0f;
                     _raw_throttle   = raw_throttle;
                     _throttle_moved = true;
                     _selector_interlock?.interlocked_handler(_raw_selector, raw_throttle, 
@@ -133,9 +135,29 @@ internal class control_stand: electric_device
             {
                 if (!disposed && is_powered)
                 {
+                    if (!_stand_active)
+                        raw_selector = (float) selector_modes.yard_power / selector_last_notch;
                     _raw_selector = raw_selector;
                     _selector_interlock.interlocked_handler(raw_selector, _raw_throttle, 
                         Mathf.CeilToInt(_primary_notch), Mathf.CeilToInt(_secondary_notch), _transition_lamp);
+                }
+            };
+        }
+        else if (string.Equals(device, "brake_cutout", StringComparison.Ordinal))
+        {
+            new_handler = delegate (float port_value)
+            {
+                if (!disposed && !_reset_all_controls)
+                {
+                    _stand_active = port_value >= 0.5f;
+                    handler(port_value);
+                    if (!_stand_active)
+                    {
+                        _reset_all_controls = true;
+                        foreach (Action<float>? current_handler in _port_handlers.Values)
+                            current_handler?.Invoke(0.0f);
+                        _reset_all_controls = false;
+                    }
                 }
             };
         }
@@ -143,8 +165,13 @@ internal class control_stand: electric_device
         {
             new_handler = delegate (float port_value)
             {
-                if (!disposed && (is_powered || !needs_power))
-                    handler(port_value);
+                if (!disposed)
+                {
+                    if (!needs_power)
+                        handler(port_value);
+                    else if (is_powered)
+                        handler(_stand_active ? port_value : default_setting);
+                }
             };
         }
         _port_handlers[device]              = new_handler;

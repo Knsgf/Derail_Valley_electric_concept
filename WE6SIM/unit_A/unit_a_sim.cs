@@ -141,7 +141,7 @@ internal partial class unit_A_sim: electric_device
         _throttle_controller = new(this);
         _reverser_handle     = grab_port(ports, "[Reverser].CONTROL_EXT_IN");
         _selector_handle     = grab_port(ports, "[Selector].EXT_IN"        );
-        _control_stand.register_handler("reverser_handle",      reverser_handler);
+        _control_stand.register_handler("reverser_handle",      reverser_handler, default_setting: 0.5f);
         _control_stand.register_handler("throttle_handle",      throttle_handler);
         _control_stand.register_handler(   "field_handle", field_control_handler);
         _control_stand.register_handler("selector_handle",      selector_handler);
@@ -150,12 +150,12 @@ internal partial class unit_A_sim: electric_device
         _control_stand.register_handler( "back_pantograph_switch", toggle_back_pantograph  );
         _control_stand.register_handler(    "left_sidepan_switch", toggle_left_sidepan     );
         _control_stand.register_handler(   "right_sidepan_switch", toggle_right_sidepan    );
-        _control_stand.register_handler( "main_breaker_on_button", enable_main_breaker     );
-        _control_stand.register_handler("main_breaker_off_button", _main_breaker.toggle_off);
+        _control_stand.register_handler( "main_breaker_on_button", _main_breaker.toggle_on );
+        _control_stand.register_handler("main_breaker_off_button", _main_breaker.toggle_off, needs_power: false);
         _control_stand.register_handler(   "fast_notching_switch", fast_notching_toggle    );
         _control_stand.register_handler(    "blower_speed_switch", blower_speed_toggle     );
 
-        _control_stand.register_handler(      "independent_brake", synchronise_independent_brake, needs_power: false);
+        _control_stand.register_handler(      "independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);
         _control_stand.register_handler(           "brake_cutout",                cab_activation);
         _control_stand.register_handler(                 "sander",            synchronise_sander);
         set_independent_brake = _control_stand.create_setter("independent_brake");
@@ -212,12 +212,6 @@ internal partial class unit_A_sim: electric_device
         if (!_pantograph.stowed || port_value_signal_active(_control_AB1.Value, (int) AB1_signals.unit_B_pantograph))
             return;
         toggle_port_signal(_control_AB1, (int) AB1_signals.unit_B_sidepan, port_value >= 0.5f);
-    }
-
-    private void enable_main_breaker(float button_port)
-    {
-        if (button_port >= 0.5f && _cab_active)
-            _main_breaker.toggle_on();
     }
 
     private void fast_notching_toggle(float port_value)
@@ -416,7 +410,7 @@ internal partial class unit_A_sim: electric_device
         if (!_cab_active)
         {
             if (!breaker_trip && port_value_signal_active(BA1, (int) BA1_signals.breaker_engage))
-                _main_breaker.toggle_on();
+                _main_breaker.toggle_on(1.0f);
             
             bool cab_changed = port_value_signal_active(BA1, (int) BA1_signals.cab_change);
             reverser_handler(port_value_signal_active(BA1, (int) BA1_signals.reverser) ? 0.0f : 1.0f, cab_changed);

@@ -116,7 +116,7 @@ internal class unit_B_sim: electric_device
         field_handle_relay = handle_relay(BA1_signals.field   , BA1_shift.field   , control_stand.field_handle_notches);
         selector_relay     = handle_relay(BA1_signals.selector, BA1_shift.selector, control_stand.selector_notches    );
         _control_stand = new(_appliances, ports);
-        _control_stand.register_handler("reverser_handle",     reverser_relay);
+        _control_stand.register_handler("reverser_handle",     reverser_relay, default_setting: 0.5f);
         _control_stand.register_handler("throttle_handle",     throttle_relay);
         _control_stand.register_handler(   "field_handle", field_handle_relay);
         _control_stand.register_handler("selector_handle",     selector_relay);
@@ -126,15 +126,15 @@ internal class unit_B_sim: electric_device
 
         _control_stand.register_handler( "main_breaker_on_button", enable_main_breaker);
         _control_stand.register_handler("main_breaker_off_button", (float button_port) 
-            => toggle_port_signal(_control_BA1, (int) BA1_signals.breaker_trip, button_port >= 0.5f));
+            => toggle_port_signal(_control_BA1, (int) BA1_signals.breaker_trip, button_port >= 0.5f), needs_power: false);
 
         _control_stand.register_handler(     "brake_cutout",                cab_activation);
-        _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false);
+        _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);
         _control_stand.register_handler(           "sander",            synchronise_sander);
         set_independent_brake = _control_stand.create_setter("independent_brake");
         set_sander            = _control_stand.create_setter(           "sander");
 
-        _control_stand.register_handler("supply_volts", (float voltage) => _relative_voltage.Value = voltage / 1500.0f);
+        _control_stand.register_handler("supply_volts", (float voltage) => _relative_voltage.Value = voltage / 1500.0f, needs_power: false);
         set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
         set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
         
