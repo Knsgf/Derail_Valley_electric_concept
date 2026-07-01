@@ -567,7 +567,9 @@ internal partial class unit_A_sim: electric_device
                     average_load  = average_load_B;
                     average_field = average_field_B;
                 }
-                set_reverse_current_lamp((average_load * average_field * (_reverser_position - 0.5f) < 0.0f) ? 1.0f : 0.0f);
+                bool reverse_current = average_load * average_field * (_reverser_position - 0.5f) < 0.0f;
+                set_reverse_current_lamp(reverse_current ? 1.0f : 0.0f);
+                toggle_port_signal(_control_AB1, (int) AB1_signals.reverse_current, reverse_current);
             }
             for (int group_index = 2; group_index >= 0; --group_index)
             {

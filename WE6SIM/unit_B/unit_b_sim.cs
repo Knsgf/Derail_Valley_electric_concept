@@ -41,7 +41,7 @@ internal class unit_B_sim: electric_device
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _reverser_handle, _selector_handle, _throttle_handle;
 
-    private readonly Action<float> set_primary_notch, set_seconday_notch;
+    private readonly Action<float> set_primary_notch, set_seconday_notch, set_reverse_current_lamp, set_transition_lamp;
     private readonly Action<float> set_independent_brake, set_sander;
     private readonly Action<float> throttle_relay, field_handle_relay, selector_relay;
 
@@ -144,6 +144,9 @@ internal class unit_B_sim: electric_device
         set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
         set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
         _secondary_controller.notch_changed += signal_secondary_camshaft_notch;
+
+        set_reverse_current_lamp = _control_stand.create_setter("reverse_current_lamp");
+        set_transition_lamp      = _control_stand.create_setter(     "transition_lamp");
         
         _unit       = unit;
         _simulation = simulation;
@@ -277,6 +280,8 @@ internal class unit_B_sim: electric_device
 
         set_primary_notch(extract_signal_from_port_value(AB1, (int) AB1_signals.unit_A_camshaft_notch, 
             (int) AB1_shift.unit_A_camshaft_notch));
+        set_reverse_current_lamp(port_value_signal_active(AB1, (int) AB1_signals.reverse_current) ? 1.0f : 0.0f);
+        set_transition_lamp     (port_value_signal_active(AB1, (int) AB1_signals.transition     ) ? 0.5f : 0.0f);
 
         _contactor_on_sound.Value  = port_value_signal_active(AB1, (int) AB1_signals.contactor_on ) ? 1.0f : 0.0f;
         _contactor_off_sound.Value = port_value_signal_active(AB1, (int) AB1_signals.contactor_off) ? 1.0f : 0.0f;

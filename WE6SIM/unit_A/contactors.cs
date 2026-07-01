@@ -166,13 +166,19 @@ internal partial class unit_A_sim
             }
             _dynamic_brake_contactor.toggle(selector is (int) selector_modes.rheostatic_brake);
             _selector_motor.target_notch = (selector is (int) selector_modes.parallel_power  ) ? 8 : (selector + 1);
-            set_transition_lamp?.Invoke(_selector_motor.current_notch != _selector_motor.target_notch ? 0.5f : 0.0f);
+            toggle_transition_lamp(_selector_motor.current_notch != _selector_motor.target_notch);
         }
 
         private void extinguish_transition_lamp(int selector_notch)
         {
             if (selector_notch == _selector_motor.target_notch)
-                set_transition_lamp?.Invoke(0.0f);
+                toggle_transition_lamp(light_up: false);
+        }
+
+        private void toggle_transition_lamp(bool light_up)
+        {
+            set_transition_lamp?.Invoke(light_up ? 0.5f : 0.0f);
+            toggle_port_signal(_unit._control_AB1, (int) AB1_signals.transition, light_up);
         }
 
         public void toggle_traction_motors(bool turn_on)

@@ -219,7 +219,6 @@ internal class control_stand: electric_device
             _transition_lamp = hooked_port;
             new_setter = delegate (float lamp_state)
             {
-                assert.test(lamp_state < 0.7f);
                 if (hooked_port.Value < 0.7f)
                     hooked_port.Value = lamp_state;
             };
