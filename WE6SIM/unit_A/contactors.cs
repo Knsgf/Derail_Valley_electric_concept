@@ -30,7 +30,7 @@ internal partial class unit_A_sim
         public readonly camshaft_contactor_set   _selector_traction_shaft, _selector_regenerative_shaft;
         public readonly camshaft_contactor_set   _jogging_switch;
         public readonly camshaft_contactor_set[] _motor_cutouts;
-        public readonly contactor                _line_contactor, _line_contactor2, _dynamic_brake_contactor, _voltmeters;
+        public readonly contactor                _line_contactor, _line_contactor2,_shunting_contactors, _dynamic_brake_contactor, _voltmeter;
         public readonly contactor[]              _field_shunt_contactors;
 
         public Action<float>? set_transition_lamp;
@@ -78,7 +78,7 @@ internal partial class unit_A_sim
             };
             
             _primary_controller          = new(camshaft_notches, appliances, drop_to_1_on_power_loss: false);
-            _primary_camshaft            = new(_primary_contactor_toggles, contactor_locations, _primary_controller, contactor_click_on_A);
+            _primary_camshaft            = new(_primary_contactor_toggles, contactor_locations, null, contactor_click_on_A);
             _secondary_camshaft          = new(_secondary_contactor_toggles, contactor_locations, null, contactor_click_on_B);
             _reverser                    = new(2, appliances, drop_to_1_on_power_loss: false);
             _reverser_shaft              = new(_reverser_toggles, contactor_locations, _reverser, contactor_click_on_both);
@@ -86,11 +86,13 @@ internal partial class unit_A_sim
             _selector_traction_shaft     = new(_selector_traction_toggles, contactor_locations, _selector_motor, contactor_click_on_both);
             _selector_regenerative_shaft = new(_selector_regenerative_toggles, contactor_locations, _selector_motor, contactor_click_on_both);
             _jogging_switch              = camshaft_contactor_set.on_off(["JOG1", "JOG2"], null, contactor_locations, null, null);
-            _selector_motor.notch_changed += extinguish_transition_lamp;
+            _selector_motor.notch_changed     += extinguish_transition_lamp;
+            _primary_controller.notch_changed += switch_primary_contactors;
             
-            _line_contactor  = new([                    "LC1"], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
-            _line_contactor2 = new([           "LC2",   "LC3"], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
-            _voltmeters      = new(["VMC12", "VMC34", "VMC56"], null, contactor_locations, contactor_click_on_both, main_breaker, air_supply);
+            _line_contactor      = new(["LC1"                 ], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
+            _line_contactor2     = new([ "LC2", "LC3"         ], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
+            _shunting_contactors = new(["CR1S", "CR2S", "CR3S"], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
+            _voltmeter           = new(["VMC34"               ], null, contactor_locations, contactor_click_on_both, main_breaker, air_supply);
             
             _motor_cutouts = new camshaft_contactor_set[motors];
             for (int motor = 1; motor <= motors; ++motor)
@@ -132,6 +134,14 @@ internal partial class unit_A_sim
             }
             _field_shunt_contactors[3 - 1] = new contactor(open_contacts, closed_contacts, contactor_locations, 
                 contactor_click_on_both, appliances, air_supply);
+        }
+
+        public void switch_primary_contactors(int primary_notch)
+        {
+            bool to_haul_notch = primary_notch > 1;
+            _shunting_contactors.toggle(to_haul_notch);
+            _primary_camshaft.switch_contactors(to_haul_notch ? primary_notch : _secondary_camshaft.current_notch);
+            //Main.log($"SPC {to_haul_notch} {primary_notch} {_secondary_camshaft.current_notch}");
         }
 
         public void switch_field_contactors(int field_handle)
@@ -204,7 +214,7 @@ internal partial class unit_A_sim
             _line_contactor2.Dispose();
             _dynamic_brake_contactor.Dispose();
             _jogging_switch.Dispose();
-            _voltmeters.Dispose();
+            _voltmeter.Dispose();
             for (int motor = 0; motor < 6; ++motor)
                 _motor_cutouts[motor].Dispose();
             for (int field_contactor = 0; field_contactor < 6; ++field_contactor)

@@ -430,6 +430,7 @@ internal partial class unit_A_sim: electric_device
 
         _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
         _contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
+        _contactors.switch_primary_contactors(_contactors._primary_controller.current_notch);   // Switch shunting notches at primary #1
         set_seconday_notch(_secondary_camshaft_notch);
     }
 
