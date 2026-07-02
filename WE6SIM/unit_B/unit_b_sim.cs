@@ -113,10 +113,14 @@ internal class unit_B_sim: electric_device
         _pantograph                 = new(unit.gameObject, _roof_bus, _appliances, _control_air, ports);
         _traction_motor_temperature = new(ports);
         
+        _control_stand = new(_appliances, ports);
+        _control_stand.register_handler(     "brake_cutout",                cab_activation, needs_power: false);
+        _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);
+        _control_stand.register_handler(           "sander",            synchronise_sander, needs_power: false);
+
         throttle_relay     = handle_relay(BA1_signals.throttle, BA1_shift.throttle, control_stand.throttle_notches    );
         field_handle_relay = handle_relay(BA1_signals.field   , BA1_shift.field   , control_stand.field_handle_notches);
         selector_relay     = handle_relay(BA1_signals.selector, BA1_shift.selector, control_stand.selector_notches    );
-        _control_stand = new(_appliances, ports);
         _control_stand.register_handler("reverser_handle",     reverser_relay, default_setting: 0.5f);
         _control_stand.register_handler("throttle_handle",     throttle_relay);
         _control_stand.register_handler(   "field_handle", field_handle_relay);
@@ -135,9 +139,6 @@ internal class unit_B_sim: electric_device
         _control_stand.register_handler(   "fast_notching_switch", switch_relay(BA2_signals.fast_notching));
         _control_stand.register_handler(    "blower_speed_switch", switch_relay(BA2_signals.blower_mode  ));
 
-        _control_stand.register_handler(     "brake_cutout",                cab_activation);
-        _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);
-        _control_stand.register_handler(           "sander",            synchronise_sander, needs_power: false);
         set_independent_brake = _control_stand.create_setter("independent_brake");
         set_sander            = _control_stand.create_setter(           "sander");
 
@@ -227,12 +228,10 @@ internal class unit_B_sim: electric_device
         else if (!_cab_active)
         {
             _cab_active = true;
-            toggle_port_signal(_control_BA1, (int) BA1_signals.cab_change, true);
             throttle_relay    (0.0f);
             field_handle_relay(0.0f);
-            reverser_relay(_reverser_handle.Value);
-            selector_relay(_selector_handle.Value);
-            toggle_port_signal(_control_BA1, (int) BA1_signals.cab_change, false);
+            //reverser_relay(_reverser_handle.Value);
+            selector_relay((float) control_stand.selector_modes.yard_power / control_stand.selector_last_notch);
         }
     }
 

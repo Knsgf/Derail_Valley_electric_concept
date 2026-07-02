@@ -91,7 +91,7 @@ internal class control_stand: electric_device
 
     private void control_stand_toggled(bool turned_on)
     {
-        if (turned_on)
+        if (turned_on && _stand_active)
         {
             foreach (KeyValuePair<string, Action<float>?> control_pair in _port_handlers)
             { 

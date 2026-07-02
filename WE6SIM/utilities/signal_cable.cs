@@ -44,7 +44,6 @@ internal static class signal_cable
     };
     public enum BA1_shift 
     { 
-        cab_change     = 0,
         battery        = 1,
         control_air    = 2,
         jog            = 3,
@@ -61,12 +60,11 @@ internal static class signal_cable
     };
     public enum BA1_signals
     {
-        cab_change            = 0x1 << BA1_shift.cab_change,
         battery               = 0x1 << BA1_shift.battery,
         control_air_usable    = 0x1 << BA1_shift.control_air,
         jog                   = 0x1 << BA1_shift.jog,
         sander                = 0x1 << BA1_shift.sander,
-        breaker_engage         = 0x1 << BA1_shift.breaker_engage,
+        breaker_engage        = 0x1 << BA1_shift.breaker_engage,
         breaker_trip          = 0x1 << BA1_shift.breaker_trip,
         reverser              = 0x1 << BA1_shift.reverser,
         throttle              = 0x7 << BA1_shift.throttle,

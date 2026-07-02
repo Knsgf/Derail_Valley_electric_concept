@@ -65,7 +65,7 @@ internal partial class unit_A_sim: electric_device
     private readonly contactors _contactors;
 
     private bool _fast_notching_enabled = false, _jogging_mode_on = false, _jog = false, _cab_active = false;
-    private int  _throttle = -1, _secondary_camshaft_notch, _selector = -1, _field_position = -1;
+    private int  _throttle = -1, _secondary_camshaft_notch = 1, _selector = -1, _field_position = -1;
     private Task? _single_notch_movement;
     private float _reverser_position = 0.5f, _fast_notching_current_limit = 250.0f;
 
@@ -138,7 +138,14 @@ internal partial class unit_A_sim: electric_device
             _contactor_on_sound, _contactor_off_sound
         );
 
-        _control_stand       = new(_appliances, ports);
+        _control_stand = new(_appliances, ports);
+        _control_stand.register_handler(     "brake_cutout",                cab_activation, needs_power: false);
+        _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);
+        _control_stand.register_handler(           "sander",            synchronise_sander, needs_power: false);
+        set_independent_brake = _control_stand.create_setter("independent_brake");
+        toggle_sander         = _control_stand.create_setter(           "sander");
+        _red_light_controller = new red_ditch_light_controller(_appliances, ports);
+
         _throttle_controller = new(this);
         _reverser_handle     = grab_port(ports, "[Reverser].CONTROL_EXT_IN");
         _selector_handle     = grab_port(ports, "[Selector].EXT_IN"        );
@@ -155,13 +162,6 @@ internal partial class unit_A_sim: electric_device
         _control_stand.register_handler("main_breaker_off_button", _main_breaker.toggle_off, needs_power: false);
         _control_stand.register_handler(   "fast_notching_switch", fast_notching_toggle    );
         _control_stand.register_handler(    "blower_speed_switch", blower_speed_toggle     );
-
-        _control_stand.register_handler(      "independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);
-        _control_stand.register_handler(           "brake_cutout",                cab_activation);
-        _control_stand.register_handler(                 "sander",            synchronise_sander, needs_power: false);
-        set_independent_brake = _control_stand.create_setter("independent_brake");
-        toggle_sander         = _control_stand.create_setter(           "sander");
-        _red_light_controller = new red_ditch_light_controller(_appliances, ports);
 
         set_supply_volts   = _control_stand.create_setter(        "supply_volts");
         set_motors_volts   = _control_stand.create_setter(        "motors_volts");
@@ -254,8 +254,9 @@ internal partial class unit_A_sim: electric_device
 
     private int get_secondary_camshaft_current_notch(float BA1)
     {
-        return extract_signal_from_port_value(BA1, (int) BA1_signals.unit_B_camshaft_notch,
+        int secondary_notch = extract_signal_from_port_value(BA1, (int) BA1_signals.unit_B_camshaft_notch,
             (int) BA1_shift.unit_B_camshaft_notch);
+        return Math.Max(1, Math.Min(secondary_notch, camshaft_notches));
     }
 
     private void compressor_power_toggle(bool turn_on)
@@ -276,6 +277,14 @@ internal partial class unit_A_sim: electric_device
 
     private void reverser_handler(float raw_reverser, bool selector_switched)
     {
+        if (!is_powered)
+        {
+            _reverser_position = 0.5f;
+            return;
+        }
+        _reverser_position = (_selector is (int) selector_modes.rheostatic_brake) 
+            ? (_contactors._reverser.current_notch - 1) 
+            : (2 - _contactors._reverser.current_notch);
         if (!selector_switched && Mathf.Abs(raw_reverser - _reverser_position) < 0.1f)
             return;
         _reverser_position = raw_reverser;
@@ -298,10 +307,15 @@ internal partial class unit_A_sim: electric_device
         _contactors._voltmeter.toggle(turn_on && _selector is not (int) selector_modes.yard_power);
     }
     
-    private void throttle_handler(float raw_throttle, bool cab_changed)
+    private void throttle_handler(float raw_throttle)
     {
+        if (!is_powered)
+        {
+            _throttle = -1;
+            return;
+        }
         int wheel_position = Mathf.RoundToInt(raw_throttle * throttle_last_notch);
-        if (!cab_changed && wheel_position == _throttle)
+        if (wheel_position > 0 && wheel_position == _throttle)
             return;
         _throttle = wheel_position;
         switch (wheel_position)
@@ -339,16 +353,16 @@ internal partial class unit_A_sim: electric_device
         }
     }
 
-    private void throttle_handler(float raw_throttle)
+    private void field_control_handler(float raw_field_position)
     {
-        throttle_handler(raw_throttle, cab_changed: false);
-    }
-
-    private void field_control_handler(float raw_field_position, bool cab_changed)
-    {
-        int handle_postion = Mathf.RoundToInt(raw_field_position * field_handle_last_notch);
-        if (!cab_changed && _field_position == handle_postion)
+        if (!is_powered)
+        {
+            _field_position = -1;
             return;
+        }
+        int handle_postion = Mathf.RoundToInt(raw_field_position * field_handle_last_notch);
+        //if (_field_position == handle_postion)
+        //    return;
         _field_position = handle_postion;
         if (_selector is not (int) selector_modes.series_regenerative and not (int) selector_modes.parallel_regenerative)
         {
@@ -357,21 +371,23 @@ internal partial class unit_A_sim: electric_device
         }
     }
 
-    private void field_control_handler(float raw_field_position)
+    private void selector_handler(float raw_selector_position)
     {
-        field_control_handler(raw_field_position, cab_changed: false);
-    }
-
-    private void selector_handler(float raw_selector_position, bool cab_changed)
-    {
+        if (!is_powered)
+        {
+            _selector = -1;
+            return;
+        }
         int handle_postion = Mathf.RoundToInt(raw_selector_position * selector_last_notch);
-        if (!cab_changed && _selector == handle_postion)
+        int selector_shaft_position = _contactors._selector_motor.current_notch;
+        _selector = (selector_shaft_position == 8) ? (int) selector_modes.parallel_power : (selector_shaft_position - 1);
+        if (_selector == handle_postion)
             return;
         _selector = handle_postion;
         _main_breaker.trip_if_all_pantographs_retracted();
         reverser_handler(_reverser_position, selector_switched: true);  // Reverser needs to be flipped when changing to or from rheostatic braking mode
         _contactors.switch_selector_contactors(handle_postion);
-        if (handle_postion >= 2)
+        if (handle_postion >= (int) selector_modes.rheostatic_brake)
             _contactors.switch_field_contactors(_field_position);
         _fast_notching_current_limit = handle_postion switch
         {
@@ -385,11 +401,6 @@ internal partial class unit_A_sim: electric_device
         };
     }
 
-    private void selector_handler(float raw_selector_position)
-    {
-        selector_handler(raw_selector_position, cab_changed: false);
-    }
-
     private void cab_activation(float valve)
     {
         if (valve < 0.5f)
@@ -397,17 +408,18 @@ internal partial class unit_A_sim: electric_device
         else if (!_cab_active)
         {
             _cab_active = true;
-            throttle_handler     (0.0f, cab_changed: true);
-            field_control_handler(0.0f, cab_changed: true);
-            selector_handler(_selector_handle.Value, cab_changed: true);
+            throttle_handler     (0.0f);
+            field_control_handler(0.0f);
+            selector_handler((float) selector_modes.yard_power / selector_last_notch);
         }
     }
 
     private void handle_relay(float BA1, BA1_signals signal, BA1_shift signal_shift, float last_notch, 
-        Action<float, bool> handle, bool cab_changed)
+        Action<float> handle)
     {
         int notch = extract_signal_from_port_value(BA1, (int) signal, (int) signal_shift);
-        handle(notch / last_notch, cab_changed);
+        Main.log($"{signal} {notch}");
+        handle(notch / last_notch);
     }
 
     private void MU_BA1_control(float BA1)
@@ -428,11 +440,11 @@ internal partial class unit_A_sim: electric_device
             if (!breaker_trip && port_value_signal_active(BA1, (int) BA1_signals.breaker_engage))
                 _main_breaker.toggle_on(1.0f);
             
-            bool cab_changed = port_value_signal_active(BA1, (int) BA1_signals.cab_change);
-            reverser_handler(port_value_signal_active(BA1, (int) BA1_signals.reverser) ? 0.0f : 1.0f, cab_changed);
-            handle_relay(BA1, BA1_signals.throttle, BA1_shift.throttle, throttle_last_notch    ,      throttle_handler, cab_changed);
-            handle_relay(BA1, BA1_signals.field   , BA1_shift.field   , field_handle_last_notch, field_control_handler, cab_changed);
-            handle_relay(BA1, BA1_signals.selector, BA1_shift.selector, selector_last_notch    ,      selector_handler, cab_changed);
+            Main.log($"Rev {(port_value_signal_active(BA1, (int) BA1_signals.reverser) ? 0.0f : 1.0f)}");
+            reverser_handler(port_value_signal_active(BA1, (int) BA1_signals.reverser) ? 0.0f : 1.0f, selector_switched: false);
+            handle_relay(BA1, BA1_signals.throttle, BA1_shift.throttle, throttle_last_notch    ,      throttle_handler);
+            handle_relay(BA1, BA1_signals.field   , BA1_shift.field   , field_handle_last_notch, field_control_handler);
+            handle_relay(BA1, BA1_signals.selector, BA1_shift.selector, selector_last_notch    ,      selector_handler);
         }
         set_independent_brake(extract_signal_from_port_value(BA1, (int) BA1_signals.independent_brake, 
             (int) BA1_shift.independent_brake) / independent_brake_last_notch);
@@ -568,7 +580,10 @@ internal partial class unit_A_sim: electric_device
             average_load_B  /= (motors >> 1);
             average_field_A /= (motors >> 1);
             if (maximum_load < 10.0f)
+            {
                 set_reverse_current_lamp(0.0f);
+                toggle_port_signal(_control_AB1, (int) AB1_signals.reverse_current, false);
+            }
             else
             {
                 float average_load, average_field;
