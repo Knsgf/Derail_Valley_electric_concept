@@ -11,9 +11,9 @@ internal class electric_device: IDisposable
     private readonly string _device_name;
 
     private Fuse? _fuse1, _fuse2;
-
+    private bool  _currently_powered = false;
     protected bool disposed { get; private set; } = false;
-    protected bool is_powered { get; private set; } = false;
+    protected bool is_powered => (_fuse1 != null && _fuse1.State) && (_fuse2 == null || _fuse2.State);
 
     protected event Action<bool>? power_supply_toggled;
 
@@ -21,10 +21,10 @@ internal class electric_device: IDisposable
     {
         if (disposed)
             return;
-        bool power_toggled_on = (_fuse1 != null && _fuse1.State) && (_fuse2 == null || _fuse2.State);
-        if (is_powered != power_toggled_on)
+        bool power_toggled_on = is_powered;
+        if (_currently_powered != power_toggled_on)
         {
-            is_powered = power_toggled_on;
+            _currently_powered = power_toggled_on;
             power_supply_toggled?.Invoke(power_toggled_on);
         }
     }

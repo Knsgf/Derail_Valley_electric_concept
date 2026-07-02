@@ -66,10 +66,13 @@ internal class camshaft_motor: electric_device
 
     private void power_supply_changed(bool power_on)
     {
-        if (power_on)
-            target_notch = (int) current_position;
-        else if (_drop_to_1_on_power_loss && !_roll_over)
-            roll_over_move(to_1: true);
+        if (!power_on)
+        {
+            if (_drop_to_1_on_power_loss && !_roll_over)
+                roll_over_move(to_1: true);
+            else
+                target_notch = Math.Max(1, Math.Min(_num_notches, Mathf.RoundToInt(current_position)));
+        }
     }
 
     private async Task single_notch_motion(int target_notch, bool power_loss_drop)

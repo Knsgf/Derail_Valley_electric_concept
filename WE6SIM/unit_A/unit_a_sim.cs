@@ -80,6 +80,7 @@ internal partial class unit_A_sim: electric_device
         _control_air         = grab_fuse(fuses, "fusebox.CONTROL_AIR"                   );
         _main_breaker_closed = grab_fuse(fuses, "[MainBreakerContacts].CLOSED"          );
         _compressor_on       = grab_fuse(fuses, "[MainBreakerContacts].COMPRESSOR_POWER");
+        power_supply_toggled += power_toggle;
         set_up_fuses(_appliances);
         _compressor_on.StateUpdated += compressor_power_toggle;
 
@@ -185,6 +186,20 @@ internal partial class unit_A_sim: electric_device
         _control_BA2.ValueUpdatedInternally += MU_BA2_control;
 
         //circuit_telemetry.set_up(_circuit, _named_branches);
+    }
+
+    private void power_toggle(bool turn_on)
+    {
+        if (!turn_on)
+        {
+            _throttle = _field_position = _selector = -1;
+            _reverser_position = 0.5f;
+        }
+        else
+        {
+            MU_BA1_control(_control_BA1.Value);
+            MU_BA2_control(_control_BA2.Value);
+        }
     }
 
     private void toggle_front_pantograph(float port_value)
