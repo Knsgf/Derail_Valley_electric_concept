@@ -30,8 +30,9 @@ internal partial class unit_A_sim
         public readonly camshaft_contactor_set   _selector_traction_shaft, _selector_regenerative_shaft;
         public readonly camshaft_contactor_set   _jogging_switch;
         public readonly camshaft_contactor_set[] _motor_cutouts;
-        public readonly contactor                _line_contactor, _line_contactor2,_shunting_contactors, _dynamic_brake_contactor, _voltmeter;
+        public readonly binary_contactor         _line_contactor, _line_contactor2,_shunting_contactors, _voltmeter;
         public readonly contactor[]              _field_shunt_contactors;
+        public readonly tri_state_contactor      _dynamic_brake_contactor;
 
         public Action<float>? set_transition_lamp;
 
@@ -112,7 +113,7 @@ internal partial class unit_A_sim
                 dynamic_brake_closed_contacts[motor + 4] = $"DB{motor}c";
                 dynamic_brake_open_contacts  [motor + 2] = $"DB{motor}o";
             }
-            _dynamic_brake_contactor = new contactor(dynamic_brake_open_contacts, dynamic_brake_closed_contacts, 
+            _dynamic_brake_contactor = new(dynamic_brake_closed_contacts, null, dynamic_brake_open_contacts,
                 contactor_locations, contactor_click_on_both, appliances);
 
             _field_shunt_contactors = new contactor[6];
@@ -123,22 +124,24 @@ internal partial class unit_A_sim
                 string[] contacts = new string[motors];
                 for (int motor = 1; motor <= motors; ++motor)
                     contacts[motor - 1] = $"FS{motor}.{field_contactor}";
-                _field_shunt_contactors[field_contactor - 1] = new contactor(contacts, null, contactor_locations, 
+                _field_shunt_contactors[field_contactor - 1] = new binary_contactor(contacts, null, contactor_locations, 
                     contactor_click_on_both, appliances, air_supply);
             }
-            string[] open_contacts = new string[motors], closed_contacts = new string[motors];
+            string[] open_contacts   = new string[motors], intermediate_contacts = new string[motors * 2], 
+                     closed_contacts = new string[motors];
             for (int motor = 1; motor <= motors; ++motor)
             {
-                open_contacts  [motor - 1] = $"FS{motor}.3o";
-                closed_contacts[motor - 1] = $"FS{motor}.3c";
+                int motor_index = motor - 1;
+                open_contacts  [motor_index] = intermediate_contacts[motor_index * 2    ] = $"FS{motor}.3o";
+                closed_contacts[motor_index] = intermediate_contacts[motor_index * 2 + 1] = $"FS{motor}.3c";
             }
-            _field_shunt_contactors[3 - 1] = new contactor(open_contacts, closed_contacts, contactor_locations, 
-                contactor_click_on_both, appliances, air_supply);
+            _field_shunt_contactors[3 - 1] = new tri_state_contactor(closed_contacts, intermediate_contacts, open_contacts, 
+                contactor_locations, contactor_click_on_both, appliances, air_supply);
         }
 
         public void switch_primary_contactors(int primary_notch)
         {
-            bool to_haul_notch = primary_notch > 1;
+            bool to_haul_notch = _primary_controller.target_notch != 1;
             _shunting_contactors.toggle(to_haul_notch);
             _primary_camshaft.switch_contactors(to_haul_notch ? primary_notch : _secondary_camshaft.current_notch);
             //Main.log($"SPC {to_haul_notch} {primary_notch} {_secondary_camshaft.current_notch}");
