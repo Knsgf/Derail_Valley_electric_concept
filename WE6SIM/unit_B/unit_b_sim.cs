@@ -39,7 +39,7 @@ internal class unit_B_sim: electric_device
     private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _relative_voltage, _traction_motor_heat, _resistors_heat;
     private readonly Port _blower_speed, _motor_cooling, _motor_current_temperature;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
-    private readonly Port _reverser_handle, _selector_handle, _throttle_handle;
+    private readonly Port _throttle_handle;
 
     private readonly Action<float> set_primary_notch, set_seconday_notch, set_reverse_current_lamp, set_transition_lamp;
     private readonly Action<float> set_independent_brake, set_sander;
@@ -127,8 +127,6 @@ internal class unit_B_sim: electric_device
         _control_stand.register_handler("throttle_handle",     throttle_relay);
         _control_stand.register_handler(   "field_handle", field_handle_relay);
         _control_stand.register_handler("selector_handle",     selector_relay);
-        _reverser_handle = grab_port(ports, "[Reverser].CONTROL_EXT_IN");
-        _selector_handle = grab_port(ports, "[Selector].EXT_IN"        );
         _throttle_handle = grab_port(ports, "[Throttle].EXT_IN"        );
 
         _control_stand.register_handler("front_pantograph_switch", switch_relay(BA2_signals.front_pantograph));
