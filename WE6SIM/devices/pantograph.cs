@@ -355,7 +355,7 @@ internal class pantograph: electric_device
                     explode(_dropper_hit_damage);
                 else if (bus_voltage < _last_pantograph_voltage && load_current >= 200.0f 
                     && _last_pantograph_voltage > 0.0f && bus_voltage / _last_pantograph_voltage < 0.1f
-                    || roof_bus.short_circuited)
+                    /*|| roof_bus.short_circuited*/)
                 {
                     explode(_arcing_damage);
                 }
