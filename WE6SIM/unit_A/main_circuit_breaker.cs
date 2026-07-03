@@ -57,10 +57,9 @@ internal partial class unit_A_sim
             if (unit._selector is (int) selector_modes.rheostatic_brake)
                 return true;
             pantograph unit_A_pantograph = unit._pantograph;
-            float      AB1               = unit._control_AB1.Value;
-            if (!unit_A_pantograph.stowed || port_value_signal_active(AB1, (int) AB1_signals.unit_B_pantograph))
-                return true;
-            return !unit_A_pantograph.sidepan_stowed || port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan);
+            float      BA1               = unit._control_BA1.Value;
+            return (!unit_A_pantograph.stowed || !unit_A_pantograph.sidepan_stowed) 
+                || port_value_signal_active(BA1, (int) BA1_signals.pantograph_up);
         }
         
         public async void toggle_on(float button_press)

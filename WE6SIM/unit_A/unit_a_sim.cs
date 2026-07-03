@@ -446,6 +446,8 @@ internal partial class unit_A_sim: electric_device
         bool breaker_trip = port_value_signal_active(BA1, (int) BA1_signals.breaker_trip);
         if (breaker_trip)
             _main_breaker.trip();
+        else if (_main_breaker_closed.State && !port_value_signal_active(BA1, (int) BA1_signals.pantograph_up))
+            _main_breaker.trip_if_all_pantographs_retracted();
 
         if (!_cab_active)
         {

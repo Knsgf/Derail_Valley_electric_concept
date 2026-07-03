@@ -108,10 +108,12 @@ internal class unit_B_sim: electric_device
 
         _secondary_controller = new camshaft_motor(unit_A_sim.camshaft_notches, _appliances, drop_to_1_on_power_loss: false);
 
-        _battery_cabinet            = new(fuses, ports, unit.brakeSystem);
-        _roof_bus                   = new(ports, is_unit_A: false);
-        _pantograph                 = new(unit.gameObject, _roof_bus, _appliances, _control_air, ports);
-        _traction_motor_temperature = new(ports);
+        _battery_cabinet             = new(fuses, ports, unit.brakeSystem);
+        _roof_bus                    = new(ports, is_unit_A: false);
+        _pantograph                  = new(unit.gameObject, _roof_bus, _appliances, _control_air, ports);
+        _traction_motor_temperature  = new(ports);
+        _pantograph.toggled         += pantographs_status;
+        _pantograph.sidepan_toggled += pantographs_status;
         
         _control_stand = new(_appliances, ports);
         _control_stand.register_handler(     "brake_cutout",                cab_activation, needs_power: false);
@@ -155,6 +157,11 @@ internal class unit_B_sim: electric_device
         _control_AB1.ValueUpdatedInternally += MU_AB1_control;
         simulation.SimulationFlow.TickEvent += simulate;
         
+    }
+
+    private void pantographs_status()
+    {
+        toggle_port_signal(_control_BA1, (int) BA1_signals.pantograph_up, !_pantograph.stowed || !_pantograph.sidepan_stowed);
     }
 
     private void synchronise_independent_brake(float raw_handle_position)
@@ -283,7 +290,6 @@ internal class unit_B_sim: electric_device
         set_reverse_current_lamp(port_value_signal_active(AB1, (int) AB1_signals.reverse_current) ? 1.0f : 0.0f);
         set_transition_lamp     (port_value_signal_active(AB1, (int) AB1_signals.transition     ) ? 0.5f : 0.0f);
         _resistors_heat.Value = extract_signal_from_port_value(AB1, (int) AB1_signals.resistors_temperature, (int) AB1_shift.resistors_temperature);
-        Main.diagnostics2?.Value = _resistors_heat.Value;
 
         _contactor_on_sound.Value  = port_value_signal_active(AB1, (int) AB1_signals.contactor_on ) ? 1.0f : 0.0f;
         _contactor_off_sound.Value = port_value_signal_active(AB1, (int) AB1_signals.contactor_off) ? 1.0f : 0.0f;

@@ -44,6 +44,7 @@ internal static class signal_cable
     };
     public enum BA1_shift 
     { 
+        pantograph     = 0,
         battery        = 1,
         control_air    = 2,
         jog            = 3,
@@ -60,6 +61,7 @@ internal static class signal_cable
     };
     public enum BA1_signals
     {
+        pantograph_up         = 0x1 << BA1_shift.pantograph,
         battery               = 0x1 << BA1_shift.battery,
         control_air_usable    = 0x1 << BA1_shift.control_air,
         jog                   = 0x1 << BA1_shift.jog,
