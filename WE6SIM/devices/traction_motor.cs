@@ -47,9 +47,9 @@ internal class traction_motor
         assert.test(named_branches[_armature_name].closed_conductance > 0.0f 
                  && named_branches[  _field1_name].closed_conductance > 0.0f
                  && named_branches[  _field1_name].closed_conductance > 0.0f);
-        _armature_resistance = 1.0f / named_branches[_armature_name].closed_conductance;
-        _field1_resistance   = 1.0f / named_branches[  _field1_name].closed_conductance;
-        _field2_resistance   = 1.0f / named_branches[  _field2_name].closed_conductance;
+        _armature_resistance = named_branches[_armature_name].closed_resistance;
+        _field1_resistance   = named_branches[  _field1_name].closed_resistance;
+        _field2_resistance   = named_branches[  _field2_name].closed_resistance;
 
         _torque_factor = torque_multiplier * torque_factor * gear_ratio;
         _EMF_factor    =    EMF_multiplier * (-EMF_factor);
