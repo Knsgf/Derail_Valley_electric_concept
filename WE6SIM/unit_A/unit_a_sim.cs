@@ -559,6 +559,7 @@ internal partial class unit_A_sim: electric_device
             }
             float motors_volts = Mathf.Abs(currents["VM34"] * _element_resistances["VM34"]);
             _resistor_grid.simulate(currents);
+            resistor_heat.simulate_overheat_damage(_resistor_grid);
 
             bool  rheostatic_brake_on = _selector is (int) selector_modes.rheostatic_brake;
             float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;

@@ -16,12 +16,13 @@ namespace WE6SIM.unit_A;
 
 internal class resistor_heat
 {
-    const int groups = 3, resistors_in_group = 7;
+    const int   groups = 3, resistors_in_group = 7;
+    const float overheat_damage_per_degree_second = 0.5f, maximum_resistor_temperature = 900.0f;
     
     private static readonly string[][] _resistor_groups = new string[groups][];
 
     private readonly float[][] _resistances = new float[groups][];
-    private readonly Port _heat_emission, _resistor_temperature, _control_AB1;
+    private readonly Port _heat_emission, _resistor_temperature, _resistor_damage, _control_AB1;
 
     static resistor_heat()
     {
@@ -36,9 +37,10 @@ internal class resistor_heat
 
     public resistor_heat(Dictionary<string, Port> ports, Dictionary<string, float> element_resistances)
     {
-        _heat_emission        = sensor_grabber.grab_port(ports, "[CustomSimulation].RESISTOR_HEAT");
-        _resistor_temperature = sensor_grabber.grab_port(ports, "[ResistorHeat].TEMPERATURE"      );
-        _control_AB1          = sensor_grabber.grab_port(ports, "[internal_MU].CONTROL_AB1"       );
+        _heat_emission        = sensor_grabber.grab_port(ports, "[CustomSimulation].RESISTOR_HEAT"  );
+        _resistor_damage      = sensor_grabber.grab_port(ports, "[CustomSimulation].RESISTOR_DAMAGE");
+        _resistor_temperature = sensor_grabber.grab_port(ports, "[ResistorHeat].TEMPERATURE"        );
+        _control_AB1          = sensor_grabber.grab_port(ports, "[internal_MU].CONTROL_AB1"         );
         for (int current_group = 0; current_group < groups; ++current_group)
         {
             _resistances[current_group] = new float[resistors_in_group];
@@ -66,8 +68,20 @@ internal class resistor_heat
         _heat_emission.Value = maximum_heat_emission;
 
         int temperature_to_B = Mathf.RoundToInt(Mathf.Clamp(_resistor_temperature.Value * (31.0f / 1200.0f), 0.0f, 31.0f));
-        Main.diagnostics?.Value = temperature_to_B;
         signal_cable.set_port_signal(_control_AB1, (int) signal_cable.AB1_signals.resistors_temperature, 
             (int) signal_cable.AB1_shift.resistors_temperature, temperature_to_B);
     }
+
+    public static void simulate_overheat_damage(resistor_heat? simulation = null, Port? damage_per_frame = null, float resistor_temperature = 0.0f)
+    {
+        if (simulation != null)
+        {
+            resistor_temperature = simulation._resistor_temperature.Value;
+            damage_per_frame     = simulation._resistor_damage;
+        }
+        else if (damage_per_frame == null)
+            throw new ArgumentNullException("Damage port not specified");
+        damage_per_frame.Value = (resistor_temperature <= maximum_resistor_temperature)
+			? 0.0f : ((resistor_temperature - maximum_resistor_temperature) * overheat_damage_per_degree_second * Time.deltaTime);
+	}
 }
