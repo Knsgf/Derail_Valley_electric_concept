@@ -27,7 +27,8 @@ internal class pantograph: electric_device
     const float maximum_head_height = 6.6f, frame_thickness = 0.085f, head_movement_speed = 0.5f;
     const float sidepan_relative_movement_speed = 0.5f;
     const int   max_iterations_before_sleep = 6;
-    const float wear_per_metre = 5.0E-6f, nominal_current = 2200.0f, wear_per_second_at_full_current = 5.0E-5f;
+    const float powertrain_points = 2000.0f, nominal_current = 2200.0f;
+    const float wear_per_metre = 5.0E-6f * powertrain_points, wear_per_second_at_full_current = 9.0E-5f * powertrain_points;
 
     private static readonly Dictionary<string, FieldInfo> _pantograph_parts = [];
     private static readonly Quaternion _sidepan_pivot_deployed_orientation = Quaternion.AngleAxis(90.0f  , Vector3.up   );
@@ -190,7 +191,6 @@ internal class pantograph: electric_device
         _arcing_damage      = sensor_grabber.grab_port(ports, "[Pantograph].ARCING"        );
         _dropper_hit_damage = sensor_grabber.grab_port(ports, "[Pantograph].DROPPER_HIT"   );
         _regular_damage     = sensor_grabber.grab_port(ports, "[Pantograph].REGULAR_DAMAGE");
-        Main.log($"PNT.ctor {unit.name}");
     }
 
     private void move()
