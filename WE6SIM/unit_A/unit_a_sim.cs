@@ -94,11 +94,17 @@ internal partial class unit_A_sim: electric_device
         _relative_voltage    = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
         _compressor_power    = grab_port(ports, "compressor.POWER_CONSUMPTION"              );
 
-        const float variation = 0.1f;
+        const float variation = 0.02f;
         UnityEngine.Random.State old_state = UnityEngine.Random.state;
         UnityEngine.Random.InitState(random_seed);
         foreach (KeyValuePair<string, float> element in _base_element_resistances)
             _element_resistances[element.Key] = element.Value * UnityEngine.Random.Range(1.0f - variation, 1.0f + variation);
+        float[] motor_EMF_variations = new float[motors], motor_torque_variations = new float[6];
+        for (int motor_index = 0; motor_index < motors; ++motor_index)
+        {
+            motor_EMF_variations   [motor_index] = UnityEngine.Random.Range(1.0f - variation, 1.0f + variation);
+            motor_torque_variations[motor_index] = UnityEngine.Random.Range(1.0f - variation, 1.0f + variation);
+        }
         UnityEngine.Random.state = old_state;
         _circuit = circuit_compiler.trace(_element_resistances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations, _currents);
         _resistor_grid = new(ports, _element_resistances);
@@ -123,9 +129,15 @@ internal partial class unit_A_sim: electric_device
 
         _traction_motors = new traction_motor[motors];
         for (int motor_number = 1; motor_number <= motors / 2; ++motor_number)
-            _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM  , _named_branches);
+        {
+            _traction_motors[motor_number - 1] = new(motor_number, motor_torque_variations[motor_number - 1], motor_EMF_variations[motor_number -1],
+                _wheel_RPM  , _named_branches);
+        }
         for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
-            _traction_motors[motor_number - 1] = new(motor_number, _wheel_RPM_B, _named_branches);
+        {
+            _traction_motors[motor_number - 1] = new(motor_number, motor_torque_variations[motor_number - 1], motor_EMF_variations[motor_number -1],
+                _wheel_RPM_B, _named_branches);
+        }
         _traction_motor_temperature = new(ports);
         _regenerative_field = new(this, ports);
         _blowers = new(

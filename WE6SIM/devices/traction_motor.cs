@@ -19,7 +19,7 @@ internal class traction_motor
 
     private readonly Port   _wheel_RPM;
     private readonly string _armature_name, _field1_name, _field2_name;
-    private readonly float  _armature_resistance, _field1_resistance, _field2_resistance;
+    private readonly float  _armature_resistance, _field1_resistance, _field2_resistance, _torque_factor, _EMF_factor;
 
     private bool _dynamic_brake_kickstarter_winding_on = false;
 
@@ -35,7 +35,8 @@ internal class traction_motor
     //private readonly int _motor_number;
     private readonly bool _has_kickstarter;
 
-    public traction_motor(int motor_number, Port wheel_RPM, Dictionary<string, circuit.branch_user> named_branches)
+    public traction_motor(int motor_number, float torque_multiplier, float EMF_multiplier, 
+        Port wheel_RPM, Dictionary<string, circuit.branch_user> named_branches)
     {
         _wheel_RPM = wheel_RPM;
         assert.test(motor_number >= 1 && motor_number <= 6);
@@ -49,6 +50,9 @@ internal class traction_motor
         _armature_resistance = 1.0f / named_branches[_armature_name].closed_conductance;
         _field1_resistance   = 1.0f / named_branches[  _field1_name].closed_conductance;
         _field2_resistance   = 1.0f / named_branches[  _field2_name].closed_conductance;
+
+        _torque_factor = torque_multiplier * torque_factor * gear_ratio;
+        _EMF_factor    =    EMF_multiplier * (-EMF_factor);
 
         //_motor_number = motor_number;
         _has_kickstarter = (motor_number & 1) != 0;
@@ -77,10 +81,10 @@ internal class traction_motor
         if (_dynamic_brake_kickstarter_winding_on)
             magnetic_flux += kickstarter_winding_flux;
 
-        float  motor_EMF     = (-EMF_factor) * magnetic_flux * motor_RPM;
+        float  motor_EMF     = _EMF_factor * magnetic_flux * motor_RPM;
         EMF                  = named_branches[armature_name].EMF = named_branches[armature_name].EMF * 0.7f + motor_EMF * 0.3f;
         RPM                  = motor_RPM;
-        wheel_torque         = (torque_factor * gear_ratio) * armature_current * magnetic_flux;
+        wheel_torque         = _torque_factor * armature_current * magnetic_flux;
         heat_emission        = armature_current * armature_current * _armature_resistance 
                              +   field1_current *   field1_current *   _field1_resistance
                              +   field2_current *   field2_current *   _field2_resistance;
