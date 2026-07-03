@@ -130,8 +130,8 @@ internal partial class circuit
         for (int index = _last_branch; index >= 0; --index)
         {
             _conductance[index, index] = _conductance_staged[index, index] = _branches[index].future_conductance;
-            _branches[index].contactor_toggled += receive_contactor_toggle;
-            _branches[index].EMF_changed       += handle_EMF_change;
+            _branches[index].conductance_changed += receive_conductance_change;
+            _branches[index].EMF_changed         += handle_EMF_change;
         }
         _left1.multiply(_incidence,          _conductance);
         _left.multiply (    _left1, _transposed_incidence);
@@ -156,10 +156,10 @@ internal partial class circuit
         _background_right.multiply(_negative_incidence, _conductance_staged);
     }
 
-    private void receive_contactor_toggle(branch toggling_branch)
+    private void receive_conductance_change(branch changed_branch)
     {
-        _conductance[toggling_branch.id, toggling_branch.id] = toggling_branch.future_conductance;
-        _branch_conductances_changed.Add(toggling_branch);
+        _conductance[changed_branch.id, changed_branch.id] = changed_branch.future_conductance;
+        _branch_conductances_changed.Add(changed_branch);
     }
 
     private void handle_EMF_change(branch EMF_source)

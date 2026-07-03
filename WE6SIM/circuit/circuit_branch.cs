@@ -11,7 +11,8 @@ internal partial class circuit
 {
     public interface branch_user
     {
-        float closed_conductance { get; }
+        float closed_conductance { get; set; }
+        float closed_resistance  { get; set; }
         float conductance        { get; }
         float current            { get; }
         float EMF                { get; set; }
@@ -29,23 +30,32 @@ internal partial class circuit
 
         private int _contactors_off = int.MaxValue;
 
-        private readonly float _closed_conductance;
-        private readonly bool  _reversed_EMF = false;
+        private readonly bool _reversed_EMF = false;
 
-        private float _current_conductance = 0.0f;
+        private float _closed_conductance = 0.0f, _current_conductance = 0.0f;
         private float _start_ptential = 0.0f, _end_potential = 0.0f, _EMF = 0.0f, _future_EMF = 0.0f, _matrix_EMF = 0.0f;
 
 
         public float future_conductance => (_contactors_off != 0) ? 0.0f : _closed_conductance;
-        public float closed_conductance => _closed_conductance;
+        public float closed_conductance 
+        {
+            get => _closed_conductance;
+            set
+            {
+                assert.test(value >= 0.0f);
+                _closed_conductance = value;
+                conductance_changed?.Invoke(this);
+            }
+        }
+        public float closed_resistance
+        {
+            get => 1.0f / closed_conductance;
+            set => closed_conductance = 1.0f / ((value < min_branch_resistance) ? min_branch_resistance : value);
+        }
         public float conductance 
         { 
             get => _current_conductance;
-            set
-            {
-                assert.test(value == 0.0f || value == _closed_conductance);
-                _current_conductance = value;
-            }
+            set => _current_conductance = value;
         }
         public float future_EMF => _future_EMF;
         public float EMF
@@ -68,7 +78,7 @@ internal partial class circuit
 
         public int id { get; private set; }
 
-        public event Action<branch>? contactor_toggled;
+        public event Action<branch>? conductance_changed;
         public event Action<branch>? EMF_changed;
 
         public void set_current_EMF_from_matrix(float EMF)
@@ -123,7 +133,7 @@ internal partial class circuit
                 _contactors_off &= ~contactor_mask;
             bool branch_is_now_closed = _contactors_off == 0;
             if (branch_is_now_closed != branch_was_closed)
-                contactor_toggled?.Invoke(this);
+                conductance_changed?.Invoke(this);
         }
 
         public bool is_contactor_on(string contactor_designation)
