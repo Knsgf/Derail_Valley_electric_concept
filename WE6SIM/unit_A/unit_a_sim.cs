@@ -70,7 +70,7 @@ internal partial class unit_A_sim: electric_device
     private int   _throttle = -1, _secondary_camshaft_notch = 1, _selector = -1, _field_position = -1;
     private Task? _single_notch_movement;
     private float _reverser_position = 0.5f, _fast_notching_current_limit = 250.0f;
-    private float _last_integrity = -1.0f, _resistance_update_time = 0.0f;
+    private float _last_integrity = -1.0f, _resistance_update_time = 0.0f, _unit_B_integrity = 1.0f;
 
     public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
 
@@ -487,6 +487,8 @@ internal partial class unit_A_sim: electric_device
             fast_notching_toggle(port_value_signal_active(BA2, (int) BA2_signals.fast_notching) ? 1.0f : 0.0f);
             blower_speed_toggle (port_value_signal_active(BA2, (int) BA2_signals.blower_mode  ) ? 1.0f : 0.0f);
         }
+        _unit_B_integrity = extract_signal_from_port_value(BA2, (int) BA2_signals.motor_integrity, (int) BA2_shift.motor_integrity)
+            / 4095.0f;
     }
 
     private void calculate_combined_unit_motor_performance(bool is_unit_A, traction_motor[] traction_motors, 
@@ -513,11 +515,11 @@ internal partial class unit_A_sim: electric_device
     private void set_powertrain_damage_resistance()
     {
         _resistance_update_time -= Time.deltaTime;
-        float current_integrity  = _integrity.Value;
-        if (_resistance_update_time <= 0.0f || current_integrity > _last_integrity)
+        float current_integrity  = Mathf.Min(_integrity.Value, _unit_B_integrity), integrity_change = _last_integrity - current_integrity;
+        if (integrity_change > 0.001f && _resistance_update_time <= 0.0f || integrity_change <= -0.01f)
         {
             _named_branches["EPS"].closed_resistance = 0.001f + ((current_integrity >= 0.5f) ? 0.0f : ((0.5f - current_integrity) * 10.0f));
-            //Main.log($"{_named_branches["EPS"].closed_resistance} ohm");
+            //Main.log($"{_integrity.Value} {_unit_B_integrity} {_named_branches["EPS"].closed_resistance} ohm");
             _resistance_update_time = 10.0f;
             _last_integrity         = current_integrity;
         }

@@ -83,7 +83,9 @@ internal static class signal_cable
         right_sidepan        = 5,
         left_sidepan         = 6,
         fast_notching        = 7,
-        blower_mode          = 8
+        blower_mode          = 8,
+
+        motor_integrity = 12
     }
     public enum BA2_signals
     {
@@ -93,7 +95,9 @@ internal static class signal_cable
         right_sidepan        = 0x1 << BA2_shift.right_sidepan,
         left_sidepan         = 0x1 << BA2_shift.left_sidepan,
         fast_notching        = 0x1 << BA2_shift.fast_notching,
-        blower_mode          = 0x1 << BA2_shift.blower_mode
+        blower_mode          = 0x1 << BA2_shift.blower_mode,
+
+        motor_integrity = 0xFFF << BA2_shift.motor_integrity
     }
 
     private static void check_signal_mask(int signal_mask)
