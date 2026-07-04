@@ -1,5 +1,8 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
+using System.Threading;
+using System.Threading.Tasks;
+
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -17,6 +20,10 @@ internal partial class overhead_equipment
     {
         [JsonIgnore]
         private float _current_voltage, _current_load = 0.0f, _new_load;
+        [JsonIgnore]
+        private bool _shutdown = false;
+        [JsonIgnore]
+        private CancellationTokenSource? _restoration_sequence = null;
         
         [JsonProperty]
         public string map_location;
@@ -46,17 +53,56 @@ internal partial class overhead_equipment
             return _current_voltage - _current_load * wire_1m_resistance * distance;
         }
 
+        private async void shutdown()
+        {
+            if (_shutdown)
+                return;
+            _shutdown        = true;
+            _current_voltage = 0.0f;
+            if (_restoration_sequence == null)
+            {
+                Main.log("10 s shutdown");
+                await Task.Delay(10_000);
+            }
+            else
+            {
+                Main.log("30 s shutdown");
+                _restoration_sequence.Cancel();
+                await Task.Delay(30_000);
+            }
+            Main.background_log("Power restoration started");
+            _current_voltage      = supply_voltage;
+            _restoration_sequence = new();
+            _shutdown             = false;
+            
+            try
+            {
+                await Task.Delay(5 * 60_000, _restoration_sequence.Token);
+            }
+            catch (TaskCanceledException _)
+            {
+                Main.background_log("Power restoration terminated");
+                return;
+            }
+
+            Main.background_log("Power restoration complete");
+            _restoration_sequence = null;
+        }
+
         public void simulate_load()
         {
-            _current_load = _new_load;
-            _new_load     = 0.0f;
-            float voltage = supply_voltage;
-            if (_current_load < -100.0f)
+            float current_load = _current_load = _new_load;
+            _new_load          = 0.0f;
+            float voltage      = supply_voltage;
+            if (current_load > maximum_load && UnityEngine.Random.value <= (current_load / maximum_load - 1) * (2.0f / Time.deltaTime))
+                shutdown();
+            else if (current_load < -100.0f)
             {
                 if (has_inverter)
-                    voltage += _current_load / 3000.0f * 350.0f;
+                    voltage += current_load / 3000.0f * 350.0f;
             }
-            _current_voltage = voltage * 0.01f + _current_voltage * 0.99f;
+            if (!_shutdown)
+                _current_voltage = voltage * 0.01f + _current_voltage * 0.99f;
             /*
             if (string.Equals(map_location, "SM1500", System.StringComparison.OrdinalIgnoreCase))
             {
