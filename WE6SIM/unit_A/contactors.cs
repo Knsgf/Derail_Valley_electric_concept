@@ -223,6 +223,7 @@ internal partial class unit_A_sim
             _selector_regenerative_shaft.Dispose();
             _line_contactor.Dispose();
             _line_contactor2.Dispose();
+            _shunting_contactors.Dispose();
             _dynamic_brake_contactor.Dispose();
             _jogging_switch.Dispose();
             _voltmeter.Dispose();
