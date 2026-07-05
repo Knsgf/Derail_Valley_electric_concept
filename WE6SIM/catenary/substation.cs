@@ -18,6 +18,8 @@ internal partial class overhead_equipment
     [JsonObject]
     private class substation: catenary_object, power_supply
     {
+        private static double _energy_consumed = 0.0, _energy_returned = 0.0;
+        
         [JsonIgnore]
         private float _current_voltage, _current_load = 0.0f, _new_load;
         [JsonIgnore]
@@ -103,6 +105,12 @@ internal partial class overhead_equipment
             }
             if (!_shutdown)
                 _current_voltage = voltage * 0.01f + _current_voltage * 0.99f;
+            if (current_load >= 0.0f)
+                _energy_consumed += (1.0 / (1000.0 * 3600.0)) * _current_voltage * current_load * Time.deltaTime;
+            else
+                _energy_returned += (1.0 / (1000.0 * 3600.0)) * _current_voltage * (-current_load) * Time.deltaTime;
+            Main.diagnostics?.Value = (float) _energy_consumed;
+            Main.diagnostics2?.Value = (float) _energy_returned;
             /*
             if (string.Equals(map_location, "SM1500", System.StringComparison.OrdinalIgnoreCase))
             {
