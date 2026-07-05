@@ -28,7 +28,7 @@ internal class pantograph: electric_device
     const float sidepan_relative_movement_speed = 0.5f;
     const int   max_iterations_before_sleep = 6;
     const float powertrain_points = 2000.0f, nominal_current = 2200.0f;
-    const float wear_per_metre = 5.0E-6f * powertrain_points, wear_per_second_at_full_current = 9.0E-5f * powertrain_points;
+    const float wear_per_metre = 3.0E-7f * powertrain_points, wear_per_second_at_full_current = 5.4E-6f * powertrain_points;
 
     private static readonly Dictionary<string, FieldInfo> _pantograph_parts = [];
     private static readonly Quaternion _sidepan_pivot_deployed_orientation = Quaternion.AngleAxis(90.0f  , Vector3.up   );
@@ -381,15 +381,26 @@ internal class pantograph: electric_device
         */
         (int x, int z) = world_position.get_absolute_position(_base.position);
         if (!raised)
+        {
             _regular_damage.Value = 0.0f;
+            _last_x = x;
+            _last_z = z;
+        }
         else
         {
-            float current_ratio = load_current / nominal_current;
-            _regular_damage.Value = wear_per_metre * Mathf.Sqrt(world_position.get_distance_squared(x, z, _last_x, _last_z))
-                                  + wear_per_second_at_full_current * current_ratio * current_ratio * Time.deltaTime;
+            float current_ratio    = load_current / nominal_current;
+            float regular_damage   = wear_per_second_at_full_current * current_ratio * current_ratio * Time.deltaTime;
+            float distance_squared = world_position.get_distance_squared(x, z, _last_x, _last_z);
+            if (distance_squared >= 1.0f)
+            {
+                if (distance_squared > 25.0f)   // Limit damage if player decides to fast travel with pantograph up
+                    distance_squared = 25.0f;
+                regular_damage += wear_per_metre * Mathf.Sqrt(distance_squared);
+                _last_x = x;
+                _last_z = z;
+            }
+            _regular_damage.Value = regular_damage;
         }
-        _last_x = x;
-        _last_z = z;
     }
 
     public void toggle(bool stowed)
