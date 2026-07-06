@@ -192,6 +192,7 @@ internal partial class overhead_equipment
         string[] all_locations =
         [
             // Yards
+            "CME",
             "FM",
             "FF",
             "IME",
