@@ -16,6 +16,7 @@ using WE6SIM.devices;
 using WE6SIM.unit_A;
 using WE6SIM.utilities;
 
+using static WE6SIM.devices.control_stand;
 using static WE6SIM.utilities.sensor_grabber;
 using static WE6SIM.utilities.signal_cable;
 
@@ -130,7 +131,7 @@ internal class unit_B_sim: electric_device
         _control_stand.register_handler("reverser_handle",     reverser_relay, default_setting: 0.5f);
         _control_stand.register_handler("throttle_handle",     throttle_relay);
         _control_stand.register_handler(   "field_handle", field_handle_relay);
-        _control_stand.register_handler("selector_handle",     selector_relay);
+        _control_stand.register_handler("selector_handle",     selector_relay, default_setting: (float) selector_modes.yard_power / selector_last_notch);
         _throttle_handle = grab_port(ports, "[Throttle].EXT_IN"        );
 
         _control_stand.register_handler("front_pantograph_switch", switch_relay(BA2_signals.front_pantograph));
@@ -187,8 +188,7 @@ internal class unit_B_sim: electric_device
         float multiplier = notches - 1.0f;
         return delegate (float port_value)
         {
-            if (_cab_active)
-                set_port_signal(_control_BA1, (int) signal, (int) signal_shift, Mathf.RoundToInt(port_value * multiplier));
+            set_port_signal(_control_BA1, (int) signal, (int) signal_shift, Mathf.RoundToInt(port_value * multiplier));
         };
     }
 
@@ -196,8 +196,7 @@ internal class unit_B_sim: electric_device
     {
         return delegate (float port_value)
         {
-            if (_cab_active)
-                toggle_port_signal(_control_BA2, (int) signal, port_value >= 0.5f);
+            toggle_port_signal(_control_BA2, (int) signal, port_value >= 0.5f && _cab_active);
         };
     }
 

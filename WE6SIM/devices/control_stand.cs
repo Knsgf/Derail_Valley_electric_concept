@@ -65,8 +65,9 @@ internal class control_stand: electric_device
         }
     }
 
-    private readonly Dictionary<string,          Port?> _port_map      = [];
-    private readonly Dictionary<string, Action<float>?> _port_handlers = [];
+    private readonly Dictionary<string,          Port?> _port_map         = [];
+    private readonly Dictionary<string, Action<float>?> _port_handlers    = [];
+    private readonly Dictionary<string,          float> _default_settings = [];
 
     private selector_interlock? _selector_interlock;
     private Port? _transition_lamp;
@@ -154,8 +155,8 @@ internal class control_stand: electric_device
                     if (!_stand_active)
                     {
                         _reset_all_controls = true;
-                        foreach (Action<float>? current_handler in _port_handlers.Values)
-                            current_handler?.Invoke(0.0f);
+                        foreach (KeyValuePair<string, float> control_default in _default_settings)
+                            _port_map[control_default.Key]?.Value = control_default.Value;
                         _reset_all_controls = false;
                     }
                 }
@@ -174,7 +175,8 @@ internal class control_stand: electric_device
                 }
             };
         }
-        _port_handlers[device]              = new_handler;
+        _port_handlers   [device]           = new_handler;
+        _default_settings[device]           = default_setting;
         hooked_port.ValueUpdatedInternally += new_handler;
         handler(hooked_port.Value);
     }

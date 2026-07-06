@@ -169,7 +169,7 @@ internal partial class unit_A_sim: electric_device
         _control_stand.register_handler("reverser_handle",      reverser_handler, default_setting: 0.5f);
         _control_stand.register_handler("throttle_handle",      throttle_handler);
         _control_stand.register_handler(   "field_handle", field_control_handler);
-        _control_stand.register_handler("selector_handle",      selector_handler);
+        _control_stand.register_handler("selector_handle",      selector_handler, default_setting: (float) selector_modes.yard_power / selector_last_notch);
 
         _control_stand.register_handler("front_pantograph_switch", toggle_front_pantograph );
         _control_stand.register_handler( "back_pantograph_switch", toggle_back_pantograph  );
@@ -531,7 +531,7 @@ internal partial class unit_A_sim: electric_device
         
         blower_controller               blowers        = _blowers;
         bool                            jog            = _jogging_mode_on && !is_powered;
-		Dictionary<string, branch_user> named_branches = _named_branches;
+        Dictionary<string, branch_user> named_branches = _named_branches;
         branch_user                     supply         = named_branches["EPS"];
         Dictionary<string,       float> currents       = _currents;
         if (jog)
