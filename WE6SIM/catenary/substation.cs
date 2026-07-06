@@ -21,7 +21,7 @@ internal partial class overhead_equipment
         private static double _energy_consumed = 0.0, _energy_returned = 0.0;
         
         [JsonIgnore]
-        private float _current_voltage, _current_load = 0.0f, _new_load;
+        private float _current_voltage, _current_load = 0.0f, _new_load, _breaker_timer = 0.0f;
         [JsonIgnore]
         private bool _shutdown = false;
         [JsonIgnore]
@@ -51,8 +51,9 @@ internal partial class overhead_equipment
             float y_offset = y - wire_y;
             float distance = Mathf.Sqrt(((long) x_offset * x_offset + (long) z_offset + z_offset) 
                 / (world_position.fixed_multiplier * world_position.fixed_multiplier) + y_offset * y_offset);
-            _new_load += load_current;
-            return _current_voltage - _current_load * wire_1m_resistance * distance;
+            _new_load            += load_current;
+            float contact_voltage = _current_voltage - _current_load * wire_1m_resistance * distance;
+            return (contact_voltage >= 0.0f) ? contact_voltage : 0.0f;
         }
 
         private async void shutdown()
@@ -95,20 +96,27 @@ internal partial class overhead_equipment
         {
             float current_load = _current_load = _new_load;
             _new_load          = 0.0f;
-            float voltage      = supply_voltage;
-            if (current_load > maximum_load && UnityEngine.Random.value <= (current_load / maximum_load - 1) * (2.0f / Time.deltaTime))
-                shutdown();
-            else if (current_load < -100.0f)
-            {
-                if (has_inverter)
-                    voltage += current_load / 3000.0f * 350.0f;
-            }
             if (!_shutdown)
+            {
+                _breaker_timer -= Time.deltaTime;
+                if (_breaker_timer < 0.0f)
+                {
+                    _breaker_timer += 1.0f;
+                    if (Mathf.Abs(current_load) > maximum_load && UnityEngine.Random.value <= (current_load / maximum_load - 1) * 2.0f)
+                        shutdown();
+                }
+                float voltage = supply_voltage;
+                if (current_load < -100.0f)
+                {
+                    if (has_inverter)
+                        voltage += current_load / 3000.0f * 350.0f;
+                }
                 _current_voltage = voltage * 0.01f + _current_voltage * 0.99f;
-            if (current_load >= 0.0f)
-                _energy_consumed += (1.0 / (1000.0 * 3600.0)) * _current_voltage * current_load * Time.deltaTime;
-            else
-                _energy_returned += (1.0 / (1000.0 * 3600.0)) * _current_voltage * (-current_load) * Time.deltaTime;
+                if (current_load >= 0.0f)
+                    _energy_consumed += (1.0 / (1000.0 * 3600.0)) * _current_voltage * current_load * Time.deltaTime;
+                else
+                    _energy_returned += (1.0 / (1000.0 * 3600.0)) * _current_voltage * (-current_load) * Time.deltaTime;
+            }
             Main.diagnostics?.Value = (float) _energy_consumed;
             Main.diagnostics2?.Value = (float) _energy_returned;
             /*
