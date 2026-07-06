@@ -138,7 +138,7 @@ internal class blower_controller: electric_device
             current_draw = 0.0f;
         else
         {
-            float current = (fan_motor_voltage < 1.0f) ? 0.0f : (fan_motor_power / fan_motor_voltage) * (6 * _line_voltage_multiplier);
+            float current = (fan_motor_voltage < 250.0f) ? 0.0f : (fan_motor_power / fan_motor_voltage) * (6 * _line_voltage_multiplier);
             if (relative_speed > 0.0f)
                 current *= Mathf.Min(7.0f, final_relative_speed / relative_speed);
             current_draw = Mathf.LerpUnclamped(current_draw, current, 0.1f);
