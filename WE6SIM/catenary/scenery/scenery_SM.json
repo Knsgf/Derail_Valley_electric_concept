@@ -13229,8 +13229,8 @@
       "z": 0.0,
       "w": -0.161265358
     },
-    "x": 8320366,
-    "z": 7901655,
+    "x": 8321594,
+    "z": 7905361,
     "y": 128.771088
   },
   {
@@ -13618,5 +13618,31 @@
     "z": 7107482,
     "y": 131.969269,
     "wire_type": "plain_single"
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "Signs/RaisePantographsOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.3517235,
+      "z": 0.0,
+      "w": 0.936104
+    },
+    "x": 7844195,
+    "z": 7318968,
+    "y": 135.2049
+  },
+  {
+    "$type": "WE6SIM.catenary.overhead_equipment+miscellaneous_object, WE6SIM",
+    "template_name": "Signs/DropPantographs",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.3517235,
+      "z": 0.0,
+      "w": 0.936104
+    },
+    "x": 7844195,
+    "z": 7318968,
+    "y": 135.2049
   }
 ]
