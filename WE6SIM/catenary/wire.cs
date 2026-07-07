@@ -19,7 +19,7 @@ internal partial class overhead_equipment
     [JsonObject]
     private class wire: catenary_object, wire_user
     {
-        const float default_section_length = 40.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f, end_achor_fixed_part_length = default_section_length - 35.0053f;
+        const float default_section_length = 40.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f, end_anchor_raise = 0.2f, end_achor_fixed_part_length = default_section_length - 35.0053f;
         const float default_side_rail_length = 10.0f, default_side_rail_height = 4.5f;
         const float single_wire_1m_resistance = 3.3E-5f, dual_wire_1m_resistance = 2.2E-5f, quad_wire_1m_resistance = 1.6E-5f, side_rail_1m_resistance = 2.314E-5f;
 
@@ -105,14 +105,16 @@ internal partial class overhead_equipment
             this.previous_pole_vertical_offset = previous_pole_vertical_offset;
             this.length_1m_resistance          = wire_info.resistance_per_metre;
 
-            float shear_angle = Mathf.Atan(previous_pole_vertical_offset / length);
             if (wire_info.fixed_template == null)
             {
+                float shear_angle = Mathf.Atan(previous_pole_vertical_offset / length);
                 (_primary_vertical_orientation, _primary_vertical_scale, _secondary_vertical_scale) 
                     = compute_shear_scale_transform(shear_angle, length, wire_info.section_length);
             }
             else
             {
+                previous_pole_vertical_offset += end_anchor_raise;
+                float shear_angle = Mathf.Atan(previous_pole_vertical_offset / length);
                 _fixed_part_template = system._templates[wire_info.fixed_template];
                 (_fixed_part_primary_vertical_orientation, _fixed_part_primary_vertical_scale, _fixed_part_secondary_vertical_scale)
                     = compute_shear_scale_transform(shear_angle, wire_info.fixed_part_length, wire_info.fixed_part_length);
