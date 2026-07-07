@@ -144,7 +144,7 @@ internal partial class unit_A_sim: electric_device
                 _wheel_RPM_B, _named_branches);
         }
         _traction_motor_temperature = new(ports);
-        _regenerative_field = new(this, ports);
+        _regenerative_field = new(this, grab_port(ports, "[CustomSimulation].EXCITER_RELATIVE_SPEED"));
         _blowers = new(
             _main_breaker_closed, 
             grab_port(ports, "[Blowers].BLOWERS_RELATIVE_SPEED"), 
@@ -529,11 +529,12 @@ internal partial class unit_A_sim: electric_device
     {
         check_if_disposed();
         
-        blower_controller               blowers        = _blowers;
-        bool                            jog            = _jogging_mode_on && !is_powered;
-        Dictionary<string, branch_user> named_branches = _named_branches;
-        branch_user                     supply         = named_branches["EPS"];
-        Dictionary<string,       float> currents       = _currents;
+        blower_controller               blowers         = _blowers;
+        exciter                         field_generator = _regenerative_field;
+        bool                            jog             = _jogging_mode_on && !is_powered;
+        Dictionary<string, branch_user> named_branches  = _named_branches;
+        branch_user                     supply          = named_branches["EPS"];
+        Dictionary<string,       float> currents        = _currents;
         if (jog)
         {
             if (!_jog)
@@ -552,7 +553,7 @@ internal partial class unit_A_sim: electric_device
                 _contactors.toggle_jogging(turn_on: false);
                 _jog = false;
             }
-            _total_load.Value = currents["EPS"] + blowers.current_draw;
+            _total_load.Value = currents["EPS"] + blowers.current_draw + field_generator.current_draw;
             if (supply.EMF > 1.0f)
                 _total_load.Value += _compressor_power.Value / supply.EMF;
             _jog_volts.Value  = 0.0f;
@@ -565,7 +566,7 @@ internal partial class unit_A_sim: electric_device
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_off, false);
 
         if (!jog && !_main_breaker_closed.State && _roof_bus.voltage < 10.0f && supply.EMF < 10.0f && _wheel_RPM.Value < 20.0f 
-            && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && _regenerative_field.relative_speed < 0.01f)
+            && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && field_generator.relative_speed < 0.01f)
         {
             _torque_A.Value = _torque_B.Value = _resistance_update_time = 0.0f;
             //_traction_motor_temperature.simulate(0.0f);
@@ -598,8 +599,8 @@ internal partial class unit_A_sim: electric_device
             _relative_voltage.Value = voltmeter_reading / 1500.0f;
             set_motors_volts(motors_volts);
             bool regenerative_on = _selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
-            if (regenerative_on || _regenerative_field.relative_speed >= 0.01f)
-                _regenerative_field.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
+            if (regenerative_on || field_generator.relative_speed >= 0.01f)
+                field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
             
             _compressor_on.ChangeState(voltmeter_reading >= 1000.0f && _main_breaker_closed.State);
             float average_RPM = 0.0f, average_load_A = 0.0f, average_load_B = 0.0f, maximum_load = 0.0f; 
