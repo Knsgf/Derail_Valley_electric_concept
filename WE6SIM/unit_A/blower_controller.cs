@@ -16,15 +16,17 @@ internal class blower_controller: electric_device
     
     const float speedup_rate = 0.1f, slowdown_rate = 0.95f;     // Bigger is slower
     const float series_3_parallel_2 = 1.0f / 3.0f, series_2_parallel_3 = 1.0f / 2.0f, parallel_6 = 1.0f;
-    const float fan_motor_power = 40.0E+3f;
+    const float motor_power = 40.0E+3f, motor_efficiency = 0.9f, motor_design_voltage = 1000.0f, motor_minimum_voltage = 250.0f;
 
     const float dynamic_braking_parallel_maximum_voltage  = 950.0f;
     const float dynamic_braking_series_minimum_voltage    = 900.0f;
     const float traction_low_speed_maximum_motor_current  = 350.0f;
     const float traction_high_speed_minimum_motor_current = 250.0f;
 
-    private readonly Port _blower_audio, _contactor_on_sound, _contactor_off_sound;
+    private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _traction_motor_temperature, _motor_cooling_rate, _resistor_temperature, _resistor_cooling_rate;
+
+    private readonly auxiliary_motor _fan_motors;
     
     private float _line_voltage = 0.0f, _motor_current = 0.0f;
     private float _line_voltage_multiplier = series_3_parallel_2;
@@ -51,7 +53,8 @@ internal class blower_controller: electric_device
         Port resistor_temperature, Port resistor_cooling_rate, 
         Port contactor_on_sound, Port contactor_off_sound): base("blower", electric_supply)
     {
-        _blower_audio        = audio;
+        _fan_motors = new(audio, motor_power, motor_efficiency, motor_design_voltage, motor_minimum_voltage, 
+            speedup_rate, slowdown_rate);
         _contactor_on_sound  = contactor_on_sound;
         _contactor_off_sound = contactor_off_sound;
 
@@ -128,21 +131,10 @@ internal class blower_controller: electric_device
         }
         fan_voltage = Mathf.LerpUnclamped(fan_voltage, fan_motor_voltage, 0.1f);
 
-        float relative_speed       = this.relative_speed;
-        float final_relative_speed = fan_motor_voltage / 1000.0f;
-        float acceleration_ratio   = Mathf.Pow((relative_speed <= final_relative_speed) ? speedup_rate : slowdown_rate, Time.deltaTime);
-        relative_speed             = Mathf.LerpUnclamped(final_relative_speed, relative_speed, acceleration_ratio);
-        _blower_audio.Value        = this.relative_speed = relative_speed;
-
-        if (rheostatic_braking_on)
-            current_draw = 0.0f;
-        else
-        {
-            float current = (fan_motor_voltage < 250.0f) ? 0.0f : (fan_motor_power / fan_motor_voltage) * (6 * _line_voltage_multiplier);
-            if (relative_speed > 0.0f)
-                current *= Mathf.Min(7.0f, final_relative_speed / relative_speed);
-            current_draw = Mathf.LerpUnclamped(current_draw, current, 0.1f);
-        }
+        _fan_motors.run(fan_motor_voltage);
+        current_draw         = rheostatic_braking_on ? 0.0f : (_fan_motors.current_draw * (6 * _line_voltage_multiplier));
+        float relative_speed = _fan_motors.relative_speed;
+        this.relative_speed  = relative_speed;
 
         _motor_cooling_rate.Value    = relative_speed * (ambient_temperature_C - _traction_motor_temperature.Value) * full_motor_cooling_power_at_1C;
         _resistor_cooling_rate.Value = relative_speed * (ambient_temperature_C -       _resistor_temperature.Value) * full_resistor_cooling_power_at_1C;
