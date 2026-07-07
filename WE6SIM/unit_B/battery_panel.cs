@@ -1,20 +1,16 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
+using UnityEngine;
 
 using DV.Simulation.Brake;
 using LocoSim.Implementations;
 
-using UnityEngine;
-
 using WE6SIM.devices;
 using WE6SIM.utilities;
 
-using static UnityEngine.UI.CanvasScaler;
 using static WE6SIM.utilities.signal_cable;
 
 namespace WE6SIM.unit_B;

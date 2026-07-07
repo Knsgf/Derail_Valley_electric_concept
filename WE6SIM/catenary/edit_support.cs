@@ -15,6 +15,7 @@ using static WE6SIM.utilities.world_position;
 
 namespace WE6SIM.catenary;
 
+#if DEBUG
 internal partial class overhead_equipment
 {
     private _type_ add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
@@ -195,3 +196,4 @@ internal partial class overhead_equipment
         }
     }
 }
+#endif

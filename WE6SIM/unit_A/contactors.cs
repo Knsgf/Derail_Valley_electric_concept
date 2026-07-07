@@ -3,16 +3,15 @@
 using System;
 using System.Collections.Generic;
 
+using UnityEngine;
+
 using LocoSim.Implementations;
 using LocoSim.Implementations.Wheels;
-
-using UnityEngine;
 
 using WE6SIM.circuit_sim;
 using WE6SIM.devices;
 using WE6SIM.utilities;
 
-using static UnityEngine.UI.CanvasScaler;
 using static WE6SIM.devices.control_stand;
 using static WE6SIM.utilities.signal_cable;
 

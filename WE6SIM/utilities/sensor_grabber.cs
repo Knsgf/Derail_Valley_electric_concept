@@ -22,5 +22,4 @@ internal static class sensor_grabber
             throw new ArgumentException("No port " + name);
         return port;
     }
-
 }

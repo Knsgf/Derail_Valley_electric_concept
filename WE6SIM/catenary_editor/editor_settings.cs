@@ -8,6 +8,7 @@ namespace WE6SIM.catenary_editor;
 
 internal class editor_settings: UnityModManager.ModSettings, IDrawable
 {
+#if DEBUG
     private bool _side_rail_placement_enabled = false;
     
     [Draw("Part placement")]
@@ -66,6 +67,7 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 
     [Draw("Eraser reach (mm)")]
     private int _eraser_radius = 2500;
+#endif
 
     public editor_settings()
     {
@@ -74,6 +76,7 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
     
     public void OnChange()
     {
+#if DEBUG
         if (_erase_scenery && _part_placement != editor.placement.Disabled)
         {
             _erase_scenery  = false;
@@ -113,8 +116,10 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
         editor.suspend_wire_placement			= _suspend_wire_placement;
         editor.terminate_wire_at_next_pole      = _terminate_wire_placement;
         editor.designated_substation                       = (_substation.Length >= 2) ? _substation : null;
+#endif
     }
 
+#if DEBUG
     public void update_cantilever_type(overhead_equipment.cantilever_kind cantilever_type)
     {
         _cantilever_type = cantilever_type;
@@ -126,4 +131,6 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
         _terminate_wire_placement = _suspend_wire_placement = false;
         _substation               = "";
     }
+#endif
+
 }

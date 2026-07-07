@@ -2,13 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LocoSim.Implementations;
 
 using UnityEngine;
+
+using LocoSim.Implementations;
 
 using WE6SIM.utilities;
 

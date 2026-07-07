@@ -1,14 +1,8 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
-
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace WE6SIM.utilities;
 

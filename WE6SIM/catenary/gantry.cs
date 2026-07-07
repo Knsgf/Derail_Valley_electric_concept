@@ -160,7 +160,6 @@ internal partial class overhead_equipment
             reposition_further_pole();
             system.handle_scenery_visibility(PlayerManager.PlayerTransform.position);
         }
-    }
 #endif
-
+    }
 }

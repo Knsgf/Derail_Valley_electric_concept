@@ -4,16 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-
-using DV.Simulation.Cars;
-using DV.Utils;
 
 using Newtonsoft.Json;
-
 using UnityEngine;
+
+using DV.Utils;
 
 using WE6SIM.catenary_editor;
 using WE6SIM.utilities;
@@ -113,7 +108,10 @@ internal partial class overhead_equipment
 
     private readonly Dictionary<string, GameObject> _templates = [];
     private readonly string _file_path;
-    private readonly List<catenary_object> _all_objects = [], _freshly_added_objects = [], _nearby_wires = [];
+    private readonly List<catenary_object> _all_objects = [], _nearby_wires = [];
+#if DEBUG
+    private readonly List<catenary_object> _freshly_added_objects = [];
+#endif
 
     private GameObject? _OCS_ticker;
 
@@ -274,7 +272,9 @@ internal partial class overhead_equipment
 
     public static void dispose()
     {
+#if DEBUG
         editor.disable();
+#endif
         if (_system == null)
             return;
         if (_system._OCS_ticker is not null)
@@ -351,13 +351,17 @@ internal partial class overhead_equipment
     private void reconstruct_tree()
     {
         _object_tree = new quad_tree(_all_objects, scenery_tree_objects_per_node);
+#if DEBUG
         _freshly_added_objects.Clear();
+#endif
     }
 
     private void floating_origin_shift(WorldMover floating_origin, Vector3 shift)
     {
+#if DEBUG
         if (_freshly_added_objects.Count >= _object_tree.node_objects_limit)
             reconstruct_tree();
+#endif
         
         List<catenary_object> visible_objects = _currently_visible_objects;
         for (int index = visible_objects.Count - 1; index >= 0; --index)
@@ -370,7 +374,9 @@ internal partial class overhead_equipment
     {
         _type_ new_object = constructor(x, z, y, orientation);
         _all_objects.Add(new_object);
+#if DEBUG
         _freshly_added_objects.Add(new_object);
+#endif
         //Main.log($"x={new_object.x / fixed_multiplier} z={new_object.z / fixed_multiplier} y={new_object.y} c={_all_objects.Count}");
         _scenery_changed = true;
         return new_object;

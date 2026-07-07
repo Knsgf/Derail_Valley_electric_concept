@@ -15,7 +15,9 @@ interface catenary_object_user
     Vector3 get_relative_position();
     Quaternion get_orientation();
     (int x, int z) get_world_position();
+#if DEBUG
     void set_relative_position(Vector3 new_position);
+#endif
 }
 
 internal partial class overhead_equipment
@@ -23,6 +25,8 @@ internal partial class overhead_equipment
     [JsonObject]
     private class catenary_object: catenary_object_user
     {
+        private static readonly GameObject _invisible_object = new("InvisibleCatenaryObject");
+        
         [JsonIgnore]
         public GameObject? entity = null;
         [JsonIgnore]
@@ -41,7 +45,11 @@ internal partial class overhead_equipment
         protected catenary_object(string template_name, int x, int z, float y, Quaternion orientation)
         {
             if (!system._templates.TryGetValue(template_name, out GameObject template))
-                throw new ArgumentException($"{template_name} not defined");
+            {
+                if (!string.Equals(template_name, "GantryArrow", StringComparison.Ordinal))
+                    throw new ArgumentException($"{template_name} not defined");
+                template = _invisible_object;
+            }
             this.template    = template;
             this.orientation = orientation;
             this.x = x;
@@ -55,6 +63,7 @@ internal partial class overhead_equipment
 
         public Quaternion get_orientation() => orientation;
 
+#if DEBUG        
         public void set_relative_position(Vector3 new_position)
         {
             is_visible = false;
@@ -64,6 +73,7 @@ internal partial class overhead_equipment
             system.reconstruct_tree_after_moving_object(this);
             system.handle_scenery_visibility(PlayerManager.PlayerTransform.position);
         }
+#endif
 
         public virtual void reveal()
         {

@@ -4,18 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using UnityEngine;
+
 using DV.Simulation.Cars;
 
 using LocoSim.Implementations;
-using LocoSim.Implementations.Wheels;
 
-using UnityEngine;
-
-using WE6SIM.catenary;
 using WE6SIM.circuit_sim;
 using WE6SIM.devices;
 using WE6SIM.unit_B;
-using WE6SIM.utilities;
 
 using static WE6SIM.circuit_sim.circuit;
 using static WE6SIM.devices.control_stand;

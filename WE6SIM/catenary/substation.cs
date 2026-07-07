@@ -127,12 +127,5 @@ internal partial class overhead_equipment
             }
             */
         }
-        
-        public override void reveal()
-        {
-#if DEBUG
-            base.reveal();
-#endif
-        }
     }
 }
