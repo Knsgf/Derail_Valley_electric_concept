@@ -36,7 +36,7 @@ internal class auxiliary_motor
     public void run(float current_voltage)
     {
         bool  is_running;
-        float final_relative_speed;
+        float final_relative_speed, relative_speed = this.relative_speed;
         if (current_voltage >= _minimum_voltage)
         {
             is_running           = true;
@@ -44,10 +44,11 @@ internal class auxiliary_motor
         }
         else
         {
+            if (relative_speed < 0.001f)
+                return;
             is_running      = false;
             current_voltage = final_relative_speed = 0.0f;
         }
-        float relative_speed       = this.relative_speed;
         float relative_acceleration;
         if (!is_running)
             relative_acceleration = _idle_slowdown;
