@@ -25,7 +25,7 @@ internal class pantograph: electric_device
     const string pantograph_tag = "PantographBase", sidepan_tag = "SidepanBase";
 
     const float maximum_head_height = 6.6f, frame_thickness = 0.085f, head_movement_speed = 0.5f;
-    const float sidepan_relative_movement_speed = 0.5f;
+    const float sidepan_relative_movement_speed = 1.0f;
     const int   max_iterations_before_sleep = 6;
     const float powertrain_points = 2000.0f, nominal_current = 2200.0f;
     const float wear_per_metre = 3.0E-7f * powertrain_points, wear_per_second_at_full_current = 5.4E-6f * powertrain_points;
@@ -249,8 +249,8 @@ internal class pantograph: electric_device
 
     private void sidepan_move()
     {
-        if (!is_powered)
-            return;
+        if (!is_powered && !_sidepan_stowed)
+            sidepan_toggle(stowed: true);
         if (_sidepan_stowed)
         {
             if (_side_arm_relative_position > 0.0f)
@@ -293,15 +293,28 @@ internal class pantograph: electric_device
         (int strip_end1_x, int stripe_end1_z) = world_position.get_absolute_position(strip_end1.position);
         (int strip_end2_x, int stripe_end2_z) = world_position.get_absolute_position(strip_end2.position);
         //Main.log($"Contact ({strip_end1_x}, {stripe_end1_z})-({strip_end2_x}, {stripe_end2_z}) {pantograph_base.position.y}");
-        return overhead_equipment.system.wire_height_and_voltage(strip_end1_x, stripe_end1_z, 
-                                                     strip_end2_x, stripe_end2_z, pantograph_base.position.y, load_current);
+        Vector3 target_head_world_position = pantograph_base.position;
+        (float? contact_height, float contact_voltage) 
+            = overhead_equipment.system.wire_height_and_voltage(strip_end1_x, stripe_end1_z, 
+                                                                strip_end2_x, stripe_end2_z, 
+                                                                target_head_world_position.y, load_current);
+        if (contact_height == null)
+            return (null, 0.0f);
+        target_head_world_position.y = (float) contact_height;
+        return (_unit.transform.InverseTransformPoint(target_head_world_position).y, contact_voltage);
     }
     
     private async void explode(Port trigger)
     {
         if (trigger.Value != 1.0f)
         {
-            trigger.Value = 1.0f;
+            trigger.Value     = 1.0f;
+            _current_height   = _initial_head_height;
+            _interations_left = max_iterations_before_sleep;
+            toggle(stowed: true);
+            _side_arm_relative_position = _side_pivot_relative_position = 0.0f;
+            _at_either_end              = false;
+            sidepan_toggle(stowed: true);
             await Task.Delay(2000);
             trigger.Value = 0.0f;
         }
@@ -316,51 +329,25 @@ internal class pantograph: electric_device
             load_current /= 2.0f;
         if (_stowed || !is_powered)
         {
-            _target_height               = _initial_head_height;
-            roof_bus.pantograph_voltage = _last_pantograph_voltage = 0.0f;
+            _target_height              = _initial_head_height;
+            roof_bus.pantograph_voltage = 0.0f;
         }
         else
         {
-            /*
-            (int strip_end1_x, int stripe_end1_z) = world_position.get_absolute_position(_contact_strip_end1.position);
-            (int strip_end2_x, int stripe_end2_z) = world_position.get_absolute_position(_contact_strip_end2.position);
-            Vector3 base_world_position = _base.position;
-            float?  wire_height         = overhead_equipment.system.wire_height(strip_end1_x, stripe_end1_z, 
-                                                                                strip_end2_x, stripe_end2_z, base_world_position.y);
-            */
             (float? wire_height, float supply_voltage) = get_wire_height_and_voltage(_base, _contact_strip_end1, _contact_strip_end2, load_current);
-            float bus_voltage;
             if (wire_height == null)
             {
                 _target_height              = maximum_head_height;
                 roof_bus.pantograph_voltage = 0.0f;
-                bus_voltage                 = roof_bus.voltage;
-                if (bus_voltage < _last_pantograph_voltage && load_current >= 200.0f 
-                    && _last_pantograph_voltage > 0.0f && bus_voltage / _last_pantograph_voltage < 0.1f
-                    || roof_bus.short_circuited)
-                {
-                    explode(_arcing_damage);
-                }
             }
             else
             {
-                Vector3 target_head_world_position = _base.position;
-                target_head_world_position.y       = (float) wire_height;
-                _target_height                     = _unit.transform.InverseTransformPoint(target_head_world_position).y;
-                raised                             = Mathf.Abs(_current_height - _target_height) < 0.2f;
-                roof_bus.pantograph_voltage        = raised ? supply_voltage : 0.0f;
-                bus_voltage                        = roof_bus.voltage;
-                
-                if (_current_height - _target_height > 0.3f)
+                _target_height              = (float) wire_height;
+                raised                      = Mathf.Abs(_current_height - _target_height) <= 0.2f;
+                roof_bus.pantograph_voltage = raised ? supply_voltage : 0.0f;
+                if (_current_height - _target_height > 0.35f)
                     explode(_dropper_hit_damage);
-                else if (bus_voltage < _last_pantograph_voltage && load_current >= 200.0f 
-                    && _last_pantograph_voltage > 0.0f && bus_voltage / _last_pantograph_voltage < 0.1f
-                    /*|| roof_bus.short_circuited*/)
-                {
-                    explode(_arcing_damage);
-                }
             }
-            _last_pantograph_voltage = Mathf.Min(roof_bus.pantograph_voltage, roof_bus.voltage);    // No arcing if the other pantograph is still live
         }
         move();
 
@@ -368,10 +355,25 @@ internal class pantograph: electric_device
             roof_bus.sidepan_voltage = 0.0f;
         else
         {
-            (float? rail_height, roof_bus.sidepan_voltage) = get_wire_height_and_voltage(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact, load_current);
-            raised |= rail_height != null;
+            (float? rail_height, float supply_voltage) = get_wire_height_and_voltage(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact, load_current);
+            if (rail_height == null || (float) rail_height is <= 4.2f or >= 4.8f)
+                _roof_bus.sidepan_voltage = 0.0f;
+            else
+            {
+                raised = true;
+                _roof_bus.sidepan_voltage = supply_voltage;
+            }
         }
         sidepan_move();
+
+        float bus_voltage = roof_bus.voltage;
+        if (bus_voltage < _last_pantograph_voltage && load_current >= 200.0f 
+            && _last_pantograph_voltage > 0.0f && bus_voltage / _last_pantograph_voltage < 0.5f
+            /*|| roof_bus.short_circuited*/)
+        {
+            explode(_arcing_damage);
+        }
+        _last_pantograph_voltage = Mathf.Min(Mathf.Max(roof_bus.pantograph_voltage, roof_bus.sidepan_voltage), roof_bus.voltage);    // No arcing if the other pantograph is still live
 
         /*
         if (_unit.name[6] == 'A')
@@ -379,6 +381,7 @@ internal class pantograph: electric_device
         else
             Main.diagnostics2?.Value = raised ? load_current : 0.0f;
         */
+
         (int x, int z) = world_position.get_absolute_position(_base.position);
         if (!raised)
         {
@@ -406,14 +409,14 @@ internal class pantograph: electric_device
     public void toggle(bool stowed)
     {
         check_if_disposed();
-        _stowed = stowed;
+        _stowed = stowed || _arcing_damage.Value > 0.0f || _dropper_hit_damage.Value > 0.0f;
         toggled?.Invoke();
     }
 
     public void sidepan_toggle(bool stowed)
     {
         check_if_disposed();
-        _sidepan_stowed = stowed;
+        _sidepan_stowed = stowed || _arcing_damage.Value > 0.0f;
         sidepan_toggled?.Invoke();
     }
 }
