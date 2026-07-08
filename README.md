@@ -32,3 +32,4 @@ There is no horn yet. Some details, like sand pipes, bogie centering devices and
 
 The "powertrain damage on idling" mechanic is not yet implemented.
 
+For debugging purposes pantograph wear is tracked separately as a "mechanical powertrain". It'll be merged into electrical later.
