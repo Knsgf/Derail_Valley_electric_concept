@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1503932075, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: WE6_HUD
+  m_EditorClassIdentifier: 
+  HUDType: 1000
+  CustomHUDSettings:
+    Powertrain: WE
+    BasicControls:
+      AmpMeter: 1
+      Throttle: 1
+      TMOrOilTemp: 1
+      Reverser: 1
+      GearboxA: 1
+      Speedometer: 1
+      GearboxB: 1
+      RPM: 0
+      TurbineOrVoltage: 2
+      Power: 1
+      WheelslipIndicator: 1
+      Sander: 1
+    Braking:
+      BrakePipe: 1
+      BrakeType: 2
+      MainReservoir: 1
+      IndependentBrake: 1
+      BrakeCylinder: 1
+      DynamicBrake: 1
+      ReleaseCylinder: 1
+      Handbrake: 1
+      BrakeCutout: 1
+    Steam:
+      SteamMeter: 0
+      CylinderCocks: 0
+      BoilerWater: 0
+      Injector: 0
+      FireboxCoal: 0
+      Damper: 0
+      FireTemperature: 0
+      Blower: 0
+      Shovel: 0
+      Firedoor: 0
+      LightFirebox: 0
+      Blowdown: 0
+      ChestPressure: 0
+      FuelDump: 0
+      Dynamo: 0
+      AirPump: 0
+      Lubricator: 0
+    Cab:
+      FuelDisplay: 0
+      Wipers: 1
+      OilLevel: 0
+      CabLightStyle: 0
+      GearLight: 0
+      SandLevel: 0
+      Headlights1: 0
+      BellOrWater: 0
+      Headlights2: 0
+      TenderCoal: 0
+      HornStyle: 0
+    Mechanical:
+      Alerter: 0
+      Pantograph: 0
+      CabOrientation: 0
+      TMOfflineIndicator: 1
+      StarterFuse: 0
+      ElectricsFuse: 1
+      TractionMotorFuse: 1
+      Starter: 1
+      FuelCutoff: 1
+  _json: '{"BasicControls":{"AmpMeter":"Display","GearboxA":"Display","GearboxB":"Display","Power":"Display","Reverser":"Reverser","RPM":"None","Sander":"Display","Speedometer":"Display","Throttle":"Throttle","TMOrOilTemp":"TMTemp","TurbineOrVoltage":"Voltage","WheelslipIndicator":"Display"},"Braking":{"BrakeCutout":"Display","BrakeCylinder":"Display","BrakePipe":"Display","BrakeType":"NonSelfLapping","DynamicBrake":"Display","Handbrake":"Display","IndependentBrake":"Display","MainReservoir":"Display","ReleaseCylinder":"Display"},"Cab":{"BellOrWater":"None","CabLightStyle":"None","FuelDisplay":"None","GearLight":"None","Headlights1":"None","Headlights2":"None","HornStyle":"None","OilLevel":"None","SandLevel":"None","TenderCoal":"None","Wipers":"SimpleWipers"},"Mechanical":{"Alerter":"None","CabOrientation":"None","ElectricsFuse":"Display","FuelCutoff":"Display","Pantograph":"None","Starter":"Display","StarterFuse":"None","TMOfflineIndicator":"Display","TractionMotorFuse":"Display"},"Powertrain":"WE","Steam":{"AirPump":"None","Blowdown":"None","Blower":"None","BoilerWater":"None","ChestPressure":"None","CylinderCocks":"None","Damper":"None","Dynamo":"None","FireboxCoal":"None","Firedoor":"None","FireTemperature":"None","FuelDump":"None","Injector":"None","LightFirebox":"None","Lubricator":"None","Shovel":"None","SteamMeter":"None"}}'

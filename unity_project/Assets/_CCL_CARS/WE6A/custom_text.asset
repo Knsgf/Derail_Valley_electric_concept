@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1197832823, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: custom_text
+  m_EditorClassIdentifier: 
+  CSV_Url: 
+  _termsJson: '[{"Data":{"Items":[{"Language":"English","Value":"Diamond pantograph"}]},"Term":"pantograph"},{"Data":{"Items":[{"Language":"English","Value":"Starting/dynamic
+    brake resistors"}]},"Term":"resistors"},{"Data":{"Items":[{"Language":"English","Value":"3x
+    700 kW split pole DC traction motor"}]},"Term":"traction_motor"},{"Data":{"Items":[{"Language":"English","Value":"Main
+    circuit breaker"}]},"Term":"circuit_breaker"},{"Data":{"Items":[{"Language":"English","Value":"Side
+    trolley"}]},"Term":"sidepan"},{"Data":{"Items":[{"Language":"English","Value":"Primary
+    camshaft controller"}]},"Term":"primary_camshaft"},{"Data":{"Items":[{"Language":"English","Value":"150
+    kW motor-generator"}]},"Term":"exciter"},{"Data":{"Items":[{"Language":"English","Value":"3x
+    cooling blowers"}]},"Term":"blowers"},{"Data":{"Items":[{"Language":"English","Value":"Main
+    air resrvoirs"}]},"Term":"main_reservoir"},{"Data":{"Items":[{"Language":"English","Value":"Reciprocating
+    compressor"}]},"Term":"compressor"},{"Data":{"Items":[{"Language":"English","Value":"120
+    V nickel-iron battery"}]},"Term":"battery"}]'
+  Terms:
+  - Term: pantograph
+    Data:
+      Items:
+      - Language: 0
+        Value: Diamond pantograph
+  - Term: resistors
+    Data:
+      Items:
+      - Language: 0
+        Value: Starting/dynamic brake resistors
+  - Term: traction_motor
+    Data:
+      Items:
+      - Language: 0
+        Value: 3x 700 kW split pole DC traction motor
+  - Term: circuit_breaker
+    Data:
+      Items:
+      - Language: 0
+        Value: Main circuit breaker
+  - Term: sidepan
+    Data:
+      Items:
+      - Language: 0
+        Value: Side trolley
+  - Term: primary_camshaft
+    Data:
+      Items:
+      - Language: 0
+        Value: Primary camshaft controller
+  - Term: exciter
+    Data:
+      Items:
+      - Language: 0
+        Value: 150 kW motor-generator
+  - Term: blowers
+    Data:
+      Items:
+      - Language: 0
+        Value: 3x cooling blowers
+  - Term: main_reservoir
+    Data:
+      Items:
+      - Language: 0
+        Value: Main air resrvoirs
+  - Term: compressor
+    Data:
+      Items:
+      - Language: 0
+        Value: Reciprocating compressor
+  - Term: battery
+    Data:
+      Items:
+      - Language: 0
+        Value: 120 V nickel-iron battery

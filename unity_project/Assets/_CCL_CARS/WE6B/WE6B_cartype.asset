@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -701297949, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: WE6B_cartype
+  m_EditorClassIdentifier: 
+  KindSelection: 2
+  id: WE6981B
+  carIdPrefix: '-'
+  IsSteamLocomotive: 0
+  localizationKey: ccl/car/WE6981B
+  NameTranslations:
+    Items:
+    - Language: 0
+      Value: WE6-981B
+  NameTranslationJson: '[{"Language":"English","Value":"WE6-981B"}]'
+  liveries:
+  - {fileID: 11400000, guid: a5005e87727b4f442bc84ca2a14c8b9b, type: 2}
+  mass: 85000
+  bogieSuspensionMultiplier: 1
+  rollingResistanceCoefficient: 0.002
+  wheelSlidingFrictionCoefficient: 0.13
+  wheelslipFrictionCoefficient: 0.3
+  brakes:
+    hasCompressor: 1
+    hasMainResConnections: 1
+    brakeValveType: 2
+    hasIndependentBrake: 1
+    hasHandbrake: 1
+    ignoreOverheating: 0
+    brakeCylinderPressureCalculation: 0
+    brakingForcePerBogieMultiplier: 1
+    TrainBrakeCurveType: 1
+    TrainBrakeCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    IndBrakeCurveType: 1
+    IndBrakeCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  damage:
+    maxHealth: 8000
+    damageResistance: 50
+    damageMultiplier: 1
+    fireResistance: 7.5
+    fireDamageMultiplier: 1
+    damageTolerance: 0.01
+    ignoreDamage: 0
+    wheelsHP: 2000
+    mechanicalPowertrainHP: 2000
+    electricalPowertrainHP: 2000
+    bodyPrice: 45000
+    wheelsPrice: 30000
+    electricalPowertrainPrice: 50000
+    mechanicalPowertrainPrice: 50000
+  wheelRadius: 0.56
+  useDefaultWheelRotation: 0
+  UseCustomGauge: 0
+  Gauge: 1435
+  CargoSetup: {fileID: 0}
+  unusedCarDeletePreventionMode: 11
+  SimAudioPrefab: {fileID: 5566522281183785106, guid: bce2d6cc1f49af442960d468bbbb87c3,
+    type: 3}
+  HUDLayout: {fileID: 11400000, guid: 431077e981ff271479544c74d17bb35b, type: 2}
+  GeneralLicense: DE6
+  JobLicenses: []
+  TutorialType: 0
+  Tutorial: {fileID: 0}
+  brakesJson: '{"brakeCylinderPressureCalculation":"Regular","brakeValveType":"ManualLap","brakingForcePerBogieMultiplier":1,"hasCompressor":true,"hasHandbrake":true,"hasIndependentBrake":true,"hasMainResConnections":true,"ignoreOverheating":false,"IndBrakeCurve":{"keys":[],"postWrapMode":"ClampForever","preWrapMode":"ClampForever"},"IndBrakeCurveType":"LocoDefault","TrainBrakeCurve":{"keys":[],"postWrapMode":"ClampForever","preWrapMode":"ClampForever"},"TrainBrakeCurveType":"LocoDefault"}'
+  damageJson: '{"bodyPrice":45000,"damageMultiplier":1,"damageResistance":50,"damageTolerance":0.01,"electricalPowertrainHP":2000,"electricalPowertrainPrice":50000,"fireDamageMultiplier":1,"fireResistance":7.5,"ignoreDamage":false,"maxHealth":8000,"mechanicalPowertrainHP":2000,"mechanicalPowertrainPrice":50000,"wheelsHP":2000,"wheelsPrice":30000}'

@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 945288799, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: WE6A_livery
+  m_EditorClassIdentifier: 
+  parentType: {fileID: 11400000, guid: c1e6b82d2bf83be45879dcdb3eb8e69e, type: 2}
+  id: WE6981A
+  NameTranslationJson: '[{"Language":"English","Value":"WE6-981A"}]'
+  NameTranslations:
+    Items:
+    - Language: 0
+      Value: WE6-981A
+  icon: {fileID: 21300000, guid: 863065551aaa56b45a3ca51b272ed609, type: 3}
+  localizationKey: ccl/livery/WE6981A
+  prefab: {fileID: 1688182864204300644, guid: 3bcdf57bea35bda4183dcf806964e025, type: 3}
+  interiorPrefab: {fileID: 6342261030562914958, guid: 690926ad56973bc4680706e19ebd676b,
+    type: 3}
+  explodedInteriorPrefab: {fileID: 0}
+  externalInteractablesPrefab: {fileID: 1312500395324393714, guid: 863711b25d61f744e836627cd2cf1e84,
+    type: 3}
+  explodedExternalInteractablesPrefab: {fileID: 0}
+  FrontBogie: 10000
+  RearBogie: 10000
+  BufferType: 10000
+  HasMUCable: 0
+  UseCustomHosePositions: 0
+  HideHookPlates: 0
+  HideFrontCoupler: 0
+  HideBackCoupler: 1
+  TrainsetLiveries:
+  - WE6981A
+  - WE6981B
+  MaxRepeatedSpawn: 0
+  AllowOnRegionalRoutes: 0
+  AllowOnExpressRoutes: 0
+  LocoSpawnGroups: []
+  _spawnGroupJson: '[]'
+  UnlockableAsWorkTrain: 0
+  UnlockPrice: 30000
+  SummonPrice: 5000
+  CatalogPage: {fileID: 11400000, guid: 4bd58ead29991b8409f5efe92a503645, type: 2}
+  _buttons: 0

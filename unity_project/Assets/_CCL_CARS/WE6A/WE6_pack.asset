@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 711031822, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: WE6_pack
+  m_EditorClassIdentifier: 
+  PackId: WE6
+  PackName: WE6-981
+  Author: '-'
+  Version: 1.0.0
+  HomePage: 
+  Repository: 
+  Cars:
+  - {fileID: 11400000, guid: c1e6b82d2bf83be45879dcdb3eb8e69e, type: 2}
+  - {fileID: 11400000, guid: 0d7987ac5712aba43af71e46926130a7, type: 2}
+  ExtraModels: []
+  PaintSubstitutions: []
+  ProceduralMaterials: {fileID: 0}
+  ExtraTranslations: {fileID: 11400000, guid: b020bcb1f52a08044b573032f1128d78, type: 2}
+  AdditionalDependencies:
+  - WE6SIM
+  _buttons: 0
+  ExporterVersion: 3.1.5
