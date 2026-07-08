@@ -167,7 +167,7 @@ internal partial class overhead_equipment
                 ];
                 formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented, write_types);
                 File.WriteAllText(Path.Combine(_file_path, "scenery.json"), formatted_scenery);
-                File.WriteAllText(@"C:\Users\Kf177\source\repos\we6\WE6SIM\catenary\scenery.json", formatted_scenery);
+                //File.WriteAllText(@"C:\Users\Kf177\source\repos\we6\WE6SIM\catenary\scenery.json", formatted_scenery);
 
                 string compact_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.None, write_types);
                 File.WriteAllText(Path.Combine(_file_path, "compacted_scenery.json"), compact_scenery);
