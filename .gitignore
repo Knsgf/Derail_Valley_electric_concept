@@ -400,5 +400,10 @@ FodyWeavers.xsd
 .nfs*
 
 *.7z
+.*
 unity_project/Assets/AssetBundles/*
+unity_project/*.sln
+unity_project/*.csproj
+unity_project/Library/*
+unity_project/Temp/*
 !unity_project/Packages/*
