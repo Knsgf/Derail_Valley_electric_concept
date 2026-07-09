@@ -38,7 +38,7 @@ internal class unit_B_sim: electric_device
 
     private readonly Fuse _appliances, _main_breaker, _compressor_on, _control_air;
     private readonly Port _control_AB1, _control_BA1, _control_BA2;
-    private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _integrity, _traction_motor_heat;
+    private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _integrity, _traction_motor_heat, _idling_damage;
     private readonly Port _relative_voltage, _resistor_temperature, _resistor_damage;
     private readonly Port _blower_speed, _motor_cooling, _motor_current_temperature;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
@@ -74,6 +74,7 @@ internal class unit_B_sim: electric_device
         _relative_voltage          = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
         _traction_motor_heat       = grab_port(ports, "[CustomSimulation].MOTOR_HEAT_B"           );
         _integrity                 = grab_port(ports, "[CustomSimulation].MOTOR_INTEGRITY"        );
+        _idling_damage             = grab_port(ports, "[CustomSimulation].IDLING_DAMAGE"          );
         _motor_current_temperature = grab_port(ports, "tmHeat.TEMPERATURE"                        );
         _blower_speed              = grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED" );
         _motor_cooling             = grab_port(ports, "[CustomSimulation].MOTOR_COOLING_B"        );
@@ -257,6 +258,9 @@ internal class unit_B_sim: electric_device
         if (disposed)
             return;
         
+        _idling_damage.Value = extract_signal_from_port_value(AB1, (int) AB1_signals.idling_damage, (int) AB1_shift.idling_damage)
+            * (unit_A_sim.maximum_idling_damage / 31.0f);
+        
         _pantograph.toggle        (!port_value_signal_active(AB1, (int) AB1_signals.unit_B_pantograph));
         _pantograph.sidepan_toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan   ));
         
@@ -264,7 +268,7 @@ internal class unit_B_sim: electric_device
         _compressor_on.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.compressor_power));
 
         set_independent_brake(extract_signal_from_port_value(AB1, (int) AB1_signals.independent_brake, 
-            (int) AB1_shift.independent_brake) / control_stand.independent_brake_last_notch);
+            (int) AB1_shift.independent_brake) / independent_brake_last_notch);
         set_sander(port_value_signal_active(AB1, (int) AB1_signals.sander) ? 1.0f : 0.0f);
 
         _secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_B_camshaft_notch, 

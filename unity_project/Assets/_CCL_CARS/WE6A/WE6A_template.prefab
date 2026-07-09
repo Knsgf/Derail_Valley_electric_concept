@@ -1672,7 +1672,12 @@ MonoBehaviour:
       valueType: 51
       ID: EXCITER_RELATIVE_SPEED
     StartingValue: 0
-  _json: '[{"Port":{"ID":"PRIMARY_NOTCH","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"SECONDARY_NOTCH","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"MOTOR_LOAD","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"MOTOR_RPM","type":"OUT","valueType":"RPM"},"StartingValue":0},{"Port":{"ID":"MOTOR_EMF","type":"OUT","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"MOTOR_HEAT_B","type":"OUT","valueType":"HEAT_RATE"},"StartingValue":0},{"Port":{"ID":"CONTACTOR_ON","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"CONTACTOR_OFF","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"JOG_VOLTS","type":"IN","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"MOTOR_LOAD_B","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"RELATIVE_SUPPLY_VOLTAGE","type":"OUT","valueType":"GENERIC"},"StartingValue":0},{"Port":{"ID":"RESISTOR_HEAT","type":"OUT","valueType":"HEAT_RATE"},"StartingValue":0},{"Port":{"ID":"RESISTOR_DAMAGE","type":"OUT","valueType":"DAMAGE"},"StartingValue":0},{"Port":{"ID":"MOTOR_INTEGRITY","type":"EXTERNAL_IN","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"EXCITER_RELATIVE_SPEED","type":"OUT","valueType":"STATE"},"StartingValue":0}]'
+  - Port:
+      type: 1
+      valueType: 52
+      ID: IDLING_DAMAGE
+    StartingValue: 0
+  _json: '[{"Port":{"ID":"PRIMARY_NOTCH","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"SECONDARY_NOTCH","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"MOTOR_LOAD","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"MOTOR_RPM","type":"OUT","valueType":"RPM"},"StartingValue":0},{"Port":{"ID":"MOTOR_EMF","type":"OUT","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"MOTOR_HEAT_B","type":"OUT","valueType":"HEAT_RATE"},"StartingValue":0},{"Port":{"ID":"CONTACTOR_ON","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"CONTACTOR_OFF","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"JOG_VOLTS","type":"IN","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"MOTOR_LOAD_B","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"RELATIVE_SUPPLY_VOLTAGE","type":"OUT","valueType":"GENERIC"},"StartingValue":0},{"Port":{"ID":"RESISTOR_HEAT","type":"OUT","valueType":"HEAT_RATE"},"StartingValue":0},{"Port":{"ID":"RESISTOR_DAMAGE","type":"OUT","valueType":"DAMAGE"},"StartingValue":0},{"Port":{"ID":"MOTOR_INTEGRITY","type":"EXTERNAL_IN","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"EXCITER_RELATIVE_SPEED","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"IDLING_DAMAGE","type":"OUT","valueType":"DAMAGE"},"StartingValue":0}]'
 --- !u!1 &1499458551095175596
 GameObject:
   m_ObjectHideFlags: 0
@@ -2008,6 +2013,7 @@ MonoBehaviour:
   electricalPTDamagerPortIds:
   - tm.GENERATED_DAMAGE
   - '[CustomSimulation].RESISTOR_DAMAGE'
+  - '[CustomSimulation].IDLING_DAMAGE'
   electricalPTHealthStateExternalInPortIds:
   - tm.HEALTH_STATE_EXT_IN
   - '[CustomSimulation].MOTOR_INTEGRITY'

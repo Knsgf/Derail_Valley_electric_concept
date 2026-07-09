@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using DV.Simulation.Cars;
-
 using LocoSim.Implementations;
 
 using WE6SIM.circuit_sim;
@@ -26,13 +25,16 @@ internal partial class unit_A_sim: electric_device
     const int   motors           = 6;
     const float compressor_power = 50.0E+3f;
 
+    public const float motor_hitpoints        = 2000.0f, maximum_idling_damage  = 0.1f * motor_hitpoints;
+    public const float maximum_idling_current =  800.0f, minimum_idling_current = 250.0f;
+
     private readonly Dictionary<string, branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
     private readonly Fuse _appliances, _control_air, _main_breaker_closed, _compressor_on;
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
-    private readonly Port _total_load, _relative_voltage, _compressor_power, _traction_motor_heat_B, _integrity;
+    private readonly Port _total_load, _relative_voltage, _compressor_power, _traction_motor_heat_B, _integrity, _idling_damage;
 
     private readonly Port _control_AB1, _control_BA1, _control_BA2, _torque_B, _wheel_RPM_B, _traction_motor_load_B;
 
@@ -62,7 +64,7 @@ internal partial class unit_A_sim: electric_device
 
     private readonly float _motor_voltmeter_resistance;
 
-    private bool  _fast_notching_enabled = false, _jogging_mode_on = false, _jog = false, _cab_active = false;
+    private bool  _fast_notching_enabled = false, _jogging_mode_on = false, _jog = false, _cab_active = false, _to_idle = false;
     private int   _throttle = -1, _secondary_camshaft_notch = 1, _selector = -1, _field_position = -1;
     private Task? _single_notch_movement;
     private float _reverser_position = 0.5f, _fast_notching_current_limit = 250.0f;
@@ -90,6 +92,7 @@ internal partial class unit_A_sim: electric_device
         _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
         _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF"              );
         _total_load          = grab_port(ports, "[CustomGauges].CURRENT_DRAW"               );
+        _idling_damage       = grab_port(ports, "[CustomSimulation].IDLING_DAMAGE"          );
         _jog_volts           = grab_port(ports, "[CustomSimulation].JOG_VOLTS"              );
         _relative_voltage    = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
         _compressor_power    = grab_port(ports, "compressor.POWER_CONSUMPTION"              );
@@ -328,6 +331,7 @@ internal partial class unit_A_sim: electric_device
         int wheel_position = Mathf.RoundToInt(raw_throttle * throttle_last_notch);
         if (wheel_position > 0 && wheel_position == _throttle)
             return;
+        _to_idle  = wheel_position == 0 && _throttle > 0;
         _throttle = wheel_position;
         switch (wheel_position)
         {
@@ -644,6 +648,23 @@ internal partial class unit_A_sim: electric_device
             _traction_motor_heat_B.Value = total_heat_emission_B;
             _traction_motor_RPM.Value    = average_RPM;
             _traction_motor_EMF.Value    = average_EMF;
+
+            if (!_to_idle || maximum_load <= minimum_idling_current)
+            {
+                _idling_damage.Value = 0.0f;
+                set_port_signal(_control_AB1, (int) AB1_signals.idling_damage, (int) AB1_shift.idling_damage, 0);
+            }
+            else
+            {
+                float idling_damage  = (maximum_idling_damage / (maximum_idling_current - minimum_idling_current)) 
+                                                              * (          maximum_load - minimum_idling_current);
+                idling_damage        = Mathf.Clamp(idling_damage * UnityEngine.Random.Range(0.8f, 1.2f), 0.0f, maximum_idling_damage);
+                _idling_damage.Value = idling_damage;
+                set_port_signal(_control_AB1, (int) AB1_signals.idling_damage, (int) AB1_shift.idling_damage,
+                    Mathf.RoundToInt((31.0f / maximum_idling_damage) * idling_damage));
+            }
+            //Main.log($"ID = {_idling_damage.Value}");
+            _to_idle = false;
         
             blowers.active                = rheostatic_brake_on || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
             blowers.rheostatic_braking_on = rheostatic_brake_on;
