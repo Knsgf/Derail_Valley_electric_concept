@@ -20,7 +20,7 @@ The height of the locomotive causes it to clip through water standpipes and chut
 
 The catenary has no hitboxes to both help with performance and permit players to throw switches obscured by poles via radio.
 
-Unit B has no windows, doors or working lights, excluding those in the machinery room. The walk mesh is also not yet set, making it possible to clip through the walls, and most handles have no sound.
+Unit B has no window glass nor doors. The walk mesh is also not yet set, making it possible to clip through the walls.
 
 There are interior pop-ins when crossing units.
 
@@ -29,7 +29,5 @@ Gadgets which directly control a locomotive, such as amp limiter or overheat pro
 An installed inclinometer gadget shows 1-2° lean forward on a level track.
 
 There is no horn yet. Some details, like sand pipes, bogie centering devices and underframe air ducts, are also missing.
-
-The "powertrain damage on idling" mechanic is not yet implemented.
 
 For debugging purposes pantograph wear is tracked separately as a "mechanical powertrain". It'll be merged into electrical later.
