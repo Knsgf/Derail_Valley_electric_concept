@@ -33,7 +33,6 @@ internal partial class unit_A_sim: electric_device
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _total_load, _relative_voltage, _compressor_power, _traction_motor_heat_B, _integrity;
-    private readonly Port _reverser_handle, _selector_handle;
 
     private readonly Port _control_AB1, _control_BA1, _control_BA2, _torque_B, _wheel_RPM_B, _traction_motor_load_B;
 
@@ -158,11 +157,9 @@ internal partial class unit_A_sim: electric_device
         _control_stand.register_handler(           "sander",            synchronise_sander, needs_power: false);
         set_independent_brake = _control_stand.create_setter("independent_brake");
         toggle_sander         = _control_stand.create_setter(           "sander");
-        _red_light_controller = new red_ditch_light_controller(_appliances, ports);
+        _red_light_controller = new(_appliances, ports);
 
         _throttle_controller = new(this);
-        _reverser_handle     = grab_port(ports, "[Reverser].CONTROL_EXT_IN");
-        _selector_handle     = grab_port(ports, "[Selector].EXT_IN"        );
         _control_stand.register_handler("reverser_handle",      reverser_handler, default_setting: 0.5f);
         _control_stand.register_handler("throttle_handle",      throttle_handler);
         _control_stand.register_handler(   "field_handle", field_control_handler);
