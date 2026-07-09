@@ -519,6 +519,7 @@ GameObject:
   - component: {fileID: 5315854196898262786}
   - component: {fileID: 3603629840030874291}
   - component: {fileID: 4684226630489398160}
+  - component: {fileID: 7645306422273266737}
   m_Layer: 0
   m_Name: IndependentBrake
   m_TagString: Untagged
@@ -639,6 +640,25 @@ MonoBehaviour:
     flip: 0
   compressZeroToOne: 0
   _json: '{"flip":false,"name":"IndependentBrakeAbsolute"}'
+--- !u!114 &7645306422273266737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792063301589424945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 8538810510836644550}
+  Replacements:
+  - ReplacementName: LeverLimit_04_MetalMedium
+    FieldName: notch
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"notch","IsArray":false,"ReplacementName":"LeverLimit_04_MetalMedium"}]'
 --- !u!1 &844768768517533739
 GameObject:
   m_ObjectHideFlags: 0
@@ -1220,6 +1240,7 @@ GameObject:
   - component: {fileID: 1108814839877952974}
   - component: {fileID: 5584243023040068919}
   - component: {fileID: 5394803804991166714}
+  - component: {fileID: 2712893101085205425}
   m_Layer: 0
   m_Name: FrontPantograph
   m_TagString: Untagged
@@ -1285,6 +1306,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[FrontPantographSwitch].EXT_IN'
+--- !u!114 &2712893101085205425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734233921263374166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 5584243023040068919}
+  Replacements:
+  - ReplacementName: Switch_07_Plastic
+    FieldName: toggle
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"toggle","IsArray":false,"ReplacementName":"Switch_07_Plastic"}]'
 --- !u!1 &1917817797051053107
 GameObject:
   m_ObjectHideFlags: 0
@@ -1734,6 +1774,7 @@ GameObject:
   - component: {fileID: 4828766578672174481}
   - component: {fileID: 301875123865595001}
   - component: {fileID: 4511523530301315312}
+  - component: {fileID: 629260639421026287}
   m_Layer: 0
   m_Name: Reverser
   m_TagString: Untagged
@@ -1854,6 +1895,25 @@ MonoBehaviour:
     flip: 0
   compressZeroToOne: 0
   _json: '{"flip":false,"name":"ReverserAbsolute"}'
+--- !u!114 &629260639421026287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2745382450080993924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 1382820178181004336}
+  Replacements:
+  - ReplacementName: LeverNotch_15_DeepMetal
+    FieldName: notch
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"notch","IsArray":false,"ReplacementName":"LeverNotch_15_DeepMetal"}]'
 --- !u!1 &2772647407372332382
 GameObject:
   m_ObjectHideFlags: 0
@@ -1966,6 +2026,7 @@ GameObject:
   - component: {fileID: 4182075731811524644}
   - component: {fileID: 3135862772088460648}
   - component: {fileID: 6194563785759367467}
+  - component: {fileID: 5741989556491040302}
   m_Layer: 0
   m_Name: Sander
   m_TagString: Untagged
@@ -2031,6 +2092,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[Sander].CONTROL_EXT_IN'
+--- !u!114 &5741989556491040302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3007860786956643104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 3135862772088460648}
+  Replacements:
+  - ReplacementName: Switch_07_Plastic
+    FieldName: toggle
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"toggle","IsArray":false,"ReplacementName":"Switch_07_Plastic"}]'
 --- !u!1 &3080943536455103557
 GameObject:
   m_ObjectHideFlags: 0
@@ -2265,6 +2345,7 @@ GameObject:
   - component: {fileID: 3515592016849224445}
   - component: {fileID: 9103471664973025344}
   - component: {fileID: 4763006055541134033}
+  - component: {fileID: 1663637184070560497}
   m_Layer: 0
   m_Name: BackPantograph
   m_TagString: Untagged
@@ -2330,6 +2411,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[BackPantographSwitch].EXT_IN'
+--- !u!114 &1663637184070560497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3231669902785456181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 9103471664973025344}
+  Replacements:
+  - ReplacementName: Switch_07_Plastic
+    FieldName: toggle
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"toggle","IsArray":false,"ReplacementName":"Switch_07_Plastic"}]'
 --- !u!1 &3296553590734832170
 GameObject:
   m_ObjectHideFlags: 0
@@ -2517,6 +2617,7 @@ GameObject:
   - component: {fileID: 2707893945176762096}
   - component: {fileID: 1769305041447738176}
   - component: {fileID: 1848281675408759046}
+  - component: {fileID: 824452151856601158}
   m_Layer: 0
   m_Name: MainBreakerOff
   m_TagString: Untagged
@@ -2586,6 +2687,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[MainBreakerOffButton].EXT_IN'
+--- !u!114 &824452151856601158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3368898040786545172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 1769305041447738176}
+  Replacements:
+  - ReplacementName: ButtonClick_02_Push
+    FieldName: press
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"press","IsArray":false,"ReplacementName":"ButtonClick_02_Push"}]'
 --- !u!1 &3378592716578067059
 GameObject:
   m_ObjectHideFlags: 0
@@ -3800,6 +3920,7 @@ GameObject:
   - component: {fileID: 8241208974264223011}
   - component: {fileID: 8242996261770218881}
   - component: {fileID: 4920512025692405993}
+  - component: {fileID: 7526043544927162046}
   m_Layer: 0
   m_Name: Throttle
   m_TagString: Untagged
@@ -3922,6 +4043,25 @@ MonoBehaviour:
     flip: 0
   compressZeroToOne: 0
   _json: '{"flip":false,"name":"ThrottleAbsolute"}'
+--- !u!114 &7526043544927162046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4512881523815968134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 2973972702604816793}
+  Replacements:
+  - ReplacementName: LeverNotch_10_Deep
+    FieldName: notch
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"notch","IsArray":false,"ReplacementName":"LeverNotch_10_Deep"}]'
 --- !u!1 &4576478725594600297
 GameObject:
   m_ObjectHideFlags: 0
@@ -3965,6 +4105,7 @@ GameObject:
   - component: {fileID: 2741681819572066183}
   - component: {fileID: 7915907149423850951}
   - component: {fileID: 4313835710918871454}
+  - component: {fileID: 4652935363900379797}
   m_Layer: 0
   m_Name: FastNotching
   m_TagString: Untagged
@@ -4064,6 +4205,25 @@ MonoBehaviour:
     flip: 0
   compressZeroToOne: 0
   _json: '{"flip":false,"name":"DynamicBrakeAbsolute"}'
+--- !u!114 &4652935363900379797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4674899265024066974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 4969510145541603408}
+  Replacements:
+  - ReplacementName: Switch_07_Plastic
+    FieldName: toggle
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"toggle","IsArray":false,"ReplacementName":"Switch_07_Plastic"}]'
 --- !u!1 &4812894765827629186
 GameObject:
   m_ObjectHideFlags: 0
@@ -4613,6 +4773,7 @@ GameObject:
   - component: {fileID: 7634792449538064148}
   - component: {fileID: 6318356148349523721}
   - component: {fileID: 1306353276769415277}
+  - component: {fileID: 8532904702036896019}
   m_Layer: 0
   m_Name: MainBreakerOn
   m_TagString: Untagged
@@ -4682,6 +4843,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[MainBreakerOnButton].EXT_IN'
+--- !u!114 &8532904702036896019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5013713682796527595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 6318356148349523721}
+  Replacements:
+  - ReplacementName: ButtonClick_02_Push
+    FieldName: press
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"press","IsArray":false,"ReplacementName":"ButtonClick_02_Push"}]'
 --- !u!1 &5203500992814397850
 GameObject:
   m_ObjectHideFlags: 0
@@ -5233,6 +5413,7 @@ GameObject:
   - component: {fileID: 4717203270832275794}
   - component: {fileID: 5871888663930391456}
   - component: {fileID: 7047170040846581994}
+  - component: {fileID: 6059930608364656564}
   m_Layer: 0
   m_Name: Selector
   m_TagString: Untagged
@@ -5353,6 +5534,25 @@ MonoBehaviour:
     flip: 0
   compressZeroToOne: 0
   _json: '{"flip":false,"name":"GearBAbsolute"}'
+--- !u!114 &6059930608364656564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5760967658682304464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 1450651949798981200}
+  Replacements:
+  - ReplacementName: LeverLimit_05_MetalMedium
+    FieldName: notch
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"notch","IsArray":false,"ReplacementName":"LeverLimit_05_MetalMedium"}]'
 --- !u!1 &5918034246740843682
 GameObject:
   m_ObjectHideFlags: 0
@@ -5573,6 +5773,7 @@ GameObject:
   - component: {fileID: 2178666289629126927}
   - component: {fileID: 3438692899343819342}
   - component: {fileID: 7683996525485846626}
+  - component: {fileID: 6737126057029143728}
   m_Layer: 0
   m_Name: RightSidepan
   m_TagString: Untagged
@@ -5638,6 +5839,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[RighttSidePanSwitch].EXT_IN'
+--- !u!114 &6737126057029143728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6093314759555890702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 3438692899343819342}
+  Replacements:
+  - ReplacementName: Switch_07_Plastic
+    FieldName: toggle
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"toggle","IsArray":false,"ReplacementName":"Switch_07_Plastic"}]'
 --- !u!1 &6117477109049904461
 GameObject:
   m_ObjectHideFlags: 0
@@ -6558,6 +6778,7 @@ GameObject:
   - component: {fileID: 3309235244036562590}
   - component: {fileID: 7780631615245558289}
   - component: {fileID: 5285759478471678438}
+  - component: {fileID: 28648634120351372}
   m_Layer: 0
   m_Name: TrainBrake
   m_TagString: Untagged
@@ -6678,6 +6899,25 @@ MonoBehaviour:
     flip: 0
   compressZeroToOne: 0
   _json: '{"flip":false,"name":"BrakeAbsolute"}'
+--- !u!114 &28648634120351372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7279627072894578724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 8469081589188330960}
+  Replacements:
+  - ReplacementName: LeverLimit_04_MetalMedium
+    FieldName: notch
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"notch","IsArray":false,"ReplacementName":"LeverLimit_04_MetalMedium"}]'
 --- !u!1 &7426645518732037354
 GameObject:
   m_ObjectHideFlags: 0
@@ -7572,6 +7812,7 @@ GameObject:
   - component: {fileID: 4684170986805009474}
   - component: {fileID: 3382666786851538886}
   - component: {fileID: 8261123999128632472}
+  - component: {fileID: 8000572480071441396}
   m_Layer: 0
   m_Name: BlowerSpeed
   m_TagString: Untagged
@@ -7637,6 +7878,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[BlowerSpeedSwitch].EXT_IN'
+--- !u!114 &8000572480071441396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8521355500614478790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 3382666786851538886}
+  Replacements:
+  - ReplacementName: Switch_07_Plastic
+    FieldName: toggle
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"toggle","IsArray":false,"ReplacementName":"Switch_07_Plastic"}]'
 --- !u!1 &8740513956312449433
 GameObject:
   m_ObjectHideFlags: 0
@@ -8106,6 +8366,7 @@ GameObject:
   - component: {fileID: 2781408378132376368}
   - component: {fileID: 6413248198180458853}
   - component: {fileID: 1074048218354866798}
+  - component: {fileID: 8913690633566760347}
   m_Layer: 0
   m_Name: LeftSidepan
   m_TagString: Untagged
@@ -8171,6 +8432,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[LeftSidePanSwitch].EXT_IN'
+--- !u!114 &8913690633566760347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9158890488183862777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 6413248198180458853}
+  Replacements:
+  - ReplacementName: Switch_07_Plastic
+    FieldName: toggle
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"toggle","IsArray":false,"ReplacementName":"Switch_07_Plastic"}]'
 --- !u!1 &9164475917360043246
 GameObject:
   m_ObjectHideFlags: 0
@@ -8297,15 +8577,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3fce18d572997be4eabcef2f074d2cff, type: 3}
---- !u!4 &5074616247844103803 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4925908453645117581, guid: 3fce18d572997be4eabcef2f074d2cff,
-    type: 3}
-  m_PrefabInstance: {fileID: 157906588440465142}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4096736246614881600 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4245338492323920822, guid: 3fce18d572997be4eabcef2f074d2cff,
+    type: 3}
+  m_PrefabInstance: {fileID: 157906588440465142}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5074616247844103803 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4925908453645117581, guid: 3fce18d572997be4eabcef2f074d2cff,
     type: 3}
   m_PrefabInstance: {fileID: 157906588440465142}
   m_PrefabAsset: {fileID: 0}
@@ -8920,15 +9200,15 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1733102314119783891}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &8458514291691352908 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7885691560557778591, guid: 5549da9f6e6438b46873bb551ec0039c,
-    type: 3}
-  m_PrefabInstance: {fileID: 1733102314119783891}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5809019772647575041 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5228960556343716818, guid: 5549da9f6e6438b46873bb551ec0039c,
+    type: 3}
+  m_PrefabInstance: {fileID: 1733102314119783891}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8458514291691352908 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7885691560557778591, guid: 5549da9f6e6438b46873bb551ec0039c,
     type: 3}
   m_PrefabInstance: {fileID: 1733102314119783891}
   m_PrefabAsset: {fileID: 0}
@@ -9001,15 +9281,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3fce18d572997be4eabcef2f074d2cff, type: 3}
---- !u!4 &6359301391964385210 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4925908453645117581, guid: 3fce18d572997be4eabcef2f074d2cff,
-    type: 3}
-  m_PrefabInstance: {fileID: 2025653703317604151}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2807688231564426369 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4245338492323920822, guid: 3fce18d572997be4eabcef2f074d2cff,
+    type: 3}
+  m_PrefabInstance: {fileID: 2025653703317604151}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6359301391964385210 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4925908453645117581, guid: 3fce18d572997be4eabcef2f074d2cff,
     type: 3}
   m_PrefabInstance: {fileID: 2025653703317604151}
   m_PrefabAsset: {fileID: 0}
@@ -9870,12 +10150,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5549da9f6e6438b46873bb551ec0039c, type: 3}
---- !u!1 &2601136537871196549 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9147625787454082436, guid: 5549da9f6e6438b46873bb551ec0039c,
-    type: 3}
-  m_PrefabInstance: {fileID: 6551597030852881409}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1331672556076795859 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5228960556343716818, guid: 5549da9f6e6438b46873bb551ec0039c,
@@ -9885,6 +10159,12 @@ Transform:
 --- !u!4 &4000437233955568286 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7885691560557778591, guid: 5549da9f6e6438b46873bb551ec0039c,
+    type: 3}
+  m_PrefabInstance: {fileID: 6551597030852881409}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2601136537871196549 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9147625787454082436, guid: 5549da9f6e6438b46873bb551ec0039c,
     type: 3}
   m_PrefabInstance: {fileID: 6551597030852881409}
   m_PrefabAsset: {fileID: 0}
@@ -10586,15 +10866,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3fce18d572997be4eabcef2f074d2cff, type: 3}
---- !u!4 &2522637037857858312 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4925908453645117581, guid: 3fce18d572997be4eabcef2f074d2cff,
-    type: 3}
-  m_PrefabInstance: {fileID: 7448499302803868549}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6752050858514247731 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4245338492323920822, guid: 3fce18d572997be4eabcef2f074d2cff,
+    type: 3}
+  m_PrefabInstance: {fileID: 7448499302803868549}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2522637037857858312 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4925908453645117581, guid: 3fce18d572997be4eabcef2f074d2cff,
     type: 3}
   m_PrefabInstance: {fileID: 7448499302803868549}
   m_PrefabAsset: {fileID: 0}
@@ -10898,15 +11178,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf252dd6a9b86144e873d0cef8b10696, type: 3}
---- !u!4 &7695390066895329677 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1839291469666505416, guid: cf252dd6a9b86144e873d0cef8b10696,
-    type: 3}
-  m_PrefabInstance: {fileID: 8308575780443343685}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5704933250528997375 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4352169622370591930, guid: cf252dd6a9b86144e873d0cef8b10696,
+    type: 3}
+  m_PrefabInstance: {fileID: 8308575780443343685}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7695390066895329677 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1839291469666505416, guid: cf252dd6a9b86144e873d0cef8b10696,
     type: 3}
   m_PrefabInstance: {fileID: 8308575780443343685}
   m_PrefabAsset: {fileID: 0}
