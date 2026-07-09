@@ -3,7 +3,7 @@ This is an experimental heavy freight electric locomotive mod for Derail Valley.
 ### Installation
 1. Install [Unity Mod Manager](https://www.nexusmods.com/site/mods/21) (UMM),
 2. Install [Custom Car Loader](https://www.nexusmods.com/derailvalley/mods/324) (CCL) and its prerequisites,
-3. Drag and drop both [WE6SIM.zip](https://github.com/Knsgf/WE6Concept/releases/download/Regular/WE6SIM.zip) and [WE6CCL.zip](https://github.com/Knsgf/WE6Concept/releases/download/Regular/WE6CCL.zip) into UMM.  
+3. Drag and drop both [WE6SIM.zip](https://github.com/Knsgf/WE6Concept/releases/download/v1.1.0/WE6SIM.zip) and [WE6CCL.zip](https://github.com/Knsgf/WE6Concept/releases/download/v1.1.0/WE6CCL.zip) into UMM.  
  The first file contains simulation code and catenary, the second is locomotive model itself. Both are required.
 4. It's strongly recommended to read the [operating manual](https://github.com/Knsgf/WE6Concept/releases/download/Regular/WE6_manual.pdf). The control scheme and operation of the locomotive are different from vanilla diesel and battery electric.
 
