@@ -23,16 +23,18 @@ namespace WE6SIM.unit_B;
 
 internal class unit_B_sim: electric_device
 {
-    private readonly pantograph              _pantograph;
-    private readonly roof_busbar             _roof_bus;
-    private readonly battery_panel           _battery_cabinet;
-    private readonly dummy_voltage_regulator _traction_motor_temperature;
-    private readonly PoweredWheelsManager    _driving_axles;
-
     private readonly TrainCar       _unit;
     private readonly SimController  _simulation;
-    private readonly camshaft_motor _secondary_controller;
-    private readonly control_stand  _control_stand;
+    
+    private readonly pantograph                 _pantograph;
+    private readonly roof_busbar                _roof_bus;
+    private readonly camshaft_motor             _secondary_controller;
+    private readonly battery_panel              _battery_cabinet;
+    private readonly dummy_voltage_regulator    _traction_motor_temperature;
+    private readonly PoweredWheelsManager       _driving_axles;
+    private readonly control_stand              _control_stand;
+    private readonly red_ditch_light_controller _red_light_controller;
+
 
     private readonly Fuse _appliances, _main_breaker, _compressor_on, _control_air;
     private readonly Port _control_AB1, _control_BA1, _control_BA2;
@@ -119,7 +121,8 @@ internal class unit_B_sim: electric_device
         _pantograph.toggled         += pantographs_status;
         _pantograph.sidepan_toggled += pantographs_status;
         
-        _control_stand = new(_appliances, ports);
+        _red_light_controller = new(_appliances, ports);
+        _control_stand        = new(_appliances, ports);
         _control_stand.register_handler(     "brake_cutout",                cab_activation, needs_power: false);
         _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);
         _control_stand.register_handler(           "sander",            synchronise_sander, needs_power: false);
@@ -327,6 +330,7 @@ internal class unit_B_sim: electric_device
             _roof_bus.Dispose();
             _battery_cabinet.Dispose();
             _control_stand.Dispose();
+            _red_light_controller.Dispose();
             _simulation.SimulationFlow.TickEvent -= simulate;
             _control_AB1.ValueUpdatedInternally  -= MU_AB1_control;
             _main_breaker.StateUpdated           -= main_breaker_trip_relay;
