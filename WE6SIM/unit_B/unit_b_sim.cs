@@ -39,7 +39,7 @@ internal class unit_B_sim: electric_device
     private readonly Fuse _appliances, _main_breaker, _compressor_on, _control_air;
     private readonly Port _control_AB1, _control_BA1, _control_BA2;
     private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _integrity, _traction_motor_heat;
-    private readonly Port _relative_voltage, _resistors_heat, _resistor_damage;
+    private readonly Port _relative_voltage, _resistor_temperature, _resistor_damage;
     private readonly Port _blower_speed, _motor_cooling, _motor_current_temperature;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _throttle_handle;
@@ -50,7 +50,7 @@ internal class unit_B_sim: electric_device
 
     private int   _secondary_camshaft_target_notch = 1;
     private bool  _cab_active = false;
-    private float _resistor_temperature, _integrity_refresh_time = 0.0f;
+    private float _integrity_refresh_time = 0.0f;
 
     public unit_B_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
         : base("unit_B_sim")
@@ -68,17 +68,17 @@ internal class unit_B_sim: electric_device
         _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
         _control_BA2 = grab_port(ports, "[internal_MU].CONTROL_BA2");
         
-        _total_load                = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD"             );
-        _wheel_RPM                 = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                  );
-        _traction_motor_RPM        = grab_port(ports, "[CustomSimulation].MOTOR_RPM"               );
-        _relative_voltage          = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE" );
-        _traction_motor_heat       = grab_port(ports, "[CustomSimulation].MOTOR_HEAT_B"            );
-        _integrity                 = grab_port(ports, "[CustomSimulation].MOTOR_INTEGRITY"         );
-        _motor_current_temperature = grab_port(ports, "tmHeat.TEMPERATURE"                         );
-        _blower_speed              = grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED"  );
-        _motor_cooling             = grab_port(ports, "[CustomSimulation].MOTOR_COOLING_B"         );
-        _resistors_heat            = grab_port(ports, "[CustomGauges].RESISTORS_TEMPERATURE_SCALED");
-        _resistor_damage           = grab_port(ports, "[CustomSimulation].RESISTOR_DAMAGE"         );
+        _total_load                = grab_port(ports, "[internal_MU].PANTOGRAPHS_LOAD"            );
+        _wheel_RPM                 = grab_port(ports, "traction.WHEEL_RPM_EXT_IN"                 );
+        _traction_motor_RPM        = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
+        _relative_voltage          = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
+        _traction_motor_heat       = grab_port(ports, "[CustomSimulation].MOTOR_HEAT_B"           );
+        _integrity                 = grab_port(ports, "[CustomSimulation].MOTOR_INTEGRITY"        );
+        _motor_current_temperature = grab_port(ports, "tmHeat.TEMPERATURE"                        );
+        _blower_speed              = grab_port(ports, "[CustomSimulation].BLOWERS_RELATIVE_SPEED" );
+        _motor_cooling             = grab_port(ports, "[CustomSimulation].MOTOR_COOLING_B"        );
+        _resistor_temperature      = grab_port(ports, "[CustomGauges].RESISTORS_TEMPERATURE"      );
+        _resistor_damage           = grab_port(ports, "[CustomSimulation].RESISTOR_DAMAGE"        );
         foreach (GameObject current_object in unit.gameObject.AllChildren())
         {
             PoweredWheelsManager? driving_axles = current_object.GetComponent<PoweredWheelsManager>();
@@ -292,8 +292,6 @@ internal class unit_B_sim: electric_device
             (int) AB1_shift.unit_A_camshaft_notch));
         set_reverse_current_lamp(port_value_signal_active(AB1, (int) AB1_signals.reverse_current) ? 1.0f : 0.0f);
         set_transition_lamp     (port_value_signal_active(AB1, (int) AB1_signals.transition     ) ? 0.5f : 0.0f);
-        _resistors_heat.Value = extract_signal_from_port_value(AB1, (int) AB1_signals.resistors_temperature, (int) AB1_shift.resistors_temperature);
-        _resistor_temperature = _resistors_heat.Value * (1200.0f / 31.0f);
 
         _contactor_on_sound.Value  = port_value_signal_active(AB1, (int) AB1_signals.contactor_on ) ? 1.0f : 0.0f;
         _contactor_off_sound.Value = port_value_signal_active(AB1, (int) AB1_signals.contactor_off) ? 1.0f : 0.0f;
@@ -307,7 +305,7 @@ internal class unit_B_sim: electric_device
         _traction_motor_temperature.simulate(_traction_motor_heat.Value, _traction_motor_RPM.Value);
         _motor_cooling.Value = _blower_speed.Value * (blower_controller.ambient_temperature_C 
             - _motor_current_temperature.Value) * blower_controller.full_motor_cooling_power_at_1C;
-        resistor_heat.simulate_overheat_damage(damage_per_frame: _resistor_damage, resistor_temperature: _resistor_temperature);
+        resistor_heat.simulate_overheat_damage(damage_per_frame: _resistor_damage, resistor_temperature: _resistor_temperature.Value);
         _pantograph.simulate(_total_load.Value);
 
         set_seconday_notch(_secondary_controller.current_position);

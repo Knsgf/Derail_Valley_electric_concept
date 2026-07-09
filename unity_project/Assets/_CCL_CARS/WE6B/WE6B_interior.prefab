@@ -8089,7 +8089,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minValue: 0
-  maxValue: 31
+  maxValue: 1200
   needle: {fileID: 4525089015643358917}
   minAngle: -120
   maxAngle: 120
@@ -8109,7 +8109,7 @@ MonoBehaviour:
   m_Script: {fileID: -1549161656, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  portId: '[CustomGauges].RESISTORS_TEMPERATURE_SCALED'
+  portId: '[CustomGauges].RESISTORS_TEMPERATURE'
   indicatorRangeScalerPortId: 
   fuseId: fusebox.ELECTRONICS_MAIN
   valueMultiplier: 1

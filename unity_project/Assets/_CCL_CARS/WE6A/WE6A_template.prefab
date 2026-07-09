@@ -4023,6 +4023,7 @@ GameObject:
   - component: {fileID: 6458473993058439821}
   - component: {fileID: 2637395547259754720}
   - component: {fileID: 175130251262031504}
+  - component: {fileID: 1084659942821269357}
   m_Layer: 0
   m_Name: '[internal_MU]'
   m_TagString: Untagged
@@ -4419,6 +4420,21 @@ MonoBehaviour:
   connectionTag: CABLE_BA2
   disconnectedValue: 0
   propagateConsumerValueChangeBackToProvider: 0
+--- !u!114 &1084659942821269357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2569583260146319686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 324781900, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  providerPortId: '[ResistorHeat].TEMPERATURE'
+  connection: 1
+  connectionTag: RESISTOR_TEMPERATURE_TO_B
 --- !u!1 &2574064049822104478
 GameObject:
   m_ObjectHideFlags: 0

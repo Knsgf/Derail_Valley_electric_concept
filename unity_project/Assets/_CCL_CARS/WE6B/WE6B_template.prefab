@@ -1646,6 +1646,7 @@ GameObject:
   - component: {fileID: 7509239097026064458}
   - component: {fileID: 5640159536928136003}
   - component: {fileID: 5300333904748819551}
+  - component: {fileID: 9184043359193217643}
   m_Layer: 0
   m_Name: '[internal_MU]'
   m_TagString: Untagged
@@ -2049,6 +2050,23 @@ MonoBehaviour:
   providerPortId: '[internal_MU].CONTROL_BA2'
   connection: 0
   connectionTag: CABLE_BA2
+--- !u!114 &9184043359193217643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1639364204226688200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1339014189, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  consumerPortId: '[CustomGauges].RESISTORS_TEMPERATURE'
+  connection: 0
+  connectionTag: RESISTOR_TEMPERATURE_TO_B
+  disconnectedValue: 0
+  propagateConsumerValueChangeBackToProvider: 0
 --- !u!1 &1650963119634723904
 GameObject:
   m_ObjectHideFlags: 0
@@ -5780,9 +5798,9 @@ MonoBehaviour:
   - Port:
       type: 1
       valueType: 103
-      ID: RESISTORS_TEMPERATURE_SCALED
+      ID: RESISTORS_TEMPERATURE
     StartingValue: 0
-  _json: '[{"Port":{"ID":"SUPPLY","type":"OUT","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"ALL_MOTOR_TERMINAL","type":"OUT","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP1","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP1","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP2","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP2","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP3","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP3","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"CURRENT_DRAW","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"RED_DITCH_LIGHT","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"REVERSE_CURRENT","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"TRANSITION","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"RESISTANCE_NOTCH","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"RESISTORS_TEMPERATURE_SCALED","type":"OUT","valueType":"TEMPERATURE"},"StartingValue":0}]'
+  _json: '[{"Port":{"ID":"SUPPLY","type":"OUT","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"ALL_MOTOR_TERMINAL","type":"OUT","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP1","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP1","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP2","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP2","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP3","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP3","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"CURRENT_DRAW","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"RED_DITCH_LIGHT","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"REVERSE_CURRENT","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"TRANSITION","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"RESISTANCE_NOTCH","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"RESISTORS_TEMPERATURE","type":"OUT","valueType":"TEMPERATURE"},"StartingValue":0}]'
 --- !u!1 &4364760919031146967
 GameObject:
   m_ObjectHideFlags: 0
