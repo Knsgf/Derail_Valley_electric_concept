@@ -14,6 +14,8 @@ When spawning the locomotive via the radio, make sure that units A and B are fac
 
 The graph plotter window for unit A includes 2 electricity meters. The "diagnostics.DISPLAY" shows total energy consumed in kWh, and "diagnostics.DISPLAY2" is the amount recovered by regenerative braking. The current plan for electricity price is $10/kWh.
 ### Other limitations
+This mod is **incompatible** with VR, as the author doesn't have means to do proper tests in VR.
+
 Only 2 lines are electrified at the moment: a short FM-SM route and FF-IME/CME with a short downhill branch towards SM. THe flat section between OWN and SM **is not electrified.**
 
 The height of the locomotive causes it to clip through water standpipes and chutes at SM and IME. The collision with them is not enforced and players are free to ignore these.
