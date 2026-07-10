@@ -292,8 +292,8 @@ internal partial class overhead_equipment
         for (int index = _system._currently_visible_objects.Count - 1; index >= 0; --index)
         {
             catenary_object current_object = _system._currently_visible_objects[index];
-            GameObject.Destroy(current_object.entity);
-            current_object.entity = null;
+            current_object.is_visible      = false;
+            current_object.hide_when_out_of_view();
         }
         _system = null;
     }
