@@ -41,7 +41,7 @@ internal partial class overhead_equipment
             return pole_type switch
             {
                 pole_kind.Ground  => "Pole",
-                pole_kind.Bridge  => "Pole",
+                pole_kind.Bridge  => "BridgePortal",
                 pole_kind.Tunnel  => "TunnelPole",
                 pole_kind.Bracket => "RegistrationBracket",
                 _ => throw new ArgumentOutOfRangeException($"Unknown pole type {pole_type}")

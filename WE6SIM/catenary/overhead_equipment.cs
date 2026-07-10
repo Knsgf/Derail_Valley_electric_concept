@@ -34,6 +34,7 @@ internal partial class overhead_equipment
 #if DEBUG
         "GantryArrow",
 #endif
+        "BridgePortal",
         "Gantry2Tracks",
         "Gantry3Tracks",
         "Gantry4Tracks",
