@@ -408,3 +408,14 @@ unity_project/*.csproj
 unity_project/Library/*
 unity_project/Temp/*
 !unity_project/Packages/*
+!unity_project/Assets/Catenary/Mesh/*.obj
+!unity_project/Assets/Catenary/Mesh/Cantilevers/*.obj
+!unity_project/Assets/Catenary/Mesh/Gantries/*.obj
+!unity_project/Assets/Catenary/Mesh/Signs/*.obj
+!unity_project/Assets/_CCL_CARS/Mesh/*.obj
+!unity_project/Assets/_CCL_CARS/Mesh/Bogies/*.obj
+!unity_project/Assets/_CCL_CARS/Mesh/Indicators/*.obj
+!unity_project/Assets/_CCL_CARS/Mesh/Levers/*.obj
+!unity_project/Assets/_CCL_CARS/Mesh/Lights/*.obj
+!unity_project/Assets/_CCL_CARS/Mesh/PantographParts/*.obj
+!unity_project/Assets/_CCL_CARS/Mesh/WindowsAndDoors/*.obj
