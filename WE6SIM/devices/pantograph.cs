@@ -22,6 +22,10 @@ public class pantograph_part(string part_name): Attribute
 
 internal class pantograph: electric_device
 {
+#if DEBUG
+    private static double _energy_consumed = 0.0, _energy_returned = 0.0f;
+#endif
+
     const string pantograph_tag = "PantographBase", sidepan_tag = "SidepanBase";
 
     const float maximum_head_height = 6.6f, frame_thickness = 0.085f, head_movement_speed = 0.5f;
@@ -331,6 +335,15 @@ internal class pantograph: electric_device
         {
             if (_roof_bus.pantograph_voltage != 1500.0f)
                 _roof_bus.pantograph_voltage = 1500.0f;
+            if (Main.diagnostics != null && Main.diagnostics2 != null)
+            {
+                if (load_current >= 0.0f)
+                    _energy_consumed += (1.0 / (1000.0 * 3600.0) * 1500.0) *   load_current  * Time.deltaTime;
+                else
+                    _energy_returned += (1.0 / (1000.0 * 3600.0) * 1500.0) * (-load_current) * Time.deltaTime;
+                Main.diagnostics.Value  = (float) _energy_consumed;
+                Main.diagnostics2.Value = (float) _energy_returned;
+            }
             return;
         }
 #endif
