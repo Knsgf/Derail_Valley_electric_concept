@@ -243,8 +243,8 @@ MonoBehaviour:
     touchPose: -1
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 225685899761434784}
-  rigidbodyMass: 1
-  rigidbodyDrag: 1
+  rigidbodyMass: 30
+  rigidbodyDrag: 10
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -263,7 +263,7 @@ MonoBehaviour:
   jointAxis: {x: -1, y: 0, z: 0}
   useSpring: 1
   jointSpring: 400
-  jointDamper: 50
+  jointDamper: 20
   useLimits: 1
   jointLimitMin: -67.5
   jointLimitMax: 45
@@ -865,8 +865,8 @@ MonoBehaviour:
     touchPose: -1
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 1799517398016724980}
-  rigidbodyMass: 0.5
-  rigidbodyDrag: 0.5
+  rigidbodyMass: 30
+  rigidbodyDrag: 10
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -885,7 +885,7 @@ MonoBehaviour:
   jointAxis: {x: 1, y: 0, z: 0}
   useSpring: 1
   jointSpring: 300
-  jointDamper: 50
+  jointDamper: 20
   useLimits: 1
   jointLimitMin: -30
   jointLimitMax: 30
@@ -2141,8 +2141,8 @@ MonoBehaviour:
     touchPose: -1
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 3271962280721715480}
-  rigidbodyMass: 2
-  rigidbodyDrag: 1
+  rigidbodyMass: 30
+  rigidbodyDrag: 10
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -2161,7 +2161,7 @@ MonoBehaviour:
   jointAxis: {x: 0, y: 1, z: 0}
   useSpring: 1
   jointSpring: 400
-  jointDamper: 50
+  jointDamper: 20
   useLimits: 1
   jointLimitMin: -90
   jointLimitMax: 135
@@ -2476,8 +2476,8 @@ MonoBehaviour:
     touchPose: -1
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 3044588585858876160}
-  rigidbodyMass: 0.5
-  rigidbodyDrag: 0.5
+  rigidbodyMass: 30
+  rigidbodyDrag: 10
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -2495,8 +2495,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 0
   jointAxis: {x: 1, y: 0, z: 0}
   useSpring: 1
-  jointSpring: 200
-  jointDamper: 50
+  jointSpring: 300
+  jointDamper: 20
   useLimits: 1
   jointLimitMin: -30
   jointLimitMax: 30
@@ -2975,8 +2975,8 @@ MonoBehaviour:
     touchPose: -1
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 2815080093367443230}
-  rigidbodyMass: 0.5
-  rigidbodyDrag: 0.5
+  rigidbodyMass: 30
+  rigidbodyDrag: 10
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -2995,7 +2995,7 @@ MonoBehaviour:
   jointAxis: {x: 1, y: 0, z: 0}
   useSpring: 1
   jointSpring: 300
-  jointDamper: 50
+  jointDamper: 20
   useLimits: 1
   jointLimitMin: -30
   jointLimitMax: 30
@@ -3200,8 +3200,8 @@ MonoBehaviour:
     touchPose: -1
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 5767120378936394020}
-  rigidbodyMass: 1
-  rigidbodyDrag: 1
+  rigidbodyMass: 30
+  rigidbodyDrag: 15
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -3408,8 +3408,8 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.05636896
-  m_Center: {x: 0.1001395, y: -0.0031422412, z: 1.3810239e-10}
+  m_Radius: 0.079904556
+  m_Center: {x: 0.0011057258, y: 0.045257494, z: 1.0116576e-11}
 --- !u!1 &3377587662944123988
 GameObject:
   m_ObjectHideFlags: 0
@@ -4733,8 +4733,8 @@ MonoBehaviour:
     touchPose: -1
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 2500322256854448473}
-  rigidbodyMass: 1
-  rigidbodyDrag: 1
+  rigidbodyMass: 30
+  rigidbodyDrag: 15
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -6508,8 +6508,8 @@ MonoBehaviour:
     touchPose: -1
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 6045054903949729777}
-  rigidbodyMass: 1.5
-  rigidbodyDrag: 1
+  rigidbodyMass: 30
+  rigidbodyDrag: 10
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -6528,7 +6528,7 @@ MonoBehaviour:
   jointAxis: {x: 0, y: -1, z: 0}
   useSpring: 1
   jointSpring: 400
-  jointDamper: 50
+  jointDamper: 20
   useLimits: 1
   jointLimitMin: -30
   jointLimitMax: 30
@@ -6936,8 +6936,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.11817515, y: 0.013787791, z: 0.13307405}
-  m_Center: {x: 0.09577799, y: 0.003739523, z: 0.0035186748}
+  m_Size: {x: 0.11817515, y: 0.013787791, z: 0.17936961}
+  m_Center: {x: 0.09577799, y: 0.0037395323, z: -0.0021291897}
 --- !u!1 &7310299349562162088
 GameObject:
   m_ObjectHideFlags: 0
@@ -7303,8 +7303,8 @@ MonoBehaviour:
     touchPose: -1
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 952996616867469824}
-  rigidbodyMass: 1.5
-  rigidbodyDrag: 1
+  rigidbodyMass: 30
+  rigidbodyDrag: 10
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -7323,7 +7323,7 @@ MonoBehaviour:
   jointAxis: {x: 0, y: -1, z: 0}
   useSpring: 1
   jointSpring: 400
-  jointDamper: 50
+  jointDamper: 20
   useLimits: 1
   jointLimitMin: -45
   jointLimitMax: 45
@@ -7486,8 +7486,8 @@ MonoBehaviour:
     touchPose: -1
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 5390342836388108894}
-  rigidbodyMass: 1
-  rigidbodyAngularDrag: 0.03
+  rigidbodyMass: 10
+  rigidbodyAngularDrag: 0.3
   blockAngularDrag: 0
   invertDirection: 0
   scrollWheelHoverScroll: 1
