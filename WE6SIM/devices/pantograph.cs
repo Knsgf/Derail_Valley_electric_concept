@@ -97,6 +97,8 @@ internal class pantograph: electric_device
 
     private float _last_pantograph_voltage = 0.0f;
 
+    public static bool infinite_power { get; set; }
+    
     public bool stowed         => _stowed;
     public bool sidepan_stowed => _sidepan_stowed;
 
@@ -323,6 +325,16 @@ internal class pantograph: electric_device
     public void simulate(float load_current)
     {
         check_if_disposed();
+
+#if DEBUG
+        if (infinite_power)
+        {
+            if (_roof_bus.pantograph_voltage != 1500.0f)
+                _roof_bus.pantograph_voltage = 1500.0f;
+            return;
+        }
+#endif
+
         bool        raised   = false;
         roof_busbar roof_bus = _roof_bus;
         if (roof_bus.halved_current)

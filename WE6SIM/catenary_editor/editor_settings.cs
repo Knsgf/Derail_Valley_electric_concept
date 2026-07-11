@@ -3,13 +3,12 @@
 using UnityModManagerNet;
 
 using WE6SIM.catenary;
+using WE6SIM.devices;
 
 namespace WE6SIM.catenary_editor;
 
 internal class editor_settings: UnityModManager.ModSettings, IDrawable
 {
-    [Draw("Infinite power cheat")]
-    private bool _infinite_power = false;
     [Draw("Substation load limit multiplier")]
     private float _load_limit_factor = 1.0f;
     [Draw("Voltage drop multiplier")]
@@ -18,6 +17,9 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 #if DEBUG
     private bool _side_rail_placement_enabled = false;
     
+    [Draw("Infinite power cheat")]
+    private bool _infinite_power = false;
+
     [Draw("Part placement")]
     private editor.placement _part_placement = editor.placement.Disabled;
 
@@ -122,7 +124,9 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
         editor.suspend_cantilever_distance      = _suspend_cantilever_distance_measurement;
         editor.suspend_wire_placement			= _suspend_wire_placement;
         editor.terminate_wire_at_next_pole      = _terminate_wire_placement;
-        editor.designated_substation                       = (_substation.Length >= 2) ? _substation : null;
+        editor.designated_substation            = (_substation.Length >= 2) ? _substation : null;
+
+        pantograph.infinite_power = _infinite_power;
 #endif
     }
 

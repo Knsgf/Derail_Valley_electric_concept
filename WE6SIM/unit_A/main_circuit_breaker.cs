@@ -48,6 +48,10 @@ internal partial class unit_A_sim
 
         private bool ready_to_run()
         {
+#if DEBUG
+            if (pantograph.infinite_power)
+                return true;
+#endif
             unit_A_sim unit = _unit;
             if (unit._selector is (int) selector_modes.rheostatic_brake)
                 return true;
