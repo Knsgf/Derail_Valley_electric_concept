@@ -138,7 +138,7 @@ internal partial class overhead_equipment
         }
         catch (Exception error)
         {
-            Main.log($"Exception occured when loading scenery: {error}");
+            Main.log($"Exception occured when loading editable scenery file: {error}");
         }
     }
 
