@@ -50,11 +50,12 @@ internal partial class overhead_equipment
         [JsonIgnore]
         private static readonly Dictionary<cantilever_kind, cantilever_internal> _tunnel_registration_arms = new()
         {
-            [cantilever_kind.Inner        ] = new() { template = "TunnelInner", wire_offset =  sweep },
-            [cantilever_kind.OutwardsInner] = new() { template = "TunnelOuter", wire_offset = -sweep },
-            [cantilever_kind.MiddleInner  ] = new() { template = "TunnelInner", wire_offset =  sweep },
-            [cantilever_kind.Middle       ] = new() { template = "TunnelOuter", wire_offset = -sweep },
-            [cantilever_kind.Outer        ] = new() { template = "TunnelOuter", wire_offset = -sweep }
+            [cantilever_kind.Inner        ] = new() { template = "TunnelInner"        , wire_offset =  sweep },
+            [cantilever_kind.OutwardsInner] = new() { template = "TunnelOutwardsInner", wire_offset =  sweep },
+            [cantilever_kind.MiddleInner  ] = new() { template = "TunnelMiddleInner"  , wire_offset =   0.0f },
+            [cantilever_kind.Middle       ] = new() { template = "TunnelMiddle"       , wire_offset =   0.0f },
+            [cantilever_kind.InwardsOuter ] = new() { template = "TunnelInwardsOuter" , wire_offset = -sweep },
+            [cantilever_kind.Outer        ] = new() { template = "TunnelOuter"        , wire_offset = -sweep }
         };
 
         [JsonIgnore]
