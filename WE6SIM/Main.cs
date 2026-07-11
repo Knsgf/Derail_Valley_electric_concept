@@ -45,11 +45,9 @@ public static class Main
             code_injector.PatchAll(Assembly.GetExecutingAssembly());
 
             // Other plugin startup logic
-#if DEBUG
-            editor.set_up(mod);
-#endif
             log("WE6SIM started");
             mod_info = mod;
+            editor_settings.set_up(mod);
         }
         catch (Exception ex)
         {

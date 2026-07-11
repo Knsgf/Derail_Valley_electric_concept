@@ -1,18 +1,36 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+using Newtonsoft.Json;
+
 using UnityModManagerNet;
 
 using WE6SIM.catenary;
 using WE6SIM.devices;
 
+using static UnityModManagerNet.UnityModManager;
+
 namespace WE6SIM.catenary_editor;
 
-internal class editor_settings: UnityModManager.ModSettings, IDrawable
+public struct stored_settings
 {
-    [Draw("Substation load limit multiplier")]
+    [JsonProperty]
+    public float load_limit_factor, voltage_drop_factor;
+}
+
+public class editor_settings: ModSettings, IDrawable
+{
+    [Draw("Substation load limit multiplier (requires reload)")]
     private float _load_limit_factor = 1.0f;
-    [Draw("Voltage drop multiplier")]
+    [Draw("Voltage drop multiplier (requires reload)")]
     private float _voltage_drop_factor = 1.0f;
+
+    public static editor_settings? instance { get; private set; }
+    public static float load_limit_factor   => (instance == null) ? 1.0f : instance._load_limit_factor;
+    public static float voltage_drop_factor => (instance == null) ? 1.0f : instance._voltage_drop_factor;
 
 #if DEBUG
     private bool _side_rail_placement_enabled = false;
@@ -130,18 +148,53 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
 #endif
     }
 
+    public override void Save(ModEntry mod)
+    {
+        string raw_settings = JsonConvert.SerializeObject(
+            new stored_settings 
+            { 
+                load_limit_factor   = _load_limit_factor,
+                voltage_drop_factor = _voltage_drop_factor
+            }, Formatting.Indented
+        );
+        File.WriteAllText(Path.Combine(mod.Path, "settings.json"), raw_settings);
+    }
+
 #if DEBUG
-    public void update_cantilever_type(overhead_equipment.cantilever_kind cantilever_type)
+    internal void update_cantilever_type(overhead_equipment.cantilever_kind cantilever_type)
     {
         _cantilever_type = cantilever_type;
     }
 
-    public void reset_placement_mode()
+    internal void reset_placement_mode()
     {
         _part_placement           = editor.placement.Disabled;
         _terminate_wire_placement = _suspend_wire_placement = false;
         _substation               = "";
     }
 #endif
-
+    
+    public static void set_up(ModEntry mod)
+    {
+        if (instance == null)
+        {
+            stored_settings current_settings;
+            try
+            {
+                string raw_settings = File.ReadAllText(Path.Combine(mod.Path, "settings.json"));
+                current_settings    = JsonConvert.DeserializeObject<stored_settings>(raw_settings);
+            }
+            catch (Exception _)
+            {
+                current_settings = new stored_settings { load_limit_factor = 1.0f, voltage_drop_factor = 1.0f };
+            }
+			instance = new()
+			{
+				_load_limit_factor   = current_settings.load_limit_factor,
+				_voltage_drop_factor = current_settings.voltage_drop_factor
+			};
+			mod.OnGUI     = instance.Draw;
+            mod.OnSaveGUI = instance.Save;
+        }
+    }
 }

@@ -41,7 +41,6 @@ internal static class editor
     private static bool             _first_cantilever                = true, _first_pole = true;
     private static Quaternion       _last_pole_orientation           = Quaternion.identity;
     private static Vector3          _last_registration_arm_direction = Vector3.zero;
-    private static editor_settings? _settings;
     private static pole_user?       _anchor_pole           = null;
     private static cantilever_user? _last_registration_arm = null;
     
@@ -61,25 +60,11 @@ internal static class editor
     public static bool            suspend_cantilever_distance      { get; set; }
     public static bool            suspend_wire_placement           { get; set; }
     public static bool            terminate_wire_at_next_pole      { get; set; }
-    public static string?         designated_substation                       { get; set; }
+    public static string?         designated_substation            { get; set; }
     public static bool            erase_scenery                    { get; set; }
     public static float           eraser_area_half                 { get; set; }
     public static bool            use_DM1U                         { get; set; }
     public static GameObject?     mow_monitor                      { get; set; }
-
-    private static void show_editor_controls(ModEntry mod)
-    {
-        _settings?.Draw(mod);
-    }
-
-    public static void set_up(ModEntry mod)
-    {
-        if (_settings == null)
-        {
-            _settings = editor_settings.Load<editor_settings>(mod);
-            mod.OnGUI = show_editor_controls;
-        }
-    }
 
     private static void store_last_pole_location(Vector3 relative_position, Quaternion orientation)
     {
@@ -571,7 +556,7 @@ internal static class editor
                         ? cantilever_kind.Outer : cantilever_kind.Inner;
                 }
                 cantilever_type = _next_cantilever_type;
-                _settings?.update_cantilever_type(_next_cantilever_type);
+                editor_settings.instance?.update_cantilever_type(_next_cantilever_type);
                 break;
 
             case placement.Wire:
@@ -648,7 +633,7 @@ internal static class editor
     public static void disable()
     {
         part_placement = placement.Disabled;
-        _settings?.reset_placement_mode();
+        editor_settings.instance?.reset_placement_mode();
     }
 }
 
