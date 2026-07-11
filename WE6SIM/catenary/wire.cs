@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEngine;
 
+using WE6SIM.catenary_editor;
 using WE6SIM.utilities;
 
 namespace WE6SIM.catenary;
@@ -103,7 +104,7 @@ internal partial class overhead_equipment
             this.substation                    = substation;
             this.length                        = length;
             this.previous_pole_vertical_offset = previous_pole_vertical_offset;
-            this.length_1m_resistance          = wire_info.resistance_per_metre;
+            this.length_1m_resistance          = wire_info.resistance_per_metre * editor_settings.voltage_drop_factor;
 
             if (wire_info.fixed_template == null)
             {

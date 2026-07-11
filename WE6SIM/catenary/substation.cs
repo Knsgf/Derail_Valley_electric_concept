@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 
+using WE6SIM.catenary_editor;
 using WE6SIM.utilities;
 
 namespace WE6SIM.catenary;
@@ -41,7 +42,7 @@ internal partial class overhead_equipment
         { 
             this.map_location   = map_location;
             this.supply_voltage = _current_voltage = supply_voltage;
-            this.maximum_load   = maximum_load;
+            this.maximum_load   = maximum_load * editor_settings.load_limit_factor;
             this.has_inverter   = has_inverter;
         }
 
