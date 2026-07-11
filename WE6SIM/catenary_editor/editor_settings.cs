@@ -8,6 +8,13 @@ namespace WE6SIM.catenary_editor;
 
 internal class editor_settings: UnityModManager.ModSettings, IDrawable
 {
+    [Draw("Infinite power cheat")]
+    private bool _infinite_power = false;
+    [Draw("Substation load limit multiplier")]
+    private float _load_limit_factor = 1.0f;
+    [Draw("Voltage drop multiplier")]
+    private float _voltage_drop_factor = 1.0f;
+
 #if DEBUG
     private bool _side_rail_placement_enabled = false;
     
@@ -30,7 +37,7 @@ internal class editor_settings: UnityModManager.ModSettings, IDrawable
     private int _pole_distance = 40;
 
     [Draw("Sweep (mm)")]
-    private int _sweep = 300;
+    private int _sweep = 500;
 
     [Draw("Gantry stretch %")]
     private int _gantry_stretch = 100;
