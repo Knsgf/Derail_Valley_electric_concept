@@ -24,8 +24,11 @@ internal class roof_busbar: electric_device
         get => _pantograph_voltage;
         set
         {
-            _pantograph_voltage = value;
-            set_supply_voltage();
+            if (_pantograph_voltage != value)
+            {
+                _pantograph_voltage = value;
+                set_supply_voltage();
+            }
         }
     }
     public float sidepan_voltage
@@ -33,8 +36,11 @@ internal class roof_busbar: electric_device
         get => _sidepan_voltage;
         set
         {
-            _sidepan_voltage = value;
-            set_supply_voltage();
+            if (_sidepan_voltage != value)
+            {
+                _sidepan_voltage = value;
+                set_supply_voltage();
+            }
         }
     }
     
