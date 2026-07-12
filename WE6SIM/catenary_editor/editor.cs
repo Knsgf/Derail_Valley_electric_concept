@@ -298,7 +298,7 @@ internal static class editor
 
         if (place_on_near_side)
         {
-            system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type == pole_kind.Tunnel,
+            system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type is pole_kind.Tunnel or pole_kind.Bridge,
                 dual_wire, pole.get_relative_position(), pole_orientation);
             pole.cantilever_on_near_side = true;
             //Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
