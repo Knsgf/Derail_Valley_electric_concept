@@ -215,6 +215,7 @@ internal partial class overhead_equipment
 
             // Mainlines
             "CME-IME",
+            "CP-IMW[IMW]",
             "FF-IME[FF]",
             "FF-SM[FF]",
             "FM-SM[SM]",
