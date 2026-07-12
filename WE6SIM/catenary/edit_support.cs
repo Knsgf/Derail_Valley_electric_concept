@@ -20,6 +20,8 @@ namespace WE6SIM.catenary;
 #if DEBUG
 internal partial class overhead_equipment
 {
+    private bool _poles_sunk = false;
+    
     private _type_ add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
         Vector3 relative_position, Quaternion orientation)
         where _type_: catenary_object
@@ -148,6 +150,76 @@ internal partial class overhead_equipment
     {
         _store_scenery = true;
         store_scenery();
+    }
+
+    public void sink_tunnel_poles()
+    {
+        if (_poles_sunk)
+            return;
+        _poles_sunk = true;
+        List<pole> all_poles =
+        [..
+            from   current_object in _all_objects
+            where  !current_object.placed_procedurally
+            let    current_pole = current_object as pole
+            where  current_pole != null
+            select current_pole
+        ];
+        List<(int start_index, int end_index)> tunnel_ranges = [];
+        int tunnel_start = -1, tunnel_end = -1;
+        Main.log($"TSNK {all_poles.Count}");
+        for (int index = 0; index < all_poles.Count; ++index)
+        {
+            pole current_pole = all_poles[index];
+            if (current_pole.pole_type == pole_kind.Tunnel && tunnel_start < 0)
+                tunnel_start = index;
+            else if (tunnel_start >= 0 && current_pole.pole_type != pole_kind.Tunnel)
+                tunnel_end = index;
+            if (tunnel_start >= 0 && tunnel_end > 0)
+            {
+                tunnel_ranges.Add((tunnel_start - 6, tunnel_end + 6));
+                tunnel_start = tunnel_end = -1;
+                Main.log($"TSNK {tunnel_ranges[tunnel_ranges.Count - 1]}");
+            }
+        }
+
+        Main.log("TSNK");
+        for (int range_index = tunnel_ranges.Count - 1; range_index > 0; --range_index)
+        {
+            (int range1_start, int range1_end) = tunnel_ranges[range_index - 1];
+            (int range2_start, int range2_end) = tunnel_ranges[range_index    ];
+            if (range2_start - range1_end < 10)
+            {
+                tunnel_ranges[range_index - 1] = (range1_start, range2_end);
+                tunnel_ranges.RemoveAt(range_index);
+            }
+            else
+                Main.log($"TSNK {tunnel_ranges[range_index]}");
+        }
+        Main.log($"TSNK {tunnel_ranges[0]}");
+
+        foreach ((int range_start, int range_end) in tunnel_ranges)
+        {
+            int current_pole_index;
+            float sink = 0.1f;
+            for (current_pole_index = range_start; current_pole_index < range_start + 5; ++current_pole_index)
+            {
+                if (current_pole_index >= 0 && current_pole_index < all_poles.Count)
+                    all_poles[current_pole_index].sink_pole(sink);
+                sink += 0.1f;
+            }
+            for(; current_pole_index < range_end - 5; ++current_pole_index)
+            {
+                if (current_pole_index >= 0 && current_pole_index < all_poles.Count)
+                    all_poles[current_pole_index].sink_pole(sink);
+            }
+            for (; current_pole_index < range_end; ++current_pole_index)
+            {
+                if (current_pole_index >= 0 && current_pole_index < all_poles.Count)
+                    all_poles[current_pole_index].sink_pole(sink);
+                sink -= 0.1f;
+            }
+        }
     }
 
     public void store_scenery()

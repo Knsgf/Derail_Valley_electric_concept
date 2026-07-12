@@ -69,5 +69,10 @@ internal partial class overhead_equipment
             // same track at the same point under 3-track gantry, where bracket attachment zones may overlap
             return get_relative_position() + orientation * Vector3.left * (default_pole_offset + 0.005f);
         }
+
+        public void sink_pole(float height_change)
+        {
+            y -= height_change;
+        }
     }
 }

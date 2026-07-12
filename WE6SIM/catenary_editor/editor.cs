@@ -24,7 +24,7 @@ internal static class editor
     { 
         Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryStretch, GantryAlign, Bracket, FlippedBracket,
         Cantilever, GantryRegistrationArm, Wire, Substation, SubstationSideRail, LowClearancesYardCP, LowClearancesYardOR,
-        SaveNow
+        SaveNow, SinkTunnelPoles1, SinkTunnelPoles2
     };
     const float mow_vehicle_length          = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
     const float vehicle_half_length_squared = mow_vehicle_length * mow_vehicle_length / 4.0f;
@@ -38,7 +38,7 @@ internal static class editor
 
     private static int              _last_pole_x, _last_pole_z, _last_x, _last_z;
     private static float            _remaining_cantilevers_distance;
-    private static bool             _first_cantilever                = true, _first_pole = true;
+    private static bool             _first_cantilever                = true, _first_pole = true, _tunnel_pole_sink = false;
     private static Quaternion       _last_pole_orientation           = Quaternion.identity;
     private static Vector3          _last_registration_arm_direction = Vector3.zero;
     private static pole_user?       _anchor_pole           = null;
@@ -469,6 +469,10 @@ internal static class editor
             return;
         }
 
+        if (part_placement == placement.SinkTunnelPoles1)
+            _tunnel_pole_sink = true;
+        else if (part_placement != placement.SinkTunnelPoles2)
+            _tunnel_pole_sink = false;
         Quaternion orientation;
         forward_direction = new Vector3(forward_direction.x, 0.0f, forward_direction.z).normalized;
         switch (part_placement)
@@ -610,6 +614,14 @@ internal static class editor
             case placement.SaveNow:
                 system.store_scenery_now();
                 disable();
+                break;
+
+            case placement.SinkTunnelPoles2:
+                if (_tunnel_pole_sink)
+                {
+                    _tunnel_pole_sink = false;
+                    system.sink_tunnel_poles();
+                }
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);
