@@ -359,6 +359,11 @@ internal partial class overhead_equipment
         visible_objects = _previously_visible_objects;
         for (int object_index = visible_objects.Count - 1; object_index >= 0; --object_index)
             visible_objects[object_index].hide_when_out_of_view();
+
+#if DEBUG        
+        foreach (var current_object in _currently_visible_objects)
+            assert.test(current_object.entity != null);
+#endif
     }
 
     private void reconstruct_tree()
