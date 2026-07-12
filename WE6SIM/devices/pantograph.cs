@@ -101,7 +101,7 @@ internal class pantograph: electric_device
     private float _side_pivot_relative_position = 0.0f, _side_arm_relative_position = 0.0f;
     private bool  _sidepan_stowed = true, _at_either_end = false;
 
-    private float _last_pantograph_voltage = 0.0f, _remaining_time_till_drop = 0.0f;
+    private float _last_pantograph_voltage = 0.0f, _remaining_time_till_drop = 0.0f, _remaining_time_till_retract = 0.0f;
 
     public static bool infinite_power { get; set; }
     
@@ -260,8 +260,10 @@ internal class pantograph: electric_device
     {
         if (!is_powered && !_sidepan_stowed)
             sidepan_toggle(stowed: true);
-        if (_sidepan_stowed && _remaining_time_till_drop <= 0.0f)
+        if (_sidepan_stowed)
         {
+            if (_remaining_time_till_retract > 0.0f)
+                return;
             if (_side_arm_relative_position > 0.0f)
             {
                 _side_arm_relative_position -= sidepan_relative_movement_speed * Time.deltaTime;
@@ -390,9 +392,9 @@ internal class pantograph: electric_device
         else
         {
             if (_sidepan_stowed)
-                _remaining_time_till_drop -= Time.deltaTime;
+                _remaining_time_till_retract -= Time.deltaTime;
             else
-                _remaining_time_till_drop = drop_delay;
+                _remaining_time_till_retract = drop_delay;
             (float? rail_height, float supply_voltage) = get_wire_height_and_voltage(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact, load_current);
             if (rail_height == null || (float) rail_height is <= 4.2f or >= 4.8f)
                 _roof_bus.sidepan_voltage = 0.0f;
