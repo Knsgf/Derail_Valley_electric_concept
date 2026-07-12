@@ -117,7 +117,7 @@ internal class unit_B_sim: electric_device
 
         _battery_cabinet             = new(fuses, ports, unit.brakeSystem);
         _roof_bus                    = new(ports, is_unit_A: false);
-        _pantograph                  = new(unit.gameObject, _roof_bus, _appliances, _control_air, ports);
+        _pantograph                  = new(unit.gameObject, _roof_bus, _appliances, _control_air, _main_breaker, ports);
         _traction_motor_temperature  = new(ports);
         _pantograph.toggled         += pantographs_status;
         _pantograph.sidepan_toggled += pantographs_status;

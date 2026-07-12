@@ -33,6 +33,7 @@ internal class pantograph: electric_device
     const int   max_iterations_before_sleep = 6;
     const float powertrain_points = 2000.0f, nominal_current = 2200.0f;
     const float wear_per_metre = 3.0E-7f * powertrain_points, wear_per_second_at_full_current = 5.4E-6f * powertrain_points;
+    const float drop_delay = 0.5f;
 
     private static readonly Dictionary<string, FieldInfo> _pantograph_parts = [];
     private static readonly Quaternion _sidepan_pivot_deployed_orientation = Quaternion.AngleAxis(90.0f  , Vector3.up   );
@@ -82,6 +83,7 @@ internal class pantograph: electric_device
     private Transform _sidepan_outer_contact;
 
     private readonly Port _arcing_damage, _dropper_hit_damage, _regular_damage;
+    private readonly Fuse _main_breaker;
 
     private readonly Quaternion _initial_front_lower_frame_orientation, _initial_front_upper_frame_orientation;
     private readonly Quaternion _initial_back_lower_frame_orientation, _initial_back_upper_frame_orientation;
@@ -99,7 +101,7 @@ internal class pantograph: electric_device
     private float _side_pivot_relative_position = 0.0f, _side_arm_relative_position = 0.0f;
     private bool  _sidepan_stowed = true, _at_either_end = false;
 
-    private float _last_pantograph_voltage = 0.0f;
+    private float _last_pantograph_voltage = 0.0f, _remaining_time_till_drop = 0.0f;
 
     public static bool infinite_power { get; set; }
     
@@ -145,8 +147,8 @@ internal class pantograph: electric_device
             assign_part(tagged_anchors, current_part);
     }
 
-    public pantograph(GameObject unit, roof_busbar roof_bus, Fuse electric_supply, Fuse air_supply, Dictionary<string, Port> ports)
-        : base("pantograph", electric_supply, air_supply)
+    public pantograph(GameObject unit, roof_busbar roof_bus, Fuse electric_supply, Fuse air_supply, Fuse main_breaker,
+        Dictionary<string, Port> ports): base("pantograph", electric_supply, air_supply)
     {
         _roof_bus = roof_bus;
         
@@ -197,6 +199,7 @@ internal class pantograph: electric_device
         _arcing_damage      = sensor_grabber.grab_port(ports, "[Pantograph].ARCING"        );
         _dropper_hit_damage = sensor_grabber.grab_port(ports, "[Pantograph].DROPPER_HIT"   );
         _regular_damage     = sensor_grabber.grab_port(ports, "[Pantograph].REGULAR_DAMAGE");
+        _main_breaker       = main_breaker;
     }
 
     private void move()
@@ -257,7 +260,7 @@ internal class pantograph: electric_device
     {
         if (!is_powered && !_sidepan_stowed)
             sidepan_toggle(stowed: true);
-        if (_sidepan_stowed)
+        if (_sidepan_stowed && _remaining_time_till_drop <= 0.0f)
         {
             if (_side_arm_relative_position > 0.0f)
             {
@@ -352,13 +355,18 @@ internal class pantograph: electric_device
         roof_busbar roof_bus = _roof_bus;
         if (roof_bus.halved_current)
             load_current /= 2.0f;
-        if (_stowed || !is_powered)
+        bool stow = _stowed || !is_powered;
+        if (stow && _remaining_time_till_drop <= 0.0f)
         {
             _target_height              = _initial_head_height;
             roof_bus.pantograph_voltage = 0.0f;
         }
         else
         {
+            if (stow)
+                _remaining_time_till_drop -= Time.deltaTime;
+            else
+                _remaining_time_till_drop = drop_delay;
             (float? wire_height, float supply_voltage) = get_wire_height_and_voltage(_base, _contact_strip_end1, _contact_strip_end2, load_current);
             if (wire_height == null)
             {
@@ -376,10 +384,15 @@ internal class pantograph: electric_device
         }
         move();
 
-        if (_sidepan_stowed || _side_pivot_relative_position < 1.0f || _side_arm_relative_position < 1.0f)
+        Main.diagnostics2?.Value = _side_arm_relative_position;
+        if (_side_pivot_relative_position < 1.0f || _side_arm_relative_position < 1.0f)
             roof_bus.sidepan_voltage = 0.0f;
         else
         {
+            if (_sidepan_stowed)
+                _remaining_time_till_drop -= Time.deltaTime;
+            else
+                _remaining_time_till_drop = drop_delay;
             (float? rail_height, float supply_voltage) = get_wire_height_and_voltage(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact, load_current);
             if (rail_height == null || (float) rail_height is <= 4.2f or >= 4.8f)
                 _roof_bus.sidepan_voltage = 0.0f;
@@ -393,7 +406,7 @@ internal class pantograph: electric_device
 
         float bus_voltage = roof_bus.voltage;
         if (bus_voltage < _last_pantograph_voltage && load_current >= 200.0f 
-            && _last_pantograph_voltage > 0.0f && bus_voltage / _last_pantograph_voltage < 0.5f
+            && _last_pantograph_voltage > 0.0f && bus_voltage / _last_pantograph_voltage < 0.5f && _main_breaker.State
             /*|| roof_bus.short_circuited*/)
         {
             explode(_arcing_damage);
