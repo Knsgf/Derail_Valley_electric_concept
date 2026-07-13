@@ -42,8 +42,24 @@ MonoBehaviour:
   MaxRepeatedSpawn: 0
   AllowOnRegionalRoutes: 0
   AllowOnExpressRoutes: 0
-  LocoSpawnGroups: []
-  _spawnGroupJson: '[]'
+  LocoSpawnGroups:
+  - Track: 1801
+    AdditionalLiveries:
+    - WE6981A
+    - WE6981B
+  - Track: 200
+    AdditionalLiveries:
+    - WE6981A
+    - WE6981B
+  - Track: 1100
+    AdditionalLiveries:
+    - WE6981A
+    - WE6981B
+  - Track: 601
+    AdditionalLiveries:
+    - WE6981A
+    - WE6981B
+  _spawnGroupJson: '[{"AdditionalLiveries":["WE6981A","WE6981B"],"Track":"SteelMillTurntable2"},{"AdditionalLiveries":["WE6981A","WE6981B"],"Track":"CoalMineEast"},{"AdditionalLiveries":["WE6981A","WE6981B"],"Track":"IronMineEast"},{"AdditionalLiveries":["WE6981A","WE6981B"],"Track":"FoodFactory2"}]'
   UnlockableAsWorkTrain: 0
   UnlockPrice: 30000
   SummonPrice: 5000
