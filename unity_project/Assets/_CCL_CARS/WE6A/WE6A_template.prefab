@@ -1125,6 +1125,52 @@ MonoBehaviour:
   m_Script: {fileID: 186368272, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1019026411236769470
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5694487613157664976}
+  - component: {fileID: 904995570712737190}
+  m_Layer: 0
+  m_Name: '[LeftoverMeter]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5694487613157664976
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019026411236769470}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5162761952140236819}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &904995570712737190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019026411236769470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19037246, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: '[LeftoverMeter]'
+  defaultValue: 0
+  saveState: 1
 --- !u!1 &1055251483372343719
 GameObject:
   m_ObjectHideFlags: 0
@@ -9279,14 +9325,15 @@ MonoBehaviour:
   - {fileID: 7014036125415406457}
   - {fileID: 8188100207058399140}
   - {fileID: 3360334665540799534}
+  - {fileID: 904995570712737190}
   connections: []
   portReferenceConnections:
   - portReferenceId: horn.HORN_CONTROL
     portId: hornControl.CONTROL
   - portReferenceId: batteryController.NORMALIZED_CHARGE
-    portId: batteryCharge.NORMALIZED
+    portId: '[ElectricityMeter].NORMALIZED'
   - portReferenceId: batteryController.CHARGE_CONSUMPTION
-    portId: batteryCharge.CONSUME_EXT_IN
+    portId: '[ElectricityMeter].CONSUME_EXT_IN'
   - portReferenceId: batteryController.POWER
     portId: powerConsumptionCalculator.POWER_CONSUMPTION_TOTAL
   - portReferenceId: tmRpmCalculator.WHEEL_RPM
@@ -9306,7 +9353,7 @@ MonoBehaviour:
   - portReferenceId: tmOfflineLamp.INPUT
     portId: tm.TMS_STATE
   - portReferenceId: batteryLamp.INPUT
-    portId: batteryCharge.NORMALIZED
+    portId: '[ElectricityMeter].NORMALIZED'
   - portReferenceId: tmOverheatLamp.INPUT
     portId: tmHeat.TEMPERATURE
   - portReferenceId: headlightsFLamp.INPUT
@@ -9368,7 +9415,7 @@ MonoBehaviour:
   - portReferenceId: '[GaugeLighting].INPUT'
     portId: '[GaugeLightsSwitch].EXT_IN'
   connectionsJson: '[]'
-  portReferenceConnectionsJson: '[{"portId":"hornControl.CONTROL","portReferenceId":"horn.HORN_CONTROL"},{"portId":"batteryCharge.NORMALIZED","portReferenceId":"batteryController.NORMALIZED_CHARGE"},{"portId":"batteryCharge.CONSUME_EXT_IN","portReferenceId":"batteryController.CHARGE_CONSUMPTION"},{"portId":"powerConsumptionCalculator.POWER_CONSUMPTION_TOTAL","portReferenceId":"batteryController.POWER"},{"portId":"traction.WHEEL_RPM_EXT_IN","portReferenceId":"tmRpmCalculator.WHEEL_RPM"},{"portId":"transmission.GEAR_RATIO","portReferenceId":"tmRpmCalculator.GEAR_RATIO"},{"portId":"batteryController.VOLTAGE","portReferenceId":"voltageRegulator.SUPPLY_VOLTAGE"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tm.TM_TEMPERATURE"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tmPassiveCooler.TEMPERATURE"},{"portId":"tm.HEAT_OUT","portReferenceId":"tmHeat.HEAT_IN_0"},{"portId":"tmPassiveCooler.HEAT_OUT","portReferenceId":"tmHeat.HEAT_IN_1"},{"portId":"tm.TMS_STATE","portReferenceId":"tmOfflineLamp.INPUT"},{"portId":"batteryCharge.NORMALIZED","portReferenceId":"batteryLamp.INPUT"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tmOverheatLamp.INPUT"},{"portId":"headlightDecoder.FRONT_HEADLIGHTS_EXT_IN","portReferenceId":"headlightsFLamp.INPUT"},{"portId":"headlightDecoder.REAR_HEADLIGHTS_EXT_IN","portReferenceId":"headlightsRLamp.INPUT"},{"portId":"tm.AMPS_PER_TM","portReferenceId":"ampLamp.INPUT"},{"portId":"[SandBox].AMOUNT","portReferenceId":"[Sander].SAND"},{"portId":"[SandBox].CONSUME_EXT_IN","portReferenceId":"[Sander].SAND_CONSUMPTION"},{"portId":"[HeadlightSwitch].EXT_IN","portReferenceId":"[HeadlightDim].INPUT"},{"portId":"[HeadlightSwitch].EXT_IN","portReferenceId":"[HeadlightFull].INPUT"},{"portId":"[CustomGauges].RED_DITCH_LIGHT","portReferenceId":"[DitchLightsRed].INPUT"},{"portId":"[DitchLightsSwitch].EXT_IN","portReferenceId":"[DitchLightsWhite].INPUT"},{"portId":"[CustomGauges].REVERSE_CURRENT","portReferenceId":"[ReverseCurrent].INPUT"},{"portId":"[CustomGauges].TRANSITION","portReferenceId":"[Transition].INPUT"},{"portId":"[FastNotchingSwitch].EXT_IN","portReferenceId":"[FastNotching].INPUT"},{"portId":"[Sander].CONTROL_EXT_IN","portReferenceId":"[SanderActive].INPUT"},{"portId":"[SandBox].NORMALIZED","portReferenceId":"[SandLow].INPUT"},{"portId":"[CustomGauges].RESISTANCE_NOTCH","portReferenceId":"[ResistanceNotch].INPUT"},{"portId":"[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE","portReferenceId":"compressor.VOLTAGE_NORMALIZED"},{"portId":"[ResistorPassiveCooler].HEAT_OUT","portReferenceId":"[ResistorHeat].HEAT_IN_1"},{"portId":"[Blowers].MOTOR_COOLING_RATE","portReferenceId":"tmHeat.HEAT_IN_2"},{"portId":"[Blowers].RESISTOR_COOLING_RATE","portReferenceId":"[ResistorHeat].HEAT_IN_2"},{"portId":"[ResistorHeat].TEMPERATURE","portReferenceId":"[ResistorPassiveCooler].TEMPERATURE"},{"portId":"[CustomSimulation].RESISTOR_HEAT","portReferenceId":"[ResistorHeat].HEAT_IN_0"},{"portId":"[WaterOrBreakerTrip].OUT","portReferenceId":"tm.ENVIRONMENT_WATER_STATE"},{"portId":"waterDetector.STATE_EXT_IN","portReferenceId":"[WaterOrBreakerTrip].WATER_LEVEL"},{"portId":"[MainBreaker].TRIPPED","portReferenceId":"[WaterOrBreakerTrip].BREAKER_TRIPPED"},{"portId":"[DummyVoltageRegulator].EFFECTIVE_VOLTAGE_DROP","portReferenceId":"tm.APPLIED_VOLTAGE"},{"portId":"[DummyVoltageRegulator].POWER_ON","portReferenceId":"tm.THROTTLE"},{"portId":"[DummyVoltageRegulator].POWER_ON","portReferenceId":"tm.REVERSER"},{"portId":"[DummyVoltageRegulator].ABSOLUTE_RPM","portReferenceId":"tm.MOTOR_RPM"},{"portId":"[GaugeLightsSwitch].EXT_IN","portReferenceId":"[GaugeLighting].INPUT"}]'
+  portReferenceConnectionsJson: '[{"portId":"hornControl.CONTROL","portReferenceId":"horn.HORN_CONTROL"},{"portId":"[ElectricityMeter].NORMALIZED","portReferenceId":"batteryController.NORMALIZED_CHARGE"},{"portId":"[ElectricityMeter].CONSUME_EXT_IN","portReferenceId":"batteryController.CHARGE_CONSUMPTION"},{"portId":"powerConsumptionCalculator.POWER_CONSUMPTION_TOTAL","portReferenceId":"batteryController.POWER"},{"portId":"traction.WHEEL_RPM_EXT_IN","portReferenceId":"tmRpmCalculator.WHEEL_RPM"},{"portId":"transmission.GEAR_RATIO","portReferenceId":"tmRpmCalculator.GEAR_RATIO"},{"portId":"batteryController.VOLTAGE","portReferenceId":"voltageRegulator.SUPPLY_VOLTAGE"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tm.TM_TEMPERATURE"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tmPassiveCooler.TEMPERATURE"},{"portId":"tm.HEAT_OUT","portReferenceId":"tmHeat.HEAT_IN_0"},{"portId":"tmPassiveCooler.HEAT_OUT","portReferenceId":"tmHeat.HEAT_IN_1"},{"portId":"tm.TMS_STATE","portReferenceId":"tmOfflineLamp.INPUT"},{"portId":"[ElectricityMeter].NORMALIZED","portReferenceId":"batteryLamp.INPUT"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tmOverheatLamp.INPUT"},{"portId":"headlightDecoder.FRONT_HEADLIGHTS_EXT_IN","portReferenceId":"headlightsFLamp.INPUT"},{"portId":"headlightDecoder.REAR_HEADLIGHTS_EXT_IN","portReferenceId":"headlightsRLamp.INPUT"},{"portId":"tm.AMPS_PER_TM","portReferenceId":"ampLamp.INPUT"},{"portId":"[SandBox].AMOUNT","portReferenceId":"[Sander].SAND"},{"portId":"[SandBox].CONSUME_EXT_IN","portReferenceId":"[Sander].SAND_CONSUMPTION"},{"portId":"[HeadlightSwitch].EXT_IN","portReferenceId":"[HeadlightDim].INPUT"},{"portId":"[HeadlightSwitch].EXT_IN","portReferenceId":"[HeadlightFull].INPUT"},{"portId":"[CustomGauges].RED_DITCH_LIGHT","portReferenceId":"[DitchLightsRed].INPUT"},{"portId":"[DitchLightsSwitch].EXT_IN","portReferenceId":"[DitchLightsWhite].INPUT"},{"portId":"[CustomGauges].REVERSE_CURRENT","portReferenceId":"[ReverseCurrent].INPUT"},{"portId":"[CustomGauges].TRANSITION","portReferenceId":"[Transition].INPUT"},{"portId":"[FastNotchingSwitch].EXT_IN","portReferenceId":"[FastNotching].INPUT"},{"portId":"[Sander].CONTROL_EXT_IN","portReferenceId":"[SanderActive].INPUT"},{"portId":"[SandBox].NORMALIZED","portReferenceId":"[SandLow].INPUT"},{"portId":"[CustomGauges].RESISTANCE_NOTCH","portReferenceId":"[ResistanceNotch].INPUT"},{"portId":"[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE","portReferenceId":"compressor.VOLTAGE_NORMALIZED"},{"portId":"[ResistorPassiveCooler].HEAT_OUT","portReferenceId":"[ResistorHeat].HEAT_IN_1"},{"portId":"[Blowers].MOTOR_COOLING_RATE","portReferenceId":"tmHeat.HEAT_IN_2"},{"portId":"[Blowers].RESISTOR_COOLING_RATE","portReferenceId":"[ResistorHeat].HEAT_IN_2"},{"portId":"[ResistorHeat].TEMPERATURE","portReferenceId":"[ResistorPassiveCooler].TEMPERATURE"},{"portId":"[CustomSimulation].RESISTOR_HEAT","portReferenceId":"[ResistorHeat].HEAT_IN_0"},{"portId":"[WaterOrBreakerTrip].OUT","portReferenceId":"tm.ENVIRONMENT_WATER_STATE"},{"portId":"waterDetector.STATE_EXT_IN","portReferenceId":"[WaterOrBreakerTrip].WATER_LEVEL"},{"portId":"[MainBreaker].TRIPPED","portReferenceId":"[WaterOrBreakerTrip].BREAKER_TRIPPED"},{"portId":"[DummyVoltageRegulator].EFFECTIVE_VOLTAGE_DROP","portReferenceId":"tm.APPLIED_VOLTAGE"},{"portId":"[DummyVoltageRegulator].POWER_ON","portReferenceId":"tm.THROTTLE"},{"portId":"[DummyVoltageRegulator].POWER_ON","portReferenceId":"tm.REVERSER"},{"portId":"[DummyVoltageRegulator].ABSOLUTE_RPM","portReferenceId":"tm.MOTOR_RPM"},{"portId":"[GaugeLightsSwitch].EXT_IN","portReferenceId":"[GaugeLighting].INPUT"}]'
 --- !u!114 &6890907758226312197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9489,7 +9536,7 @@ GameObject:
   - component: {fileID: 5162761952140236819}
   - component: {fileID: 2665202519194884237}
   m_Layer: 0
-  m_Name: batteryCharge
+  m_Name: '[ElectricityMeter]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9505,7 +9552,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 5694487613157664976}
   m_Father: {fileID: 2189951106285168713}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9521,9 +9569,9 @@ MonoBehaviour:
   m_Script: {fileID: -507730800, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: batteryCharge
-  capacity: 360
-  defaultValue: 360
+  ID: '[ElectricityMeter]'
+  capacity: 2000000
+  defaultValue: 2000000
   type: 5
 --- !u!1 &6514910465207950134
 GameObject:
@@ -13263,18 +13311,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac35f4ebdf61413478bf58417324e46a, type: 3}
---- !u!114 &2433104821205777034 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1471230915655454128, guid: ac35f4ebdf61413478bf58417324e46a,
-    type: 3}
-  m_PrefabInstance: {fileID: 3868243846503987002}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1023674373, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5977033620743592185 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7447954471910961091, guid: ac35f4ebdf61413478bf58417324e46a,
@@ -13293,6 +13329,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 3868243846503987002}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2433104821205777034 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1471230915655454128, guid: ac35f4ebdf61413478bf58417324e46a,
+    type: 3}
+  m_PrefabInstance: {fileID: 3868243846503987002}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1023674373, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4992439027535805764
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13472,12 +13520,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac35f4ebdf61413478bf58417324e46a, type: 3}
---- !u!4 &6127537900239376767 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1171454432313060411, guid: ac35f4ebdf61413478bf58417324e46a,
-    type: 3}
-  m_PrefabInstance: {fileID: 4992439027535805764}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5846350032657592564 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1471230915655454128, guid: ac35f4ebdf61413478bf58417324e46a,
@@ -13490,6 +13532,12 @@ MonoBehaviour:
   m_Script: {fileID: 1023674373, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &6127537900239376767 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1171454432313060411, guid: ac35f4ebdf61413478bf58417324e46a,
+    type: 3}
+  m_PrefabInstance: {fileID: 4992439027535805764}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2455807572148064903 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7447954471910961091, guid: ac35f4ebdf61413478bf58417324e46a,

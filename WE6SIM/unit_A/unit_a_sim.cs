@@ -52,6 +52,7 @@ internal partial class unit_A_sim: electric_device
     private readonly control_stand              _control_stand;
     private readonly red_ditch_light_controller _red_light_controller;
     private readonly dummy_voltage_regulator    _traction_motor_temperature;
+    private readonly electricity_meter          _meter;
     
     private readonly TrainCar _unit;
 
@@ -64,7 +65,7 @@ internal partial class unit_A_sim: electric_device
 
     private readonly float _motor_voltmeter_resistance;
 
-    private bool  _fast_notching_enabled = false, _jogging_mode_on = false, _jog = false, _cab_active = false, _to_idle = false;
+    private bool  _fast_notching_enabled = false, _jogging_mode_on = false, _jog_active = false, _cab_active = false, _to_idle = false;
     private int   _throttle = -1, _secondary_camshaft_notch = 1, _selector = -1, _field_position = -1;
     private Task? _single_notch_movement;
     private float _reverser_position = 0.5f, _fast_notching_current_limit = 250.0f;
@@ -153,6 +154,7 @@ internal partial class unit_A_sim: electric_device
             grab_port(ports, "[Blowers].RESISTOR_COOLING_RATE" ), 
             _contactor_on_sound, _contactor_off_sound
         );
+        _meter = new(ports);
 
         _control_stand = new(_appliances, ports);
         _control_stand.register_handler(     "brake_cutout",                cab_activation, needs_power: false);
@@ -533,30 +535,32 @@ internal partial class unit_A_sim: electric_device
         Dictionary<string, branch_user> named_branches  = _named_branches;
         branch_user                     supply          = named_branches["EPS"];
         Dictionary<string,       float> currents        = _currents;
+        float                           current_draw;
         if (jog)
         {
-            if (!_jog)
+            if (!_jog_active)
             {
                 _contactors.toggle_jogging(turn_on: true);
-                _jog = true;
+                _jog_active = true;
             }
-            _total_load.Value = currents["BAT"];
-            _jog_volts.Value  = battery_panel.battery_EMF - _total_load.Value * battery_panel.battery_internal_resistance;
+            current_draw      = 0.0f;
+            _jog_volts.Value  = battery_panel.battery_EMF - currents["BAT"] * battery_panel.battery_internal_resistance;
             _pantograph.simulate(0.0f);
         }
         else
         {
-            if (_jog)
+            if (_jog_active)
             {
                 _contactors.toggle_jogging(turn_on: false);
-                _jog = false;
+                _jog_volts.Value = 0.0f;
+                _jog_active      = false;
             }
-            _total_load.Value = currents["EPS"] + blowers.current_draw + field_generator.current_draw;
+            current_draw = currents["EPS"] + blowers.current_draw + field_generator.current_draw;
             if (supply.EMF > 1.0f)
-                _total_load.Value += _compressor_power.Value / supply.EMF;
-            _jog_volts.Value  = 0.0f;
-            _pantograph.simulate(_total_load.Value);
+                current_draw += _compressor_power.Value / supply.EMF;
+            _pantograph.simulate(current_draw);
         }
+        _total_load.Value = current_draw;
         
         set_primary_notch(_contactors._primary_controller.current_position);
         _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
@@ -583,8 +587,7 @@ internal partial class unit_A_sim: electric_device
             resistor_heat.simulate_overheat_damage(_resistor_grid);
 
             bool  rheostatic_brake_on = _selector is (int) selector_modes.rheostatic_brake;
-            float voltage = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
-            supply.EMF = supply.EMF * 0.9f + voltage * 0.1f;
+            supply.EMF                = supply.EMF * 0.9f + (rheostatic_brake_on ? 0.0f : _roof_bus.voltage) * 0.1f;
         
             set_powertrain_damage_resistance();
             traction_motor[] traction_motors = _traction_motors;
@@ -599,6 +602,8 @@ internal partial class unit_A_sim: electric_device
             bool regenerative_on = _selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
             if (regenerative_on || field_generator.relative_speed >= 0.01f)
                 field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
+            if (!rheostatic_brake_on)
+                _meter.count_energy(voltmeter_reading, current_draw);
             
             _compressor_on.ChangeState(voltmeter_reading >= 1000.0f && _main_breaker_closed.State);
             float average_RPM = 0.0f, average_load_A = 0.0f, average_load_B = 0.0f, maximum_load = 0.0f; 
@@ -610,7 +615,7 @@ internal partial class unit_A_sim: electric_device
             calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref average_RPM, 
                 ref average_load_B, ref maximum_load, ref average_field_B, ref average_EMF,
                 out total_torque_B, out total_heat_emission_B);
-            _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, motors_volts, maximum_load, _total_load.Value);
+            _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, motors_volts, maximum_load, current_draw);
             average_RPM     /= motors;
             average_EMF     /= motors;
             average_load_A  /= (motors >> 1);
@@ -666,7 +671,7 @@ internal partial class unit_A_sim: electric_device
             //Main.log($"ID = {_idling_damage.Value}");
             _to_idle = false;
         
-            blowers.active                = rheostatic_brake_on || /*_primary_controller.current_notch > 1*/ _throttle >= 1;
+            blowers.active                = rheostatic_brake_on || _throttle >= 1;
             blowers.rheostatic_braking_on = rheostatic_brake_on;
             blowers.motor_current         = maximum_load;
             blowers.line_voltage          = rheostatic_brake_on ? motors_volts : voltmeter_reading;

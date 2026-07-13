@@ -18,19 +18,24 @@ namespace WE6SIM.catenary_editor;
 public struct stored_settings
 {
     [JsonProperty]
-    public float load_limit_factor, voltage_drop_factor;
+    public float load_limit_factor, voltage_drop_factor, kWh_price;
 }
 
 public class editor_settings: ModSettings, IDrawable
 {
+    const float default_kWh_price = 10.0f;
+    
     [Draw("Substation load limit multiplier (requires reload)")]
     private float _load_limit_factor = 1.0f;
     [Draw("Voltage drop multiplier (requires reload)")]
     private float _voltage_drop_factor = 1.0f;
+    [Draw("Electricity price, $/kWh (requires reload)")]
+    private float _kWh_price = default_kWh_price;
 
     public static editor_settings? instance { get; private set; }
-    public static float load_limit_factor   => (instance == null) ? 1.0f : instance._load_limit_factor;
-    public static float voltage_drop_factor => (instance == null) ? 1.0f : instance._voltage_drop_factor;
+    public static float load_limit_factor   { get; private set; } = 1.0f;
+    public static float voltage_drop_factor { get; private set; } = 1.0f;
+    public static float kWh_price           { get; private set; } = default_kWh_price;
 
 #if DEBUG
     private bool _side_rail_placement_enabled = false;
@@ -154,7 +159,8 @@ public class editor_settings: ModSettings, IDrawable
             new stored_settings 
             { 
                 load_limit_factor   = _load_limit_factor,
-                voltage_drop_factor = _voltage_drop_factor
+                voltage_drop_factor = _voltage_drop_factor,
+                kWh_price           = _kWh_price
             }, Formatting.Indented
         );
         File.WriteAllText(Path.Combine(mod.Path, "settings.json"), raw_settings);
@@ -186,15 +192,19 @@ public class editor_settings: ModSettings, IDrawable
             }
             catch (Exception _)
             {
-                current_settings = new stored_settings { load_limit_factor = 1.0f, voltage_drop_factor = 1.0f };
+                current_settings = new stored_settings { load_limit_factor = 1.0f, voltage_drop_factor = 1.0f, kWh_price = default_kWh_price };
             }
 			instance = new()
 			{
-				_load_limit_factor   = current_settings.load_limit_factor,
-				_voltage_drop_factor = current_settings.voltage_drop_factor
+				_load_limit_factor   = (current_settings.load_limit_factor   > 0.0f) ? current_settings.load_limit_factor   : 1.0f,
+				_voltage_drop_factor = (current_settings.voltage_drop_factor > 0.0f) ? current_settings.voltage_drop_factor : 1.0f,
+                _kWh_price           = (current_settings.kWh_price           > 0.0f) ? current_settings.kWh_price           : default_kWh_price
 			};
-			mod.OnGUI     = instance.Draw;
-            mod.OnSaveGUI = instance.Save;
+            load_limit_factor   = instance._load_limit_factor;
+            voltage_drop_factor = instance._voltage_drop_factor;
+            kWh_price           = instance._kWh_price;
+			mod.OnGUI           = instance.Draw;
+            mod.OnSaveGUI       = instance.Save;
         }
     }
 }
