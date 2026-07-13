@@ -54,6 +54,8 @@ internal partial class overhead_equipment
                 / (world_position.fixed_multiplier * world_position.fixed_multiplier) + y_offset * y_offset);
             _new_load            += load_current;
             float contact_voltage = _current_voltage - _current_load * wire_1m_resistance * distance;
+            //if (string.Equals(map_location, "IMW1500", System.StringComparison.OrdinalIgnoreCase))
+            //    Main.diagnostics?.Value = _current_voltage - maximum_load * wire_1m_resistance * distance;
             return (contact_voltage >= 0.0f) ? contact_voltage : 0.0f;
         }
 
@@ -118,15 +120,6 @@ internal partial class overhead_equipment
                 else
                     _energy_returned += (1.0 / (1000.0 * 3600.0)) * _current_voltage * (-current_load) * Time.deltaTime;
             }
-            Main.diagnostics?.Value = (float) _energy_consumed;
-            Main.diagnostics2?.Value = (float) _energy_returned;
-            /*
-            if (string.Equals(map_location, "SM1500", System.StringComparison.OrdinalIgnoreCase))
-            {
-                Main.diagnostics?.Value = _current_load;
-                //Main.diagnostics2?.Value = _current_voltage;
-            }
-            */
         }
     }
 }

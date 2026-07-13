@@ -340,15 +340,6 @@ internal class pantograph: electric_device
         {
             if (_roof_bus.pantograph_voltage != 1500.0f)
                 _roof_bus.pantograph_voltage = 1500.0f;
-            if (Main.diagnostics != null && Main.diagnostics2 != null)
-            {
-                if (load_current >= 0.0f)
-                    _energy_consumed += (1.0 / (1000.0 * 3600.0) * 1500.0) *   load_current  * Time.deltaTime;
-                else
-                    _energy_returned += (1.0 / (1000.0 * 3600.0) * 1500.0) * (-load_current) * Time.deltaTime;
-                Main.diagnostics.Value  = (float) _energy_consumed;
-                Main.diagnostics2.Value = (float) _energy_returned;
-            }
             return;
         }
 #endif
@@ -386,7 +377,6 @@ internal class pantograph: electric_device
         }
         move();
 
-        Main.diagnostics2?.Value = _side_arm_relative_position;
         if (_side_pivot_relative_position < 1.0f || _side_arm_relative_position < 1.0f)
             roof_bus.sidepan_voltage = 0.0f;
         else
