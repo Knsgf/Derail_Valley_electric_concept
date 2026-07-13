@@ -60,22 +60,22 @@ MonoBehaviour:
       FuelDisplay: 0
       Wipers: 1
       OilLevel: 0
-      CabLightStyle: 0
+      CabLightStyle: 2
       GearLight: 0
       SandLevel: 0
-      Headlights1: 0
+      Headlights1: 1
       BellOrWater: 0
-      Headlights2: 0
+      Headlights2: 1
       TenderCoal: 0
       HornStyle: 0
     Mechanical:
       Alerter: 0
       Pantograph: 0
       CabOrientation: 0
-      TMOfflineIndicator: 1
+      TMOfflineIndicator: 0
       StarterFuse: 0
-      ElectricsFuse: 1
-      TractionMotorFuse: 1
-      Starter: 1
-      FuelCutoff: 1
-  _json: '{"BasicControls":{"AmpMeter":"Display","GearboxA":"Display","GearboxB":"Display","Power":"Display","Reverser":"Reverser","RPM":"None","Sander":"Display","Speedometer":"Display","Throttle":"Throttle","TMOrOilTemp":"TMTemp","TurbineOrVoltage":"Voltage","WheelslipIndicator":"Display"},"Braking":{"BrakeCutout":"Display","BrakeCylinder":"Display","BrakePipe":"Display","BrakeType":"NonSelfLapping","DynamicBrake":"Display","Handbrake":"Display","IndependentBrake":"Display","MainReservoir":"Display","ReleaseCylinder":"Display"},"Cab":{"BellOrWater":"None","CabLightStyle":"None","FuelDisplay":"None","GearLight":"None","Headlights1":"None","Headlights2":"None","HornStyle":"None","OilLevel":"None","SandLevel":"None","TenderCoal":"None","Wipers":"SimpleWipers"},"Mechanical":{"Alerter":"None","CabOrientation":"None","ElectricsFuse":"Display","FuelCutoff":"Display","Pantograph":"None","Starter":"Display","StarterFuse":"None","TMOfflineIndicator":"Display","TractionMotorFuse":"Display"},"Powertrain":"WE","Steam":{"AirPump":"None","Blowdown":"None","Blower":"None","BoilerWater":"None","ChestPressure":"None","CylinderCocks":"None","Damper":"None","Dynamo":"None","FireboxCoal":"None","Firedoor":"None","FireTemperature":"None","FuelDump":"None","Injector":"None","LightFirebox":"None","Lubricator":"None","Shovel":"None","SteamMeter":"None"}}'
+      ElectricsFuse: 0
+      TractionMotorFuse: 0
+      Starter: 0
+      FuelCutoff: 0
+  _json: '{"BasicControls":{"AmpMeter":"Display","GearboxA":"Display","GearboxB":"Display","Power":"Display","Reverser":"Reverser","RPM":"None","Sander":"Display","Speedometer":"Display","Throttle":"Throttle","TMOrOilTemp":"TMTemp","TurbineOrVoltage":"Voltage","WheelslipIndicator":"Display"},"Braking":{"BrakeCutout":"Display","BrakeCylinder":"Display","BrakePipe":"Display","BrakeType":"NonSelfLapping","DynamicBrake":"Display","Handbrake":"Display","IndependentBrake":"Display","MainReservoir":"Display","ReleaseCylinder":"Display"},"Cab":{"BellOrWater":"None","CabLightStyle":"DashAndCabLight","FuelDisplay":"None","GearLight":"None","Headlights1":"HeadlightsSlider","Headlights2":"HeadlightsSlider","HornStyle":"None","OilLevel":"None","SandLevel":"None","TenderCoal":"None","Wipers":"SimpleWipers"},"Mechanical":{"Alerter":"None","CabOrientation":"None","ElectricsFuse":"None","FuelCutoff":"None","Pantograph":"None","Starter":"None","StarterFuse":"None","TMOfflineIndicator":"None","TractionMotorFuse":"None"},"Powertrain":"WE","Steam":{"AirPump":"None","Blowdown":"None","Blower":"None","BoilerWater":"None","ChestPressure":"None","CylinderCocks":"None","Damper":"None","Dynamo":"None","FireboxCoal":"None","Firedoor":"None","FireTemperature":"None","FuelDump":"None","Injector":"None","LightFirebox":"None","Lubricator":"None","Shovel":"None","SteamMeter":"None"}}'
