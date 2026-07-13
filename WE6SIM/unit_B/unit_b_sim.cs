@@ -55,6 +55,7 @@ internal class unit_B_sim: electric_device
     public unit_B_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
         : base("unit_B_sim")
     {
+        unit.brakeSystem.SetHandbrakePosition(1.0f, forced: true);  // Prevent spawned unit from rolling off when a player fast travels
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
         _main_breaker   = grab_fuse(fuses, "[MainBreakerContacts].CLOSED"          );

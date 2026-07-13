@@ -76,6 +76,7 @@ internal partial class unit_A_sim: electric_device
     public unit_A_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit, int random_seed)
         : base("unit_A_sim")
     {
+        unit.brakeSystem.SetHandbrakePosition(1.0f, forced: true);  // Prevent spawned unit from rolling off when a player fast travels
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
         _appliances          = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"              );
