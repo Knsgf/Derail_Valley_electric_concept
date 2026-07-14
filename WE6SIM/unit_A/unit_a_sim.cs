@@ -693,6 +693,7 @@ internal partial class unit_A_sim: electric_device
         if (!disposed)
         {
             base.Dispose();
+            _meter.Dispose();
             _pantograph.Dispose();
             _roof_bus.Dispose();
             _main_breaker.Dispose();

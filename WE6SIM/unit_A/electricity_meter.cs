@@ -15,10 +15,10 @@ using WE6SIM.utilities;
 
 namespace WE6SIM.unit_A;
 
-internal class electricity_meter
+internal class electricity_meter: IDisposable
 {
     const float minimum_current = 10.0f, energy_unit_price = 7.5f * 2.0f;
-    
+
     private readonly Port  _consumption, _regeneration, _energy, _leftover_bank, _powertrain;
     private readonly float _zero_energy, _negative_zero_energy, _usage_factor;
 
@@ -32,10 +32,18 @@ internal class electricity_meter
         _zero_energy   = sensor_grabber.grab_port(ports, "[ElectricityMeter].CAPACITY"       ).Value;
         _leftover_bank = sensor_grabber.grab_port(ports, "[LeftoverMeter].EXT_IN"            );
         _powertrain    = sensor_grabber.grab_port(ports, "[CustomSimulation].MOTOR_INTEGRITY");
+        _powertrain.ValueUpdatedInternally += track_powertrain_integrity;
 
         _negative_zero_energy = -_zero_energy;
         _last_integrity       = _powertrain.Value;
         _usage_factor         = (editor_settings.kWh_price / energy_unit_price) / (1000.0f * 3600.0f);
+    }
+
+    private void track_powertrain_integrity(float integrity)
+    {
+        if (integrity - _last_integrity > 0.01f)
+            _leftover_bank.Value = 0.0f;
+        _last_integrity = integrity;
     }
 
     private float add_with_remainder(float a, float b, ref float remainder)
@@ -49,13 +57,6 @@ internal class electricity_meter
     
     public void count_energy(float voltage, float current)
     {
-        if (_powertrain.Value - _last_integrity > 0.01f)
-        {
-            if (_leftover_bank.Value < 0.0f)
-                _consumption.Value = -_leftover_bank.Value;
-            _leftover_bank.Value = 0.0f;
-        }
-        _last_integrity = _powertrain.Value;
         if (Mathf.Abs(current) < minimum_current)
             return;
         float energy_added  = (voltage * (-current)) * _usage_factor * Time.deltaTime, energy_remainder = 0.0f;
@@ -79,5 +80,10 @@ internal class electricity_meter
         }
         Main.diagnostics?.Value = _zero_energy - _energy.Value;
         Main.diagnostics2?.Value = _leftover_bank.Value;
+    }
+
+    public void Dispose()
+    {
+        _powertrain.ValueUpdatedInternally -= track_powertrain_integrity;
     }
 }
