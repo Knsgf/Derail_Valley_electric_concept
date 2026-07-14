@@ -9388,6 +9388,7 @@ MonoBehaviour:
   - {fileID: 1615244718954378493}
   - {fileID: 6209050325981053824}
   - {fileID: 2665202519194884237}
+  - {fileID: 904995570712737190}
   - {fileID: 1293833607894613111}
   - {fileID: 5605324424032693354}
   - {fileID: 3068159418981673378}
@@ -9460,7 +9461,6 @@ MonoBehaviour:
   - {fileID: 7014036125415406457}
   - {fileID: 8188100207058399140}
   - {fileID: 3360334665540799534}
-  - {fileID: 904995570712737190}
   connections: []
   portReferenceConnections:
   - portReferenceId: horn.HORN_CONTROL
@@ -12364,7 +12364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: horn
   controlNeutralAt0: 1
-  powerFuseId: fusebox.ELECTRONICS_MAIN
+  powerFuseId: fusebox.CONTROL_AIR
 --- !u!1 &8727600521403897009
 GameObject:
   m_ObjectHideFlags: 0
