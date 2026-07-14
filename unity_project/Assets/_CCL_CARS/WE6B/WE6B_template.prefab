@@ -313,7 +313,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4651406216521838135
 MonoBehaviour:
@@ -483,7 +483,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 12
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8403359067773289409
 MonoBehaviour:
@@ -555,126 +555,6 @@ MonoBehaviour:
   sandCoefPortId: '[Sander].SAND_COEF'
   engineBrakingActivePortId: 
   _buttons: 0
---- !u!1 &616270597738417743
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4202708846629142728}
-  - component: {fileID: 4188619228257981123}
-  m_Layer: 0
-  m_Name: sandLamp
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4202708846629142728
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 616270597738417743}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 19
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4188619228257981123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 616270597738417743}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -432747236, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: sandLamp
-  offRangeMin: 0.1
-  offRangeMax: 1
-  onRangeUsed: 1
-  onRangeMin: 0.05
-  onRangeMax: 0.1
-  blinkRangeUsed: 1
-  blinkRangeMin: 0
-  blinkRangeMax: 0.05
-  playAudioOnValueDrop: 1
-  playAudioOnValueRaise: 0
-  inputReader:
-    valueType: 202
-    ID: INPUT
-    writeAllowed: 0
-  powerFuseId: fusebox.ELECTRONICS_MAIN
-  _json: '{"ID":"INPUT","valueType":"SAND","writeAllowed":false}'
---- !u!1 &633459552249978423
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5515809025299220062}
-  - component: {fileID: 9028591517153507358}
-  m_Layer: 0
-  m_Name: tmOverheatLamp
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5515809025299220062
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633459552249978423}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 17
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9028591517153507358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633459552249978423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -432747236, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: tmOverheatLamp
-  offRangeMin: 0
-  offRangeMax: 90
-  onRangeUsed: 1
-  onRangeMin: 90
-  onRangeMax: 105
-  blinkRangeUsed: 1
-  blinkRangeMin: 105
-  blinkRangeMax: Infinity
-  playAudioOnValueDrop: 0
-  playAudioOnValueRaise: 1
-  inputReader:
-    valueType: 103
-    ID: INPUT
-    writeAllowed: 0
-  powerFuseId: fusebox.ELECTRONICS_MAIN
-  _json: '{"ID":"INPUT","valueType":"TEMPERATURE","writeAllowed":false}'
 --- !u!1 &666195298963516752
 GameObject:
   m_ObjectHideFlags: 0
@@ -1382,7 +1262,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 13
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8512966340434449801
 MonoBehaviour:
@@ -1401,13 +1281,10 @@ MonoBehaviour:
   - id: ELECTRONICS_MAIN
     initialState: 0
     offValue: 0
-  - id: TM_POWER
-    initialState: 0
-    offValue: 0
   - id: CONTROL_AIR
     initialState: 0
     offValue: 0
-  fusesJson: '[{"id":"ELECTRONICS_MAIN","initialState":false,"offValue":0},{"id":"TM_POWER","initialState":false,"offValue":0},{"id":"CONTROL_AIR","initialState":false,"offValue":0}]'
+  fusesJson: '[{"id":"ELECTRONICS_MAIN","initialState":false,"offValue":0},{"id":"CONTROL_AIR","initialState":false,"offValue":0}]'
   saveState: 1
 --- !u!1 &1535925498467930563
 GameObject:
@@ -1597,126 +1474,6 @@ MonoBehaviour:
   renderers: []
   glareColor: {r: 1, g: 1, b: 1, a: 1}
   glareRenderer: {fileID: 0}
---- !u!1 &1603919849245829761
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1515975578735755642}
-  - component: {fileID: 5067863645083888523}
-  m_Layer: 0
-  m_Name: tmOfflineLamp
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1515975578735755642
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1603919849245829761}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 15
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5067863645083888523
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1603919849245829761}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -432747236, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: tmOfflineLamp
-  offRangeMin: 0.1
-  offRangeMax: 1
-  onRangeUsed: 1
-  onRangeMin: -1
-  onRangeMax: -0.1
-  blinkRangeUsed: 1
-  blinkRangeMin: -0.1
-  blinkRangeMax: 0.1
-  playAudioOnValueDrop: 0
-  playAudioOnValueRaise: 0
-  inputReader:
-    valueType: 51
-    ID: INPUT
-    writeAllowed: 0
-  powerFuseId: fusebox.ELECTRONICS_MAIN
-  _json: '{"ID":"INPUT","valueType":"STATE","writeAllowed":false}'
---- !u!1 &1626561383603582991
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9142124140876944501}
-  - component: {fileID: 1605673126528414389}
-  m_Layer: 0
-  m_Name: sanderLamp
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &9142124140876944501
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1626561383603582991}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 18
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1605673126528414389
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1626561383603582991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -432747236, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: sanderLamp
-  offRangeMin: 0
-  offRangeMax: 0.001
-  onRangeUsed: 1
-  onRangeMin: 0.001
-  onRangeMax: Infinity
-  blinkRangeUsed: 0
-  blinkRangeMin: 0
-  blinkRangeMax: 0
-  playAudioOnValueDrop: 0
-  playAudioOnValueRaise: 0
-  inputReader:
-    valueType: 50
-    ID: INPUT
-    writeAllowed: 0
-  powerFuseId: fusebox.ELECTRONICS_MAIN
-  _json: '{"ID":"INPUT","valueType":"CONTROL","writeAllowed":false}'
 --- !u!1 &1630636205852546539
 GameObject:
   m_ObjectHideFlags: 0
@@ -1800,7 +1557,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 35
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5733836348996260976
 MonoBehaviour:
@@ -2201,53 +1958,6 @@ MonoBehaviour:
   connectionTag: RESISTOR_TEMPERATURE_TO_B
   disconnectedValue: 0
   propagateConsumerValueChangeBackToProvider: 0
---- !u!1 &1650963119634723904
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7157960374344664834}
-  - component: {fileID: 7541232897267488061}
-  m_Layer: 0
-  m_Name: batteryCharge
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7157960374344664834
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1650963119634723904}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7541232897267488061
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1650963119634723904}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -507730800, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: batteryCharge
-  capacity: 360
-  defaultValue: 360
-  type: 5
 --- !u!1 &1682443466635449886
 GameObject:
   m_ObjectHideFlags: 0
@@ -2699,7 +2409,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 23
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3749001730017152636
 MonoBehaviour:
@@ -3002,52 +2712,6 @@ MonoBehaviour:
     _saturation: 1
     _shape: 0
   _json: '{"_affectCeiling":false,"_edgeFadeoff":0,"_enableJitter":false,"_faceSharpness":0,"_layerMode":"None","_layerProjection":"Local","_mode":"Dry","_sampleJitter":0,"_saturation":1,"_shape":"Cube","_xLayer":{},"_yLayer":{},"_zLayer":{}}'
---- !u!1 &2065871077693019968
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8667957835442554309}
-  - component: {fileID: 4243575745255336675}
-  m_Layer: 0
-  m_Name: transmission
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8667957835442554309
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2065871077693019968}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 11
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4243575745255336675
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2065871077693019968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 845733294, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: transmission
-  gearRatio: 4.133333
-  transmissionEfficiency: 1
 --- !u!1 &2077624122912502662
 GameObject:
   m_ObjectHideFlags: 0
@@ -3176,7 +2840,7 @@ Transform:
   - {fileID: 9206990154920467470}
   - {fileID: 5308309053716498831}
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 27
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2143272717347857468
 GameObject:
@@ -4493,7 +4157,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 10
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1298084233541528980
 MonoBehaviour:
@@ -4606,7 +4270,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 6
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3414246028596272761
 MonoBehaviour:
@@ -4973,7 +4637,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 34
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2313810231424117196
 MonoBehaviour:
@@ -5822,7 +5486,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3434728974169315655
 MonoBehaviour:
@@ -5930,66 +5594,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.0786386, y: 2.1921904, z: 4.966297}
   m_Center: {x: -0.49615955, y: -0.16961992, z: 0.34854364}
---- !u!1 &3728418318147257177
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 344334708918980635}
-  - component: {fileID: 3101878508443396322}
-  m_Layer: 0
-  m_Name: cabLightLamp
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &344334708918980635
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3728418318147257177}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 14
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3101878508443396322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3728418318147257177}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -432747236, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: cabLightLamp
-  offRangeMin: 0
-  offRangeMax: 0.2
-  onRangeUsed: 1
-  onRangeMin: 0.2
-  onRangeMax: Infinity
-  blinkRangeUsed: 0
-  blinkRangeMin: 0
-  blinkRangeMax: 0
-  playAudioOnValueDrop: 0
-  playAudioOnValueRaise: 0
-  inputReader:
-    valueType: 50
-    ID: INPUT
-    writeAllowed: 0
-  powerFuseId: fusebox.ELECTRONICS_MAIN
-  _json: '{"ID":"INPUT","valueType":"CONTROL","writeAllowed":false}'
 --- !u!1 &3775762699589720857
 GameObject:
   m_ObjectHideFlags: 0
@@ -6035,66 +5639,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -7273229546580681772, guid: 8c4ef41ddd67d1041b50d04421125cc0, type: 3}
---- !u!1 &3790670220278235139
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2862246541058871903}
-  - component: {fileID: 2180488489187998569}
-  m_Layer: 0
-  m_Name: batteryLamp
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2862246541058871903
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3790670220278235139}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 16
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2180488489187998569
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3790670220278235139}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -432747236, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: batteryLamp
-  offRangeMin: 0.25
-  offRangeMax: 1
-  onRangeUsed: 1
-  onRangeMin: 0.05
-  onRangeMax: 0.25
-  blinkRangeUsed: 1
-  blinkRangeMin: 0
-  blinkRangeMax: 0.05
-  playAudioOnValueDrop: 1
-  playAudioOnValueRaise: 0
-  inputReader:
-    valueType: 205
-    ID: INPUT
-    writeAllowed: 0
-  powerFuseId: fusebox.ELECTRONICS_MAIN
-  _json: '{"ID":"INPUT","valueType":"ELECTRIC_CHARGE","writeAllowed":false}'
 --- !u!1 &3818780549135109235
 GameObject:
   m_ObjectHideFlags: 0
@@ -6190,55 +5734,6 @@ Transform:
   m_Father: {fileID: 1318102602023526079}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4062828574717762505
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5553214046666226146}
-  - component: {fileID: 9078580392381747489}
-  m_Layer: 0
-  m_Name: batteryController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5553214046666226146
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4062828574717762505}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 5278558650307281328}
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9078580392381747489
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4062828574717762505}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -838336945, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: batteryController
-  numSeriesCells: 56
-  internalResistance: 0.005
-  baseConsumptionMultiplier: 2
-  powerFuseId: fusebox.ELECTRONICS_MAIN
 --- !u!1 &4115687891123712745
 GameObject:
   m_ObjectHideFlags: 0
@@ -6418,7 +5913,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 32
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &636624416084977880
 MonoBehaviour:
@@ -7816,29 +7311,13 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 7875146762605263663}
-  - {fileID: 4392391260528991376}
   - {fileID: 8537416305213315476}
   - {fileID: 5134953346352010709}
-  - {fileID: 7157960374344664834}
-  - {fileID: 5553214046666226146}
   - {fileID: 3008448456693878574}
-  - {fileID: 756076799534625113}
-  - {fileID: 7841523046416182232}
   - {fileID: 2202351326890116333}
   - {fileID: 4670978475633700270}
-  - {fileID: 8667957835442554309}
   - {fileID: 1283145430491458128}
   - {fileID: 5670585690080913771}
-  - {fileID: 344334708918980635}
-  - {fileID: 1515975578735755642}
-  - {fileID: 2862246541058871903}
-  - {fileID: 5515809025299220062}
-  - {fileID: 9142124140876944501}
-  - {fileID: 4202708846629142728}
-  - {fileID: 8025896607401154388}
-  - {fileID: 6724719221828047605}
-  - {fileID: 8144323801775381710}
   - {fileID: 339630452140332582}
   - {fileID: 7970168492276806047}
   - {fileID: 5260657731287174853}
@@ -7869,32 +7348,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AutoClearRemovedConnections: 1
   executionOrder:
-  - {fileID: 7749480492641358}
-  - {fileID: 3710740653869707035}
   - {fileID: 3434728974169315655}
   - {fileID: 4651406216521838135}
-  - {fileID: 7541232897267488061}
-  - {fileID: 9078580392381747489}
-  - {fileID: 7079563793826284017}
   - {fileID: 3414246028596272761}
-  - {fileID: 4942849852194960444}
-  - {fileID: 5128191971739665248}
   - {fileID: 6161193085729043934}
   - {fileID: 826887662439273597}
   - {fileID: 7413571938728000516}
   - {fileID: 1298084233541528980}
-  - {fileID: 4243575745255336675}
   - {fileID: 8403359067773289409}
   - {fileID: 8512966340434449801}
-  - {fileID: 3101878508443396322}
-  - {fileID: 5067863645083888523}
-  - {fileID: 2180488489187998569}
-  - {fileID: 9028591517153507358}
-  - {fileID: 1605673126528414389}
-  - {fileID: 4188619228257981123}
-  - {fileID: 2129673578644280730}
-  - {fileID: 4067577769749734992}
-  - {fileID: 2756644755387246472}
   - {fileID: 3749001730017152636}
   - {fileID: 5538398645340148258}
   - {fileID: 310041246773013363}
@@ -7953,24 +7415,10 @@ MonoBehaviour:
   portReferenceConnections:
   - portReferenceId: horn.HORN_CONTROL
     portId: hornControl.CONTROL
-  - portReferenceId: batteryController.NORMALIZED_CHARGE
-    portId: batteryCharge.NORMALIZED
-  - portReferenceId: batteryController.CHARGE_CONSUMPTION
-    portId: batteryCharge.CONSUME_EXT_IN
-  - portReferenceId: batteryController.POWER
-    portId: powerConsumptionCalculator.POWER_CONSUMPTION_TOTAL
-  - portReferenceId: powerConsumptionCalculator.POWER_CONSUMPTION_1
-    portId: compressor.POWER_CONSUMPTION
   - portReferenceId: '[Sander].SAND'
     portId: '[SandBox].AMOUNT'
   - portReferenceId: '[Sander].SAND_CONSUMPTION'
     portId: '[SandBox].CONSUME_EXT_IN'
-  - portReferenceId: tmRpmCalculator.WHEEL_RPM
-    portId: traction.WHEEL_RPM_EXT_IN
-  - portReferenceId: tmRpmCalculator.GEAR_RATIO
-    portId: transmission.GEAR_RATIO
-  - portReferenceId: voltageRegulator.SUPPLY_VOLTAGE
-    portId: batteryController.VOLTAGE
   - portReferenceId: tm.TM_TEMPERATURE
     portId: tmHeat.TEMPERATURE
   - portReferenceId: tm.ENVIRONMENT_WATER_STATE
@@ -7981,24 +7429,6 @@ MonoBehaviour:
     portId: tm.HEAT_OUT
   - portReferenceId: tmHeat.HEAT_IN_1
     portId: tmPassiveCooler.HEAT_OUT
-  - portReferenceId: cabLightLamp.INPUT
-    portId: cabLight.EXT_IN
-  - portReferenceId: tmOfflineLamp.INPUT
-    portId: tm.TMS_STATE
-  - portReferenceId: batteryLamp.INPUT
-    portId: batteryCharge.NORMALIZED
-  - portReferenceId: tmOverheatLamp.INPUT
-    portId: tmHeat.TEMPERATURE
-  - portReferenceId: sanderLamp.INPUT
-    portId: '[Sander].CONTROL_EXT_IN'
-  - portReferenceId: sandLamp.INPUT
-    portId: '[SandBox].NORMALIZED'
-  - portReferenceId: headlightsFLamp.INPUT
-    portId: headlightDecoder.FRONT_HEADLIGHTS_EXT_IN
-  - portReferenceId: headlightsRLamp.INPUT
-    portId: headlightDecoder.REAR_HEADLIGHTS_EXT_IN
-  - portReferenceId: ampLamp.INPUT
-    portId: tm.AMPS_PER_TM
   - portReferenceId: compressor.VOLTAGE_NORMALIZED
     portId: '[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE'
   - portReferenceId: tmHeat.HEAT_IN_2
@@ -8034,7 +7464,7 @@ MonoBehaviour:
   - portReferenceId: '[GaugeLighting].INPUT'
     portId: '[GaugeLightsSwitch].EXT_IN'
   connectionsJson: '[{"fullPortIdIn":"traction.TORQUE_IN","fullPortIdOut":"[internal_MU].TM4-6"}]'
-  portReferenceConnectionsJson: '[{"portId":"hornControl.CONTROL","portReferenceId":"horn.HORN_CONTROL"},{"portId":"batteryCharge.NORMALIZED","portReferenceId":"batteryController.NORMALIZED_CHARGE"},{"portId":"batteryCharge.CONSUME_EXT_IN","portReferenceId":"batteryController.CHARGE_CONSUMPTION"},{"portId":"powerConsumptionCalculator.POWER_CONSUMPTION_TOTAL","portReferenceId":"batteryController.POWER"},{"portId":"compressor.POWER_CONSUMPTION","portReferenceId":"powerConsumptionCalculator.POWER_CONSUMPTION_1"},{"portId":"[SandBox].AMOUNT","portReferenceId":"[Sander].SAND"},{"portId":"[SandBox].CONSUME_EXT_IN","portReferenceId":"[Sander].SAND_CONSUMPTION"},{"portId":"traction.WHEEL_RPM_EXT_IN","portReferenceId":"tmRpmCalculator.WHEEL_RPM"},{"portId":"transmission.GEAR_RATIO","portReferenceId":"tmRpmCalculator.GEAR_RATIO"},{"portId":"batteryController.VOLTAGE","portReferenceId":"voltageRegulator.SUPPLY_VOLTAGE"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tm.TM_TEMPERATURE"},{"portId":"waterDetector.STATE_EXT_IN","portReferenceId":"tm.ENVIRONMENT_WATER_STATE"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tmPassiveCooler.TEMPERATURE"},{"portId":"tm.HEAT_OUT","portReferenceId":"tmHeat.HEAT_IN_0"},{"portId":"tmPassiveCooler.HEAT_OUT","portReferenceId":"tmHeat.HEAT_IN_1"},{"portId":"cabLight.EXT_IN","portReferenceId":"cabLightLamp.INPUT"},{"portId":"tm.TMS_STATE","portReferenceId":"tmOfflineLamp.INPUT"},{"portId":"batteryCharge.NORMALIZED","portReferenceId":"batteryLamp.INPUT"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tmOverheatLamp.INPUT"},{"portId":"[Sander].CONTROL_EXT_IN","portReferenceId":"sanderLamp.INPUT"},{"portId":"[SandBox].NORMALIZED","portReferenceId":"sandLamp.INPUT"},{"portId":"headlightDecoder.FRONT_HEADLIGHTS_EXT_IN","portReferenceId":"headlightsFLamp.INPUT"},{"portId":"headlightDecoder.REAR_HEADLIGHTS_EXT_IN","portReferenceId":"headlightsRLamp.INPUT"},{"portId":"tm.AMPS_PER_TM","portReferenceId":"ampLamp.INPUT"},{"portId":"[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE","portReferenceId":"compressor.VOLTAGE_NORMALIZED"},{"portId":"[CustomSimulation].MOTOR_COOLING_B","portReferenceId":"tmHeat.HEAT_IN_2"},{"portId":"[DummyVoltageRegulator].EFFECTIVE_VOLTAGE_DROP","portReferenceId":"tm.APPLIED_VOLTAGE"},{"portId":"[DummyVoltageRegulator].POWER_ON","portReferenceId":"tm.THROTTLE"},{"portId":"[DummyVoltageRegulator].POWER_ON","portReferenceId":"tm.REVERSER"},{"portId":"[DummyVoltageRegulator].ABSOLUTE_RPM","portReferenceId":"tm.MOTOR_RPM"},{"portId":"[CustomGauges].REVERSE_CURRENT","portReferenceId":"[ReverseCurrent].INPUT"},{"portId":"[CustomGauges].TRANSITION","portReferenceId":"[Transition].INPUT"},{"portId":"[FastNotchingSwitch].EXT_IN","portReferenceId":"[FastNotching].INPUT"},{"portId":"[CustomGauges].RESISTANCE_NOTCH","portReferenceId":"[ResistanceNotch].INPUT"},{"portId":"[Sander].CONTROL_EXT_IN","portReferenceId":"[SanderActive].INPUT"},{"portId":"[SandBox].NORMALIZED","portReferenceId":"[SandLow].INPUT"},{"portId":"[HeadlightSwitch].EXT_IN","portReferenceId":"[HeadlightDim].INPUT"},{"portId":"[HeadlightSwitch].EXT_IN","portReferenceId":"[HeadlightFull].INPUT"},{"portId":"[CustomGauges].RED_DITCH_LIGHT","portReferenceId":"[DitchLightsRed].INPUT"},{"portId":"[DitchLightsSwitch].EXT_IN","portReferenceId":"[DitchLightsWhite].INPUT"},{"portId":"[GaugeLightsSwitch].EXT_IN","portReferenceId":"[GaugeLighting].INPUT"}]'
+  portReferenceConnectionsJson: '[{"portId":"hornControl.CONTROL","portReferenceId":"horn.HORN_CONTROL"},{"portId":"[SandBox].AMOUNT","portReferenceId":"[Sander].SAND"},{"portId":"[SandBox].CONSUME_EXT_IN","portReferenceId":"[Sander].SAND_CONSUMPTION"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tm.TM_TEMPERATURE"},{"portId":"waterDetector.STATE_EXT_IN","portReferenceId":"tm.ENVIRONMENT_WATER_STATE"},{"portId":"tmHeat.TEMPERATURE","portReferenceId":"tmPassiveCooler.TEMPERATURE"},{"portId":"tm.HEAT_OUT","portReferenceId":"tmHeat.HEAT_IN_0"},{"portId":"tmPassiveCooler.HEAT_OUT","portReferenceId":"tmHeat.HEAT_IN_1"},{"portId":"[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE","portReferenceId":"compressor.VOLTAGE_NORMALIZED"},{"portId":"[CustomSimulation].MOTOR_COOLING_B","portReferenceId":"tmHeat.HEAT_IN_2"},{"portId":"[DummyVoltageRegulator].EFFECTIVE_VOLTAGE_DROP","portReferenceId":"tm.APPLIED_VOLTAGE"},{"portId":"[DummyVoltageRegulator].POWER_ON","portReferenceId":"tm.THROTTLE"},{"portId":"[DummyVoltageRegulator].POWER_ON","portReferenceId":"tm.REVERSER"},{"portId":"[DummyVoltageRegulator].ABSOLUTE_RPM","portReferenceId":"tm.MOTOR_RPM"},{"portId":"[CustomGauges].REVERSE_CURRENT","portReferenceId":"[ReverseCurrent].INPUT"},{"portId":"[CustomGauges].TRANSITION","portReferenceId":"[Transition].INPUT"},{"portId":"[FastNotchingSwitch].EXT_IN","portReferenceId":"[FastNotching].INPUT"},{"portId":"[CustomGauges].RESISTANCE_NOTCH","portReferenceId":"[ResistanceNotch].INPUT"},{"portId":"[Sander].CONTROL_EXT_IN","portReferenceId":"[SanderActive].INPUT"},{"portId":"[SandBox].NORMALIZED","portReferenceId":"[SandLow].INPUT"},{"portId":"[HeadlightSwitch].EXT_IN","portReferenceId":"[HeadlightDim].INPUT"},{"portId":"[HeadlightSwitch].EXT_IN","portReferenceId":"[HeadlightFull].INPUT"},{"portId":"[CustomGauges].RED_DITCH_LIGHT","portReferenceId":"[DitchLightsRed].INPUT"},{"portId":"[DitchLightsSwitch].EXT_IN","portReferenceId":"[DitchLightsWhite].INPUT"},{"portId":"[GaugeLightsSwitch].EXT_IN","portReferenceId":"[GaugeLighting].INPUT"}]'
 --- !u!114 &7078582623551104063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8288,7 +7718,7 @@ Transform:
   - {fileID: 3649739626498812192}
   - {fileID: 4233752557002349530}
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 28
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5420717495959997684
 GameObject:
@@ -8363,7 +7793,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 24
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5538398645340148258
 MonoBehaviour:
@@ -8473,7 +7903,7 @@ Transform:
   - {fileID: 7153134362236798236}
   - {fileID: 5448563021159280146}
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 30
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2099016125053629057
 MonoBehaviour:
@@ -8551,7 +7981,7 @@ Transform:
   - {fileID: 3515051354996283559}
   - {fileID: 731245498532790819}
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 26
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5491624046195854394
 GameObject:
@@ -8675,66 +8105,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!1 &5614328703934479808
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8025896607401154388}
-  - component: {fileID: 2129673578644280730}
-  m_Layer: 0
-  m_Name: headlightsFLamp
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8025896607401154388
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5614328703934479808}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 20
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2129673578644280730
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5614328703934479808}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -432747236, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: headlightsFLamp
-  offRangeMin: 0
-  offRangeMax: 0.01
-  onRangeUsed: 1
-  onRangeMin: 0.01
-  onRangeMax: Infinity
-  blinkRangeUsed: 0
-  blinkRangeMin: 0
-  blinkRangeMax: 0
-  playAudioOnValueDrop: 0
-  playAudioOnValueRaise: 0
-  inputReader:
-    valueType: 50
-    ID: INPUT
-    writeAllowed: 0
-  powerFuseId: fusebox.ELECTRONICS_MAIN
-  _json: '{"ID":"INPUT","valueType":"CONTROL","writeAllowed":false}'
 --- !u!1 &5650772883553687314
 GameObject:
   m_ObjectHideFlags: 0
@@ -9699,68 +9069,6 @@ Transform:
   m_Father: {fileID: 4726221284669233379}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &6419488772133110043
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4392391260528991376}
-  - component: {fileID: 3710740653869707035}
-  - component: {fileID: 4911962882212540670}
-  m_Layer: 0
-  m_Name: cabLight
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4392391260528991376
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6419488772133110043}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3710740653869707035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6419488772133110043}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 19037246, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: cabLight
-  defaultValue: 0
-  saveState: 1
---- !u!114 &4911962882212540670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6419488772133110043}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1241259877, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  portId: cabLight.EXT_IN
-  ControlType: 15
-  controlBlocker: {fileID: 0}
 --- !u!1 &6428342074330741382
 GameObject:
   m_ObjectHideFlags: 0
@@ -10588,7 +9896,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 31
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8585173881041844384
 MonoBehaviour:
@@ -11137,132 +10445,6 @@ MonoBehaviour:
     thresholdValue: 0.3
     blockType: 1
   _json: '[{"blockerPortId":"[Throttle].EXT_IN","blockType":"BLOCK_ON_ABOVE_THRESHOLD","thresholdValue":0.1},{"blockerPortId":"[BrakeValveCutout].EXT_IN","blockType":"BLOCK_ON_BELOW_THRESHOLD","thresholdValue":0.3}]'
---- !u!1 &7322790393580694940
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7875146762605263663}
-  - component: {fileID: 7749480492641358}
-  - component: {fileID: 4296848410541003397}
-  - component: {fileID: 5150044908588986739}
-  m_Layer: 0
-  m_Name: headlightDecoder
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7875146762605263663
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7322790393580694940}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7749480492641358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7322790393580694940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1300770436, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: headlightDecoder
-  combinations: 4
-  defaultOutputValue: 0
-  useDefaultValueOnMatchNotFound: 1
-  matchClosestOutputValue: 0
-  values:
-  - array:
-    - 0
-    - 0
-    - 0
-  - array:
-    - 1
-    - 0
-    - 0.33333334
-  - array:
-    - 0
-    - 1
-    - 0.6666667
-  - array:
-    - 1
-    - 1
-    - 1
-  inputPorts:
-  - type: 2
-    valueType: 50
-    ID: FRONT_HEADLIGHTS_EXT_IN
-  - type: 2
-    valueType: 50
-    ID: REAR_HEADLIGHTS_EXT_IN
-  outputPort:
-    type: 2
-    valueType: 50
-    ID: HEADLIGHTS_EXT_IN
-  saveState: 0
-  _renderButton: 0
-  _inPorts: '[{"ID":"FRONT_HEADLIGHTS_EXT_IN","type":"EXTERNAL_IN","valueType":"CONTROL"},{"ID":"REAR_HEADLIGHTS_EXT_IN","type":"EXTERNAL_IN","valueType":"CONTROL"}]'
-  _outPort: '{"ID":"HEADLIGHTS_EXT_IN","type":"EXTERNAL_IN","valueType":"CONTROL"}'
-  _lenghts: 03000000030000000300000003000000
-  _values:
-  - 0
-  - 0
-  - 0
-  - 1
-  - 0
-  - 0.33333334
-  - 0
-  - 1
-  - 0.6666667
-  - 1
-  - 1
-  - 1
---- !u!114 &4296848410541003397
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7322790393580694940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1241259877, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  portId: headlightDecoder.FRONT_HEADLIGHTS_EXT_IN
-  ControlType: 8
-  controlBlocker: {fileID: 0}
---- !u!114 &5150044908588986739
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7322790393580694940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1241259877, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  portId: headlightDecoder.REAR_HEADLIGHTS_EXT_IN
-  ControlType: 9
-  controlBlocker: {fileID: 0}
 --- !u!1 &7483958804485480898
 GameObject:
   m_ObjectHideFlags: 0
@@ -11307,50 +10489,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.32909966, y: 0.30417967, z: 0.881053}
   m_Center: {x: -0.0876292, y: -0.017290354, z: 0.13877201}
---- !u!1 &7518197770075018083
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7841523046416182232}
-  - component: {fileID: 5128191971739665248}
-  m_Layer: 0
-  m_Name: voltageRegulator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7841523046416182232
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7518197770075018083}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5128191971739665248
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7518197770075018083}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 406090336, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: voltageRegulator
 --- !u!1 &7715385417702026152
 GameObject:
   m_ObjectHideFlags: 0
@@ -11620,7 +10758,7 @@ Transform:
   - {fileID: 440042568386564005}
   - {fileID: 6311265705450075334}
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 33
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8086878547219696958
 GameObject:
@@ -12047,67 +11185,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.1532587, y: 5.492685, z: 0.4239894}
   m_Center: {x: -0.00510873, y: 3.8328624, z: 0.09418754}
---- !u!1 &8264573763348835665
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5278558650307281328}
-  - component: {fileID: 7079563793826284017}
-  m_Layer: 0
-  m_Name: powerConsumptionCalculator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5278558650307281328
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8264573763348835665}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 5553214046666226146}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7079563793826284017
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8264573763348835665}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -90173034, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: powerConsumptionCalculator
-  aReader:
-    valueType: 100
-    ID: POWER_CONSUMPTION_0
-    writeAllowed: 0
-  bReader:
-    valueType: 100
-    ID: POWER_CONSUMPTION_1
-    writeAllowed: 0
-  addReadOut:
-    type: 3
-    valueType: 100
-    ID: POWER_CONSUMPTION_TOTAL
-  negativeA: 0
-  negativeB: 0
-  aJson: '{"ID":"POWER_CONSUMPTION_0","valueType":"POWER","writeAllowed":false}'
-  bJson: '{"ID":"POWER_CONSUMPTION_1","valueType":"POWER","writeAllowed":false}'
-  outJson: '{"ID":"POWER_CONSUMPTION_TOTAL","type":"READONLY_OUT","valueType":"POWER"}'
 --- !u!1 &8316345817769274570
 GameObject:
   m_ObjectHideFlags: 0
@@ -12139,66 +11216,6 @@ Transform:
   m_Father: {fileID: 1958210688369783621}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 180, y: 45, z: 90}
---- !u!1 &8363319753070530784
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6724719221828047605}
-  - component: {fileID: 4067577769749734992}
-  m_Layer: 0
-  m_Name: headlightsRLamp
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6724719221828047605
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8363319753070530784}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 21
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4067577769749734992
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8363319753070530784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -432747236, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: headlightsRLamp
-  offRangeMin: 0
-  offRangeMax: 0.01
-  onRangeUsed: 1
-  onRangeMin: 0.01
-  onRangeMax: Infinity
-  blinkRangeUsed: 0
-  blinkRangeMin: 0
-  blinkRangeMax: 0
-  playAudioOnValueDrop: 0
-  playAudioOnValueRaise: 0
-  inputReader:
-    valueType: 50
-    ID: INPUT
-    writeAllowed: 0
-  powerFuseId: fusebox.ELECTRONICS_MAIN
-  _json: '{"ID":"INPUT","valueType":"CONTROL","writeAllowed":false}'
 --- !u!1 &8426725595072060438
 GameObject:
   m_ObjectHideFlags: 0
@@ -12287,7 +11304,7 @@ Transform:
   - {fileID: 6551838259788655060}
   - {fileID: 6018566431985447737}
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 9
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6161193085729043934
 MonoBehaviour:
@@ -12490,67 +11507,6 @@ MonoBehaviour:
   ID: '[MainBreakerOffButton]'
   defaultValue: 0
   saveState: 0
---- !u!1 &8726798522586462502
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 756076799534625113}
-  - component: {fileID: 4942849852194960444}
-  m_Layer: 0
-  m_Name: tmRpmCalculator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &756076799534625113
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8726798522586462502}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4942849852194960444
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8726798522586462502}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1464646225, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: tmRpmCalculator
-  aReader:
-    valueType: 104
-    ID: WHEEL_RPM
-    writeAllowed: 0
-  bReader:
-    valueType: 0
-    ID: GEAR_RATIO
-    writeAllowed: 0
-  mulReadOut:
-    type: 3
-    valueType: 104
-    ID: TM_RPM
-  invertA: 0
-  invertB: 0
-  aJson: '{"ID":"WHEEL_RPM","valueType":"RPM","writeAllowed":false}'
-  bJson: '{"ID":"GEAR_RATIO","valueType":"GENERIC","writeAllowed":false}'
-  outJson: '{"ID":"TM_RPM","type":"READONLY_OUT","valueType":"RPM"}'
 --- !u!1 &8742633199367729356
 GameObject:
   m_ObjectHideFlags: 0
@@ -12670,7 +11626,7 @@ Transform:
   - {fileID: 5226011017984652857}
   - {fileID: 2123012867608650889}
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 29
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8861754024508044204
 GameObject:
@@ -12703,66 +11659,6 @@ Transform:
   m_Father: {fileID: 8475955283893482987}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &8874121062604347773
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8144323801775381710}
-  - component: {fileID: 2756644755387246472}
-  m_Layer: 0
-  m_Name: ampLamp
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8144323801775381710
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8874121062604347773}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 22
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2756644755387246472
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8874121062604347773}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -432747236, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: ampLamp
-  offRangeMin: 0
-  offRangeMax: 400
-  onRangeUsed: 1
-  onRangeMin: 400
-  onRangeMax: 700
-  blinkRangeUsed: 1
-  blinkRangeMin: 700
-  blinkRangeMax: Infinity
-  playAudioOnValueDrop: 0
-  playAudioOnValueRaise: 0
-  inputReader:
-    valueType: 105
-    ID: INPUT
-    writeAllowed: 0
-  powerFuseId: fusebox.ELECTRONICS_MAIN
-  _json: '{"ID":"INPUT","valueType":"AMPS","writeAllowed":false}'
 --- !u!1 &8896441511260024257
 GameObject:
   m_ObjectHideFlags: 0
@@ -12917,7 +11813,7 @@ Transform:
   m_Children:
   - {fileID: 2042265175884136376}
   m_Father: {fileID: 3849810944053019061}
-  m_RootOrder: 25
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &310041246773013363
 MonoBehaviour:
