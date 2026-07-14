@@ -1228,8 +1228,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 90
   jointAxis: {x: 0, y: 1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 30
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
@@ -1283,7 +1283,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 223249535835305909}
-  - {fileID: 1999278607231181141}
+  - {fileID: 6536884801283845085}
   m_Father: {fileID: 3790707829302347843}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -2243,8 +2243,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 90
   jointAxis: {x: 0, y: 1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 30
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
@@ -3193,7 +3193,7 @@ Transform:
   m_Children:
   - {fileID: 5183527156118121276}
   m_Father: {fileID: 6536884801283845085}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!33 &1226796202232098130
 MeshFilter:
@@ -3438,8 +3438,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 0
   jointAxis: {x: 0, y: -1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 30
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 100
@@ -3691,38 +3691,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7601137027796453993}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5962508930445697064
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1999278607231181141}
-  m_Layer: 0
-  m_Name: CabDoorWindow
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1999278607231181141
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5962508930445697064}
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.036159, y: 0.559935, z: -0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 6536884801283845085}
-  - {fileID: 2163417534514882733}
-  m_Father: {fileID: 8261980281971730414}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6061309123749079477
 GameObject:
@@ -4212,6 +4180,36 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &6591196195172203450
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1412853867332973855}
+  m_Layer: 0
+  m_Name: CabDoorWindowInteractionPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1412853867332973855
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6591196195172203450}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0416, y: 0, z: -0.506}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6536884801283845085}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6713218510183354631
 GameObject:
   m_ObjectHideFlags: 0
@@ -4225,7 +4223,7 @@ GameObject:
   - component: {fileID: 7551461260464476742}
   - component: {fileID: 8068402556707545287}
   m_Layer: 0
-  m_Name: C_CabDoorWindow
+  m_Name: CabDoorWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4238,13 +4236,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6713218510183354631}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.036159042, y: 0.5599351, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 1412853867332973855}
   - {fileID: 1594610205336615399}
-  m_Father: {fileID: 1999278607231181141}
-  m_RootOrder: 0
+  m_Father: {fileID: 8261980281971730414}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5381529728642248445
 MonoBehaviour:
@@ -4265,14 +4264,14 @@ MonoBehaviour:
     nearTouchPose: -1
     touchPose: -1
     grabPose: -1
-  nonVrStaticInteractionArea: {fileID: 8247141808057585353}
-  rigidbodyMass: 1
-  rigidbodyDrag: 1
+  nonVrStaticInteractionArea: {fileID: 0}
+  rigidbodyMass: 30
+  rigidbodyDrag: 5
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
   invertDirection: 0
-  interactionPoint: {fileID: 0}
+  interactionPoint: {fileID: 1412853867332973855}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
   scrollWheelHoverScroll: 3
@@ -4285,8 +4284,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 0
   jointAxis: {x: 0, y: -1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 20
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
@@ -5096,8 +5095,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 90
   jointAxis: {x: 0, y: 1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 30
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
@@ -5237,63 +5236,6 @@ MonoBehaviour:
   m_Script: {fileID: -43728086, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &9205386342009378840
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2163417534514882733}
-  - component: {fileID: 8247141808057585353}
-  - component: {fileID: 2215187144098317491}
-  m_Layer: 0
-  m_Name: IA_CabDoorWindow
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &2163417534514882733
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9205386342009378840}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1999278607231181141}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8247141808057585353
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9205386342009378840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -112135585, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!65 &2215187144098317491
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9205386342009378840}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.029617183, y: 0.4897491, z: 0.52755296}
-  m_Center: {x: -0.011048374, y: 0.0054829265, z: -0.26635343}
 --- !u!1001 &9181767099577100512
 PrefabInstance:
   m_ObjectHideFlags: 0
