@@ -34,7 +34,7 @@ internal class unit_B_sim: electric_device
     private readonly PoweredWheelsManager       _driving_axles;
     private readonly control_stand              _control_stand;
     private readonly red_ditch_light_controller _red_light_controller;
-
+    private readonly throttle_HUD               _HUD_notch_readout;
 
     private readonly Fuse _appliances, _main_breaker, _compressor_on, _control_air;
     private readonly Port _control_AB1, _control_BA1, _control_BA2;
@@ -48,7 +48,7 @@ internal class unit_B_sim: electric_device
     private readonly Action<float> set_independent_brake, set_sander;
     private readonly Action<float> throttle_relay, field_handle_relay, selector_relay;
 
-    private int   _secondary_camshaft_target_notch = 1;
+    private int   _secondary_camshaft_target_notch = 1, _primary_camshaft_current_notch;
     private bool  _cab_active = false;
     private float _integrity_refresh_time = 0.0f;
 
@@ -154,6 +154,7 @@ internal class unit_B_sim: electric_device
         _control_stand.register_handler("supply_volts", (float voltage) => _relative_voltage.Value = voltage / 1500.0f, needs_power: false);
         set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
         set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
+        _HUD_notch_readout = new(_control_stand.create_setter("throttle_HUD_readout"));
         _secondary_controller.notch_changed += signal_secondary_camshaft_notch;
 
         set_reverse_current_lamp = _control_stand.create_setter("reverse_current_lamp");
@@ -293,8 +294,9 @@ internal class unit_B_sim: electric_device
                 break;
         }
 
-        set_primary_notch(extract_signal_from_port_value(AB1, (int) AB1_signals.unit_A_camshaft_notch, 
-            (int) AB1_shift.unit_A_camshaft_notch));
+        _primary_camshaft_current_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_A_camshaft_notch, 
+            (int) AB1_shift.unit_A_camshaft_notch);
+        set_primary_notch(_primary_camshaft_current_notch);
         set_reverse_current_lamp(port_value_signal_active(AB1, (int) AB1_signals.reverse_current) ? 1.0f : 0.0f);
         set_transition_lamp     (port_value_signal_active(AB1, (int) AB1_signals.transition     ) ? 0.5f : 0.0f);
 
@@ -313,7 +315,9 @@ internal class unit_B_sim: electric_device
         resistor_heat.simulate_overheat_damage(damage_per_frame: _resistor_damage, resistor_temperature: _resistor_temperature.Value);
         _pantograph.simulate(_total_load.Value);
 
-        set_seconday_notch(_secondary_controller.current_position);
+        float secondary_position = _secondary_controller.current_position;
+        set_seconday_notch(secondary_position);
+        _HUD_notch_readout.update(_primary_camshaft_current_notch, Mathf.RoundToInt(secondary_position));
         _integrity_refresh_time -= Time.deltaTime;
         if (_integrity_refresh_time <= 0.0f)
         {

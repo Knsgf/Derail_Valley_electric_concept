@@ -53,6 +53,7 @@ internal partial class unit_A_sim: electric_device
     private readonly red_ditch_light_controller _red_light_controller;
     private readonly dummy_voltage_regulator    _traction_motor_temperature;
     private readonly electricity_meter          _meter;
+    private readonly throttle_HUD               _HUD_notch_readout;
     
     private readonly TrainCar _unit;
 
@@ -184,6 +185,7 @@ internal partial class unit_A_sim: electric_device
         set_motors_volts   = _control_stand.create_setter(        "motors_volts");
         set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
         set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
+        _HUD_notch_readout = new(_control_stand.create_setter("throttle_HUD_readout"));
         set_motor_group_load  = new Action<float>[3];
         set_motor_group_field = new Action<float>[3];
         for (int group = 1; group <= 3; ++group)
@@ -563,7 +565,9 @@ internal partial class unit_A_sim: electric_device
         }
         _total_load.Value = current_draw;
         
-        set_primary_notch(_contactors._primary_controller.current_position);
+        float primary_current_position = _contactors._primary_controller.current_position;
+        set_primary_notch(primary_current_position);
+        _HUD_notch_readout.update(Mathf.RoundToInt(primary_current_position), _secondary_camshaft_notch);
         _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_on , false);
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_off, false);

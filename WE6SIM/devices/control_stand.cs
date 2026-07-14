@@ -42,6 +42,7 @@ internal class control_stand: electric_device
 
         ["primary_notch_hand"  ] = "[CustomSimulation].PRIMARY_NOTCH",
         ["secondary_notch_hand"] = "[CustomSimulation].SECONDARY_NOTCH",
+        ["throttle_HUD_readout"] = "[CustomGauges].HUD_THROTTLE",
         ["supply_volts"        ] = "[CustomGauges].SUPPLY",
         ["motors_volts"        ] = "[CustomGauges].ALL_MOTOR_TERMINAL",
         //["total_load"          ] = "[CustomGauges].CURRENT_DRAW",

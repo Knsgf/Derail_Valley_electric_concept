@@ -5418,7 +5418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: hornControl
   defaultValue: 0
-  smoothTime: 0.2
+  smoothTime: 0.5
   saveState: 0
 --- !u!114 &3948537807576607877
 MonoBehaviour:
@@ -10731,7 +10731,12 @@ MonoBehaviour:
       valueType: 51
       ID: RESISTANCE_NOTCH
     StartingValue: 0
-  _json: '[{"Port":{"ID":"SUPPLY","type":"OUT","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"ALL_MOTOR_TERMINAL","type":"OUT","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP1","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP1","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP2","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP2","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP3","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP3","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"CURRENT_DRAW","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"RED_DITCH_LIGHT","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"REVERSE_CURRENT","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"TRANSITION","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"RESISTANCE_NOTCH","type":"OUT","valueType":"STATE"},"StartingValue":0}]'
+  - Port:
+      type: 1
+      valueType: 51
+      ID: HUD_THROTTLE
+    StartingValue: 0
+  _json: '[{"Port":{"ID":"SUPPLY","type":"OUT","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"ALL_MOTOR_TERMINAL","type":"OUT","valueType":"VOLTS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP1","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP1","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP2","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP2","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"LOAD_GROUP3","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"FIELD_GROUP3","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"CURRENT_DRAW","type":"OUT","valueType":"AMPS"},"StartingValue":0},{"Port":{"ID":"RED_DITCH_LIGHT","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"REVERSE_CURRENT","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"TRANSITION","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"RESISTANCE_NOTCH","type":"OUT","valueType":"STATE"},"StartingValue":0},{"Port":{"ID":"HUD_THROTTLE","type":"OUT","valueType":"STATE"},"StartingValue":0}]'
 --- !u!1 &7305432553315637780
 GameObject:
   m_ObjectHideFlags: 0
