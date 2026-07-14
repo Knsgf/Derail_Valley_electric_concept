@@ -1166,6 +1166,7 @@ GameObject:
   - component: {fileID: 8593098763566213569}
   - component: {fileID: 4759095719573298480}
   - component: {fileID: 7494255220765091274}
+  - component: {fileID: 15944355860198515}
   m_Layer: 0
   m_Name: MachineryRoomDoor
   m_TagString: Untagged
@@ -1252,6 +1253,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[MachineryRoomDoor].EXT_IN'
+--- !u!114 &15944355860198515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 863112142778048120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 4759095719573298480}
+  Replacements:
+  - ReplacementName: LeverDrag_01_MetalLightGrind
+    FieldName: drag
+    IsArray: 0
+    ArrayIndex: 0
+  - ReplacementName: LeverLimit_09_Door
+    FieldName: limitHit
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"drag","IsArray":false,"ReplacementName":"LeverDrag_01_MetalLightGrind"},{"ArrayIndex":0,"FieldName":"limitHit","IsArray":false,"ReplacementName":"LeverLimit_09_Door"}]'
 --- !u!1 &873236758545495253
 GameObject:
   m_ObjectHideFlags: 0
@@ -2181,6 +2205,7 @@ GameObject:
   - component: {fileID: 8507776984669936275}
   - component: {fileID: 7102344708923235553}
   - component: {fileID: 582764358926255104}
+  - component: {fileID: 3820542282219799241}
   m_Layer: 0
   m_Name: CabBackDoor
   m_TagString: Untagged
@@ -2280,6 +2305,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   closedAtZero: 1
+--- !u!114 &3820542282219799241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3377806918452832350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 8507776984669936275}
+  Replacements:
+  - ReplacementName: LeverDrag_01_MetalLightGrind
+    FieldName: drag
+    IsArray: 0
+    ArrayIndex: 0
+  - ReplacementName: LeverLimit_09_Door
+    FieldName: limitHit
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"drag","IsArray":false,"ReplacementName":"LeverDrag_01_MetalLightGrind"},{"ArrayIndex":0,"FieldName":"limitHit","IsArray":false,"ReplacementName":"LeverLimit_09_Door"}]'
 --- !u!1 &3770693297385830472
 GameObject:
   m_ObjectHideFlags: 0
@@ -3376,6 +3424,7 @@ GameObject:
   - component: {fileID: 8275735404616321884}
   - component: {fileID: 1826032829589099926}
   - component: {fileID: 7159203754970681043}
+  - component: {fileID: 2611625675782466066}
   m_Layer: 0
   m_Name: LeftCabDoor
   m_TagString: Untagged
@@ -3475,6 +3524,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   closedAtZero: 1
+--- !u!114 &2611625675782466066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5070802923569647432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 8275735404616321884}
+  Replacements:
+  - ReplacementName: LeverDrag_01_MetalLightGrind
+    FieldName: drag
+    IsArray: 0
+    ArrayIndex: 0
+  - ReplacementName: LeverLimit_09_Door
+    FieldName: limitHit
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"drag","IsArray":false,"ReplacementName":"LeverDrag_01_MetalLightGrind"},{"ArrayIndex":0,"FieldName":"limitHit","IsArray":false,"ReplacementName":"LeverLimit_09_Door"}]'
 --- !u!1 &5114731353728123125
 GameObject:
   m_ObjectHideFlags: 0
@@ -4222,6 +4294,7 @@ GameObject:
   - component: {fileID: 5381529728642248445}
   - component: {fileID: 7551461260464476742}
   - component: {fileID: 8068402556707545287}
+  - component: {fileID: 1072031308220548934}
   m_Layer: 0
   m_Name: CabDoorWindow
   m_TagString: Untagged
@@ -4321,6 +4394,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   closedAtZero: 1
+--- !u!114 &1072031308220548934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6713218510183354631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 5381529728642248445}
+  Replacements:
+  - ReplacementName: LeverDrag_03_MetalLightGrind
+    FieldName: drag
+    IsArray: 0
+    ArrayIndex: 0
+  - ReplacementName: LeverLimit_03_MountLight
+    FieldName: limitHit
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"drag","IsArray":false,"ReplacementName":"LeverDrag_03_MetalLightGrind"},{"ArrayIndex":0,"FieldName":"limitHit","IsArray":false,"ReplacementName":"LeverLimit_03_MountLight"}]'
 --- !u!1 &6715853986896959351
 GameObject:
   m_ObjectHideFlags: 0
@@ -5033,6 +5129,7 @@ GameObject:
   - component: {fileID: 4761825068759429559}
   - component: {fileID: 6993112469306609466}
   - component: {fileID: 3902679427868027960}
+  - component: {fileID: 2852048081511448206}
   m_Layer: 0
   m_Name: GangwayDoor
   m_TagString: Untagged
@@ -5119,6 +5216,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[GangwayDoor].EXT_IN'
+--- !u!114 &2852048081511448206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8188987458477445089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1591213018, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScriptToAffect: {fileID: 6993112469306609466}
+  Replacements:
+  - ReplacementName: LeverDrag_01_MetalLightGrind
+    FieldName: drag
+    IsArray: 0
+    ArrayIndex: 0
+  - ReplacementName: LeverLimit_09_Door
+    FieldName: limitHit
+    IsArray: 0
+    ArrayIndex: 0
+  _json: '[{"ArrayIndex":0,"FieldName":"drag","IsArray":false,"ReplacementName":"LeverDrag_01_MetalLightGrind"},{"ArrayIndex":0,"FieldName":"limitHit","IsArray":false,"ReplacementName":"LeverLimit_09_Door"}]'
 --- !u!1 &8288135798815132834
 GameObject:
   m_ObjectHideFlags: 0
