@@ -4,11 +4,11 @@ using System;
 using Newtonsoft.Json;
 using UnityEngine;
 
-using WE6SIM.utilities;
+using electric_sim.utilities;
 
-using static WE6SIM.utilities.world_position;
+using static electric_sim.utilities.world_position;
 
-namespace WE6SIM.catenary;
+namespace electric_sim.catenary;
 
 interface catenary_object_user
 {

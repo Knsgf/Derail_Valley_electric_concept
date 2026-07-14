@@ -10,10 +10,10 @@ using LocoSim.Implementations;
 
 using UnityEngine;
 
-using WE6SIM.catenary_editor;
-using WE6SIM.utilities;
+using electric_sim.catenary_editor;
+using electric_sim.utilities;
 
-namespace WE6SIM.unit_A;
+namespace electric_sim.unit_A;
 
 internal class electricity_meter: IDisposable
 {

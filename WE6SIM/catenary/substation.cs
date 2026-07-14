@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 
-using WE6SIM.catenary_editor;
-using WE6SIM.utilities;
+using electric_sim.catenary_editor;
+using electric_sim.utilities;
 
-namespace WE6SIM.catenary;
+namespace electric_sim.catenary;
 
 interface power_supply: catenary_object_user
 { }

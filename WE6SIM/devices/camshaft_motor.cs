@@ -6,7 +6,7 @@ using UnityEngine;
 
 using LocoSim.Implementations;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 internal class camshaft_motor: electric_device
 {

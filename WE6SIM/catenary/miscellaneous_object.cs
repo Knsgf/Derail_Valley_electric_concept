@@ -4,7 +4,7 @@ using System;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace WE6SIM.catenary;
+namespace electric_sim.catenary;
 
 internal partial class overhead_equipment
 {

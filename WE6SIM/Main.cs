@@ -9,9 +9,9 @@ using static UnityModManagerNet.UnityModManager;
 
 using LocoSim.Implementations;
 
-using WE6SIM.catenary_editor;
+using electric_sim.catenary_editor;
 
-namespace WE6SIM;
+namespace electric_sim;
 
 public static class Main
 {

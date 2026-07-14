@@ -4,9 +4,9 @@ using UnityEngine;
 
 using LocoSim.Implementations;
 
-using WE6SIM.devices;
+using electric_sim.devices;
 
-namespace WE6SIM.unit_A;
+namespace electric_sim.unit_A;
 
 internal partial class unit_A_sim
 {

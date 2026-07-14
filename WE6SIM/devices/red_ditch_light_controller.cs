@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 using LocoSim.Implementations;
 
-using WE6SIM.utilities;
+using electric_sim.utilities;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 internal class red_ditch_light_controller: electric_device
 {

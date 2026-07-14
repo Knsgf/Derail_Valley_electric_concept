@@ -3,7 +3,7 @@
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace WE6SIM.catenary;
+namespace electric_sim.catenary;
 
 interface side_rail_pole_user: pole_user, cantilever_user
 {

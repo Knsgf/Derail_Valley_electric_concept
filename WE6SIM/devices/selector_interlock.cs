@@ -6,9 +6,9 @@ using UnityEngine;
 
 using LocoSim.Implementations;
 
-using static WE6SIM.devices.control_stand;
+using static electric_sim.devices.control_stand;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 internal class selector_interlock(Action<float> unit_selector_handler, float handle_initial_position)
 {

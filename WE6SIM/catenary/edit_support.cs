@@ -10,12 +10,12 @@ using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
 
-using WE6SIM.catenary_editor;
-using WE6SIM.utilities;
+using electric_sim.catenary_editor;
+using electric_sim.utilities;
 
-using static WE6SIM.utilities.world_position;
+using static electric_sim.utilities.world_position;
 
-namespace WE6SIM.catenary;
+namespace electric_sim.catenary;
 
 #if DEBUG
 internal partial class overhead_equipment

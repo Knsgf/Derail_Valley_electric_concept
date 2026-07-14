@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace WE6SIM.catenary;
+namespace electric_sim.catenary;
 
 interface cantilever_user: catenary_object_user
 {

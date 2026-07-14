@@ -7,9 +7,9 @@ using UnityEngine;
 
 using LocoSim.Implementations;
 
-using WE6SIM.utilities;
+using electric_sim.utilities;
 
-namespace WE6SIM.unit_A;
+namespace electric_sim.unit_A;
 
 internal class resistor_heat
 {

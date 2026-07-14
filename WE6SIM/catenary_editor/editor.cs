@@ -9,14 +9,14 @@ using UnityEngine;
 
 using UnityModManagerNet;
 
-using WE6SIM.catenary;
-using WE6SIM.utilities;
+using electric_sim.catenary;
+using electric_sim.utilities;
 
 using static UnityModManagerNet.UnityModManager;
-using static WE6SIM.catenary.overhead_equipment;
-using static WE6SIM.utilities.world_position;
+using static electric_sim.catenary.overhead_equipment;
+using static electric_sim.utilities.world_position;
 
-namespace WE6SIM.catenary_editor;
+namespace electric_sim.catenary_editor;
 
 internal static class editor
 {

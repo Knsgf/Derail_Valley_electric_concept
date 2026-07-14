@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace WE6SIM.circuit_sim;
+namespace electric_sim.circuit_sim;
 
 internal partial class circuit_builder
 {

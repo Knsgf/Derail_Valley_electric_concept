@@ -2,10 +2,10 @@
 
 using System.Collections.Generic;
 
-using WE6SIM.devices;
-using WE6SIM.unit_B;
+using electric_sim.devices;
+using electric_sim.unit_B;
 
-namespace WE6SIM.unit_A;
+namespace electric_sim.unit_A;
 
 internal partial class unit_A_sim
 {

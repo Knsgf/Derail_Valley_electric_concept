@@ -5,7 +5,7 @@ using System;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace WE6SIM.catenary;
+namespace electric_sim.catenary;
 
 interface pole_user: catenary_object_user
 {

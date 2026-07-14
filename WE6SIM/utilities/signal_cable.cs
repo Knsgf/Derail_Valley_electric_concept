@@ -4,7 +4,7 @@ using System;
 
 using LocoSim.Implementations;
 
-namespace WE6SIM.utilities;
+namespace electric_sim.utilities;
 
 internal static class signal_cable
 {

@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 
-using WE6SIM.utilities;
+using electric_sim.utilities;
 
-namespace WE6SIM.circuit_sim;
+namespace electric_sim.circuit_sim;
 
 internal partial class circuit
 {

@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-using WE6SIM.utilities;
+using electric_sim.utilities;
 
-using static WE6SIM.devices.control_stand;
+using static electric_sim.devices.control_stand;
 
-namespace WE6SIM.unit_A;
+namespace electric_sim.unit_A;
 
 internal partial class unit_A_sim
 {

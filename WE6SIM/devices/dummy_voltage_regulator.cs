@@ -6,9 +6,9 @@ using UnityEngine;
 
 using LocoSim.Implementations;
 
-using WE6SIM.utilities;
+using electric_sim.utilities;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 // Receives traction motor heat emission from the main simulation and feeds input voltage
 // to vanilla TractionMotorSet in such a way so that its heat generation matches

@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Generic;
 
-using WE6SIM.circuit_sim;
-using WE6SIM.utilities;
+using electric_sim.circuit_sim;
+using electric_sim.utilities;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 internal class camshaft_contactor_set: electric_device
 {

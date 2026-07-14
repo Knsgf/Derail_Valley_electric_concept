@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-namespace WE6SIM.utilities;
+namespace electric_sim.utilities;
 
 internal static class hierarchy_traversal
 {

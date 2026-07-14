@@ -11,15 +11,15 @@ using DV.Simulation.Cars;
 using LocoSim.Implementations;
 using LocoSim.Implementations.Wheels;
 
-using WE6SIM.devices;
-using WE6SIM.unit_A;
-using WE6SIM.utilities;
+using electric_sim.devices;
+using electric_sim.unit_A;
+using electric_sim.utilities;
 
-using static WE6SIM.devices.control_stand;
-using static WE6SIM.utilities.sensor_grabber;
-using static WE6SIM.utilities.signal_cable;
+using static electric_sim.devices.control_stand;
+using static electric_sim.utilities.sensor_grabber;
+using static electric_sim.utilities.signal_cable;
 
-namespace WE6SIM.unit_B;
+namespace electric_sim.unit_B;
 
 internal class unit_B_sim: electric_device
 {

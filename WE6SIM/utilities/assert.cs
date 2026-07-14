@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace WE6SIM.utilities;
+namespace electric_sim.utilities;
 
 internal static class assert
 {

@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using UnityEngine;
 
-namespace WE6SIM.circuit_sim;
+namespace electric_sim.circuit_sim;
 
 internal partial class sparse_matrix
 {

@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 
-using WE6SIM.utilities;
+using electric_sim.utilities;
 
-namespace WE6SIM.catenary;
+namespace electric_sim.catenary;
 
 internal partial class overhead_equipment
 {

@@ -7,10 +7,10 @@ using UnityEngine;
 
 using LocoSim.Implementations;
 
-using WE6SIM.utilities;
-using WE6SIM.unit_A;
+using electric_sim.utilities;
+using electric_sim.unit_A;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 internal class control_stand: electric_device
 {

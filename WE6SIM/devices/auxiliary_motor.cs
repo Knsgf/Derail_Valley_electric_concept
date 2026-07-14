@@ -4,7 +4,7 @@ using UnityEngine;
 
 using LocoSim.Implementations;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 internal class auxiliary_motor
 {

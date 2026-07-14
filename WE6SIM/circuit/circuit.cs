@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using WE6SIM.utilities;
+using electric_sim.utilities;
 
-using static WE6SIM.circuit_sim.circuit_builder;
+using static electric_sim.circuit_sim.circuit_builder;
 
-namespace WE6SIM.circuit_sim;
+namespace electric_sim.circuit_sim;
 
 internal class MalformedCircuitException(string message): Exception(message)
 { }

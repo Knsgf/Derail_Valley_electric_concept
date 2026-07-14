@@ -10,15 +10,15 @@ using UnityEngine;
 using DV.ThingTypes;
 using LocoSim.Implementations;
 
-using WE6SIM.catenary;
-using WE6SIM.unit_A;
-using WE6SIM.unit_B;
+using electric_sim.catenary;
+using electric_sim.unit_A;
+using electric_sim.unit_B;
 
 #if DEBUG
-using WE6SIM.catenary_editor;
+using electric_sim.catenary_editor;
 #endif
 
-namespace WE6SIM;
+namespace electric_sim;
 
 [HarmonyPatch(typeof(CarSpawner), "Awake")]
 internal static class car_spawn_handler

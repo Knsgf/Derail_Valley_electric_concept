@@ -4,7 +4,7 @@ using System;
 
 using LocoSim.Implementations;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 internal class electric_device: IDisposable
 {

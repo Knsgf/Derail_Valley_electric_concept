@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 internal class throttle_HUD(Action<float> HUD_setter)
 {

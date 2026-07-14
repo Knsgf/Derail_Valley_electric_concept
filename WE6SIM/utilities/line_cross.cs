@@ -4,7 +4,7 @@ using System;
 
 using UnityEngine;
 
-namespace WE6SIM.utilities;
+namespace electric_sim.utilities;
 
 internal class line_cross
 {

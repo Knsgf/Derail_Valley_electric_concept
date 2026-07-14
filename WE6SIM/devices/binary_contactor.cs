@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 using LocoSim.Implementations;
 
-using WE6SIM.circuit_sim;
+using electric_sim.circuit_sim;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 interface contactor: IDisposable
 {

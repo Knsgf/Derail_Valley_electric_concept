@@ -8,12 +8,12 @@ using UnityEngine;
 using DV.Simulation.Brake;
 using LocoSim.Implementations;
 
-using WE6SIM.devices;
-using WE6SIM.utilities;
+using electric_sim.devices;
+using electric_sim.utilities;
 
-using static WE6SIM.utilities.signal_cable;
+using static electric_sim.utilities.signal_cable;
 
-namespace WE6SIM.unit_B;
+namespace electric_sim.unit_B;
 
 internal class battery_panel: electric_device
 {

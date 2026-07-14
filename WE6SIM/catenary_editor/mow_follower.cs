@@ -7,9 +7,9 @@ using UnityEngine;
 
 using DV.ThingTypes;
 
-using WE6SIM.catenary;
+using electric_sim.catenary;
 
-namespace WE6SIM.catenary_editor;
+namespace electric_sim.catenary_editor;
 
 internal class mow_follower: IDisposable
 {

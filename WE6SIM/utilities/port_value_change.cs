@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 using LocoSim.Implementations;
 
-namespace WE6SIM.utilities;
+namespace electric_sim.utilities;
 
 internal struct port_value_change
 {

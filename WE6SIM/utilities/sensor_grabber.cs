@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using LocoSim.Implementations;
 
-namespace WE6SIM.utilities;
+namespace electric_sim.utilities;
 
 internal static class sensor_grabber
 {

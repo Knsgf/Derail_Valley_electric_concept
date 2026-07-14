@@ -9,10 +9,10 @@ using LocoSim.Implementations;
 
 using UnityEngine;
 
-using WE6SIM.catenary;
-using WE6SIM.utilities;
+using electric_sim.catenary;
+using electric_sim.utilities;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
 public class pantograph_part(string part_name): Attribute

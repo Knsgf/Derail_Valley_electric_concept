@@ -10,13 +10,13 @@ using UnityEngine;
 
 using DV.Utils;
 
-using WE6SIM.catenary_editor;
-using WE6SIM.utilities;
+using electric_sim.catenary_editor;
+using electric_sim.utilities;
 
 using static UnityModManagerNet.UnityModManager;
-using static WE6SIM.utilities.world_position;
+using static electric_sim.utilities.world_position;
 
-namespace WE6SIM.catenary;
+namespace electric_sim.catenary;
 
 internal partial class overhead_equipment
 {

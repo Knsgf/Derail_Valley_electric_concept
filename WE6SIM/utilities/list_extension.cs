@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace WE6SIM.utilities;
+namespace electric_sim.utilities;
 
 internal static class list_extension
 {

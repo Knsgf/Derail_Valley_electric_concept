@@ -2,7 +2,7 @@
 
 using System.Diagnostics;
 
-namespace WE6SIM.utilities;
+namespace electric_sim.utilities;
 
 internal static class log_stack
 {

@@ -6,9 +6,9 @@ using LocoSim.Implementations;
 
 using UnityEngine;
 
-using WE6SIM.utilities;
+using electric_sim.utilities;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 internal class roof_busbar: electric_device
 {

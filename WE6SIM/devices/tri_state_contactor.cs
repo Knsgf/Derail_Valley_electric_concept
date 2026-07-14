@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 using LocoSim.Implementations;
 
-using WE6SIM.circuit_sim;
+using electric_sim.circuit_sim;
 
-namespace WE6SIM.devices;
+namespace electric_sim.devices;
 
 // A binary contactor with a defined intermediate state, used to either prevent or ensure a short circuit when switching
 internal class tri_state_contactor: electric_device, contactor

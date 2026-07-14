@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEngine;
 
-using WE6SIM.utilities;
+using electric_sim.utilities;
 
-namespace WE6SIM.catenary;
+namespace electric_sim.catenary;
 
 interface gantry_user: catenary_object_user
 {

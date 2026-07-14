@@ -8,12 +8,12 @@ using Newtonsoft.Json;
 
 using UnityModManagerNet;
 
-using WE6SIM.catenary;
-using WE6SIM.devices;
+using electric_sim.catenary;
+using electric_sim.devices;
 
 using static UnityModManagerNet.UnityModManager;
 
-namespace WE6SIM.catenary_editor;
+namespace electric_sim.catenary_editor;
 
 public struct stored_settings
 {
