@@ -23,6 +23,7 @@ internal class electricity_meter: IDisposable
     private readonly float _zero_energy, _negative_zero_energy, _usage_factor;
 
     private float _last_integrity = float.MaxValue;     // Workaround for integrity being zero during game load phase
+    private volatile float _new_remainder;
 
     public electricity_meter(Dictionary<string, Port> ports)
     {
@@ -47,10 +48,10 @@ internal class electricity_meter: IDisposable
 
     private float add_with_remainder(float a, float b, ref float remainder)
     {
-        float sum           = a + b + remainder;
-        float new_remainder = sum - a;
-        new_remainder      -= b;
-        remainder          -= new_remainder;
+        float sum       = a + b + remainder;
+        _new_remainder  = sum - a;
+        _new_remainder -= b;
+        remainder      -= _new_remainder;
         return sum;
     }
     
