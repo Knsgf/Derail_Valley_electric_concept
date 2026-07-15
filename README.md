@@ -20,7 +20,7 @@ The debug version [Catenary-DC-debug.zip](https://github.com/Knsgf/Derail_Valley
 ### Other limitations
 This mod is **incompatible** with VR and multiplayer, as the author doesn't have means to do proper tests in either. It also won't work properly with Double-Tracked Valley, as mainlines would have to be redone to support it.
 
-Only 2 lines are electrified at the moment: a short FM-SM route and FF-IME/CME with a short downhill branch towards SM. THe flat section between OWN and SM **is not electrified.** The debug version includes a partially done CP-FF mainline, but it's not usable at the moment.
+Only 2 lines are electrified at the moment: a short FM-SM route and FF-IME/CME with a short downhill branch towards SM. The flat section between OWN and SM **is not electrified.** The debug version includes a partially done CP-FF mainline, but it's not usable at the moment.
 
 The height of the locomotive causes it to clip through water standpipes and chutes at SM and IME. The collision with them is not enforced and players are free to ignore these.
 
@@ -28,10 +28,12 @@ The catenary has no hitboxes to both help with performance and permit players to
 
 There are interior pop-ins when crossing units.
 
-Gadgets which directly control a locomotive, such as amp limiter or overheat protector, are **not compatible** with WE6. Neither is "Start-up" function of the comms radio.
+Gadgets which directly control a locomotive, such as amp limiter or overheat protector, are **not compatible**. Neither is "Start-up" function of the comms radio.
 
 An installed inclinometer gadget shows 1-2° lean forward on a level track.
 
 Some details, like physical horns, sand pipes, bogie centering devices and underframe air ducts, are also missing.
+
+Whistle levers can only be operated with a mouse.
 
 For debugging purposes pantograph wear is tracked separately as a "mechanical powertrain". It'll be merged into electrical later.
