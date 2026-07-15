@@ -2902,6 +2902,8 @@ MonoBehaviour:
   - tm.HEAT_OUT
   - tm.AMPS_PER_TM
   - '[CustomSimulation].MOTOR_INTEGRITY'
+  - '[ElectricityMeter].AMOUNT'
+  - '[LeftoverMeter].EXT_IN'
   PortReferenceIds:
   - tm.APPLIED_VOLTAGE
   - tm.MOTOR_RPM

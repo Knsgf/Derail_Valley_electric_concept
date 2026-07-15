@@ -22,7 +22,7 @@ internal class electricity_meter: IDisposable
     private readonly Port  _consumption, _regeneration, _energy, _leftover_bank, _powertrain;
     private readonly float _zero_energy, _negative_zero_energy, _usage_factor;
 
-    private float _last_integrity;
+    private float _last_integrity = float.MaxValue;     // Workaround for integrity being zero during game load phase
 
     public electricity_meter(Dictionary<string, Port> ports)
     {
@@ -35,13 +35,12 @@ internal class electricity_meter: IDisposable
         _powertrain.ValueUpdatedInternally += track_powertrain_integrity;
 
         _negative_zero_energy = -_zero_energy;
-        _last_integrity       = _powertrain.Value;
         _usage_factor         = (editor_settings.kWh_price / energy_unit_price) / (1000.0f * 3600.0f);
     }
 
     private void track_powertrain_integrity(float integrity)
     {
-        if (integrity - _last_integrity > 0.01f)
+        if (integrity - _last_integrity >= 0.001f)
             _leftover_bank.Value = 0.0f;
         _last_integrity = integrity;
     }
