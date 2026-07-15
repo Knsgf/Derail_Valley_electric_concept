@@ -1,4 +1,4 @@
-### WE6-981 - an electric locomotive proof of concept for Derail Valley
+### 2WE3-981 - an electric locomotive proof of concept for Derail Valley
 This is an experimental heavy freight electric locomotive mod for Derail Valley.
 ### Installation
 1. Install [Unity Mod Manager](https://www.nexusmods.com/site/mods/21) (UMM),
