@@ -15,7 +15,7 @@ Electricity price in career is set to $10/kWh by default. It can be changed in m
 
 When spawning the locomotive in sandbox via the radio, make sure that units A and B are facing in the same direction and the arrow "front" of unit B is touching the arrows "back" of unit A. The order in which units are spawned doesn't matter: it's possible to bring in unit B first, then A and vice versa.
 
-The debug version ([Catenary-DC-debug.zip])(https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.0.0/Catenary-DC-debug.zip)) includes an infinite power cheat, toggleable in mod settings. When enabled it allows the locomotive to run anywhere on the map. However it doesn't disable electricity costs.
+The debug version [Catenary-DC-debug.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.0.0/Catenary-DC-debug.zip) includes an infinite power cheat, toggleable in mod settings. When enabled it allows the locomotive to run anywhere on the map. However it doesn't disable electricity costs.
 
 ### Other limitations
 This mod is **incompatible** with VR and multiplayer, as the author doesn't have means to do proper tests in either. It also won't work properly with Double-Tracked Valley, as mainlines would have to be redone to support it.
