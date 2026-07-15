@@ -10,6 +10,7 @@ using static UnityModManagerNet.UnityModManager;
 using LocoSim.Implementations;
 
 using electric_sim.catenary_editor;
+using System.Diagnostics;
 
 namespace electric_sim;
 
@@ -23,15 +24,17 @@ public static class Main
     public static Port? diagnostics2 { get; set; }
     public static ModEntry? mod_info { get; private set; }
     
+    [Conditional("DEBUG")]
     public static void log(string message)
     {
         _logger?.Log(message);
     }
 
     // UMM's logger is not thread-safe!
+    [Conditional("DEBUG")]
     public static void background_log(string message)
     {
-        Console.WriteLine($"[WE6SIM background] {message}");
+        Console.WriteLine($"[Catenary-DC background] {message}");
     }
 
     public static bool Load(ModEntry mod)
@@ -45,7 +48,7 @@ public static class Main
             code_injector.PatchAll(Assembly.GetExecutingAssembly());
 
             // Other plugin startup logic
-            log("WE6SIM started");
+            log("Catenary-DC started");
             mod_info = mod;
             editor_settings.set_up(mod);
         }

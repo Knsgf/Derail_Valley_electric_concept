@@ -112,6 +112,7 @@ internal static class car_spawn_handler
                 continue;
             Main.log($"{port.id} {port.type} {port.valueType}");
             all_ports[port.id] = port;
+#if DEBUG
             if (is_unit_a)
             {
                 switch (port.id)
@@ -133,6 +134,7 @@ internal static class car_spawn_handler
                         break;
                 }
             }
+#endif
         }
 
         //if (vehicle.gameObject != null)
