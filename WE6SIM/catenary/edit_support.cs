@@ -20,7 +20,7 @@ internal partial class overhead_equipment
 {
     private static readonly string? _local_repository_path = null;
 
-    private bool _poles_sunk = false;
+    private bool _poles_sunk = false, _store_scenery = false;
     
     private _type_ add_scenery_object<_type_>(Func<int, int, float, Quaternion, _type_> constructor, 
         Vector3 relative_position, Quaternion orientation)

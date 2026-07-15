@@ -25,8 +25,6 @@ internal partial class overhead_equipment
     [JsonObject]
     private class catenary_object: catenary_object_user
     {
-        private static readonly GameObject _invisible_object = new("InvisibleCatenaryObject");
-        
         [JsonIgnore]
         public GameObject? entity = null;
         [JsonIgnore]
@@ -40,15 +38,14 @@ internal partial class overhead_equipment
         public float y;
 
         [JsonIgnore]
-        protected GameObject template { get; private set; }
+        protected GameObject? template { get; private set; }
 
         protected catenary_object(string template_name, int x, int z, float y, Quaternion orientation)
         {
-            if (!system._templates.TryGetValue(template_name, out GameObject template))
+            if (!system._templates.TryGetValue(template_name, out GameObject? template))
             {
                 if (!string.Equals(template_name, "GantryArrow", StringComparison.Ordinal))
                     throw new ArgumentException($"{template_name} not defined");
-                template = _invisible_object;
             }
             this.template    = template;
             this.orientation = orientation;
@@ -75,10 +72,13 @@ internal partial class overhead_equipment
         }
 #endif
 
-        public virtual void reveal()
+        public virtual bool reveal()
         {
+            if (template is null)
+                return false;
             is_visible = true;
             entity   ??= GameObject.Instantiate(template, world_position.get_relative_position(x, z, y), orientation);
+            return true;
         }
 
         public virtual void hide_when_out_of_view()

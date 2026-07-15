@@ -101,11 +101,13 @@ internal partial class overhead_equipment
 #endif
         }
 
-        public override void reveal()
+        public override bool reveal()
         {
+            assert.test(template is not null);
             is_visible = true;
             entity ??= GameObject.Instantiate(template, get_frame_relative_position(x, z, y, orientation, _stretch), orientation);
             entity.transform.localScale = new Vector3(_stretch, 1.0f, 1.0f);
+            return true;
         }
 
 #if DEBUG

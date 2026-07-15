@@ -154,7 +154,7 @@ internal partial class overhead_equipment
             secondary_location.localScale    = secondary_vertical_scale;
         }
         
-        public override void reveal()
+        public override bool reveal()
         {
             is_visible = true;
             if (entity is null)
@@ -164,6 +164,7 @@ internal partial class overhead_equipment
                 entity_location.position  = get_relative_position();
                 entity_location.rotation  = orientation;
 
+                assert.test(template is not null);
                 reveal_part("ShearA", entity_location, Vector3.zero, template, 
                     _primary_vertical_orientation, _primary_vertical_scale, _secondary_vertical_scale,
                     ref _primary_transform, ref _secondary_transform);
@@ -174,6 +175,7 @@ internal partial class overhead_equipment
                         ref _fixed_primary_transform, ref _fixed_secondary_transform);
                 }
             }
+            return true;
         }
 
         public override void hide_when_out_of_view()

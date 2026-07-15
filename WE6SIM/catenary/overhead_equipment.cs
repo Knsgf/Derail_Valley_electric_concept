@@ -117,7 +117,7 @@ internal partial class overhead_equipment
 
     private int  _last_x, _last_z;
     //private float _remaining_time = 1.0f;
-    private bool _scenery_changed = true, _store_scenery = false;
+    private bool _scenery_changed = true;
 
     private readonly Dictionary<string, GameObject> _templates = [];
     private readonly string _file_path;
@@ -355,7 +355,11 @@ internal partial class overhead_equipment
         find_objects_within_region(visible_objects, _object_tree, do_bounds_check: false,
             x - visible_distance_fixed, z - visible_distance_fixed,x + visible_distance_fixed, z + visible_distance_fixed);
         for (int object_index = visible_objects.Count - 1; object_index >= 0; --object_index)
-            visible_objects[object_index].reveal();
+        {
+            bool is_invisible = !visible_objects[object_index].reveal();
+            if (is_invisible)
+                visible_objects.FastRemoveAt(object_index);
+        }
 
         visible_objects = _previously_visible_objects;
         for (int object_index = visible_objects.Count - 1; object_index >= 0; --object_index)
