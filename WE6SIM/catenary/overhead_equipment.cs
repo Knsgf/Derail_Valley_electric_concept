@@ -29,6 +29,27 @@ internal partial class overhead_equipment
 
     public const float default_pole_offset = 2.2f;
 
+    private static readonly string[] _all_locations =
+    [
+        // Yards
+        "CME",
+        "FM",
+        "FF",
+        "IME",
+        "SM",
+
+        // Mainlines
+        "CME-IME",
+        "CP-IMW[IMW]",
+        "FF-IME[FF]",
+        "FF-SM[FF]",
+        "FM-SM[SM]",
+        "IME-FF[CME-IME]",
+
+        // Neutral sections
+        "[FF]![CME-IME]"
+    ];
+
     private static readonly string[] _template_names =
     {
 #if DEBUG
@@ -37,6 +58,7 @@ internal partial class overhead_equipment
         "Gantry2Tracks",
         "Gantry3Tracks",
         "Gantry4Tracks",
+        "GantryTruss6Tracks",
         "RegistrationBracket",
         "RegistrationArmInnerDual",
         "RegistrationArmInnerSingle",
@@ -204,27 +226,7 @@ internal partial class overhead_equipment
         // which precludes doing loading inside constructor
         AssetBundle catenary = AssetBundle.LoadFromFile(Path.Combine(system._file_path, "catenary"))
             ?? throw new FileNotFoundException("Not found " + Path.Combine(system._file_path, "catenary"));
-        string[] all_locations =
-        [
-            // Yards
-            "CME",
-            "FM",
-            "FF",
-            "IME",
-            "SM",
-
-            // Mainlines
-            "CME-IME",
-            "CP-IMW[IMW]",
-            "FF-IME[FF]",
-            "FF-SM[FF]",
-            "FM-SM[SM]",
-            "IME-FF[CME-IME]",
-
-            // Neutral sections
-            "[FF]![CME-IME]"
-        ];
-        foreach (string location in all_locations)
+        foreach (string location in _all_locations)
             _system.load_scenery_from_bundle(catenary, location);
 #if DEBUG        
         _system.load_scenery_from_file();   

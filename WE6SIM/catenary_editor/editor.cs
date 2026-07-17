@@ -22,7 +22,7 @@ internal static class editor
 {
     public enum placement 
     { 
-        Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryStretch, GantryAlign, Bracket, FlippedBracket,
+        Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryTruss6, GantryStretch, GantryAlign, Bracket, FlippedBracket,
         Cantilever, GantryRegistrationArm, Wire, Substation, SubstationSideRail, LowClearancesYardCP, LowClearancesYardOR,
         SaveNow, SinkTunnelPoles1, SinkTunnelPoles2
     };
@@ -183,9 +183,10 @@ internal static class editor
             {
                 int tracks = part_placement switch
                 {
-                    placement.Gantry2 => 2,
-                    placement.Gantry3 => 3,
-                    placement.Gantry4 => 4,
+                    placement.Gantry2      => 2,
+                    placement.Gantry3      => 3,
+                    placement.Gantry4      => 4,
+                    placement.GantryTruss6 => 6,
                     _ => throw new InvalidOperationException($"Gantry placement routine called in {part_placement} mode")
                 };
                 closest_pole.cantilever_on_near_side = true;
@@ -505,6 +506,7 @@ internal static class editor
             case placement.Gantry2:
             case placement.Gantry3:
             case placement.Gantry4:
+            case placement.GantryTruss6:
             case placement.GantryStretch:
                 _anchor_pole           = null;
                 _last_registration_arm = null;

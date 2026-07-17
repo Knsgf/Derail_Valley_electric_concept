@@ -34,7 +34,7 @@ internal partial class overhead_equipment
 #endif
         
         [JsonIgnore]
-        private static readonly float[] _gantry_lengths = [8.86f, 13.26f, 17.56f];
+        private static readonly float[] _gantry_lengths = [8.86f, 13.26f, 17.56f, 0.0f, 26.235f];
 
         [JsonProperty]
         private readonly int tracks;
@@ -66,8 +66,10 @@ internal partial class overhead_equipment
 
         private static string get_template(int tracks)
         {
-            return (tracks >= 2 && tracks <= 4) ? $"Gantry{tracks}Tracks"
-                : throw new ArgumentOutOfRangeException("Gantries should cover 2, 3 or 4 tracks");
+            if (tracks == 6)
+                return "GantryTruss6Tracks";
+            return (tracks is >= 2 and <= 4) ? $"Gantry{tracks}Tracks"
+                : throw new ArgumentOutOfRangeException("Gantries should cover 2, 3, 4 or 6 tracks");
         }
 
         private static (int x, int z) further_pole_position(int x, int z, int tracks, float stretch, Quaternion orientation)
