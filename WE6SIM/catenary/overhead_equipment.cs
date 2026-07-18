@@ -42,6 +42,7 @@ internal partial class overhead_equipment
         "CME-IME",
         "CP-IMW[IMW]",
         "FF-IME[FF]",
+        "FF-IMW[FF]",
         "FF-SM[FF]",
         "FM-SM[SM]",
         "IME-FF[CME-IME]",
