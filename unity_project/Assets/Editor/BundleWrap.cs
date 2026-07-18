@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+using UnityEditor;
+using UnityEngine;
 using System.IO;
 
 public class CreateAssetBundles
@@ -14,5 +15,6 @@ public class CreateAssetBundles
         BuildPipeline.BuildAssetBundles(assetBundleDirectory,
                                         BuildAssetBundleOptions.ChunkBasedCompression,
                                         BuildTarget.StandaloneWindows);
+        Debug.Log("OCS export complete");
     }
 }
