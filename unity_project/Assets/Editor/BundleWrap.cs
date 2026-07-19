@@ -13,7 +13,7 @@ public class CreateAssetBundles
             Directory.CreateDirectory(assetBundleDirectory);
         }
         BuildPipeline.BuildAssetBundles(assetBundleDirectory,
-                                        BuildAssetBundleOptions.ChunkBasedCompression,
+                                        BuildAssetBundleOptions.None,
                                         BuildTarget.StandaloneWindows);
         Debug.Log("OCS export complete");
     }
