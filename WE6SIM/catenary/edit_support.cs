@@ -57,8 +57,18 @@ internal partial class overhead_equipment
     public void add_cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool is_tunnel_registration_arm,
         bool dual_wire, Vector3 relative_position, Quaternion orientation)
     {
-        add_scenery_object((int x, int z, float y, Quaternion orientation) 
-            => new cantilever(cantilever_type, is_gantry_registration_arm, is_tunnel_registration_arm, dual_wire, x, z, y, orientation),
+        add_scenery_object(
+            delegate (int x, int z, float y, Quaternion orientation) 
+            { 
+                steady_arm_kind steady_arm_type;
+                if (is_gantry_registration_arm)
+                    steady_arm_type = steady_arm_kind.gantry;
+                else if (is_tunnel_registration_arm)
+                    steady_arm_type = steady_arm_kind.tunnel;
+                else
+                    steady_arm_type = steady_arm_kind.cantilever;
+                return new cantilever(cantilever_type, steady_arm_type, dual_wire, x, z, y, orientation);
+            }, 
             relative_position, orientation);
     }
 

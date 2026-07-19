@@ -24,8 +24,10 @@ internal partial class overhead_equipment
     
     public enum pole_kind { Ground, Bridge, Tunnel, Bracket, SideRail };
     public enum cantilever_kind { Inner, OutwardsInner, MiddleInner, Middle, InwardsOuter, Outer };
+    public enum steady_arm_kind { cantilever, gantry, tunnel, trolley };
     public enum wire_kind { plain_dual, plain_single, plain_quad, end_anchor_dual, end_anchor_single, end_anchor_quad, 
-        wall_anchor_single, middle_anchor_dual, middle_anchor_single, middle_anchor_quad, side_rail, termination_rail };
+        wall_anchor_single, middle_anchor_dual, middle_anchor_single, middle_anchor_quad, side_rail, termination_rail,
+        trolley, trolley_anchor };
 
     public const float default_pole_offset = 2.2f;
 

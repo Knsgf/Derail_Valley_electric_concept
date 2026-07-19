@@ -64,9 +64,7 @@ internal partial class overhead_equipment
         [JsonProperty]
         public cantilever_kind cantilever_type;
         [JsonProperty]
-        public bool is_gantry_registration_arm;
-        [JsonProperty]
-        public bool is_tunnel_registration_arm;
+        public steady_arm_kind steady_arm_type;
 
         [JsonProperty]
         public bool dual_wire { get; private set; }
@@ -74,34 +72,38 @@ internal partial class overhead_equipment
         public bool wire_attached { get; set; }
 
         private static Dictionary<cantilever_kind, cantilever_internal> 
-            get_cantilever_types(bool is_gantry_registration_arm, bool is_tunnel_registration_arm)
+            get_cantilever_types(steady_arm_kind steady_arm_type)
         {
-            if (is_gantry_registration_arm)
-                return _gantry_registration_arms;
-            return is_tunnel_registration_arm ? _tunnel_registration_arms : _cantilevers;
+            return steady_arm_type switch
+            {
+                steady_arm_kind.cantilever => _cantilevers,
+                steady_arm_kind.gantry     => _gantry_registration_arms,
+                steady_arm_kind.tunnel     => _tunnel_registration_arms,
+                //steady_arm_kind.trolley    => _trolley_cantilevers,
+                _ => throw new ArgumentException($"Unknown cantilever type {steady_arm_type}")
+            };
         }
-        
-        private static string get_template(cantilever_kind cantilever_type, bool is_gantry_registration_arm, 
-            bool is_tunnel_registration_arm, bool dual_wire)
+
+        private static string get_template(cantilever_kind cantilever_type, steady_arm_kind steady_arm_type, bool dual_wire)
         {
-            if (!get_cantilever_types(is_gantry_registration_arm, is_tunnel_registration_arm).TryGetValue(cantilever_type, out cantilever_internal cantilever_info))
+            if (!get_cantilever_types(steady_arm_type).TryGetValue(cantilever_type, out cantilever_internal cantilever_info))
                 throw new ArgumentOutOfRangeException($"Invalid cantilever type {cantilever_type}");
             return cantilever_info.template + (dual_wire ? "Dual" : "Single");
         }
         
         [JsonConstructor]
-        public cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool is_tunnel_registration_arm,
+        public cantilever(cantilever_kind cantilever_type, steady_arm_kind steady_arm_type,
             bool dual_wire, int x, int z, float y, Quaternion orientation)
-            : base(get_template(cantilever_type, is_gantry_registration_arm, is_tunnel_registration_arm, dual_wire), x, z, y, orientation)
+            : base(get_template(cantilever_type, steady_arm_type, dual_wire), x, z, y, orientation)
         {
-            this.cantilever_type            = cantilever_type;
-            this.is_gantry_registration_arm = is_gantry_registration_arm;
-            this.is_tunnel_registration_arm = is_tunnel_registration_arm;
-            this.dual_wire                  = dual_wire;
-
-            if (!get_cantilever_types(is_gantry_registration_arm, is_tunnel_registration_arm).TryGetValue(cantilever_type, out cantilever_internal cantilever_info))
+            if (!get_cantilever_types(steady_arm_type).TryGetValue(cantilever_type, out cantilever_internal cantilever_info))
                 throw new ArgumentOutOfRangeException($"Invalid cantilever type {cantilever_type}");
-            _wire_attachment_offset = orientation * (is_gantry_registration_arm ? Vector3.left : Vector3.right) * cantilever_info.wire_offset;
+
+            this.cantilever_type = cantilever_type;
+            this.dual_wire       = dual_wire;
+            this.steady_arm_type = steady_arm_type;
+
+            _wire_attachment_offset = orientation * ((steady_arm_type == steady_arm_kind.gantry) ? Vector3.left : Vector3.right) * cantilever_info.wire_offset;
         }
 
         public Vector3 relative_wire_attachment_point() => get_relative_position() + _wire_attachment_offset;

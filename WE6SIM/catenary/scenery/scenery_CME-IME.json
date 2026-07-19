@@ -1651,8 +1651,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "OutwardsInner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.978277564,
@@ -1668,8 +1667,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Middle",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.970430434,
@@ -1685,8 +1683,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9685545,
@@ -1702,8 +1699,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.2589677,
@@ -1719,8 +1715,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.268842757,
@@ -1736,8 +1731,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.2799575,
@@ -1753,8 +1747,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.2888013,
@@ -1770,8 +1763,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.299069315,
@@ -1787,8 +1779,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.3108864,
@@ -1804,8 +1795,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.319071651,
@@ -1821,8 +1811,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.330146432,
@@ -1838,8 +1827,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.3395903,
@@ -1855,8 +1843,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.34242937,
@@ -1872,8 +1859,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9348008,
@@ -1889,8 +1875,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9323733,
@@ -1906,8 +1891,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.928093731,
@@ -1923,8 +1907,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9231792,
@@ -1940,8 +1923,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.919137836,
@@ -1957,8 +1939,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.915168941,
@@ -1974,8 +1955,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9107398,
@@ -1991,8 +1971,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9082425,
@@ -2008,8 +1987,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.916346669,
@@ -2025,8 +2003,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.929798067,
@@ -2042,8 +2019,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.945435,
@@ -2059,8 +2035,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9601806,
@@ -2076,8 +2051,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9739279,
@@ -2093,8 +2067,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9853787,
@@ -2110,8 +2083,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9939074,
@@ -2127,8 +2099,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.998946965,
@@ -2144,8 +2115,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9997417,
@@ -2161,8 +2131,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9968933,
@@ -2178,8 +2147,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9937991,
@@ -2195,8 +2163,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9972597,
@@ -2212,8 +2179,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.9997046,
@@ -2229,8 +2195,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.999757946,
@@ -2246,8 +2211,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.997900963,
@@ -2263,8 +2227,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.9950405,
@@ -2280,8 +2243,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.99200505,
@@ -2297,8 +2259,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9903128,
@@ -2314,8 +2275,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9892237,
@@ -2331,8 +2291,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.988835,
@@ -2348,8 +2307,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.988826,
@@ -2365,8 +2323,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.989341855,
@@ -2382,8 +2339,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.9906804,
@@ -2399,8 +2355,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9932623,
@@ -2416,8 +2371,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9958613,
@@ -2433,8 +2387,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.998371363,
@@ -2450,8 +2403,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9997808,
@@ -3294,8 +3246,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Middle",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.997208238,
@@ -3328,8 +3279,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "MiddleInner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9992359,
@@ -3345,8 +3295,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9995865,
@@ -3362,8 +3311,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.997663856,
@@ -3379,8 +3327,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9945889,
@@ -3396,8 +3343,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9918256,
@@ -3413,8 +3359,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.9910957,
@@ -3430,8 +3375,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.991804063,
@@ -3447,8 +3391,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.994586468,
@@ -3464,8 +3407,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.9975189,
@@ -3481,8 +3423,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9993798,
@@ -3498,8 +3439,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 1.0,
@@ -3515,8 +3455,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 1.0,
@@ -3532,8 +3471,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.999222,
@@ -3549,8 +3487,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.998627,
@@ -3566,8 +3503,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9984817,
@@ -3583,8 +3519,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9987787,
@@ -3600,8 +3535,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9993147,
@@ -3617,8 +3551,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 1.0,
@@ -3634,8 +3567,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "InwardsOuter",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 1.0,
@@ -3651,8 +3583,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.999608338,
@@ -3668,8 +3599,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 1.0,
@@ -3685,8 +3615,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.999585032,
@@ -3702,8 +3631,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9973223,
@@ -3719,8 +3647,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9926708,
@@ -3736,8 +3663,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9850771,
@@ -3753,8 +3679,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9747918,
@@ -3770,8 +3695,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.96135515,
@@ -3787,8 +3711,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9461374,
@@ -3804,8 +3727,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.928268,
@@ -3821,8 +3743,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.908247948,
@@ -3838,8 +3759,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.8851538,
@@ -3855,8 +3775,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.860708058,
@@ -3872,8 +3791,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.8340122,
@@ -3889,8 +3807,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.8053332,
@@ -3906,8 +3823,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.7751335,
@@ -3923,8 +3839,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.7433152,
@@ -3940,8 +3855,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.7083318,
@@ -3957,8 +3871,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.6839407,
@@ -3974,8 +3887,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.644209743,
@@ -3991,8 +3903,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.628107846,
@@ -4008,8 +3919,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.612111032,
@@ -4025,8 +3935,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.588653743,
@@ -4042,8 +3951,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.5603242,
@@ -4059,8 +3967,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.5263732,
@@ -4076,8 +3983,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.491560161,
@@ -4093,8 +3999,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.4536344,
@@ -4110,8 +4015,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.412082672,
@@ -4127,8 +4031,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.367729127,
@@ -4144,8 +4047,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": 0.320248842,
@@ -4229,8 +4131,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": false,
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": -0.2939553,
@@ -4246,8 +4147,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "MiddleInner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": -0.31604895,
@@ -4263,8 +4163,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": -0.322061449,
@@ -4280,8 +4179,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "MiddleInner",
-    "is_gantry_registration_arm": false,
-    "is_tunnel_registration_arm": true,
+    "steady_arm_type": "tunnel",
     "orientation": {
       "x": 0.0,
       "y": -0.3127944,
