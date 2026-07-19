@@ -60,9 +60,9 @@ internal partial class overhead_equipment
         [JsonIgnore]
         private static readonly Dictionary<cantilever_kind, cantilever_internal> _trolley_cantilevers = new()
         {
-            [cantilever_kind.Inner ] = new() { template = "InnerCantilever" , wire_offset =  sweep },
-            [cantilever_kind.Middle] = new() { template = "MiddleCantilever", wire_offset =   0.0f },
-            [cantilever_kind.Outer ] = new() { template = "OuterCantilever" , wire_offset = -sweep }
+            [cantilever_kind.Inner ] = new() { template = "TrolleyInner" , wire_offset =  sweep },
+            [cantilever_kind.Middle] = new() { template = "TrolleyMiddle", wire_offset =   0.0f },
+            [cantilever_kind.Outer ] = new() { template = "TrolleyOuter" , wire_offset = -sweep }
         };
 
         [JsonIgnore]
@@ -78,8 +78,7 @@ internal partial class overhead_equipment
         [JsonProperty]
         public bool wire_attached { get; set; }
 
-        private static Dictionary<cantilever_kind, cantilever_internal> 
-            get_cantilever_types(steady_arm_kind steady_arm_type)
+        private static Dictionary<cantilever_kind, cantilever_internal> get_cantilever_types(steady_arm_kind steady_arm_type)
         {
             return steady_arm_type switch
             {
