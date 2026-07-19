@@ -437,7 +437,7 @@
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
-    "anchored": false,
+    "anchored": true,
     "siding_anchor": false
   },
   {
@@ -911,7 +911,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
-    "cantilever_type": "Inner",
+    "cantilever_type": "Outer",
     "steady_arm_type": "trolley",
     "orientation": {
       "x": 0.0,
@@ -2523,38 +2523,6 @@
     "x": 2223893,
     "z": 8716676,
     "y": 145.228867,
-    "wire_type": "trolley"
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
-    "length": 44.2300568,
-    "previous_pole_vertical_offset": -0.04838562,
-    "substation": "CP750",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.9338254,
-      "z": 0.0,
-      "w": 0.3577291
-    },
-    "x": 2253444,
-    "z": 8749586,
-    "y": 145.277252,
-    "wire_type": "trolley"
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
-    "length": 35.8430557,
-    "previous_pole_vertical_offset": -0.196472168,
-    "substation": "CP750",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.925529,
-      "z": 0.0,
-      "w": 0.3786766
-    },
-    "x": 2278568,
-    "z": 8775149,
-    "y": 145.473724,
     "wire_type": "trolley"
   },
   {
@@ -5636,7 +5604,7 @@
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
-    "anchored": false,
+    "anchored": true,
     "siding_anchor": false
   },
   {
@@ -7346,38 +7314,6 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
-    "length": 12.3328657,
-    "previous_pole_vertical_offset": -0.04336548,
-    "substation": "CP750",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.985401,
-      "z": 0.0,
-      "w": 0.1702496
-    },
-    "x": 2253444,
-    "z": 8749586,
-    "y": 145.277252,
-    "wire_type": "trolley"
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
-    "length": 23.0775318,
-    "previous_pole_vertical_offset": 0.03517151,
-    "substation": "CP750",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.9951723,
-      "z": 0.0,
-      "w": 0.09814338
-    },
-    "x": 2257952,
-    "z": 8772219,
-    "y": 145.242081,
-    "wire_type": "trolley"
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
     "length": 16.4312763,
     "previous_pole_vertical_offset": 0.01889038,
     "substation": "CP750",
@@ -7758,6 +7694,70 @@
     "x": 1866198,
     "z": 9341010,
     "y": 145.232376,
+    "wire_type": "trolley"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 23.34464,
+    "previous_pole_vertical_offset": -0.03517151,
+    "substation": "CP750",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.08670797,
+      "z": 0.0,
+      "w": 0.996233761
+    },
+    "x": 2253919,
+    "z": 8749225,
+    "y": 145.277252,
+    "wire_type": "trolley"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 12.1656981,
+    "previous_pole_vertical_offset": 0.04336548,
+    "substation": "CP750",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.193227187,
+      "z": 0.0,
+      "w": 0.981154
+    },
+    "x": 2249306,
+    "z": 8737968,
+    "y": 145.233887,
+    "wire_type": "trolley"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 44.2829971,
+    "previous_pole_vertical_offset": -0.04838562,
+    "substation": "CP750",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.9314042,
+      "z": 0.0,
+      "w": 0.3639867
+    },
+    "x": 2253919,
+    "z": 8749225,
+    "y": 145.277252,
+    "wire_type": "trolley"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 35.7722321,
+    "previous_pole_vertical_offset": -0.196472168,
+    "substation": "CP750",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.92862767,
+      "z": 0.0,
+      "w": 0.371012926
+    },
+    "x": 2278568,
+    "z": 8775149,
+    "y": 145.473724,
     "wire_type": "trolley"
   }
 ]
