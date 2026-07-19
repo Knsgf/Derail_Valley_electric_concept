@@ -57,6 +57,13 @@ internal partial class overhead_equipment
             [cantilever_kind.InwardsOuter ] = new() { template = "TunnelInwardsOuter" , wire_offset = -sweep },
             [cantilever_kind.Outer        ] = new() { template = "TunnelOuter"        , wire_offset = -sweep }
         };
+        [JsonIgnore]
+        private static readonly Dictionary<cantilever_kind, cantilever_internal> _trolley_cantilevers = new()
+        {
+            [cantilever_kind.Inner ] = new() { template = "InnerCantilever" , wire_offset =  sweep },
+            [cantilever_kind.Middle] = new() { template = "MiddleCantilever", wire_offset =   0.0f },
+            [cantilever_kind.Outer ] = new() { template = "OuterCantilever" , wire_offset = -sweep }
+        };
 
         [JsonIgnore]
         private readonly Vector3 _wire_attachment_offset;
@@ -79,7 +86,7 @@ internal partial class overhead_equipment
                 steady_arm_kind.cantilever => _cantilevers,
                 steady_arm_kind.gantry     => _gantry_registration_arms,
                 steady_arm_kind.tunnel     => _tunnel_registration_arms,
-                //steady_arm_kind.trolley    => _trolley_cantilevers,
+                steady_arm_kind.trolley    => _trolley_cantilevers,
                 _ => throw new ArgumentException($"Unknown cantilever type {steady_arm_type}")
             };
         }

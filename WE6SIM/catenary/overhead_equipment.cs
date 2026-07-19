@@ -125,6 +125,12 @@ internal partial class overhead_equipment
         "Wires/WireQuadFixedEnd",
         "Wires/WireMidpointAnchorQuad",
 
+        "Trolley/TrolleyInnerSingle",
+        "Trolley/TrolleyMiddleSingle",
+        "Trolley/TrolleyOuterSingle",
+        "Trolley/TrolleyWire",
+        "Trolley/TrolleyWireEnd",
+
         "Signs/DropPantographs",
         "Signs/DropPantographsOtherSide",
         "Signs/DropPantographsWarning",

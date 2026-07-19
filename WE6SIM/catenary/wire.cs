@@ -22,7 +22,7 @@ internal partial class overhead_equipment
     {
         const float default_section_length = 40.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f, end_anchor_raise = 0.2f, end_achor_fixed_part_length = default_section_length - 35.0053f;
         const float default_side_rail_length = 10.0f, default_side_rail_height = 4.5f;
-        const float single_wire_1m_resistance = 3.3E-5f, dual_wire_1m_resistance = 2.2E-5f, quad_wire_1m_resistance = 1.6E-5f, side_rail_1m_resistance = 2.314E-5f;
+        const float single_wire_1m_resistance = 3.3E-5f, dual_wire_1m_resistance = 2.2E-5f, quad_wire_1m_resistance = 1.6E-5f, side_rail_1m_resistance = 2.314E-5f, trolley_wire_1m_resistance = 6.6E-5f;
 
         private struct wire_internal
         {
@@ -45,8 +45,10 @@ internal partial class overhead_equipment
             [wire_kind.end_anchor_single   ] = new() { template = "WireSingleEnd"           , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = single_wire_1m_resistance, end_anchor = true, fixed_template = "WireSingleFixedEnd", fixed_part_length = end_achor_fixed_part_length },
             [wire_kind.end_anchor_quad     ] = new() { template = "WireQuadEnd"             , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = quad_wire_1m_resistance  , end_anchor = true, fixed_template = "WireQuadFixedEnd"  , fixed_part_length = end_achor_fixed_part_length },
             [wire_kind.wall_anchor_single  ] = new() { template = "WireSingleWallEnd"       , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = single_wire_1m_resistance, end_anchor = true },
-            [wire_kind.side_rail           ] = new() { template = "SideRail"                , section_length = default_side_rail_length, contact_height = default_side_rail_height, resistance_per_metre = side_rail_1m_resistance   },
-            [wire_kind.termination_rail    ] = new() { template = "SideRailEnd"             , section_length = default_side_rail_length, contact_height = default_side_rail_height, resistance_per_metre = side_rail_1m_resistance   },
+            [wire_kind.side_rail           ] = new() { template = "SideRail"                , section_length = default_side_rail_length, contact_height = default_side_rail_height, resistance_per_metre = side_rail_1m_resistance    },
+            [wire_kind.termination_rail    ] = new() { template = "SideRailEnd"             , section_length = default_side_rail_length, contact_height = default_side_rail_height, resistance_per_metre = side_rail_1m_resistance    },
+            [wire_kind.trolley             ] = new() { template = "TrolleyWire"             , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = trolley_wire_1m_resistance },
+            [wire_kind.trolley_anchor      ] = new() { template = "TrolleyWireEnd"          , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = trolley_wire_1m_resistance, end_anchor = true }
         };
         
         [JsonIgnore]
