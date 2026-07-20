@@ -78,8 +78,8 @@ internal class electricity_meter: IDisposable
                 _regeneration.Value =  difference;
             _leftover_bank.Value = energy_remainder;
         }
-        Main.diagnostics?.Value = _zero_energy - _energy.Value;
-        Main.diagnostics2?.Value = _leftover_bank.Value;
+        //Main.diagnostics?.Value = _zero_energy - _energy.Value;
+        //Main.diagnostics2?.Value = _leftover_bank.Value;
     }
 
     public void Dispose()
