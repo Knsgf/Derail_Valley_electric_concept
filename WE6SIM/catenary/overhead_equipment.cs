@@ -35,6 +35,7 @@ internal partial class overhead_equipment
     [
         // Yards
         "CME",
+        "CP",
         "FM",
         "FF",
         "IME",
