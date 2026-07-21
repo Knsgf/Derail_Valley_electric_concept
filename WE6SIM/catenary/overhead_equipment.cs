@@ -150,7 +150,7 @@ internal partial class overhead_equipment
     };
     private static overhead_equipment? _system;
 
-    private int  _last_x, _last_z;
+    private int  _last_x, _last_z, _visible_distance_fixed = 500 * fixed_divider, _visibility_check_distance = (500 * fixed_divider) >> 3;
     //private float _remaining_time = 1.0f;
     private bool _scenery_changed = true;
 
@@ -169,6 +169,19 @@ internal partial class overhead_equipment
     private substation[]? _all_substations = null;
 
     public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
+
+    public int rendering_distance
+    {
+        get => _visible_distance_fixed / fixed_divider;
+        set
+        {
+            if (value < 10)
+                value = 10;
+            _visible_distance_fixed    = value * fixed_divider;
+            _visibility_check_distance = _visible_distance_fixed >> 3;
+            _scenery_changed           = true;
+        }
+    }
     
     private overhead_equipment(ModEntry mod)
     {
@@ -352,8 +365,8 @@ internal partial class overhead_equipment
 
     public void handle_scenery_visibility(Vector3 relative_postion)
     {
-        const float visible_distance       = 500.0f;
-        const int   visible_distance_fixed = (int) (visible_distance * fixed_multiplier);
+        //const float visible_distance       = 500.0f;
+        //const int   _visible_distance_fixed = (int) (visible_distance * fixed_multiplier);
 
         /*
         _remaining_time -= Time.deltaTime;
@@ -362,11 +375,12 @@ internal partial class overhead_equipment
         _remaining_time = 1.0f;
         */
         (int x, int z) = get_absolute_position(relative_postion);
-        if (!_scenery_changed && Math.Abs(x - _last_x) + Math.Abs(z - _last_z) <= visible_distance_fixed >> 3)
+        if (!_scenery_changed && Math.Abs(x - _last_x) + Math.Abs(z - _last_z) <= _visibility_check_distance)
             return;
         _last_x = x;
         _last_z = z;
-        _scenery_changed = false;
+        _scenery_changed           = false;
+        int visible_distance_fixed = _visible_distance_fixed;
 
         (_previously_visible_objects, _currently_visible_objects) = (_currently_visible_objects, _previously_visible_objects);
         List<catenary_object> visible_objects = _previously_visible_objects;

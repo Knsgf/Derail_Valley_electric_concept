@@ -24,6 +24,8 @@ public struct stored_settings
 public class editor_settings: ModSettings, IDrawable
 {
     const float default_kWh_price = 10.0f;
+
+    private int _last_redering_distance = -1;
     
     [Draw("Substation load limit multiplier (requires reload)")]
     private float _load_limit_factor = 1.0f;
@@ -31,6 +33,8 @@ public class editor_settings: ModSettings, IDrawable
     private float _voltage_drop_factor = 1.0f;
     [Draw("Electricity price, $/kWh (requires reload)")]
     private float _kWh_price = default_kWh_price;
+    [Draw("Catenary drawing distance, m")]
+    private int   _OCS_rendering_distance = 500;
 
     public static editor_settings? instance { get; private set; }
     public static float load_limit_factor   { get; private set; } = 1.0f;
@@ -108,6 +112,14 @@ public class editor_settings: ModSettings, IDrawable
     
     public void OnChange()
     {
+        if (_OCS_rendering_distance != _last_redering_distance)
+        {
+            if (_OCS_rendering_distance < 10)
+                _OCS_rendering_distance = 10;
+            _last_redering_distance = _OCS_rendering_distance;
+            overhead_equipment.system.rendering_distance = _OCS_rendering_distance;
+        }
+
 #if DEBUG
         if (_erase_scenery && _part_placement != editor.placement.Disabled)
         {
