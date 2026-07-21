@@ -142,8 +142,8 @@ internal partial class overhead_equipment
         "Signs/NeutralBeginOtherSide",
         "Signs/NeutralEnd",
         "Signs/NeutralEndOtherSide",
-        "Signs/NeutralEndNoRegen",
-        "Signs/NeutralEndNoRegenOtherSide",
+        "Signs/NeutralEndLowVoltage",
+        "Signs/NeutralEndLowVoltageOtherSide",
         "Signs/NeutralWarning",
         "Signs/NeutralWarningOtherSide",
     };

@@ -444,5 +444,83 @@
     "x": 1528583,
     "z": 10066756,
     "y": 144.055328
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralBegin",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.999985158,
+      "z": 0.0,
+      "w": 0.00545261241
+    },
+    "x": 1527212,
+    "z": 10106959,
+    "y": 144.061035
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralEndLowVoltageOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.9999943,
+      "z": 0.0,
+      "w": 0.00337774516
+    },
+    "x": 1527229,
+    "z": 10108465,
+    "y": 144.037521
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralWarning",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.989887238,
+      "z": 0.0,
+      "w": 0.141856119
+    },
+    "x": 1558153,
+    "z": 9906896,
+    "y": 144.194763
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralEnd",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.987604856,
+      "z": 0.0,
+      "w": 0.156960621
+    },
+    "x": 1645831,
+    "z": 10488095,
+    "y": 139.949158
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralBeginOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.986481,
+      "z": 0.0,
+      "w": -0.1638758
+    },
+    "x": 1646456,
+    "z": 10489961,
+    "y": 139.9095
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralWarningOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.995999038,
+      "z": 0.0,
+      "w": 0.0893638059
+    },
+    "x": 1662845,
+    "z": 10674575,
+    "y": 137.372757
   }
 ]
