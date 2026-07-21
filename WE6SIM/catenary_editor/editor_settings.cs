@@ -117,7 +117,14 @@ public class editor_settings: ModSettings, IDrawable
             if (_OCS_rendering_distance < 10)
                 _OCS_rendering_distance = 10;
             _last_redering_distance = _OCS_rendering_distance;
-            overhead_equipment.system.rendering_distance = _OCS_rendering_distance;
+            try
+            {
+                overhead_equipment.system.rendering_distance = _OCS_rendering_distance;
+            }
+            catch (InvalidOperationException _)
+            { 
+                _last_redering_distance = -1;
+            }
         }
 
 #if DEBUG
