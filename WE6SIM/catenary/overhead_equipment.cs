@@ -39,6 +39,7 @@ internal partial class overhead_equipment
         "FM",
         "FF",
         "IME",
+        "IMW",
         "SM",
 
         // Mainlines
