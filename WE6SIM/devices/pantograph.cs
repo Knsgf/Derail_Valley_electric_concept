@@ -22,10 +22,6 @@ public class pantograph_part(string part_name): Attribute
 
 internal class pantograph: electric_device
 {
-#if DEBUG
-    private static double _energy_consumed = 0.0, _energy_returned = 0.0f;
-#endif
-
     const string pantograph_tag = "PantographBase", sidepan_tag = "SidepanBase";
 
     const float maximum_head_height = 6.6f, frame_thickness = 0.085f, head_movement_speed = 0.5f;
@@ -205,7 +201,7 @@ internal class pantograph: electric_device
     private void move()
     {
         float height_difference = _target_height - _current_height;
-        float movement_speed    = Mathf.Min(head_movement_speed, Mathf.Abs(height_difference) / 0.5f);
+        float movement_speed    = Mathf.Min(head_movement_speed, Mathf.Abs(height_difference) / 0.2f);
         if (height_difference > 0.006f)
         {
             _current_height   = Mathf.Min(_current_height + movement_speed * Time.deltaTime, maximum_head_height);
