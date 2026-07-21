@@ -29,7 +29,8 @@ internal partial class overhead_equipment
         wall_anchor_single, middle_anchor_dual, middle_anchor_single, middle_anchor_quad, side_rail, termination_rail,
         trolley, trolley_anchor };
 
-    public const float default_pole_offset = 2.2f;
+    public const float default_pole_offset      = 2.2f;
+    public const int   minimum_redering_distance = 10;
 
     private static readonly string[] _all_locations =
     [
@@ -150,8 +151,10 @@ internal partial class overhead_equipment
         "Signs/NeutralWarningOtherSide",
     };
     private static overhead_equipment? _system;
+    private static int                 _default_rendering_distance = 500;
 
-    private int  _last_x, _last_z, _visible_distance_fixed = 500 * fixed_divider, _visibility_check_distance = (500 * fixed_divider) >> 3;
+    private int  _last_x, _last_z;
+    private int  _visible_distance_fixed = _default_rendering_distance * fixed_divider, _visibility_check_distance = (_default_rendering_distance * fixed_divider) >> 3;
     //private float _remaining_time = 1.0f;
     private bool _scenery_changed = true;
 
@@ -170,17 +173,21 @@ internal partial class overhead_equipment
     private substation[]? _all_substations = null;
 
     public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
-
-    public int rendering_distance
+    
+    public static int rendering_distance
     {
-        get => _visible_distance_fixed / fixed_divider;
+        get => _default_rendering_distance;
         set
         {
-            if (value < 10)
-                value = 10;
-            _visible_distance_fixed    = value * fixed_divider;
-            _visibility_check_distance = _visible_distance_fixed >> 3;
-            _scenery_changed           = true;
+            if (value < minimum_redering_distance)
+                value = minimum_redering_distance;
+            _default_rendering_distance = value;
+            if (_system != null)
+            {
+                _system._visible_distance_fixed    = value * fixed_divider;
+                _system._visibility_check_distance = _system._visible_distance_fixed >> 3;
+                _system._scenery_changed           = true;
+            }
         }
     }
     

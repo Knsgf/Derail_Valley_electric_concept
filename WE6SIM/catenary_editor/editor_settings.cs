@@ -1,7 +1,6 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 using Newtonsoft.Json;
@@ -18,7 +17,9 @@ namespace electric_sim.catenary_editor;
 public struct stored_settings
 {
     [JsonProperty]
-    public float load_limit_factor, voltage_drop_factor, kWh_price;
+    public float load_limit_factor, voltage_drop_factor, kWh_price; 
+    [JsonProperty]
+    public int   rendering_distance;
 }
 
 public class editor_settings: ModSettings, IDrawable
@@ -109,22 +110,14 @@ public class editor_settings: ModSettings, IDrawable
     {
         OnChange();
     }
-    
+
     public void OnChange()
     {
         if (_OCS_rendering_distance != _last_redering_distance)
         {
-            if (_OCS_rendering_distance < 10)
-                _OCS_rendering_distance = 10;
-            _last_redering_distance = _OCS_rendering_distance;
-            try
-            {
-                overhead_equipment.system.rendering_distance = _OCS_rendering_distance;
-            }
-            catch (InvalidOperationException _)
-            { 
-                _last_redering_distance = -1;
-            }
+            if (_OCS_rendering_distance < overhead_equipment.minimum_redering_distance)
+                _OCS_rendering_distance = overhead_equipment.minimum_redering_distance;
+            _last_redering_distance = overhead_equipment.rendering_distance = _OCS_rendering_distance;
         }
 
 #if DEBUG
@@ -179,7 +172,8 @@ public class editor_settings: ModSettings, IDrawable
             { 
                 load_limit_factor   = _load_limit_factor,
                 voltage_drop_factor = _voltage_drop_factor,
-                kWh_price           = _kWh_price
+                kWh_price           = _kWh_price,
+                rendering_distance  = _OCS_rendering_distance
             }, Formatting.Indented
         );
         File.WriteAllText(Path.Combine(mod.Path, "settings.json"), raw_settings);
@@ -215,15 +209,18 @@ public class editor_settings: ModSettings, IDrawable
             }
 			instance = new()
 			{
-				_load_limit_factor   = (current_settings.load_limit_factor   > 0.0f) ? current_settings.load_limit_factor   : 1.0f,
-				_voltage_drop_factor = (current_settings.voltage_drop_factor > 0.0f) ? current_settings.voltage_drop_factor : 1.0f,
-                _kWh_price           = (current_settings.kWh_price           > 0.0f) ? current_settings.kWh_price           : default_kWh_price
+				_load_limit_factor      = (current_settings.load_limit_factor   > 0.0f) ? current_settings.load_limit_factor   : 1.0f,
+				_voltage_drop_factor    = (current_settings.voltage_drop_factor > 0.0f) ? current_settings.voltage_drop_factor : 1.0f,
+                _kWh_price              = (current_settings.kWh_price           > 0.0f) ? current_settings.kWh_price           : default_kWh_price,
+                _OCS_rendering_distance = (current_settings.rendering_distance  >= overhead_equipment.minimum_redering_distance) 
+                                        ?  current_settings.rendering_distance : 500
 			};
             load_limit_factor   = instance._load_limit_factor;
             voltage_drop_factor = instance._voltage_drop_factor;
             kWh_price           = instance._kWh_price;
 			mod.OnGUI           = instance.Draw;
             mod.OnSaveGUI       = instance.Save;
+            instance.OnChange();
         }
     }
 }
