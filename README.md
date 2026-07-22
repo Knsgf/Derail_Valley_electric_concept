@@ -20,7 +20,7 @@ The debug version [Catenary-DC-debug.zip](https://github.com/Knsgf/Derail_Valley
 ### Other limitations
 This mod is **incompatible** with VR and multiplayer, as the author doesn't have means to do proper tests in either. It also won't work properly with Double-Tracked Valley, as mainlines would have to be redone to support it.
 
-Only 2 lines are electrified at the moment: a short FM-SM route and FF-IME/CME with a short downhill branch towards SM. The flat section between OWN and SM **is not electrified.** The debug version includes a partially done CP-FF mainline, but it's not usable at the moment.
+Only 2 lines are electrified at the moment: a short FM-SM route and CP-FF-IME/CME with a short downhill branch towards SM. The flat section between OWN and SM **is not electrified.**
 
 The height of the locomotive causes it to clip through water standpipes and chutes at SM and IME. The collision with them is not enforced and players are free to ignore these.
 
