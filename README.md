@@ -4,7 +4,7 @@ This is an experimental heavy freight electric locomotive mod for Derail Valley.
 1. Install [Unity Mod Manager](https://www.nexusmods.com/site/mods/21) (UMM),
 2. Install [Custom Car Loader](https://www.nexusmods.com/derailvalley/mods/324) (CCL) and its prerequisites,
 3. Uninstall the following mods in UMM, if they're present: **WE6-981** and **WE6SIM**,
-4. Drag and drop both [Catenary-DC.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.0/Catenary-DC.zip) and [2WE3CCL.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.0/2WE3CCL.zip) into UMM.
+4. Drag and drop both [Catenary-DC.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.0/Catenary-DC.zip) and [2WE3CCL.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.1/2WE3CCL.zip) into UMM.
  The first file contains simulation code and catenary, the second is locomotive model itself. Both are required.
 5. It's strongly recommended to read the [operating manual](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.0/2WE3_manual.pdf). The control scheme and operation of the locomotive are different from vanilla diesel and battery electric.
 
