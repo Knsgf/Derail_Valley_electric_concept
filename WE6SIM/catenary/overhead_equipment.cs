@@ -22,9 +22,9 @@ internal partial class overhead_equipment
 {
     const int scenery_tree_objects_per_node = 64, wires_tree_objects_per_node = 4;
     
-    public enum pole_kind { Ground, Bridge, Tunnel, Bracket, SideRail };
+    public enum pole_kind { Ground, Bridge, Tunnel, Bracket, TrussBracket, SideRail };
     public enum cantilever_kind { Inner, OutwardsInner, MiddleInner, Middle, InwardsOuter, Outer };
-    public enum steady_arm_kind { cantilever, gantry, tunnel, trolley };
+    public enum steady_arm_kind { cantilever, gantry, truss_gantry, tunnel, trolley };
     public enum wire_kind { plain_dual, plain_single, plain_quad, end_anchor_dual, end_anchor_single, end_anchor_quad, 
         wall_anchor_single, middle_anchor_dual, middle_anchor_single, middle_anchor_quad, side_rail, termination_rail,
         trolley, trolley_anchor };
@@ -67,7 +67,6 @@ internal partial class overhead_equipment
         "Gantries/Gantry2Tracks",
         "Gantries/Gantry3Tracks",
         "Gantries/Gantry4Tracks",
-        "Gantries/GantryTruss6Tracks",
         "Gantries/RegistrationBracket",
         "Gantries/RegistrationArmInnerDual",
         "Gantries/RegistrationArmInnerSingle",
@@ -79,6 +78,18 @@ internal partial class overhead_equipment
         "Gantries/RegistrationArmMiddleInnerSingle",
         "Gantries/RegistrationArmOuterDual",
         "Gantries/RegistrationArmOuterSingle",
+        "Gantries/GantryTruss6Tracks",
+        "Gantries/TrussGantryBracket",
+        "Gantries/TrussArmInnerDual",
+        "Gantries/TrussArmInnerSingle",
+        "Gantries/TrussArmInnerOutwardDual",
+        "Gantries/TrussArmInnerOutwardSingle",
+        "Gantries/TrussArmMiddleDual",
+        "Gantries/TrussArmMiddleSingle",
+        "Gantries/TrussArmMiddleInnerDual",
+        "Gantries/TrussArmMiddleInnerSingle",
+        "Gantries/TrussArmOuterDual",
+        "Gantries/TrussArmOuterSingle",
 
         "PolesAndCantilevers/Pole",
         "PolesAndCantilevers/PoleAnchor",
