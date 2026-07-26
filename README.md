@@ -4,7 +4,7 @@ This is an experimental heavy freight electric locomotive mod for Derail Valley.
 1. Install [Unity Mod Manager](https://www.nexusmods.com/site/mods/21) (UMM),
 2. Install [Custom Car Loader](https://www.nexusmods.com/derailvalley/mods/324) (CCL) and its prerequisites,
 3. Uninstall the following mods in UMM, if they're present: **WE6-981** and **WE6SIM**,
-4. Drag and drop both [Catenary-DC.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.0/Catenary-DC.zip) and [2WE3CCL.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.2/2WE3CCL.zip) into UMM.
+4. Drag and drop both [Catenary-DC.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.0/Catenary-DC.zip) and [2WE3CCL.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.3/2WE3CCL.zip) into UMM.
  The first file contains simulation code and catenary, the second is locomotive model itself. Both are required.
 5. It's strongly recommended to read the [operating manual](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.0/2WE3_manual.pdf). The control scheme and operation of the locomotive are different from vanilla diesel and battery electric.
 
@@ -15,10 +15,10 @@ Electricity price in career is set to $10/kWh by default. It can be changed in m
 
 When spawning the locomotive in sandbox via the radio, make sure that units A and B are facing in the same direction and the arrow "front" of unit B is touching the arrows "back" of unit A. The order in which units are spawned doesn't matter: it's possible to bring in unit B first, then A and vice versa.
 
-The debug version [Catenary-DC-debug.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.0/Catenary-DC-debug.zip) includes an infinite power cheat, toggleable in mod settings. When enabled it allows the locomotive to run anywhere on the map. However it doesn't disable electricity costs.
+The debug version [Catenary-DC-debug.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.1.0/Catenary-DC-debug.zip) includes an infinite power cheat, toggleable in mod settings. When enabled it allows the locomotive to run anywhere on the map. However it doesn't turn off electricity costs.
 
 ### Other limitations
-This mod is **incompatible** with VR and multiplayer, as the author doesn't have means to do proper tests in either. It also won't work properly with Double-Tracked Valley, as mainlines would have to be redone to support it.
+This mod is **incompatible** with VR and multiplayer, as the author doesn't have means to do proper tests in either. It also won't work properly with Double-Tracked Valley, as double tracked mainlines have to be redone manually.
 
 Only 2 lines are electrified at the moment: a short FM-SM route and CP-FF-IME/CME with a short downhill branch towards SM. The flat section between OWN and SM **is not electrified.**
 
@@ -32,7 +32,7 @@ Gadgets which directly control a locomotive, such as amp limiter or overheat pro
 
 An installed inclinometer gadget shows 1-2° lean forward on a level track.
 
-Some details, like physical horns, sand pipes, bogie centering devices and underframe air ducts, are also missing.
+Some details, like physical horns, sand pipes, bogie centering devices and underframe air ducts, are missing.
 
 Whistle levers can only be operated with a mouse.
 
