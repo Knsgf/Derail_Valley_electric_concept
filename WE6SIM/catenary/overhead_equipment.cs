@@ -52,6 +52,7 @@ internal partial class overhead_equipment
         "FM-SM[SM]",
         "IME-FF[CME-IME]",
         "IMW-FF[IMW]",
+        "SM-HB[SM]",
 
         // Neutral sections
         "[CP]![IMW]",
