@@ -4,7 +4,7 @@ using System.IO;
 
 public class CreateAssetBundles
 {
-    [MenuItem("Assets/Build AssetBundles")]
+    [MenuItem("Catenary/Export OCS")]
     static void BuildAllAssetBundles()
     {
         string assetBundleDirectory = "Assets/AssetBundles";
@@ -15,6 +15,6 @@ public class CreateAssetBundles
         BuildPipeline.BuildAssetBundles(assetBundleDirectory,
                                         BuildAssetBundleOptions.None,
                                         BuildTarget.StandaloneWindows);
-        Debug.Log("OCS export complete");
+        Debug.Log($"OCS export complete. Bundles written to {assetBundleDirectory}");
     }
 }
