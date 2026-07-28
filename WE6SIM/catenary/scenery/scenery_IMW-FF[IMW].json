@@ -5372,23 +5372,6 @@
     "wire_attached": true
   },
   {
-    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.687410653,
-      "z": 0.0,
-      "w": 0.726268947
-    },
-    "x": 13434839,
-    "z": 3495746,
-    "y": 113.282883,
-    "pole_type": "Ground",
-    "cantilever_on_near_side": true,
-    "cantilever_on_far_side": false,
-    "anchored": false,
-    "siding_anchor": false
-  },
-  {
     "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
     "length": 40.5704041,
     "previous_pole_vertical_offset": 0.1060791,

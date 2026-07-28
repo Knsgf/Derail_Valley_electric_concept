@@ -17,7 +17,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
-    "cantilever_type": "Inner",
+    "cantilever_type": "OutwardsInner",
     "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
@@ -49,7 +49,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
-    "cantilever_type": "Inner",
+    "cantilever_type": "OutwardsInner",
     "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
@@ -437,9 +437,9 @@
     "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
-      "y": 0.569547653,
+      "y": -0.821958363,
       "z": 0.0,
-      "w": 0.821958363
+      "w": 0.569547653
     },
     "x": 11745388,
     "z": 3056536,
