@@ -63,12 +63,9 @@ internal partial class overhead_equipment
 
         public Vector3 get_pole_true_position()
         { 
-            if (pole_type != pole_kind.Bracket)
-                return get_relative_position() + orientation * Vector3.right * default_pole_offset; 
-            
-            // Gantry bracket position is slightly biased to prevent placement of 2 registration arms above the
-            // same track at the same point under 3-track gantry, where bracket attachment zones may overlap
-            return get_relative_position() + orientation * Vector3.left * (default_pole_offset + 0.005f);
+            return get_relative_position() + orientation 
+                * ((pole_type is pole_kind.Bracket or pole_kind.TrussBracket) ? Vector3.left : Vector3.right) 
+                * default_pole_offset;
         }
 
         public void sink_pole(float height_change)

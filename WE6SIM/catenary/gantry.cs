@@ -13,7 +13,8 @@ namespace electric_sim.catenary;
 interface gantry_user: catenary_object_user
 {
 #if DEBUG
-    float stretch { get; set; }
+    bool  is_truss { get; }
+    float stretch  { get; set; }
     Vector3? cross_point(Vector3 travel_relative_start, Vector3 travel_vector);
     void change_orientation(Quaternion new_orientation);
 #endif
@@ -58,6 +59,9 @@ internal partial class overhead_equipment
             }
 #endif
         }
+
+        [JsonIgnore]
+        public bool is_truss => tracks == 6;
 
         private static Vector3 get_frame_relative_position(int x, int z, float y, Quaternion orientation, float stretch)
         {

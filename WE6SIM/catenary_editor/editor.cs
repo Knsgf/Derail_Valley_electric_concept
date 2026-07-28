@@ -72,7 +72,7 @@ internal static class editor
         _last_pole_orientation       = orientation;
     }
     
-    public static void place_pole(Vector3 relative_position, Quaternion orientation)
+    public static void place_pole(Vector3 relative_position, Quaternion orientation, bool truss_gantry = false)
     {
         bool is_siding_anchor_pole = part_placement == placement.Front;
         if (is_siding_anchor_pole && _anchor_pole != null)
@@ -86,8 +86,13 @@ internal static class editor
             orientation *= flip_around_vertical;
         else if (part_placement == placement.Front)
             orientation *= turn_by_90_counter_clockwise_vertical;
-        pole_user last_pole = system.add_pole((part_placement == placement.Bracket) ? pole_kind.Bracket : pole_type, 
-            relative_position + orientation * Vector3.right * pole_horizontal_offset + Vector3.up * pole_height_offset, 
+        pole_kind current_pole_type;
+        if (part_placement != placement.Bracket)
+            current_pole_type = pole_type;
+        else 
+            current_pole_type = truss_gantry ? pole_kind.TrussBracket : pole_kind.Bracket;
+        pole_user last_pole = system.add_pole(current_pole_type, relative_position 
+            + orientation * Vector3.right * pole_horizontal_offset + Vector3.up * pole_height_offset, 
             orientation, is_siding_anchor_pole);
         if (is_siding_anchor_pole && _anchor_pole == null)
             _anchor_pole = last_pole;
@@ -202,15 +207,14 @@ internal static class editor
         closest_gantry?.change_orientation(orientation);
     }
 
-    private static void place_gantry_braket(Vector3 relative_position)
+    private static void place_gantry_braket(Vector3 relative_position, Vector3 forward_direction)
     {
-        Vector3                    last_relative_position = get_relative_position(_last_x, _last_z, relative_position.y);
-        List<catenary_object_user> nearby_objects         = grab_nearby_objects(relative_position, 25.0f);
+        List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 25.0f);
         foreach (catenary_object_user current_object in nearby_objects)
         {
             if (current_object is gantry_user gantry)
             {
-                Vector3? possible_bracket_position = gantry.cross_point(last_relative_position, relative_position - last_relative_position);
+                Vector3? possible_bracket_position = gantry.cross_point(relative_position, forward_direction * 0.1f);
                 if (possible_bracket_position == null)
                     continue;
                 var        bracket_position = (Vector3) possible_bracket_position;
@@ -219,10 +223,12 @@ internal static class editor
                     orientation *= flip_around_vertical;
                 Vector3    bracket_true_position = bracket_position + orientation * Vector3.left * default_pole_offset;
                 pole_user? closest_bracket       = get_closest(nearby_objects, bracket_true_position, 
-                                                               (pole_user pole) => pole.pole_type == pole_kind.Bracket);
+                                                               (pole_user pole) => pole.pole_type is pole_kind.Bracket or pole_kind.TrussBracket);
                 Vector3? closest_bracket_position = closest_bracket?.get_pole_true_position();
-                if (closest_bracket_position == null || ((Vector3) closest_bracket_position - bracket_true_position).sqrMagnitude >= 0.01f)
-                    place_pole(bracket_position, orientation);
+                //if (closest_bracket_position != null && closest_bracket != null)
+                //    Main.log($"PlBr {((Vector3) closest_bracket_position - bracket_true_position).magnitude} {get_absolute_position(bracket_position)} {get_absolute_position(bracket_true_position)} {closest_bracket.get_world_position()}");
+                if (closest_bracket_position == null || ((Vector3) closest_bracket_position - bracket_true_position).sqrMagnitude >= 0.3f * 0.3f)
+                    place_pole(bracket_position, orientation, gantry.is_truss);
             }
         }
     }
@@ -232,7 +238,7 @@ internal static class editor
     {
         pole_user? closest_pole;
         closest_pole = get_closest(nearby_objects, relative_position, 
-            (pole_user pole) => look_for_gantry_brackets == (pole.pole_type == pole_kind.Bracket));
+            (pole_user pole) => look_for_gantry_brackets == (pole.pole_type is pole_kind.Bracket or pole_kind.TrussBracket));
         if (closest_pole == null)
             return (null, Vector3.zero);
         return (closest_pole, closest_pole.get_pole_true_position());
@@ -299,16 +305,16 @@ internal static class editor
 
         if (place_on_near_side)
         {
-            system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type is pole_kind.Tunnel or pole_kind.Bridge,
-                dual_wire, pole.get_relative_position(), pole_orientation);
+            system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type == pole_kind.TrussBracket,
+                pole.pole_type is pole_kind.Tunnel or pole_kind.Bridge, dual_wire, pole.get_relative_position(), pole_orientation);
             pole.cantilever_on_near_side = true;
             //Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
         }
         else
         {
-            system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type == pole_kind.Tunnel, 
-                dual_wire, pole.get_relative_position() + registration_arm_direction * (default_pole_offset * 2.0f),
-                pole_orientation * flip_around_vertical);
+            system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type == pole_kind.TrussBracket, 
+                pole.pole_type == pole_kind.Tunnel, dual_wire, pole.get_relative_position() + registration_arm_direction 
+                * (default_pole_offset * 2.0f), pole_orientation * flip_around_vertical);
             pole.cantilever_on_far_side = true;
             //Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
         }
@@ -530,7 +536,7 @@ internal static class editor
                 _last_registration_arm = null;
                 _first_cantilever      = _first_pole = true;
                 _remaining_cantilevers_distance = cantilever_termination_distance;
-                place_gantry_braket(relative_position);
+                place_gantry_braket(relative_position, forward_direction);
                 break;
 
             case placement.Cantilever:
