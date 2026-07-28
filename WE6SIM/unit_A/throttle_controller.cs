@@ -35,11 +35,13 @@ internal partial class unit_A_sim
             contactors all_contactors = unit._contactors;
             while (unit.is_powered && (all_contactors._line_contactor.engaged 
                                     || all_contactors._line_contactor2.engaged
-                                    || all_contactors._voltmeter.engaged))
+                                    || all_contactors._voltmeter.engaged
+                                    || all_contactors._shunting_contactors.engaged))
             {
-                all_contactors._line_contactor.toggle(false);
-                all_contactors._line_contactor2.toggle(false);
-                all_contactors._voltmeter.toggle(false);
+                all_contactors._line_contactor.toggle     (false);
+                all_contactors._line_contactor2.toggle    (false);
+                all_contactors._voltmeter.toggle          (false);
+                all_contactors._shunting_contactors.toggle(false);
                 await Task.Delay(300);
             }
             all_contactors.toggle_traction_motors(turn_on: false);
@@ -170,12 +172,14 @@ internal partial class unit_A_sim
             bool enable_line_contactor2 = unit._selector is not (int) selector_modes.yard_power;
             if (!all_contactors._line_contactor.engaged || enable_line_contactor2 && !!all_contactors._line_contactor2.engaged)
             {
-                int primary_target_notch = (unit._selector is (int) selector_modes.rheostatic_brake) ? 4 : 1;
+                bool rheostatic_brake_on  = unit._selector is (int) selector_modes.rheostatic_brake;
+                int  primary_target_notch = rheostatic_brake_on ? 4 : 1;
                 while (unit._throttle == 3 && !all_contactors._line_contactor.engaged 
                     || enable_line_contactor2 && !all_contactors._line_contactor2.engaged)
                 {
                     if (all_contactors._primary_controller.current_notch == primary_target_notch
-                        && unit.get_secondary_camshaft_current_notch(unit._control_BA1.Value) == 1)
+                        && unit.get_secondary_camshaft_current_notch(unit._control_BA1.Value) == 1
+                        && rheostatic_brake_on == all_contactors._shunting_contactors.engaged)
                     {
                         all_contactors._line_contactor.toggle(true);
                         if (enable_line_contactor2)
@@ -185,6 +189,7 @@ internal partial class unit_A_sim
                     {
                         all_contactors._primary_controller.target_notch = primary_target_notch;
                         unit.set_secondary_camshaft_target_notch(1);
+                        all_contactors._shunting_contactors.toggle(rheostatic_brake_on);
                     }
                     await Task.Delay(300);
                     primary_target_notch = (unit._selector is (int) selector_modes.rheostatic_brake) ? 4 : 1;
