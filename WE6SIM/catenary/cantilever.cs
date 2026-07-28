@@ -50,11 +50,11 @@ internal partial class overhead_equipment
         [JsonIgnore]
         private static readonly Dictionary<cantilever_kind, cantilever_internal> _truss_gantry_registration_arms = new()
         {
-            [cantilever_kind.Inner        ] = new() { template = "TrussArmInner"       , wire_offset =  sweep },
-            [cantilever_kind.OutwardsInner] = new() { template = "TrussArmInnerOutward", wire_offset =  sweep },
+            [cantilever_kind.Inner        ] = new() { template = "TrussArmInner"       , wire_offset = -sweep },
+            [cantilever_kind.OutwardsInner] = new() { template = "TrussArmInnerOutward", wire_offset = -sweep },
             [cantilever_kind.MiddleInner  ] = new() { template = "TrussArmMiddleInner" , wire_offset =   0.0f },
             [cantilever_kind.Middle       ] = new() { template = "TrussArmMiddle"      , wire_offset =   0.0f },
-            [cantilever_kind.Outer        ] = new() { template = "TrussArmOuter"       , wire_offset = -sweep }
+            [cantilever_kind.Outer        ] = new() { template = "TrussArmOuter"       , wire_offset = +sweep }
         };
         [JsonIgnore]
         private static readonly Dictionary<cantilever_kind, cantilever_internal> _tunnel_registration_arms = new()
