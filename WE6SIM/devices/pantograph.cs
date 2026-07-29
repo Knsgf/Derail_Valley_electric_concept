@@ -324,6 +324,7 @@ internal class pantograph: electric_device
             sidepan_toggle(stowed: true);
             await Task.Delay(2000);
             trigger.Value = 0.0f;
+            Main.release_log("XEnd");
         }
     }
     
@@ -368,7 +369,10 @@ internal class pantograph: electric_device
                 raised                      = Mathf.Abs(_current_height - _target_height) <= 0.2f;
                 roof_bus.pantograph_voltage = raised ? supply_voltage : 0.0f;
                 if (_current_height - _target_height > 0.35f)
+                {
+                    Main.release_log($"DRP h={_current_height}-{_target_height} ");
                     explode(_dropper_hit_damage);
+                }
             }
         }
         move();
@@ -397,6 +401,7 @@ internal class pantograph: electric_device
             && _last_pantograph_voltage > 0.0f && bus_voltage / _last_pantograph_voltage < 0.5f && _main_breaker.State
             /*|| roof_bus.short_circuited*/)
         {
+            Main.release_log($"ARC B={bus_voltage} L={_last_pantograph_voltage} I={load_current}");
             explode(_arcing_damage);
         }
         _last_pantograph_voltage = Mathf.Min(Mathf.Max(roof_bus.pantograph_voltage, roof_bus.sidepan_voltage), roof_bus.voltage);    // No arcing if the other pantograph is still live

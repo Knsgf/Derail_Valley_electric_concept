@@ -37,6 +37,11 @@ public static class Main
         Console.WriteLine($"[Catenary-DC background] {message}");
     }
 
+    public static void release_log(string message)
+    {
+        _logger?.Log(message);
+    }
+
     public static bool Load(ModEntry mod)
     {
         Harmony? code_injector = null;
