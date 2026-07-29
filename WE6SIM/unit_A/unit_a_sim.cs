@@ -680,7 +680,7 @@ internal partial class unit_A_sim: electric_device
             }
             //Main.log($"ID = {_idling_damage.Value}");
         
-            blowers.active                = rheostatic_brake_on || _throttle >= 1;
+            blowers.active                = /*rheostatic_brake_on || _throttle >= 1*/ Mathf.Abs(_reverser_position - 0.5f) > 0.1f;
             blowers.rheostatic_braking_on = rheostatic_brake_on;
             blowers.motor_current         = maximum_load;
             blowers.line_voltage          = rheostatic_brake_on ? motors_volts : voltmeter_reading;
