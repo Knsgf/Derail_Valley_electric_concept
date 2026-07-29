@@ -66,7 +66,8 @@ internal partial class unit_A_sim: electric_device
 
     private readonly float _motor_voltmeter_resistance;
 
-    private bool  _fast_notching_enabled = false, _jogging_mode_on = false, _jog_active = false, _cab_active = false, _to_idle = false;
+    private bool  _fast_notching_enabled = false, _jogging_mode_on = false, _jog_active = false, _cab_active = false;
+    private bool  _line_contactrs_on = false;
     private int   _throttle = -1, _secondary_camshaft_notch = 1, _selector = -1, _field_position = -1;
     private Task? _single_notch_movement;
     private float _reverser_position = 0.5f, _fast_notching_current_limit = 250.0f;
@@ -336,7 +337,6 @@ internal partial class unit_A_sim: electric_device
         int wheel_position = Mathf.RoundToInt(raw_throttle * throttle_last_notch);
         if (wheel_position > 0 && wheel_position == _throttle)
             return;
-        _to_idle  = wheel_position == 0 && _throttle > 0;
         _throttle = wheel_position;
         switch (wheel_position)
         {
@@ -532,6 +532,7 @@ internal partial class unit_A_sim: electric_device
     {
         check_if_disposed();
         
+        contactors                      all_contactors  = _contactors;
         blower_controller               blowers         = _blowers;
         exciter                         field_generator = _regenerative_field;
         bool                            jog             = _jogging_mode_on && !is_powered;
@@ -543,7 +544,7 @@ internal partial class unit_A_sim: electric_device
         {
             if (!_jog_active)
             {
-                _contactors.toggle_jogging(turn_on: true);
+                all_contactors.toggle_jogging(turn_on: true);
                 _jog_active = true;
             }
             current_draw      = 0.0f;
@@ -554,7 +555,7 @@ internal partial class unit_A_sim: electric_device
         {
             if (_jog_active)
             {
-                _contactors.toggle_jogging(turn_on: false);
+                all_contactors.toggle_jogging(turn_on: false);
                 _jog_volts.Value = 0.0f;
                 _jog_active      = false;
             }
@@ -565,7 +566,7 @@ internal partial class unit_A_sim: electric_device
         }
         _total_load.Value = current_draw;
         
-        float primary_current_position = _contactors._primary_controller.current_position;
+        float primary_current_position = all_contactors._primary_controller.current_position;
         set_primary_notch(primary_current_position);
         _HUD_notch_readout.update(Mathf.RoundToInt(primary_current_position), _secondary_camshaft_notch);
         _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
@@ -659,7 +660,11 @@ internal partial class unit_A_sim: electric_device
             _traction_motor_RPM.Value    = average_RPM;
             _traction_motor_EMF.Value    = average_EMF;
 
-            if (!_to_idle || maximum_load <= minimum_idling_current)
+            bool line_contactor1_on = all_contactors._line_contactor.engaged, line_contactor2_on = all_contactors._line_contactor2.engaged;
+            bool to_idle            = !line_contactor1_on && !line_contactor2_on && _line_contactrs_on;
+            _line_contactrs_on      =  line_contactor1_on ||  line_contactor2_on;
+            Main.log($"UA {to_idle}");
+            if (!to_idle || maximum_load <= minimum_idling_current)
             {
                 _idling_damage.Value = 0.0f;
                 set_port_signal(_control_AB1, (int) AB1_signals.idling_damage, (int) AB1_shift.idling_damage, 0);
@@ -674,7 +679,6 @@ internal partial class unit_A_sim: electric_device
                     Mathf.RoundToInt((31.0f / maximum_idling_damage) * idling_damage));
             }
             //Main.log($"ID = {_idling_damage.Value}");
-            _to_idle = false;
         
             blowers.active                = rheostatic_brake_on || _throttle >= 1;
             blowers.rheostatic_braking_on = rheostatic_brake_on;
