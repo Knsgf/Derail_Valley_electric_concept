@@ -46,7 +46,6 @@ internal class roof_busbar: electric_device
     
     public roof_busbar(Dictionary<string, Port> ports, bool is_unit_A): base("Roof busbar")
     {
-        _ua = is_unit_A;
         if (is_unit_A)
         {
             _inter_unit_cable_supplier = sensor_grabber.grab_port(ports, "[internal_MU].SUPPLY_TO_B");
@@ -71,21 +70,21 @@ internal class roof_busbar: electric_device
         return voltage1 > 1.0f && voltage2 > 1.0f && Mathf.Abs(voltage1 - voltage2) > 50.0f;
     }
     
-    private bool _ua;
     private void set_supply_voltage()
     {
+        /*
         short_circuited = made_short_circuit(_pantograph_voltage,          _sidepan_voltage)
                        || made_short_circuit(_pantograph_voltage, _inter_unit_cable_voltage)
-                       || made_short_circuit(   _sidepan_voltage, _inter_unit_cable_voltage);
+                       || made_short_circuit(   _sidepan_voltage, _inter_unit_cable_voltage);*/
         float pantographs_voltage;
-        if (short_circuited)
+        /*if (short_circuited)
             pantographs_voltage = voltage = 0.0f;
         else
-        {
+        {*/
             pantographs_voltage = Mathf.Max(_pantograph_voltage,          _sidepan_voltage);
             voltage             = Mathf.Max(pantographs_voltage, _inter_unit_cable_voltage);
             halved_current      = Mathf.Abs(pantographs_voltage - _inter_unit_cable_voltage) <= 50.0f;
-        }
+        /*}*/
         _inter_unit_cable_supplier.Value = pantographs_voltage;
     }
 
