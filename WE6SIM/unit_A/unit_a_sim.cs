@@ -308,6 +308,7 @@ internal partial class unit_A_sim: electric_device
         if (!selector_switched && Mathf.Abs(raw_reverser - _reverser_position) < 0.1f)
             return;
         _reverser_position = raw_reverser;
+        Main.log($"RevA {_reverser_position}");
         if (_selector is (int) selector_modes.rheostatic_brake)
             raw_reverser = 1.0f - raw_reverser;
         if (raw_reverser >= 0.7f)
@@ -449,8 +450,6 @@ internal partial class unit_A_sim: electric_device
         _appliances.ChangeState (port_value_signal_active(BA1, (int) BA1_signals.battery           ));
         _control_air.ChangeState(port_value_signal_active(BA1, (int) BA1_signals.control_air_usable));
         
-        _jogging_mode_on = port_value_signal_active(BA1, (int) BA1_signals.jog);
-
         bool breaker_trip = port_value_signal_active(BA1, (int) BA1_signals.breaker_trip);
         if (breaker_trip)
             _main_breaker.trip();
@@ -462,8 +461,9 @@ internal partial class unit_A_sim: electric_device
             if (!breaker_trip && port_value_signal_active(BA1, (int) BA1_signals.breaker_engage))
                 _main_breaker.toggle_on(1.0f);
             
-            Main.log($"Rev {(port_value_signal_active(BA1, (int) BA1_signals.reverser) ? 0.0f : 1.0f)}");
-            reverser_handler(port_value_signal_active(BA1, (int) BA1_signals.reverser) ? 0.0f : 1.0f, selector_switched: false);
+            float unit_B_reverser = 1.0f - extract_signal_from_port_value(BA1, (int) BA1_signals.reverser, (int) BA1_shift.reverser) / 2.0f;
+            Main.log($"Rev {unit_B_reverser}");
+            reverser_handler(unit_B_reverser, selector_switched: false);
             handle_relay(BA1, BA1_signals.throttle, BA1_shift.throttle, throttle_last_notch    ,      throttle_handler);
             handle_relay(BA1, BA1_signals.field   , BA1_shift.field   , field_handle_last_notch, field_control_handler);
             handle_relay(BA1, BA1_signals.selector, BA1_shift.selector, selector_last_notch    ,      selector_handler);
@@ -489,6 +489,8 @@ internal partial class unit_A_sim: electric_device
             
             fast_notching_toggle(port_value_signal_active(BA2, (int) BA2_signals.fast_notching) ? 1.0f : 0.0f);
             blower_speed_toggle (port_value_signal_active(BA2, (int) BA2_signals.blower_mode  ) ? 1.0f : 0.0f);
+        
+            _jogging_mode_on = port_value_signal_active(BA2, (int) BA2_signals.jog);
         }
         _unit_B_integrity = extract_signal_from_port_value(BA2, (int) BA2_signals.motor_integrity, (int) BA2_shift.motor_integrity)
             / 4095.0f;
@@ -663,7 +665,6 @@ internal partial class unit_A_sim: electric_device
             bool line_contactor1_on = all_contactors._line_contactor.engaged, line_contactor2_on = all_contactors._line_contactor2.engaged;
             bool to_idle            = !line_contactor1_on && !line_contactor2_on && _line_contactrs_on;
             _line_contactrs_on      =  line_contactor1_on ||  line_contactor2_on;
-            Main.log($"UA {to_idle}");
             if (!to_idle || maximum_load <= minimum_idling_current)
             {
                 _idling_damage.Value = 0.0f;

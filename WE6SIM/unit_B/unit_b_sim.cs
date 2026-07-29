@@ -185,7 +185,8 @@ internal class unit_B_sim: electric_device
 
     private void reverser_relay(float raw_reverser)
     {
-        toggle_port_signal(_control_BA1, (int) BA1_signals.reverser, raw_reverser >= 0.5f);
+        Main.log($"RevB {raw_reverser}");
+        set_port_signal(_control_BA1, (int) BA1_signals.reverser, (int) BA1_shift.reverser, Mathf.RoundToInt(raw_reverser * 2.0f));
     }
 
     private Action<float> handle_relay(BA1_signals signal, BA1_shift signal_shift, int notches)

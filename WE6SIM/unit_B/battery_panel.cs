@@ -22,7 +22,7 @@ internal class battery_panel: electric_device
     public const float battery_EMF = 120.0f, battery_internal_resistance = 0.4f;
     
     private readonly Fuse _appliances, _control_air;
-    private readonly Port _control_BA1, _control_air_valve, _auxiliary_compressor_switch, _jogging_switch;
+    private readonly Port _control_BA1, _control_BA2, _control_air_valve, _auxiliary_compressor_switch, _jogging_switch;
     private readonly Port _battery_voltmeter, _jogging_voltage, _control_air_pressure;
 
     private readonly BrakeSystem _main_reservoir_connection;
@@ -38,6 +38,7 @@ internal class battery_panel: electric_device
         power_supply_toggled += battery_toggle;
         
         _control_BA1                 = sensor_grabber.grab_port(ports, "[internal_MU].CONTROL_BA1"          );
+        _control_BA2                 = sensor_grabber.grab_port(ports, "[internal_MU].CONTROL_BA2"          );
         _auxiliary_compressor_switch = sensor_grabber.grab_port(ports, "[BatteryPanel].AUXILIARY_COMPRESSOR");
         _control_air_valve           = sensor_grabber.grab_port(ports, "[PantographAirValve].EXT_IN"        );
         _jogging_switch              = sensor_grabber.grab_port(ports, "[Jogging].EXT_IN"                   );
@@ -96,7 +97,7 @@ internal class battery_panel: electric_device
 
     private void jog_toggle(float jog_switch)
     {
-        toggle_port_signal(_control_BA1, (int) BA1_signals.jog, jog_switch >= 0.5f && !is_powered);
+        toggle_port_signal(_control_BA2, (int) BA2_signals.jog, jog_switch >= 0.5f && !is_powered && !_control_air.State);
     }
 
     private void jog_voltage(float _)

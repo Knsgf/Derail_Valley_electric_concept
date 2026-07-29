@@ -47,12 +47,11 @@ internal static class signal_cable
         pantograph     = 0,
         battery        = 1,
         control_air    = 2,
-        jog            = 3,
-        sander         = 4,
-        breaker_engage = 5,
-        breaker_trip   = 6,
+        sander         = 3,
+        breaker_engage = 4,
+        breaker_trip   = 5,
 
-        reverser              = 7,
+        reverser              = 6,
         throttle              = 8,
         field                 = 11,
         selector              = 15,
@@ -64,11 +63,10 @@ internal static class signal_cable
         pantograph_up         = 0x1 << BA1_shift.pantograph,
         battery               = 0x1 << BA1_shift.battery,
         control_air_usable    = 0x1 << BA1_shift.control_air,
-        jog                   = 0x1 << BA1_shift.jog,
         sander                = 0x1 << BA1_shift.sander,
         breaker_engage        = 0x1 << BA1_shift.breaker_engage,
         breaker_trip          = 0x1 << BA1_shift.breaker_trip,
-        reverser              = 0x1 << BA1_shift.reverser,
+        reverser              = 0x3 << BA1_shift.reverser,
         throttle              = 0x7 << BA1_shift.throttle,
         field                 = 0xF << BA1_shift.field,
         selector              = 0x7 << BA1_shift.selector,
@@ -84,6 +82,7 @@ internal static class signal_cable
         left_sidepan         = 6,
         fast_notching        = 7,
         blower_mode          = 8,
+        jog                  = 9,
 
         motor_integrity = 12
     }
@@ -96,6 +95,7 @@ internal static class signal_cable
         left_sidepan         = 0x1 << BA2_shift.left_sidepan,
         fast_notching        = 0x1 << BA2_shift.fast_notching,
         blower_mode          = 0x1 << BA2_shift.blower_mode,
+        jog                  = 0x1 << BA2_shift.jog,
 
         motor_integrity = 0xFFF << BA2_shift.motor_integrity
     }
