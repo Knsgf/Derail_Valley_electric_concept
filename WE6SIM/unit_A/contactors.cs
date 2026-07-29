@@ -14,6 +14,7 @@ using electric_sim.utilities;
 
 using static electric_sim.devices.control_stand;
 using static electric_sim.utilities.signal_cable;
+using System.Threading.Tasks;
 
 namespace electric_sim.unit_A;
 
@@ -21,8 +22,12 @@ internal partial class unit_A_sim
 {
     private class contactors: IDisposable
     {
-        private readonly unit_A_sim              _unit;
-        private readonly PoweredWheelsManager    _driving_axles;
+        private readonly unit_A_sim           _unit;
+        private readonly PoweredWheelsManager _driving_axles;
+        private readonly object               _selector_interlock = new();
+
+        private bool _selector_movement = false;
+        private int  _new_selector      = (int) selector_modes.yard_power;
 
         public readonly camshaft_motor           _reverser, _primary_controller, _selector_motor;
         public readonly camshaft_contactor_set   _reverser_shaft, _primary_camshaft, _secondary_camshaft;
@@ -157,20 +162,45 @@ internal partial class unit_A_sim
                 _field_shunt_contactors[field_contactor].toggle(turn_on: false);
         }
 
-        public void switch_selector_contactors(int selector)
+        public async void switch_selector_contactors(int selector)
         {
-            if (selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative)
+            lock (_selector_interlock)
             {
-                _field_shunt_contactors[0].toggle(turn_on: true);
-                _field_shunt_contactors[1].toggle(turn_on: true);
-                _field_shunt_contactors[2].toggle(turn_on: false);
-                _field_shunt_contactors[3].toggle(turn_on: true);
-                _field_shunt_contactors[4].toggle(turn_on: true);
-                _field_shunt_contactors[5].toggle(turn_on: true);
+                _new_selector = selector;
+                if (_selector_movement)
+                    return;
+                _selector_movement = true;
             }
-            _dynamic_brake_contactor.toggle(selector is (int) selector_modes.rheostatic_brake);
-            _selector_motor.target_notch = (selector is (int) selector_modes.parallel_power  ) ? 8 : (selector + 1);
-            toggle_transition_lamp(_selector_motor.current_notch != _selector_motor.target_notch);
+
+            int current_selector = _selector_motor.current_notch;
+            if (current_selector is not (int) selector_modes.series_power and not (int) selector_modes.parallel_power
+                &&     selector  is not (int) selector_modes.series_power and not (int) selector_modes.parallel_power)
+            {
+                while (_line_contactor.engaged || _line_contactor2.engaged)
+                {
+                    _line_contactor.toggle (false);
+                    _line_contactor2.toggle(false);
+                    await Task.Delay(300);
+                }
+            }
+
+            lock (_selector_interlock)
+            {
+                selector = _new_selector;
+                if (selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative)
+                {
+                    _field_shunt_contactors[0].toggle(turn_on: true);
+                    _field_shunt_contactors[1].toggle(turn_on: true);
+                    _field_shunt_contactors[2].toggle(turn_on: false);
+                    _field_shunt_contactors[3].toggle(turn_on: true);
+                    _field_shunt_contactors[4].toggle(turn_on: true);
+                    _field_shunt_contactors[5].toggle(turn_on: true);
+                }
+                _dynamic_brake_contactor.toggle(selector is (int) selector_modes.rheostatic_brake);
+                _selector_motor.target_notch = (selector is (int) selector_modes.parallel_power  ) ? 8 : (selector + 1);
+                toggle_transition_lamp(_selector_motor.current_notch != _selector_motor.target_notch);
+                _selector_movement = false;
+            }
         }
 
         private void extinguish_transition_lamp(int selector_notch)
