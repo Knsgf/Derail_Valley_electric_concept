@@ -187,21 +187,32 @@ internal partial class unit_A_sim
 
         public void toggle_traction_motors(bool turn_on)
         {
-            int notch = turn_on ? 2 : 1;
+            int notch = turn_on ? 2 : 1, motor_status = 0;
             for (int motor = 0; motor <= 2; ++motor)
             {
-                if (!turn_on || _driving_axles.poweredWheels[motor].IsPowered)
-                    _motor_cutouts[motor].switch_contactors(notch);
+                if (_driving_axles.poweredWheels[motor].IsPowered)
+                    motor_status |= 1 << motor;
             }
             int   unit_B_motor_status = 1 << ((int) BA2_shift.unit_B_active_motors);
             float BA2                 = _unit._control_BA2.Value;
-            Main.log($"TTM {BA2} {unit_B_motor_status}");
             for (int motor = 5; motor >= 3; --motor)
-            {
-                if (!turn_on || port_value_signal_active(BA2, unit_B_motor_status))
-                    _motor_cutouts[motor].switch_contactors(notch);
+            { 
+                if (port_value_signal_active(BA2, unit_B_motor_status))
+                    motor_status |= 1 << motor;
                 unit_B_motor_status <<= 1;
             }
+            
+            if (_unit._selector == (int) selector_modes.rheostatic_brake)
+            {
+                for (int motor_group = 0x3; motor_group <= (0x3 << 4); motor_group <<= 2)
+                {
+                    if ((motor_status & motor_group) != motor_group)
+                        motor_status &= ~motor_group;
+                }
+            }
+
+            for (int motor = 0; motor < 6; ++motor)
+                _motor_cutouts[motor].switch_contactors(((motor_status & (1 << motor)) != 0) ? notch : 1);
         }
 
         public void toggle_jogging(bool turn_on)
