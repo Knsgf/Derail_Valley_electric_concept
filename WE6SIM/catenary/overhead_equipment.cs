@@ -59,7 +59,8 @@ internal partial class overhead_equipment
         // Neutral sections
         "[CP]![IMW]",
         "[FF]![CME-IME]",
-        "[FF]![IMW]"
+        "[FF]![IMW]",
+        "[HB]![SM]"
     ];
 
     private static readonly string[] _template_names =
