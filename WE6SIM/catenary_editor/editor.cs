@@ -24,7 +24,7 @@ internal static class editor
     { 
         Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryTruss6, GantryStretch, GantryAlign, Bracket, FlippedBracket,
         Cantilever, GantryRegistrationArm, Wire, Substation, SubstationSideRail, LowClearancesYardCP, LowClearancesYardOR,
-        SaveNow, SinkTunnelPoles1, SinkTunnelPoles2
+        SaveNow, SinkTunnelPoles1, SinkTunnelPoles2, Reload
     };
     const float mow_vehicle_length          = 14.4f, overhang = 4.1f, wheelbase = mow_vehicle_length - overhang * 2.0f;
     const float vehicle_half_length_squared = mow_vehicle_length * mow_vehicle_length / 4.0f;
@@ -630,6 +630,12 @@ internal static class editor
                     _tunnel_pole_sink = false;
                     system.sink_tunnel_poles();
                 }
+                break;
+
+            case placement.Reload:
+                overhead_equipment.dispose();
+                if (Main.mod_info != null)
+                    overhead_equipment.set_up(Main.mod_info);
                 break;
         }
         (_last_x, _last_z) = get_absolute_position(relative_position);

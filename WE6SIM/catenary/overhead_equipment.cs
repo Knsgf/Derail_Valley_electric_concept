@@ -180,6 +180,7 @@ internal partial class overhead_equipment
 
     private GameObject? _OCS_ticker;
 
+    private List<    AssetBundle> _loaded_bundles = [];
     private List<catenary_object> _previously_visible_objects = [], _currently_visible_objects = [];
     private quad_tree _object_tree = new([], scenery_tree_objects_per_node), _wires_tree = new([], wires_tree_objects_per_node);
 
@@ -222,6 +223,7 @@ internal partial class overhead_equipment
                 ?? throw new FileNotFoundException($"No {template_name} prefab");
         }
 
+        _loaded_bundles.Add(catenary_assets);
         WorldMover floating_origin = SingletonBehaviour<WorldMover>.Instance;
         assert.test(floating_origin != null);
         floating_origin.WorldMoved    += floating_origin_shift;
@@ -279,6 +281,7 @@ internal partial class overhead_equipment
         // which precludes doing loading inside constructor
         AssetBundle catenary = AssetBundle.LoadFromFile(Path.Combine(system._file_path, "catenary"))
             ?? throw new FileNotFoundException("Not found " + Path.Combine(system._file_path, "catenary"));
+        _system._loaded_bundles.Add(catenary);
         foreach (string location in _all_locations)
             _system.load_scenery_from_bundle(catenary, location);
 #if DEBUG        
@@ -364,6 +367,9 @@ internal partial class overhead_equipment
             current_object.is_visible      = false;
             current_object.hide_when_out_of_view();
         }
+        foreach (AssetBundle loaded_bundle in _system._loaded_bundles)
+            loaded_bundle.Unload(unloadAllLoadedObjects: true);
+        _system._loaded_bundles.Clear();
         _system = null;
     }
 
