@@ -401,7 +401,7 @@
     "pole_type": "Bridge",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
-    "anchored": false,
+    "anchored": true,
     "siding_anchor": false
   },
   {
@@ -8198,7 +8198,7 @@
     "z": 3526786,
     "y": 113.285118,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -8230,7 +8230,7 @@
     "z": 3490485,
     "y": 113.2833,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -8262,7 +8262,7 @@
     "z": 3454258,
     "y": 113.294846,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -8342,7 +8342,7 @@
     "z": 3308984,
     "y": 113.299095,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
@@ -8358,7 +8358,7 @@
     "pole_type": "Bridge",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
-    "anchored": false,
+    "anchored": true,
     "siding_anchor": false
   },
   {
@@ -9243,7 +9243,7 @@
     "z": 3662291,
     "y": 113.299774,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -9259,7 +9259,7 @@
     "z": 3655624,
     "y": 113.306648,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -9275,7 +9275,7 @@
     "z": 3645291,
     "y": 113.30574,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -9291,7 +9291,7 @@
     "z": 3632013,
     "y": 113.282051,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -9307,7 +9307,7 @@
     "z": 3616599,
     "y": 113.302048,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -9323,7 +9323,7 @@
     "z": 3599456,
     "y": 113.284447,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -9339,7 +9339,7 @@
     "z": 3580950,
     "y": 113.280144,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -9355,7 +9355,7 @@
     "z": 3563645,
     "y": 113.281769,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -9371,7 +9371,7 @@
     "z": 3419833,
     "y": 113.283104,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -9387,7 +9387,7 @@
     "z": 3383430,
     "y": 113.270638,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
@@ -9403,7 +9403,7 @@
     "z": 3347109,
     "y": 113.290787,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
@@ -9436,6 +9436,304 @@
     "z": 3545800,
     "y": 113.293221,
     "dual_wire": false,
-    "wire_attached": false
+    "wire_attached": true
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 38.5973167,
+    "previous_pole_vertical_offset": 0.00566864,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.9822459,
+      "z": 0.0,
+      "w": 0.187597647
+    },
+    "x": 12723037,
+    "z": 3308984,
+    "y": 113.299095,
+    "wire_type": "end_anchor_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "PoleAnchor",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9761406,
+      "z": 0.0,
+      "w": -0.217139423
+    },
+    "x": 12710805,
+    "z": 3272171,
+    "y": 113.304764
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 40.1909,
+    "previous_pole_vertical_offset": 0.008308411,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.9862754,
+      "z": 0.0,
+      "w": 0.165108457
+    },
+    "x": 12736127,
+    "z": 3346984,
+    "y": 113.290787,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 40.04274,
+    "previous_pole_vertical_offset": 0.020149231,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.976481259,
+      "z": 0.0,
+      "w": 0.2156024
+    },
+    "x": 12752987,
+    "z": 3383304,
+    "y": 113.270638,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 40.12536,
+    "previous_pole_vertical_offset": -0.0124664307,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.9765229,
+      "z": 0.0,
+      "w": 0.215413719
+    },
+    "x": 12769868,
+    "z": 3419705,
+    "y": 113.283104,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 40.2368279,
+    "previous_pole_vertical_offset": -0.0117416382,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.963224769,
+      "z": 0.0,
+      "w": 0.268697172
+    },
+    "x": 12790696,
+    "z": 3454132,
+    "y": 113.294846,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 39.95601,
+    "previous_pole_vertical_offset": 0.0115432739,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.9764533,
+      "z": 0.0,
+      "w": 0.215728968
+    },
+    "x": 12807530,
+    "z": 3490369,
+    "y": 113.2833,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 40.03055,
+    "previous_pole_vertical_offset": -0.0018157959,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.977172852,
+      "z": 0.0,
+      "w": 0.212445915
+    },
+    "x": 12824150,
+    "z": 3526786,
+    "y": 113.285118,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 20.9650154,
+    "previous_pole_vertical_offset": -0.008102417,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.9750188,
+      "z": 0.0,
+      "w": 0.222122341
+    },
+    "x": 12833231,
+    "z": 3545682,
+    "y": 113.293221,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 18.7812157,
+    "previous_pole_vertical_offset": 0.0114517212,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.987547755,
+      "z": 0.0,
+      "w": 0.157319546
+    },
+    "x": 12839067,
+    "z": 3563534,
+    "y": 113.281769,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 17.51181,
+    "previous_pole_vertical_offset": 0.001625061,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.99871695,
+      "z": 0.0,
+      "w": 0.05063978
+    },
+    "x": 12840838,
+    "z": 3580956,
+    "y": 113.280144,
+    "wire_type": "middle_anchor_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 18.6780281,
+    "previous_pole_vertical_offset": -0.00430297852,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.99855274,
+      "z": 0.0,
+      "w": 0.0537815727
+    },
+    "x": 12838832,
+    "z": 3599526,
+    "y": 113.284447,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 18.1309242,
+    "previous_pole_vertical_offset": -0.0176010132,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9871651,
+      "z": 0.0,
+      "w": 0.159703031
+    },
+    "x": 12833115,
+    "z": 3616732,
+    "y": 113.302048,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 18.0827255,
+    "previous_pole_vertical_offset": 0.0199966431,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9632012,
+      "z": 0.0,
+      "w": 0.2687813
+    },
+    "x": 12823752,
+    "z": 3632202,
+    "y": 113.282051,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 18.5098763,
+    "previous_pole_vertical_offset": -0.02368927,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.927317739,
+      "z": 0.0,
+      "w": 0.374275237
+    },
+    "x": 12810904,
+    "z": 3645526,
+    "y": 113.30574,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 18.7260227,
+    "previous_pole_vertical_offset": -0.000907897949,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.881371856,
+      "z": 0.0,
+      "w": 0.472423136
+    },
+    "x": 12795309,
+    "z": 3655893,
+    "y": 113.306648,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 18.5890141,
+    "previous_pole_vertical_offset": 0.00687408447,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.8246873,
+      "z": 0.0,
+      "w": 0.565588832
+    },
+    "x": 12777968,
+    "z": 3662589,
+    "y": 113.299774,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 45.20993,
+    "previous_pole_vertical_offset": 0.0171813965,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.670260966,
+      "z": 0.0,
+      "w": 0.7421256
+    },
+    "x": 12777968,
+    "z": 3662589,
+    "y": 113.299774,
+    "wire_type": "end_anchor_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "PoleAnchor",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.751849234,
+      "z": 0.0,
+      "w": -0.659335136
+    },
+    "x": 12733279,
+    "z": 3664997,
+    "y": 113.316956
   }
 ]
