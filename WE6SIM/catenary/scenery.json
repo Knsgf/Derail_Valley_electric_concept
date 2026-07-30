@@ -149,7 +149,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
-    "cantilever_type": "Inner",
+    "cantilever_type": "OutwardsInner",
     "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
@@ -332,5 +332,83 @@
     "x": 10862477,
     "z": 5312845,
     "y": 154.828583
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralBeginOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.794821441,
+      "z": 0.0,
+      "w": 0.6068435
+    },
+    "x": 10898820,
+    "z": 5306012,
+    "y": 154.373322
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralEnd",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.787167251,
+      "z": 0.0,
+      "w": 0.6167395
+    },
+    "x": 10900316,
+    "z": 5305672,
+    "y": 154.373322
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralBegin",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.894037545,
+      "z": 0.0,
+      "w": 0.447992
+    },
+    "x": 11088256,
+    "z": 5244693,
+    "y": 152.668839
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralEndOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.894037545,
+      "z": 0.0,
+      "w": 0.447992
+    },
+    "x": 11088256,
+    "z": 5244693,
+    "y": 152.668839
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralWarningOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.8174654,
+      "z": 0.0,
+      "w": 0.5759778
+    },
+    "x": 10577014,
+    "z": 5463143,
+    "y": 158.631882
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralWarning",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.99903506,
+      "z": 0.0,
+      "w": 0.04392137
+    },
+    "x": 11142723,
+    "z": 5118061,
+    "y": 151.4289
   }
 ]
