@@ -39,6 +39,7 @@ internal partial class overhead_equipment
         "CP",
         "FM",
         "FF",
+        "HB",
         "IME",
         "IMW",
         "SM",
