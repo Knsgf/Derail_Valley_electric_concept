@@ -489,9 +489,8 @@ internal partial class unit_A_sim: electric_device
             
             fast_notching_toggle(port_value_signal_active(BA2, (int) BA2_signals.fast_notching) ? 1.0f : 0.0f);
             blower_speed_toggle (port_value_signal_active(BA2, (int) BA2_signals.blower_mode  ) ? 1.0f : 0.0f);
-        
-            _jogging_mode_on = port_value_signal_active(BA2, (int) BA2_signals.jog);
         }
+        _jogging_mode_on  = port_value_signal_active(BA2, (int) BA2_signals.jog);
         _unit_B_integrity = extract_signal_from_port_value(BA2, (int) BA2_signals.motor_integrity, (int) BA2_shift.motor_integrity)
             / 4095.0f;
     }
