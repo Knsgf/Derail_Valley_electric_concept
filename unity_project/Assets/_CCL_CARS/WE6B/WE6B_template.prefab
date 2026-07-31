@@ -115,6 +115,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3228445412442432228}
   - component: {fileID: 4153637288161191367}
+  - component: {fileID: 9108165399189780718}
   m_Layer: 0
   m_Name: '[BackPantographSwitch]'
   m_TagString: Untagged
@@ -151,6 +152,31 @@ MonoBehaviour:
   ID: '[BackPantographSwitch]'
   defaultValue: 0
   saveState: 0
+--- !u!114 &9108165399189780718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178836905211270172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1001712476, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockedControlPortId: '[BackPantographSwitch].EXT_IN'
+  resetToZeroOnBlock: 1
+  blockers:
+  - blockerPortId: '[BrakeValveCutout].EXT_IN'
+    thresholdValue: 0.5
+    blockType: 1
+  - blockerPortId: '[LeftSidePanSwitch].EXT_IN'
+    thresholdValue: 0.1
+    blockType: 0
+  - blockerPortId: '[RighttSidePanSwitch].EXT_IN'
+    thresholdValue: 0.1
+    blockType: 0
+  _json: '[{"blockerPortId":"[BrakeValveCutout].EXT_IN","blockType":"BLOCK_ON_BELOW_THRESHOLD","thresholdValue":0.5},{"blockerPortId":"[LeftSidePanSwitch].EXT_IN","blockType":"BLOCK_ON_ABOVE_THRESHOLD","thresholdValue":0.1},{"blockerPortId":"[RighttSidePanSwitch].EXT_IN","blockType":"BLOCK_ON_ABOVE_THRESHOLD","thresholdValue":0.1}]'
 --- !u!1 &219536695817239239
 GameObject:
   m_ObjectHideFlags: 0
@@ -802,6 +828,7 @@ GameObject:
   m_Component:
   - component: {fileID: 420656903514615897}
   - component: {fileID: 6889518642248942414}
+  - component: {fileID: 413288489496961675}
   m_Layer: 0
   m_Name: '[LeftSidePanSwitch]'
   m_TagString: Untagged
@@ -838,6 +865,31 @@ MonoBehaviour:
   ID: '[LeftSidePanSwitch]'
   defaultValue: 0
   saveState: 0
+--- !u!114 &413288489496961675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137523568382755191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1001712476, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockedControlPortId: '[LeftSidePanSwitch].EXT_IN'
+  resetToZeroOnBlock: 1
+  blockers:
+  - blockerPortId: '[BrakeValveCutout].EXT_IN'
+    thresholdValue: 0.5
+    blockType: 1
+  - blockerPortId: '[FrontPantographSwitch].EXT_IN'
+    thresholdValue: 0.1
+    blockType: 0
+  - blockerPortId: '[BackPantographSwitch].EXT_IN'
+    thresholdValue: 0.1
+    blockType: 0
+  _json: '[{"blockerPortId":"[BrakeValveCutout].EXT_IN","blockType":"BLOCK_ON_BELOW_THRESHOLD","thresholdValue":0.5},{"blockerPortId":"[FrontPantographSwitch].EXT_IN","blockType":"BLOCK_ON_ABOVE_THRESHOLD","thresholdValue":0.1},{"blockerPortId":"[BackPantographSwitch].EXT_IN","blockType":"BLOCK_ON_ABOVE_THRESHOLD","thresholdValue":0.1}]'
 --- !u!1 &1187167441738201901
 GameObject:
   m_ObjectHideFlags: 0
@@ -7050,6 +7102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1150888793487442304}
   - component: {fileID: 8371666697688006186}
+  - component: {fileID: 933801236340506132}
   m_Layer: 0
   m_Name: '[RighttSidePanSwitch]'
   m_TagString: Untagged
@@ -7086,6 +7139,31 @@ MonoBehaviour:
   ID: '[RighttSidePanSwitch]'
   defaultValue: 0
   saveState: 0
+--- !u!114 &933801236340506132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5082228424198413410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1001712476, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockedControlPortId: '[RighttSidePanSwitch].EXT_IN'
+  resetToZeroOnBlock: 1
+  blockers:
+  - blockerPortId: '[BrakeValveCutout].EXT_IN'
+    thresholdValue: 0.5
+    blockType: 1
+  - blockerPortId: '[FrontPantographSwitch].EXT_IN'
+    thresholdValue: 0.1
+    blockType: 0
+  - blockerPortId: '[BackPantographSwitch].EXT_IN'
+    thresholdValue: 0.1
+    blockType: 0
+  _json: '[{"blockerPortId":"[BrakeValveCutout].EXT_IN","blockType":"BLOCK_ON_BELOW_THRESHOLD","thresholdValue":0.5},{"blockerPortId":"[FrontPantographSwitch].EXT_IN","blockType":"BLOCK_ON_ABOVE_THRESHOLD","thresholdValue":0.1},{"blockerPortId":"[BackPantographSwitch].EXT_IN","blockType":"BLOCK_ON_ABOVE_THRESHOLD","thresholdValue":0.1}]'
 --- !u!1 &5094327434809340005
 GameObject:
   m_ObjectHideFlags: 0
@@ -7851,6 +7929,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4197372418766594212}
   - component: {fileID: 7065638886289880070}
+  - component: {fileID: 1171283880289407654}
   m_Layer: 0
   m_Name: '[FrontPantographSwitch]'
   m_TagString: Untagged
@@ -7887,6 +7966,31 @@ MonoBehaviour:
   ID: '[FrontPantographSwitch]'
   defaultValue: 0
   saveState: 0
+--- !u!114 &1171283880289407654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5447209882156800981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1001712476, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockedControlPortId: '[FrontPantographSwitch].EXT_IN'
+  resetToZeroOnBlock: 1
+  blockers:
+  - blockerPortId: '[BrakeValveCutout].EXT_IN'
+    thresholdValue: 0.5
+    blockType: 1
+  - blockerPortId: '[LeftSidePanSwitch].EXT_IN'
+    thresholdValue: 0.1
+    blockType: 0
+  - blockerPortId: '[RighttSidePanSwitch].EXT_IN'
+    thresholdValue: 0.1
+    blockType: 0
+  _json: '[{"blockerPortId":"[BrakeValveCutout].EXT_IN","blockType":"BLOCK_ON_BELOW_THRESHOLD","thresholdValue":0.5},{"blockerPortId":"[LeftSidePanSwitch].EXT_IN","blockType":"BLOCK_ON_ABOVE_THRESHOLD","thresholdValue":0.1},{"blockerPortId":"[RighttSidePanSwitch].EXT_IN","blockType":"BLOCK_ON_ABOVE_THRESHOLD","thresholdValue":0.1}]'
 --- !u!1 &5465823422041792943
 GameObject:
   m_ObjectHideFlags: 0
@@ -12202,18 +12306,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac35f4ebdf61413478bf58417324e46a, type: 3}
---- !u!114 &5175713686659899765 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7447954471910961091, guid: ac35f4ebdf61413478bf58417324e46a,
-    type: 3}
-  m_PrefabInstance: {fileID: 2346277603313536694}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -2063964737, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3811588679638582022 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1471230915655454128, guid: ac35f4ebdf61413478bf58417324e46a,
@@ -12224,6 +12316,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 1023674373, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5175713686659899765 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7447954471910961091, guid: ac35f4ebdf61413478bf58417324e46a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2346277603313536694}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -2063964737, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &3516872148258316941 stripped
@@ -12411,18 +12515,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac35f4ebdf61413478bf58417324e46a, type: 3}
---- !u!114 &3821464218101760479 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1471230915655454128, guid: ac35f4ebdf61413478bf58417324e46a,
+--- !u!4 &3540843425856659540 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1171454432313060411, guid: ac35f4ebdf61413478bf58417324e46a,
     type: 3}
   m_PrefabInstance: {fileID: 2405570692086303855}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1023674373, guid: b247489fc36790c41b197410cd8386d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5061552219081270188 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7447954471910961091, guid: ac35f4ebdf61413478bf58417324e46a,
@@ -12435,12 +12533,18 @@ MonoBehaviour:
   m_Script: {fileID: -2063964737, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &3540843425856659540 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1171454432313060411, guid: ac35f4ebdf61413478bf58417324e46a,
+--- !u!114 &3821464218101760479 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1471230915655454128, guid: ac35f4ebdf61413478bf58417324e46a,
     type: 3}
   m_PrefabInstance: {fileID: 2405570692086303855}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1023674373, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2893179813289889419
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12962,15 +13066,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aeebab013efdb784cb8de385eccdc17e, type: 3}
---- !u!4 &2189483185027007897 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6538259055991433226, guid: aeebab013efdb784cb8de385eccdc17e,
-    type: 3}
-  m_PrefabInstance: {fileID: 4962426531279302035}
-  m_PrefabAsset: {fileID: 0}
 --- !u!108 &1733590205056159452 stripped
 Light:
   m_CorrespondingSourceObject: {fileID: 6688100224551379791, guid: aeebab013efdb784cb8de385eccdc17e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4962426531279302035}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2189483185027007897 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6538259055991433226, guid: aeebab013efdb784cb8de385eccdc17e,
     type: 3}
   m_PrefabInstance: {fileID: 4962426531279302035}
   m_PrefabAsset: {fileID: 0}
@@ -13053,15 +13157,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5df958ba6a7e2a74fb38c09f3c9e2f5d, type: 3}
---- !u!108 &6065916660629788654 stripped
-Light:
-  m_CorrespondingSourceObject: {fileID: 1322116949729837495, guid: 5df958ba6a7e2a74fb38c09f3c9e2f5d,
-    type: 3}
-  m_PrefabInstance: {fileID: 5077647278435325529}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9126026155202554553 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4094129555602177248, guid: 5df958ba6a7e2a74fb38c09f3c9e2f5d,
+    type: 3}
+  m_PrefabInstance: {fileID: 5077647278435325529}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &6065916660629788654 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 1322116949729837495, guid: 5df958ba6a7e2a74fb38c09f3c9e2f5d,
     type: 3}
   m_PrefabInstance: {fileID: 5077647278435325529}
   m_PrefabAsset: {fileID: 0}
@@ -13389,15 +13493,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aeebab013efdb784cb8de385eccdc17e, type: 3}
---- !u!4 &4505790840054912337 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6538259055991433226, guid: aeebab013efdb784cb8de385eccdc17e,
-    type: 3}
-  m_PrefabInstance: {fileID: 7222444617641704795}
-  m_PrefabAsset: {fileID: 0}
 --- !u!108 &4101548516431584788 stripped
 Light:
   m_CorrespondingSourceObject: {fileID: 6688100224551379791, guid: aeebab013efdb784cb8de385eccdc17e,
+    type: 3}
+  m_PrefabInstance: {fileID: 7222444617641704795}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4505790840054912337 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6538259055991433226, guid: aeebab013efdb784cb8de385eccdc17e,
     type: 3}
   m_PrefabInstance: {fileID: 7222444617641704795}
   m_PrefabAsset: {fileID: 0}
