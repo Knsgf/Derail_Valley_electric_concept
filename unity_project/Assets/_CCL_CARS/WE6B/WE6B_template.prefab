@@ -4681,7 +4681,7 @@ MonoBehaviour:
   bodyDamagePercentage: 0.02
   wheelsDamagePercentage: 0
   mechanicalPTDamagePercentage: 0
-  electricalPTDamagePercentage: 0.25
+  electricalPTDamagePercentage: 0.1
   explosionPrefab: 1
   explosionParticlesDuration: 5
   windowsBreakingDelay: 0.5
@@ -4703,7 +4703,7 @@ MonoBehaviour:
   bodyDamagePercentage: 0.05
   wheelsDamagePercentage: 0
   mechanicalPTDamagePercentage: 0
-  electricalPTDamagePercentage: 0.4
+  electricalPTDamagePercentage: 0.2
   explosionPrefab: 1
   explosionParticlesDuration: 4
   windowsBreakingDelay: 0.5
@@ -11147,8 +11147,8 @@ MonoBehaviour:
       thresholdType: 0
   overheatingTemperatureThreshold: 105
   overheatingMaxTime: 60
-  overheatingTmKillPercentage: 0.5
-  setTmOnFireOnKillPercentage: 0.3
+  overheatingTmKillPercentage: 0.25
+  setTmOnFireOnKillPercentage: 0.1
   rpmDamagePerSecond: 0.009
   overspeedDamageFactor: 0.001
   overheatingDamagePerSecond: 0.1
