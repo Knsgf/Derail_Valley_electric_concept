@@ -19,10 +19,10 @@ public partial class overhead_equipment
     [JsonObject]
     private class substation: catenary_object, power_supply
     {
-        private static double _energy_consumed = 0.0, _energy_returned = 0.0;
+        const float grace_period = 5.0f;
         
         [JsonIgnore]
-        private float _current_voltage, _current_load = 0.0f, _new_load, _breaker_timer = 0.0f;
+        private float _current_voltage, _current_load = 0.0f, _new_load, _breaker_timer = grace_period;
         [JsonIgnore]
         private bool _shutdown = false;
         [JsonIgnore]
@@ -101,13 +101,31 @@ public partial class overhead_equipment
             _new_load          = 0.0f;
             if (!_shutdown)
             {
-                _breaker_timer -= Time.deltaTime;
-                if (_breaker_timer < 0.0f)
+                if (Mathf.Abs(current_load) <= maximum_load)
                 {
-                    _breaker_timer += 1.0f;
-                    if (Mathf.Abs(current_load) > maximum_load && UnityEngine.Random.value <= (current_load / maximum_load - 1) * 2.0f)
-                        shutdown();
+                    if (_breaker_timer < grace_period)
+                        _breaker_timer = Mathf.Min(grace_period, _breaker_timer + Time.deltaTime);
                 }
+                else
+                {
+                    _breaker_timer -= Time.deltaTime;
+                    if (_breaker_timer < 0.0f)
+                    {
+                        _breaker_timer += 1.0f;
+                        if (UnityEngine.Random.value <= (current_load / maximum_load - 1) * 2.0f)
+                        {
+                            Main.release_log($"SubTrip I={current_load}");
+                            shutdown();
+                        }
+                    }
+                }
+                /*
+                if (string.Equals(map_location, "SM1500", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    Main.diagnostics?.Value = _breaker_timer;
+                    Main.diagnostics2?.Value = current_load;
+                }
+                */
                 float voltage = supply_voltage;
                 if (current_load < -100.0f)
                 {
@@ -115,10 +133,6 @@ public partial class overhead_equipment
                         voltage += current_load / 3000.0f * 350.0f;
                 }
                 _current_voltage = voltage * 0.01f + _current_voltage * 0.99f;
-                if (current_load >= 0.0f)
-                    _energy_consumed += (1.0 / (1000.0 * 3600.0)) * _current_voltage * current_load * Time.deltaTime;
-                else
-                    _energy_returned += (1.0 / (1000.0 * 3600.0)) * _current_voltage * (-current_load) * Time.deltaTime;
             }
         }
     }

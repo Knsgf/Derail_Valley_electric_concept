@@ -83,7 +83,7 @@ internal class roof_busbar: electric_device
         {*/
             pantographs_voltage = Mathf.Max(_pantograph_voltage,          _sidepan_voltage);
             voltage             = Mathf.Max(pantographs_voltage, _inter_unit_cable_voltage);
-            halved_current      = Mathf.Abs(pantographs_voltage - _inter_unit_cable_voltage) <= 50.0f;
+            halved_current      = pantographs_voltage > 500.0f && _inter_unit_cable_voltage > 500.0f;
         /*}*/
         _inter_unit_cable_supplier.Value = pantographs_voltage;
     }
