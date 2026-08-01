@@ -5,16 +5,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Newtonsoft.Json;
-using UnityEngine;
-
 using DV.Utils;
 
 using electric_sim.catenary_editor;
 using electric_sim.utilities;
 
-using static UnityModManagerNet.UnityModManager;
+using Newtonsoft.Json;
+
+using UnityEngine;
+
 using static electric_sim.utilities.world_position;
+using static UnityEngine.UI.CanvasScaler;
+using static UnityModManagerNet.UnityModManager;
 
 namespace electric_sim.catenary;
 
@@ -480,7 +482,8 @@ public partial class overhead_equipment
             current_substation.simulate_load();
     }
 
-    public (float? contact_height, float contact_voltage) wire_height_and_voltage(int strip_end1_x, int strip_end1_z, int strip_end2_x, int strip_end2_z, 
+    internal (float? contact_height, float contact_voltage) 
+        absolute_wire_height_and_voltage(int strip_end1_x, int strip_end1_z, int strip_end2_x, int strip_end2_z, 
         float pantograph_base_y, float load_current)
     {
         const int wire_search_half_area = (int) (60.0f * fixed_multiplier);
@@ -521,5 +524,23 @@ public partial class overhead_equipment
         substation supplying_substation = _all_substations![energised_wire.substation_index];
         return (lowest_height, supplying_substation.wire_voltage(energised_wire.x, energised_wire.z, 
             energised_wire.y, load_current, energised_wire.length_1m_resistance));
+    }
+
+    public (float? contact_height, float contact_voltage) 
+        relative_wire_height_and_voltage(Transform unit_location, Transform pantograph_base, 
+                                         Transform    strip_end1, Transform      strip_end2,
+        float load_current) 
+    { 
+        (int strip_end1_x, int stripe_end1_z) = world_position.get_absolute_position(strip_end1.position);
+        (int strip_end2_x, int stripe_end2_z) = world_position.get_absolute_position(strip_end2.position);
+        //Main.log($"Contact ({strip_end1_x}, {stripe_end1_z})-({strip_end2_x}, {stripe_end2_z}) {pantograph_base.position.y}");
+        Vector3 target_head_world_position = pantograph_base.position;
+        (float? contact_height, float contact_voltage) = absolute_wire_height_and_voltage(strip_end1_x, stripe_end1_z, 
+                                                                                          strip_end2_x, stripe_end2_z, 
+                                                                                          target_head_world_position.y, load_current);
+        if (contact_height == null)
+            return (null, 0.0f);
+        target_head_world_position.y = (float) contact_height;
+        return (unit_location.InverseTransformPoint(target_head_world_position).y, contact_voltage);
     }
 }

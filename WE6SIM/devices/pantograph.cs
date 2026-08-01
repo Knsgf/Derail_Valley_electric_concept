@@ -294,23 +294,6 @@ internal class pantograph: electric_device
         _sidepan_arm.localRotation   = Quaternion.Slerp(Quaternion.identity,   _sidepan_arm_deployed_orientation,   _side_arm_relative_position);
     }
 
-    private (float?, float) get_wire_height_and_voltage(Transform pantograph_base, Transform strip_end1, Transform strip_end2,
-        float load_current) 
-    { 
-        (int strip_end1_x, int stripe_end1_z) = world_position.get_absolute_position(strip_end1.position);
-        (int strip_end2_x, int stripe_end2_z) = world_position.get_absolute_position(strip_end2.position);
-        //Main.log($"Contact ({strip_end1_x}, {stripe_end1_z})-({strip_end2_x}, {stripe_end2_z}) {pantograph_base.position.y}");
-        Vector3 target_head_world_position = pantograph_base.position;
-        (float? contact_height, float contact_voltage) 
-            = overhead_equipment.system.wire_height_and_voltage(strip_end1_x, stripe_end1_z, 
-                                                                strip_end2_x, stripe_end2_z, 
-                                                                target_head_world_position.y, load_current);
-        if (contact_height == null)
-            return (null, 0.0f);
-        target_head_world_position.y = (float) contact_height;
-        return (_unit.transform.InverseTransformPoint(target_head_world_position).y, contact_voltage);
-    }
-    
     private async void explode(Port trigger)
     {
         if (trigger.Value != 1.0f)
@@ -357,7 +340,8 @@ internal class pantograph: electric_device
                 _remaining_time_till_drop -= Time.deltaTime;
             else
                 _remaining_time_till_drop = drop_delay;
-            (float? wire_height, float supply_voltage) = get_wire_height_and_voltage(_base, _contact_strip_end1, _contact_strip_end2, load_current);
+            (float? wire_height, float supply_voltage) 
+                = overhead_equipment.system.relative_wire_height_and_voltage(_unit.transform, _base, _contact_strip_end1, _contact_strip_end2, load_current);
             if (wire_height == null)
             {
                 _target_height              = maximum_head_height;
@@ -385,13 +369,14 @@ internal class pantograph: electric_device
                 _remaining_time_till_retract -= Time.deltaTime;
             else
                 _remaining_time_till_retract = drop_delay;
-            (float? rail_height, float supply_voltage) = get_wire_height_and_voltage(_sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact, load_current);
+            (float? rail_height, float supply_voltage) 
+                = overhead_equipment.system.relative_wire_height_and_voltage(_unit.transform, _sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact, load_current);
             if (rail_height == null || (float) rail_height is <= 4.2f or >= 4.8f)
-                _roof_bus.sidepan_voltage = 0.0f;
+                roof_bus.sidepan_voltage = 0.0f;
             else
             {
                 raised = true;
-                _roof_bus.sidepan_voltage = supply_voltage;
+                roof_bus.sidepan_voltage = supply_voltage;
             }
         }
         sidepan_move();
