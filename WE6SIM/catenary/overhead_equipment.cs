@@ -189,6 +189,9 @@ public partial class overhead_equipment
     private substation[]? _all_substations = null;
 
     public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
+
+    public static event Action? catenary_activated;
+    public static event Action? catenary_deactivated;
     
     public static int rendering_distance
     {
@@ -337,6 +340,7 @@ public partial class overhead_equipment
         PlayerManager.PlayerTeleportStarted  += tracker.suspend_tracker;
         PlayerManager.PlayerTeleportFinished += tracker.resume_tracker;
         PlayerManager.PlayerChanged          += _system.restart_tracker;
+        catenary_activated?.Invoke();
     }
 
     private void restart_tracker()
@@ -351,6 +355,7 @@ public partial class overhead_equipment
 #endif
         if (_system == null)
             return;
+        catenary_deactivated?.Invoke();
         if (_system._OCS_ticker is not null)
         {
             var tracker = _system._OCS_ticker.GetComponent<OCS_ticker>();
