@@ -132,7 +132,7 @@ public partial class overhead_equipment
 
             Vector3 wire_top_view = orientation * Vector3.forward * (wire_info.end_anchor ? (length - end_anchor_dead_length) : length);
             _pantograph_strip_intersection = new line_cross(x, z, 
-                x + world_position.float_to_fixed(wire_top_view.x), z + world_position.float_to_fixed(wire_top_view.z), 0.01f);
+                x + world_position.float_to_fixed(wire_top_view.x), z + world_position.float_to_fixed(wire_top_view.z), 0.1f);
             _other_end_y = y + previous_pole_vertical_offset;
             //Main.log($"WTV = {wire_top_view} h0 = {y} h1 = {_other_end_y}");
 
