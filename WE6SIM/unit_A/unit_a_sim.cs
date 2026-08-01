@@ -101,7 +101,7 @@ internal partial class unit_A_sim: electric_device
         _relative_voltage    = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
         _compressor_power    = grab_port(ports, "compressor.POWER_CONSUMPTION"              );
 
-        const float variation = 0.02f;
+        const float variation = 0.01f;
         UnityEngine.Random.State old_state = UnityEngine.Random.state;
         UnityEngine.Random.InitState(random_seed);
         foreach (KeyValuePair<string, float> element in _base_element_resistances)
@@ -138,12 +138,12 @@ internal partial class unit_A_sim: electric_device
         _traction_motors = new traction_motor[motors];
         for (int motor_number = 1; motor_number <= motors / 2; ++motor_number)
         {
-            _traction_motors[motor_number - 1] = new(motor_number, motor_torque_variations[motor_number - 1], motor_EMF_variations[motor_number -1],
+            _traction_motors[motor_number - 1] = new(motor_number, motor_torque_variations[motor_number - 1], motor_EMF_variations[motor_number - 1],
                 _wheel_RPM  , _named_branches);
         }
         for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
         {
-            _traction_motors[motor_number - 1] = new(motor_number, motor_torque_variations[motor_number - 1], motor_EMF_variations[motor_number -1],
+            _traction_motors[motor_number - 1] = new(motor_number, motor_torque_variations[motor_number - 1], motor_EMF_variations[motor_number - 1],
                 _wheel_RPM_B, _named_branches);
         }
         _traction_motor_temperature = new(ports);
