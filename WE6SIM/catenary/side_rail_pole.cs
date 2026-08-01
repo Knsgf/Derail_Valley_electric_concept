@@ -10,7 +10,7 @@ interface side_rail_pole_user: pole_user, cantilever_user
 
 }
 
-internal partial class overhead_equipment
+public partial class overhead_equipment
 {
     [JsonObject]
     private class side_rail_pole: catenary_object, side_rail_pole_user

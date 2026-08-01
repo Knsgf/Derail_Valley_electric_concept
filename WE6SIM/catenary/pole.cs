@@ -17,7 +17,7 @@ interface pole_user: catenary_object_user
     Vector3 get_pole_true_position();
 }
 
-internal partial class overhead_equipment
+public partial class overhead_equipment
 {
     [JsonObject]
     private class pole: catenary_object, pole_user

@@ -18,7 +18,7 @@ using static electric_sim.utilities.world_position;
 
 namespace electric_sim.catenary;
 
-internal partial class overhead_equipment
+public partial class overhead_equipment
 {
     const int scenery_tree_objects_per_node = 64, wires_tree_objects_per_node = 4;
     
@@ -273,7 +273,7 @@ internal partial class overhead_equipment
         stuff_scenery(raw_scenery, no_saving: true);
     }
 
-    public static void set_up(ModEntry mod)
+    internal static void set_up(ModEntry mod)
     {
         if (_system != null)
             throw new InvalidOperationException("Attempt to create a duplicate catenary in the world");
@@ -344,7 +344,7 @@ internal partial class overhead_equipment
         _OCS_ticker?.GetComponent<OCS_ticker>().resume_tracker();
     }
 
-    public static void dispose()
+    internal static void dispose()
     {
 #if DEBUG
         editor.disable();
@@ -392,7 +392,7 @@ internal partial class overhead_equipment
     #endif
     }
 
-    public void handle_scenery_visibility(Vector3 relative_postion)
+    internal void handle_scenery_visibility(Vector3 relative_postion)
     {
         //const float visible_distance       = 500.0f;
         //const int   _visible_distance_fixed = (int) (visible_distance * fixed_multiplier);

@@ -7,7 +7,7 @@ using electric_sim.utilities;
 
 namespace electric_sim.catenary;
 
-internal partial class overhead_equipment
+public partial class overhead_equipment
 {
     private class quad_tree
     {

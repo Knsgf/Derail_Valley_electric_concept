@@ -15,7 +15,7 @@ interface wire_user: catenary_object_user
     overhead_equipment.wire_kind wire_type { get; set; }
 }
 
-internal partial class overhead_equipment
+public partial class overhead_equipment
 {
     [JsonObject]
     private class wire: catenary_object, wire_user

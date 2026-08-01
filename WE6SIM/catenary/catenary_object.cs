@@ -20,7 +20,7 @@ interface catenary_object_user
 #endif
 }
 
-internal partial class overhead_equipment
+public partial class overhead_equipment
 {
     [JsonObject]
     private class catenary_object: catenary_object_user

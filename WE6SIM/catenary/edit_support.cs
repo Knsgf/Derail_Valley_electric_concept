@@ -16,7 +16,7 @@ using static electric_sim.utilities.world_position;
 namespace electric_sim.catenary;
 
 #if DEBUG
-internal partial class overhead_equipment
+public partial class overhead_equipment
 {
     private static readonly string? _local_repository_path = null;
 
@@ -31,12 +31,12 @@ internal partial class overhead_equipment
         return add_scenery_object(constructor, x, z, relative_position.y, orientation);
     }
 
-    public catenary_object_user add_miscellaneous_object(string template_name, Vector3 relative_position, Quaternion orientation)
+    internal catenary_object_user add_miscellaneous_object(string template_name, Vector3 relative_position, Quaternion orientation)
     {
         return add_scenery_object(miscellaneous_object.build_generic(template_name), relative_position, orientation);
     }
 
-    public pole_user add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation, 
+    internal pole_user add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation, 
         bool is_siding_anchor_pole = false)
     {
         if (pole_type == pole_kind.SideRail)
@@ -48,13 +48,13 @@ internal partial class overhead_equipment
             new pole(pole_type, is_siding_anchor_pole, x, z, y, orientation), relative_position, orientation);
     }
 
-    public void add_gantry(int tracks, Vector3 relative_position, Quaternion orientation)
+    internal void add_gantry(int tracks, Vector3 relative_position, Quaternion orientation)
     {
         add_scenery_object((int x, int z, float y, Quaternion orientation) => new gantry(tracks, x, z, y, orientation),
             relative_position, orientation);
     }
 
-    public void add_cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool on_truss_gantry,
+    internal void add_cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool on_truss_gantry,
         bool is_tunnel_registration_arm, bool dual_wire, Vector3 relative_position, Quaternion orientation)
     {
         add_scenery_object(
@@ -72,7 +72,7 @@ internal partial class overhead_equipment
             relative_position, orientation);
     }
 
-    public wire_user add_wire(wire_kind wire_type, string substation, float length, float previous_pole_vertical_offset,
+    internal wire_user add_wire(wire_kind wire_type, string substation, float length, float previous_pole_vertical_offset,
         Vector3 relative_position, Quaternion orientation)
     {
         return add_scenery_object((int x, int z, float y, Quaternion orientation) 
@@ -80,14 +80,14 @@ internal partial class overhead_equipment
             relative_position, orientation);
     }
 
-    public void add_substation(string map_location, float supply_voltage, float maximum_load, bool has_inverter, Vector3 relative_position)
+    internal void add_substation(string map_location, float supply_voltage, float maximum_load, bool has_inverter, Vector3 relative_position)
     {
         add_scenery_object((int x, int z, float y, Quaternion orientation)
             => new substation(map_location, supply_voltage, maximum_load, has_inverter, x, z, y, orientation),
             relative_position, Quaternion.AngleAxis(90.0f, Vector3.back));
     }
 
-    public void erase_nearby_objects(Vector3 relative_position, float erase_reach)
+    internal void erase_nearby_objects(Vector3 relative_position, float erase_reach)
     {
         int erase_region_half_width = float_to_fixed(erase_reach);
         (int x, int z) = get_absolute_position(relative_position);
@@ -112,7 +112,7 @@ internal partial class overhead_equipment
             reconstruct_tree();
     }
 
-    public void get_objects_in_area(List<catenary_object_user> objects, Vector3 relative_position, float area_half_size)
+    internal void get_objects_in_area(List<catenary_object_user> objects, Vector3 relative_position, float area_half_size)
     {
         (int x, int z) = get_absolute_position(relative_position);
         List<catenary_object> found_objects = [];
@@ -156,13 +156,13 @@ internal partial class overhead_equipment
         }
     }
 
-    public void store_scenery_now()
+    internal void store_scenery_now()
     {
         _store_scenery = true;
         store_scenery();
     }
 
-    public void sink_tunnel_poles()
+    internal void sink_tunnel_poles()
     {
         if (_poles_sunk)
             return;
@@ -232,7 +232,7 @@ internal partial class overhead_equipment
         }
     }
 
-    public void store_scenery()
+    internal void store_scenery()
     {
         editor.disable();
         if (_file_path != null)
@@ -252,7 +252,14 @@ internal partial class overhead_equipment
                 formatted_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.Indented, write_types);
                 File.WriteAllText(Path.Combine(_file_path, "scenery.json"), formatted_scenery);
                 if (_local_repository_path != null)
-                    File.WriteAllText(_local_repository_path, formatted_scenery);
+                {
+                    try
+                    { 
+                        File.WriteAllText(_local_repository_path, formatted_scenery);
+                    }
+                    catch (Exception _)
+                    {}
+                }
 
                 string compact_scenery = JsonConvert.SerializeObject(objects_to_store, Formatting.None, write_types);
                 File.WriteAllText(Path.Combine(_file_path, "compacted_scenery.json"), compact_scenery);

@@ -15,7 +15,7 @@ interface cantilever_user: catenary_object_user
     Vector3 relative_wire_attachment_point();
 }
 
-internal partial class overhead_equipment
+public partial class overhead_equipment
 {
     [JsonObject]
     private class cantilever: catenary_object, cantilever_user

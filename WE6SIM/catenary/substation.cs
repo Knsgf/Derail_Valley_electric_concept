@@ -14,7 +14,7 @@ namespace electric_sim.catenary;
 interface power_supply: catenary_object_user
 { }
 
-internal partial class overhead_equipment
+public partial class overhead_equipment
 {
     [JsonObject]
     private class substation: catenary_object, power_supply
