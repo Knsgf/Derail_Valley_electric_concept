@@ -19,23 +19,25 @@ internal class selector_interlock(Action<float> unit_selector_handler, float han
     public void interlocked_handler(float raw_selector, float raw_throttle, int primary_notch, int secondary_notch,
         Port? transition_lamp)
     {
-        if (   raw_throttle                                < 0.5f / control_stand.throttle_notches 
-            || Mathf.Abs(raw_selector - _current_selector) < 0.5f / control_stand.selector_notches)
+        if (   raw_throttle                                < 0.5f / throttle_notches 
+            || Mathf.Abs(raw_selector - _current_selector) < 0.5f / selector_notches)
         {
-            _current_selector = raw_selector;
+            _current_selector = Mathf.Clamp(Mathf.RoundToInt(raw_selector * selector_last_notch), 0.0f, selector_last_notch) 
+                              / selector_last_notch;
             if (transition_lamp != null && transition_lamp.Value >= 0.7f)
                 transition_lamp.Value = 0.0f;
             unit_selector_handler(raw_selector);
         }
         else if (transition_lamp != null && transition_lamp.Value < 0.7f)
         {
-            int     selector = Mathf.RoundToInt(_current_selector * control_stand.selector_last_notch);
-            int new_selector = Mathf.RoundToInt(     raw_selector * control_stand.selector_last_notch);
+            int     selector = Mathf.RoundToInt(_current_selector * selector_last_notch);
+            int new_selector = Mathf.RoundToInt(     raw_selector * selector_last_notch);
             if (       selector is (int) selector_modes.series_power or (int) selector_modes.parallel_power 
                 && new_selector is (int) selector_modes.series_power or (int) selector_modes.parallel_power 
                 && (primary_notch <= 6 || secondary_notch <= 6))
             {
-                _current_selector = raw_selector;
+                _current_selector = Mathf.Clamp(Mathf.RoundToInt(raw_selector * selector_last_notch), 0.0f, selector_last_notch) 
+                                  / selector_last_notch;
                 unit_selector_handler(raw_selector);
             }
             else
