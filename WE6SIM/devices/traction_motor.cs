@@ -61,6 +61,9 @@ internal class traction_motor
     public void simulate(bool rheostatic_braking, Dictionary<string, float> currents, Dictionary<string, circuit.branch_user> named_branches)
     {
         float motor_RPM = _wheel_RPM.Value * gear_ratio, armature_current, field1_current, field2_current;
+
+        //const float test_speed = 10.0f;
+        //motor_RPM = (test_speed / 3.6f) / 0.56f * (30.0f / Mathf.PI) * gear_ratio;
         
         string armature_name = _armature_name;
         load_current         = armature_current = currents[armature_name];
