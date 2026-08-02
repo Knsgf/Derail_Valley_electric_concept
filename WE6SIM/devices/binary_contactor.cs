@@ -31,6 +31,8 @@ internal class binary_contactor: electric_device, contactor
         }
     }
 
+    public event Action<bool>? on_toggle;
+
     public binary_contactor(string[]? normally_open, string[]? normally_closed, Dictionary<string, circuit.branch_user> contactor_locations,
         Action<bool>? contactor_toggle_sound, Fuse electric_supply, Fuse? air_supply = null)
         : base("contactor", electric_supply, air_supply)
@@ -38,7 +40,11 @@ internal class binary_contactor: electric_device, contactor
         _drive    = new(2, electric_supply, drop_to_1_on_power_loss: true, air_supply);
         _contacts = camshaft_contactor_set.on_off(normally_open, normally_closed, contactor_locations, _drive, contactor_toggle_sound);
         _engaged  = _drive.current_notch == 2;
-        _drive.notch_changed += (int notch) => _engaged = _drive.current_notch == 2;
+        _drive.notch_changed += delegate (int notch) 
+        { 
+            _engaged = _drive.current_notch == 2;
+            on_toggle?.Invoke(_engaged);
+        };
     }
 
     public void toggle(bool turn_on)

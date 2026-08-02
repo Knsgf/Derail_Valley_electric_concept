@@ -36,7 +36,7 @@ internal class unit_B_sim: electric_device
     private readonly red_ditch_light_controller _red_light_controller;
     private readonly throttle_HUD               _HUD_notch_readout;
 
-    private readonly Fuse _appliances, _main_breaker, _compressor_on, _control_air;
+    private readonly Fuse _appliances, _main_breaker, _motor_breaker, _compressor_on, _control_air;
     private readonly Port _control_AB1, _control_BA1, _control_BA2;
     private readonly Port _total_load, _wheel_RPM, _traction_motor_RPM, _integrity, _traction_motor_heat, _idling_damage;
     private readonly Port _relative_voltage, _resistor_temperature, _resistor_damage;
@@ -58,12 +58,14 @@ internal class unit_B_sim: electric_device
         unit.brakeSystem.SetHandbrakePosition(1.0f, forced: true);  // Prevent spawned unit from rolling off when a player fast travels
         SimController? simulation = unit.SimController ?? throw new ArgumentNullException("No simulation component");
 
-        _main_breaker   = grab_fuse(fuses, "[MainBreakerContacts].CLOSED"          );
-        _compressor_on  = grab_fuse(fuses, "[MainBreakerContacts].COMPRESSOR_POWER");
-        _control_air    = grab_fuse(fuses, "fusebox.CONTROL_AIR"                   );
-        _appliances     = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"              );
+        _main_breaker  = grab_fuse(fuses, "[MainBreakerContacts].CLOSED"          );
+        _motor_breaker = grab_fuse(fuses, "[MainBreakerContacts].MOTOR_POWER"     );
+        _compressor_on = grab_fuse(fuses, "[MainBreakerContacts].COMPRESSOR_POWER");
+        _control_air   = grab_fuse(fuses, "fusebox.CONTROL_AIR"                   );
+        _appliances    = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"              );
         set_up_fuses(_appliances);
-        _main_breaker.StateUpdated += main_breaker_trip_relay;
+        _main_breaker.StateUpdated  += main_breaker_trip_relay;
+        _motor_breaker.StateUpdated += main_breaker_trip_relay;
 
         _control_AB1 = grab_port(ports, "[internal_MU].CONTROL_AB1");
         _control_BA1 = grab_port(ports, "[internal_MU].CONTROL_BA1");
@@ -265,6 +267,7 @@ internal class unit_B_sim: electric_device
         _pantograph.sidepan_toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan   ));
         
         _main_breaker.ChangeState (port_value_signal_active(AB1, (int) AB1_signals.main_breaker    ));
+        _motor_breaker.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.motor_breaker   ));
         _compressor_on.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.compressor_power));
 
         set_independent_brake(extract_signal_from_port_value(AB1, (int) AB1_signals.independent_brake, 
@@ -339,6 +342,7 @@ internal class unit_B_sim: electric_device
             _simulation.SimulationFlow.TickEvent -= simulate;
             _control_AB1.ValueUpdatedInternally  -= MU_AB1_control;
             _main_breaker.StateUpdated           -= main_breaker_trip_relay;
+            _motor_breaker.StateUpdated          -= main_breaker_trip_relay;
             _driving_axles.PoweredWheelKilled    -= motor_cut_out;
             _driving_axles.PoweredWheelSetOnFire -= motor_cut_out;
             _driving_axles.PoweredWheelRepaired  -= motor_cut_in;

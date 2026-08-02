@@ -19,6 +19,7 @@ internal static class signal_cable
         contactor_on      = 6,
         reverse_current   = 7,
         transition        = 8,
+        motor_breaker     = 9,
         
         independent_brake     = 14,
         unit_A_camshaft_notch = 17,
@@ -35,6 +36,7 @@ internal static class signal_cable
         contactor_on      = 0x1 << AB1_shift.contactor_on,
         reverse_current   = 0x1 << AB1_shift.reverse_current,
         transition        = 0x1 << AB1_shift.transition,
+        motor_breaker     = 0x1 << AB1_shift.motor_breaker,
 
         independent_brake     = 0x07 << AB1_shift.independent_brake,
         unit_A_camshaft_notch = 0x07 << AB1_shift.unit_A_camshaft_notch,

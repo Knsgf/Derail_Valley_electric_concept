@@ -2424,7 +2424,10 @@ MonoBehaviour:
   - id: CLOSED
     initialState: 0
     offValue: 0
-  fusesJson: '[{"id":"COMPRESSOR_POWER","initialState":false,"offValue":0},{"id":"CLOSED","initialState":false,"offValue":0}]'
+  - id: MOTOR_POWER
+    initialState: 0
+    offValue: 0
+  fusesJson: '[{"id":"COMPRESSOR_POWER","initialState":false,"offValue":0},{"id":"CLOSED","initialState":false,"offValue":0},{"id":"MOTOR_POWER","initialState":false,"offValue":0}]'
   saveState: 0
 --- !u!1 &1926861414309655760
 GameObject:
@@ -11277,7 +11280,7 @@ MonoBehaviour:
   damagePerFuseBlow: 100
   damagePerTmBlow: 300
   poweredWheelsManager: {fileID: 5458114456917718913}
-  powerFuseId: '[MainBreakerContacts].CLOSED'
+  powerFuseId: '[MainBreakerContacts].MOTOR_POWER'
   _configs: '[{"backwardTransition":{"thresholdType":"TRANSITION_WHEN_ABOVE_THRESHOLD","thresholdValue":0},"excitationMultiplier":1,"forwardTransition":{"thresholdType":"TRANSITION_WHEN_ABOVE_THRESHOLD","thresholdValue":0},"motorGroups":[{"motorIndexes":[0]},{"motorIndexes":[1]},{"motorIndexes":[2]}]}]'
 --- !u!114 &5756264289635122402
 MonoBehaviour:
@@ -11292,7 +11295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overheatFuseOffPortId: tm.OVERHEAT_POWER_FUSE_OFF
-  tmFuseId: '[MainBreakerContacts].CLOSED'
+  tmFuseId: '[MainBreakerContacts].MOTOR_POWER'
   tmBlowAnchor: {fileID: 7457162555082665479}
 --- !u!114 &5334162771187866204
 MonoBehaviour:

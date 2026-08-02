@@ -31,7 +31,7 @@ internal partial class unit_A_sim: electric_device
     private readonly Dictionary<string, branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
 
-    private readonly Fuse _appliances, _control_air, _main_breaker_closed, _compressor_on;
+    private readonly Fuse _appliances, _control_air, _main_breaker_closed, _compressor_on, _motor_breaker;
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _total_load, _relative_voltage, _compressor_power, _traction_motor_heat_B, _integrity, _idling_damage;
@@ -84,6 +84,7 @@ internal partial class unit_A_sim: electric_device
         _appliances          = grab_fuse(fuses, "fusebox.ELECTRONICS_MAIN"              );
         _control_air         = grab_fuse(fuses, "fusebox.CONTROL_AIR"                   );
         _main_breaker_closed = grab_fuse(fuses, "[MainBreakerContacts].CLOSED"          );
+        _motor_breaker       = grab_fuse(fuses, "[MainBreakerContacts].MOTOR_POWER"     );
         _compressor_on       = grab_fuse(fuses, "[MainBreakerContacts].COMPRESSOR_POWER");
         power_supply_toggled += power_toggle;
         set_up_fuses(_appliances);

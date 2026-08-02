@@ -40,7 +40,7 @@ internal partial class unit_A_sim
 
         public Action<float>? set_transition_lamp;
 
-        public contactors(TrainCar unit, unit_A_sim simulation, Fuse appliances, Fuse air_supply, Fuse main_breaker, 
+        public contactors(TrainCar unit, unit_A_sim simulation, Fuse appliances, Fuse air_supply, Fuse main_breaker,
             Dictionary<string, circuit.branch_user> contactor_locations, 
             Port contactor_on_sound, Port contactor_off_sound)
         {
@@ -98,6 +98,8 @@ internal partial class unit_A_sim
             _line_contactor2     = new([ "LC2", "LC3"         ], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
             _shunting_contactors = new(["CR1S", "CR2S", "CR3S"], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
             _voltmeter           = new(["VMC34"               ], null, contactor_locations, contactor_click_on_both, main_breaker, air_supply);
+            _line_contactor.on_toggle  += motor_breaker_enable;
+            _line_contactor2.on_toggle += motor_breaker_enable;
             
             _motor_cutouts = new camshaft_contactor_set[motors];
             for (int motor = 1; motor <= motors; ++motor)
@@ -141,6 +143,13 @@ internal partial class unit_A_sim
             }
             _field_shunt_contactors[3 - 1] = new tri_state_contactor(closed_contacts, intermediate_contacts, open_contacts, 
                 contactor_locations, contactor_click_on_both, appliances, air_supply);
+        }
+
+        private void motor_breaker_enable(bool turned_on)
+        {
+            Fuse motor_breaker = _unit._motor_breaker;
+            motor_breaker.ChangeState(motor_breaker.State | turned_on);
+            toggle_port_signal(_unit._control_AB1, (int) AB1_signals.motor_breaker, motor_breaker.State);
         }
 
         public void switch_primary_contactors(int primary_notch)

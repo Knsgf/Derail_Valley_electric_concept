@@ -38,6 +38,7 @@ internal partial class unit_A_sim
             unit._pantograph.toggled                 += trip_if_all_pantographs_retracted;
             unit._pantograph.sidepan_toggled         += trip_if_all_pantographs_retracted;
             unit._main_breaker_closed.StateUpdated   += trip_on_external_trigger;
+            unit._motor_breaker.StateUpdated         += trip_on_external_trigger;
         }
 
         private void trip_on_power_loss(bool powered)
@@ -98,9 +99,12 @@ internal partial class unit_A_sim
             if (!_engaging && !_switched_on)
                 return;
             _engaging = _switched_on = false;
-            _unit._main_breaker_closed.ChangeState(false);
-            toggle_port_signal(_unit._control_AB1, (int) AB1_signals.main_breaker, false);
-            _unit._contactors.toggle_traction_motors(turn_on: false);
+            unit_A_sim unit = _unit;
+            unit._main_breaker_closed.ChangeState(false);
+            unit._motor_breaker.ChangeState(false);
+            toggle_port_signal(unit._control_AB1, (int) AB1_signals.main_breaker , false);
+            toggle_port_signal(unit._control_AB1, (int) AB1_signals.motor_breaker, false);
+            unit._contactors.toggle_traction_motors(turn_on: false);
             _trip_sound.Value = 1.0f;
             await Task.Delay(500);
             _trip_sound.Value = 0.0f;

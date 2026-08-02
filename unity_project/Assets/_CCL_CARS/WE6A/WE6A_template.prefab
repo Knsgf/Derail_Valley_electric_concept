@@ -2889,7 +2889,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &795851070966194804
 Transform:
   m_ObjectHideFlags: 0
@@ -3189,7 +3189,7 @@ MonoBehaviour:
   damagePerFuseBlow: 100
   damagePerTmBlow: 300
   poweredWheelsManager: {fileID: 5765340515768144076}
-  powerFuseId: '[MainBreakerContacts].CLOSED'
+  powerFuseId: '[MainBreakerContacts].MOTOR_POWER'
   _configs: '[{"backwardTransition":{"thresholdType":"TRANSITION_WHEN_ABOVE_THRESHOLD","thresholdValue":0},"excitationMultiplier":1,"forwardTransition":{"thresholdType":"TRANSITION_WHEN_ABOVE_THRESHOLD","thresholdValue":0},"motorGroups":[{"motorIndexes":[0]},{"motorIndexes":[1]},{"motorIndexes":[2]}]}]'
 --- !u!114 &7035877533529822727
 MonoBehaviour:
@@ -3204,7 +3204,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overheatFuseOffPortId: tm.OVERHEAT_POWER_FUSE_OFF
-  tmFuseId: '[MainBreakerContacts].CLOSED'
+  tmFuseId: '[MainBreakerContacts].MOTOR_POWER'
   tmBlowAnchor: {fileID: 7457162555082665479}
 --- !u!114 &1478771430086907547
 MonoBehaviour:
@@ -4034,7 +4034,10 @@ MonoBehaviour:
   - id: COMPRESSOR_POWER
     initialState: 0
     offValue: 0
-  fusesJson: '[{"id":"CLOSED","initialState":false,"offValue":0},{"id":"COMPRESSOR_POWER","initialState":false,"offValue":0}]'
+  - id: MOTOR_POWER
+    initialState: 0
+    offValue: 0
+  fusesJson: '[{"id":"CLOSED","initialState":false,"offValue":0},{"id":"COMPRESSOR_POWER","initialState":false,"offValue":0},{"id":"MOTOR_POWER","initialState":false,"offValue":0}]'
   saveState: 0
 --- !u!1 &2569583260146319686
 GameObject:
