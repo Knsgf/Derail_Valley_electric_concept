@@ -667,7 +667,6 @@ internal partial class unit_A_sim: electric_device
             if (!to_idle || maximum_load <= minimum_idling_current)
             {
                 _idling_damage.Value = 0.0f;
-                set_port_signal(_control_AB1, (int) AB1_signals.idling_damage, (int) AB1_shift.idling_damage, 0);
             }
             else
             {
@@ -675,8 +674,6 @@ internal partial class unit_A_sim: electric_device
                                                               * (          maximum_load - minimum_idling_current);
                 idling_damage        = Mathf.Clamp(idling_damage * UnityEngine.Random.Range(0.8f, 1.2f), 0.0f, maximum_idling_damage);
                 _idling_damage.Value = idling_damage;
-                set_port_signal(_control_AB1, (int) AB1_signals.idling_damage, (int) AB1_shift.idling_damage,
-                    Mathf.RoundToInt((31.0f / maximum_idling_damage) * idling_damage));
             }
             //Main.log($"ID = {_idling_damage.Value}");
         

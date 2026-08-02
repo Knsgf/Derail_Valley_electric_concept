@@ -261,9 +261,6 @@ internal class unit_B_sim: electric_device
         if (disposed)
             return;
         
-        _idling_damage.Value = extract_signal_from_port_value(AB1, (int) AB1_signals.idling_damage, (int) AB1_shift.idling_damage)
-            * (unit_A_sim.maximum_idling_damage / 31.0f);
-        
         _pantograph.toggle        (!port_value_signal_active(AB1, (int) AB1_signals.unit_B_pantograph));
         _pantograph.sidepan_toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan   ));
         
