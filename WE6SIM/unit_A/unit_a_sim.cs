@@ -603,7 +603,7 @@ internal partial class unit_A_sim: electric_device
                 traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, currents, named_branches);
             _circuit.simulate();
 
-            float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : (supply.EMF - currents["EPS"] / supply.conductance);
+            float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : Mathf.Max(supply.EMF - currents["EPS"] / supply.conductance, 0.0f);
             set_supply_volts(voltmeter_reading);
             _relative_voltage.Value = voltmeter_reading / 1500.0f;
             set_motors_volts(motors_volts);

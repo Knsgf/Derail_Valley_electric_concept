@@ -216,6 +216,8 @@ internal class unit_B_sim: electric_device
 
     private async void main_breaker_trip_relay(bool remain_on)
     {
+        Main.log($"TRS {remain_on} {_main_breaker.State} {_motor_breaker.State}");
+        log_stack.print();
         if (remain_on || port_value_signal_active(_control_AB1.Value, (int) BA1_signals.breaker_trip))
             return;
         toggle_port_signal(_control_BA1, (int) BA1_signals.breaker_trip, true);
