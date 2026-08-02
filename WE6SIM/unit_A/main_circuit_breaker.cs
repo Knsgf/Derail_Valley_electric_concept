@@ -66,7 +66,8 @@ internal partial class unit_A_sim
             unit_A_sim unit = _unit;
             if (button_press < 0.5f || port_value_signal_active(unit._control_BA1.Value, (int) BA1_signals.breaker_trip) 
                 || unit._main_breaker_closed.State || _engaging || !is_powered 
-                || unit._throttle != 0 || !ready_to_run())
+                || unit._throttle != 0 || unit._contactors._line_contactor.engaged || unit._contactors._line_contactor2.engaged 
+                || !ready_to_run())
             {
                 return;
             }
@@ -93,6 +94,7 @@ internal partial class unit_A_sim
 
         public async void trip()
         {
+            Main.release_log($"Trip T={_trip_sound.Value} E={_engaging} S={_switched_on}");
             if (!_engaging && !_switched_on)
                 return;
             _engaging = _switched_on = false;
@@ -108,16 +110,21 @@ internal partial class unit_A_sim
         {
             if (_switched_on && supply_voltage >= 2000.0f || motor_voltage >= 2000.0f || motor_load >= 850.0f || total_draw >= 4800.0f)
             {
-                Main.log($"TU {supply_voltage} {motor_voltage} {motor_load} {total_draw}");
+                Main.release_log($"Trip S={supply_voltage} M={motor_voltage} I={motor_load} i={total_draw}");
                 //trip();
                 _trip_sound.Value = 1.0f;   // Trigger instant fuse blow in vanilla TractionMotorSet via "water" detection
+                trip();
             }
         }
         
         public void trip_if_all_pantographs_retracted()
         {
             if (!ready_to_run())
+            {
+                Main.release_log("Trip retr.");
+                log_stack.print();
                 trip();
+            }
         }
 
         private void trip_if_all_pantographs_retracted(float _)
@@ -128,7 +135,11 @@ internal partial class unit_A_sim
         private void trip_on_external_trigger(bool remain_on)
         {
             if (!remain_on)
+            {
+                Main.release_log("Trip ext.");
+                log_stack.print();
                 trip();
+            }
         }
 
 		public override void Dispose()
