@@ -528,11 +528,10 @@ public partial class overhead_equipment
 
     public (float? contact_height, float contact_voltage) 
         relative_wire_height_and_voltage(Transform unit_location, Transform pantograph_base, 
-                                         Transform    strip_end1, Transform      strip_end2,
-        float load_current) 
+                                         Transform    strip_end1, Transform      strip_end2, float load_current) 
     { 
-        (int strip_end1_x, int stripe_end1_z) = world_position.get_absolute_position(strip_end1.position);
-        (int strip_end2_x, int stripe_end2_z) = world_position.get_absolute_position(strip_end2.position);
+        (int strip_end1_x, int stripe_end1_z) = get_absolute_position(strip_end1.position);
+        (int strip_end2_x, int stripe_end2_z) = get_absolute_position(strip_end2.position);
         //Main.log($"Contact ({strip_end1_x}, {stripe_end1_z})-({strip_end2_x}, {stripe_end2_z}) {pantograph_base.position.y}");
         Vector3 target_head_world_position = pantograph_base.position;
         (float? contact_height, float contact_voltage) = absolute_wire_height_and_voltage(strip_end1_x, stripe_end1_z, 
