@@ -1,5 +1,37 @@
 [
   {
+    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
+    "map_location": "SM1500",
+    "supply_voltage": 1650.0,
+    "maximum_load": 4000.0,
+    "has_inverter": false,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": -0.707106769,
+      "w": 0.707106769
+    },
+    "x": 8430701,
+    "z": 7929717,
+    "y": 130.830338
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
+    "map_location": "SM1000",
+    "supply_voltage": 1100.0,
+    "maximum_load": 2000.0,
+    "has_inverter": false,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": -0.707106769,
+      "w": 0.707106769
+    },
+    "x": 8375657,
+    "z": 7877380,
+    "y": 130.941376
+  },
+  {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
     "tracks": 4,
     "orientation": {
@@ -621,22 +653,6 @@
     "cantilever_on_far_side": false,
     "anchored": true,
     "siding_anchor": false
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
-    "map_location": "SM1500",
-    "supply_voltage": 1650.0,
-    "maximum_load": 4000.0,
-    "has_inverter": false,
-    "orientation": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": -0.707106769,
-      "w": 0.707106769
-    },
-    "x": 8430701,
-    "z": 7929717,
-    "y": 130.830338
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
@@ -7997,22 +8013,6 @@
     "z": 7321456,
     "y": 131.962814,
     "wire_type": "termination_rail"
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
-    "map_location": "SM1000",
-    "supply_voltage": 1100.0,
-    "maximum_load": 2000.0,
-    "has_inverter": false,
-    "orientation": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": -0.707106769,
-      "w": 0.707106769
-    },
-    "x": 8375657,
-    "z": 7877380,
-    "y": 130.941376
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+side_rail_pole, electric_sim",

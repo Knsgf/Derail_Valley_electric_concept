@@ -1,5 +1,21 @@
 [
   {
+    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
+    "map_location": "HB1500",
+    "supply_voltage": 1650.0,
+    "maximum_load": 4500.0,
+    "has_inverter": true,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": -0.707106769,
+      "w": 0.707106769
+    },
+    "x": 12360086,
+    "z": 3496618,
+    "y": 113.61673
+  },
+  {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
     "tracks": 4,
     "orientation": {

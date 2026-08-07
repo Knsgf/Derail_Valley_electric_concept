@@ -1,5 +1,21 @@
 [
   {
+    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
+    "map_location": "FF1500",
+    "supply_voltage": 1650.0,
+    "maximum_load": 4000.0,
+    "has_inverter": true,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": -0.707106769,
+      "w": 0.707106769
+    },
+    "x": 9335659,
+    "z": 13298051,
+    "y": 120.178413
+  },
+  {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
     "tracks": 3,
     "orientation": {
@@ -1414,22 +1430,6 @@
     "y": 119.388176,
     "dual_wire": false,
     "wire_attached": true
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
-    "map_location": "FF1500",
-    "supply_voltage": 1650.0,
-    "maximum_load": 4000.0,
-    "has_inverter": true,
-    "orientation": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": -0.707106769,
-      "w": 0.707106769
-    },
-    "x": 9335659,
-    "z": 13298051,
-    "y": 120.178413
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",

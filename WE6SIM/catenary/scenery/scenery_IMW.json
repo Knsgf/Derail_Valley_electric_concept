@@ -1,5 +1,21 @@
 [
   {
+    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
+    "map_location": "IMW1500",
+    "supply_voltage": 1650.0,
+    "maximum_load": 4500.0,
+    "has_inverter": true,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": -0.707106769,
+      "w": 0.707106769
+    },
+    "x": 2333273,
+    "z": 13127537,
+    "y": 134.553085
+  },
+  {
     "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
     "orientation": {
       "x": 0.0,
