@@ -273,8 +273,16 @@ public partial class overhead_equipment
 
     private void load_scenery_from_bundle(AssetBundle scenery, string location_name)
     {
-        string raw_scenery = scenery.LoadAsset<TextAsset>($"Assets/Catenary/Scenery/scenery_{location_name}.json").text
-            ?? throw new FileNotFoundException($"No {location_name} location");
+        string raw_scenery;
+        try
+        {
+            raw_scenery = File.ReadAllText(Path.Combine(_file_path, $"scenery_{location_name}.json"));
+        }
+        catch (Exception _)
+        {
+            raw_scenery = scenery.LoadAsset<TextAsset>($"Assets/Catenary/Scenery/scenery_{location_name}.json").text
+                ?? throw new FileNotFoundException($"No {location_name} location");
+        }
         stuff_scenery(raw_scenery, no_saving: true);
     }
 
