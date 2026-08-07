@@ -132,14 +132,14 @@ internal class control_stand: electric_device
         }
         else if (string.Equals(device, "selector_handle", StringComparison.Ordinal))
         {
-            _raw_selector       = hooked_port.Value;
+            default_setting     = 1.0f - default_setting;
+            _raw_selector       = 1.0f - hooked_port.Value;
             _selector_interlock = new(handler, _raw_selector);
             new_handler = delegate (float raw_selector)
             {
                 if (!disposed && is_powered)
                 {
-                    if (!_stand_active)
-                        raw_selector = (float) selector_modes.yard_power / selector_last_notch;
+                    raw_selector  = _stand_active ? (1.0f - raw_selector) : ((float) selector_modes.yard_power / selector_last_notch);
                     _raw_selector = raw_selector;
                     _selector_interlock.interlocked_handler(raw_selector, _raw_throttle, 
                         Mathf.CeilToInt(_primary_notch), Mathf.CeilToInt(_secondary_notch), _transition_lamp);
