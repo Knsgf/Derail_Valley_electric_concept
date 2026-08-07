@@ -94,6 +94,8 @@ public partial class overhead_equipment
         "Gantries/TrussArmMiddleSingle",
         "Gantries/TrussArmMiddleInnerDual",
         "Gantries/TrussArmMiddleInnerSingle",
+        "Gantries/TrussArmInwardsOuterDual",
+        "Gantries/TrussArmInwardsOuterSingle",
         "Gantries/TrussArmOuterDual",
         "Gantries/TrussArmOuterSingle",
 

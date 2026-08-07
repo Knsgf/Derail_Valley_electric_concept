@@ -54,6 +54,7 @@ public partial class overhead_equipment
             [cantilever_kind.OutwardsInner] = new() { template = "TrussArmInnerOutward", wire_offset = -sweep },
             [cantilever_kind.MiddleInner  ] = new() { template = "TrussArmMiddleInner" , wire_offset =   0.0f },
             [cantilever_kind.Middle       ] = new() { template = "TrussArmMiddle"      , wire_offset =   0.0f },
+            [cantilever_kind.InwardsOuter ] = new() { template = "TrussArmInwardsOuter", wire_offset = +sweep },
             [cantilever_kind.Outer        ] = new() { template = "TrussArmOuter"       , wire_offset = +sweep }
         };
         [JsonIgnore]
