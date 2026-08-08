@@ -110,14 +110,17 @@ internal partial class unit_A_sim
             _trip_sound.Value = 0.0f;
         }
 
-        public void trip_if_operating_parameters_exceeded(float supply_voltage, float motor_voltage, float motor_load, float total_draw)
+        public async void trip_if_operating_parameters_exceeded(float supply_voltage, float motor_voltage, float motor_load, float total_draw)
         {
-            if (_switched_on && supply_voltage >= 2000.0f || motor_voltage >= 2000.0f || motor_load >= 850.0f || total_draw >= 4800.0f)
+            if (_switched_on && (motor_load >= 850.0f || total_draw >= 4800.0f || motor_voltage >= 2000.0f || supply_voltage >= 2000.0f) 
+                && _trip_sound.Value < 1.0f)
             {
                 Main.release_log($"Trip S={supply_voltage} M={motor_voltage} I={motor_load} i={total_draw}");
                 //trip();
                 _trip_sound.Value = 1.0f;   // Trigger instant fuse blow in vanilla TractionMotorSet via "water" detection
-                trip();
+                await Task.Delay(200);
+                if (_trip_sound.Value != 0.0f)  // Invoke trip routine in case of all motors on the lead unit being dead
+                    trip();
             }
         }
         
