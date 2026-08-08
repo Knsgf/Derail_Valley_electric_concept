@@ -35,8 +35,8 @@ MonoBehaviour:
     Tonnage: 750
     Rating: 1
   LoadInclineWet:
-    Tonnage: 650
-    Rating: 1
+    Tonnage: 450
+    Rating: 2
   DiagramLayout: {fileID: 5718642761412568601, guid: 51520adf2083236439ac176494e7036f,
     type: 3}
   DiagramExtras:
@@ -184,7 +184,7 @@ MonoBehaviour:
   _nicknameJson: '{"Items":[{"Language":"English","Value":""}]}'
   _loadJson: '{"Rating":"Good","Tonnage":2000}'
   _loadInclineJson: '{"Rating":"Medium","Tonnage":750}'
-  _loadInclineWetJson: '{"Rating":"Medium","Tonnage":650}'
+  _loadInclineWetJson: '{"Rating":"Bad","Tonnage":450}'
   _diagramJson: '{"HasFrontBumper":true,"HasRearBumper":false,"Height":5200,"IsThinVehicle":false,"Length":11000,"Width":3200}'
   _techJson: '{"Tech1":{"Description":"pantograph","Icon":"ElectricPowerSupplyAndTransmission","Type":"vc/techtype/electric_power"},"Tech2":{"Description":"sidepan","Icon":"ElectricPowerSupplyAndTransmission","Type":"vc/techtype/electric_power"},"Tech3":{"Description":"resistors","Icon":"ElectricPowerSupplyAndTransmission","Type":"vc/techtype/electric_trans"},"Tech4":{"Description":"blowers","Icon":"HeatManagement","Type":"vc/techtype/heat_management"},"Tech5":{"Description":"traction_motor","Icon":"ElectricPowerSupplyAndTransmission","Type":"vc/techtype/electric_trans"},"Tech6":{"Description":"exciter","Icon":"DynamicBrakeSystem","Type":"vc/techtype/dynamic_brake"},"Tech7":{"Description":"main_reservoir","Icon":"CompressedAirBrakeSystem","Type":"vc/techtype/air_brake"}}'
   _easeScore: '{"BrakeOperation":{"ScoreType":"Score","Value":2},"ControlsLayout":{"ScoreType":"Score","Value":5},"ItemStorage":{"ScoreType":"Score","Value":2},"LearningSimplicity":{"ScoreType":"Score","Value":2},"LightingOperation":{"ScoreType":"Score","Value":4},"MisuseTolerance":{"ScoreType":"Score","Value":2},"RemoteConnectivity":{"ScoreType":"Score","Value":1},"ReversingComfort":{"ScoreType":"Score","Value":4},"SoundComfort":{"ScoreType":"Score","Value":3},"TotalScoreDisplay":"Average","WarningSystems":{"ScoreType":"Score","Value":2}}'
