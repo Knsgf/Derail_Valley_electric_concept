@@ -579,7 +579,7 @@ internal partial class unit_A_sim: electric_device
             && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && field_generator.relative_speed < 0.01f)
         {
             _torque_A.Value = _torque_B.Value = _resistance_update_time = 0.0f;
-            //_traction_motor_temperature.simulate(0.0f);
+            _meter.count_energy(0.0f, 0.0f);
         }
         else
         {
@@ -593,16 +593,15 @@ internal partial class unit_A_sim: electric_device
             float motors_volts = Mathf.Abs(currents["VM34"] * _motor_voltmeter_resistance);
             _resistor_grid.simulate(currents);
             resistor_heat.simulate_overheat_damage(_resistor_grid);
-
-            bool  rheostatic_brake_on = _selector is (int) selector_modes.rheostatic_brake;
-            supply.EMF                = supply.EMF * 0.9f + (rheostatic_brake_on ? 0.0f : _roof_bus.voltage) * 0.1f;
         
             set_powertrain_damage_resistance();
-            traction_motor[] traction_motors = _traction_motors;
+            bool             rheostatic_brake_on = _selector is (int) selector_modes.rheostatic_brake;
+            traction_motor[] traction_motors     = _traction_motors;
             for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
                 traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, currents, named_branches);
             _circuit.simulate();
 
+            supply.EMF              = supply.EMF * 0.9f + (rheostatic_brake_on ? 0.0f : _roof_bus.voltage) * 0.1f;
             float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : Mathf.Max(supply.EMF - currents["EPS"] / supply.conductance, 0.0f);
             set_supply_volts(voltmeter_reading);
             _relative_voltage.Value = voltmeter_reading / 1500.0f;
@@ -610,8 +609,7 @@ internal partial class unit_A_sim: electric_device
             bool regenerative_on = _selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
             if (regenerative_on || field_generator.relative_speed >= 0.01f)
                 field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
-            if (!rheostatic_brake_on)
-                _meter.count_energy(voltmeter_reading, current_draw);
+            _meter.count_energy(voltmeter_reading, rheostatic_brake_on ? 0.0f : current_draw);
             
             _compressor_on.ChangeState(voltmeter_reading >= 1000.0f && _main_breaker_closed.State);
             float average_RPM = 0.0f, average_load_A = 0.0f, average_load_B = 0.0f, maximum_load = 0.0f; 

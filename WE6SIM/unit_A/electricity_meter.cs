@@ -34,11 +34,11 @@ internal class electricity_meter: IDisposable
     private SimulatedCarDebtTracker? _fee_tracker;
 
     private double _energy_used = 0.0;
+    private bool   _energy_read = false;
 
     public electricity_meter(TrainCar unit, Dictionary<string, Port> ports)
     {
         _game_save_energy        = sensor_grabber.grab_port(ports, "[LeftoverMeter].EXT_IN");
-        _energy_used             = _game_save_energy.Value;
         _usage_factor            = (editor_settings.kWh_price / energy_unit_price) / (1000.0f * 3600.0f);
         _deferred_initialisation = setup_fee_tracker(unit, _initialisation_timeout.Token);
     }
@@ -62,7 +62,6 @@ internal class electricity_meter: IDisposable
                             Main.log($"Set up a fee tracker {tracked_fee.ID} for car {unit.ID}");
                             _fee_tracker               = fee_tracker;
                             _fee_trackers[fee_tracker] = this;
-                            fee_tracker.UpdateDebtValues();
                             return;
                         }
                     }
@@ -74,10 +73,19 @@ internal class electricity_meter: IDisposable
 
     public void count_energy(float voltage, float current)
     {
-        if (Mathf.Abs(current) < minimum_current)
+        if (_fee_tracker == null)
             return;
-        _energy_used           += (voltage * current) * _usage_factor * Time.deltaTime;
-        _game_save_energy.Value = (_fee_tracker == null) ? 0.0f : ((float) _energy_used);
+        if (!_energy_read)
+        {
+            _energy_read = true;
+            _energy_used = _game_save_energy.Value;
+            _fee_tracker.UpdateDebtValues();
+        }
+        if (Mathf.Abs(current) < minimum_current)
+        {
+            _energy_used           += voltage * current * _usage_factor * Time.deltaTime;
+            _game_save_energy.Value = (float) _energy_used;
+        }
     }
 
     public void Dispose()
