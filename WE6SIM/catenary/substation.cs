@@ -22,7 +22,7 @@ public partial class overhead_equipment
         const float grace_period = 5.0f;
         
         [JsonIgnore]
-        private float _current_voltage, _current_load = 0.0f, _new_load, _breaker_timer = grace_period;
+        private float _current_voltage, _current_load = 0.0f, _new_load, _breaker_timer = grace_period, _voltage_regulation = 0.0f;
         [JsonIgnore]
         private bool _shutdown = false;
         [JsonIgnore]
@@ -44,6 +44,8 @@ public partial class overhead_equipment
             this.supply_voltage = _current_voltage = supply_voltage;
             this.maximum_load   = maximum_load * editor_settings.load_limit_factor;
             this.has_inverter   = has_inverter;
+            if (has_inverter)
+                _voltage_regulation = Mathf.Max(0.0f, (supply_voltage - 1300.0f) / maximum_load);
         }
 
         public float wire_voltage(int wire_x, int wire_z, float wire_y, float load_current, float wire_1m_resistance)
@@ -130,7 +132,7 @@ public partial class overhead_equipment
                 if (current_load < -100.0f)
                 {
                     if (has_inverter)
-                        voltage += current_load / 3000.0f * 350.0f;
+                        voltage += current_load * _voltage_regulation;
                 }
                 _current_voltage = voltage * 0.01f + _current_voltage * 0.99f;
             }
