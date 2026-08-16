@@ -56,6 +56,7 @@ public partial class overhead_equipment
         "HB-SM[HB]",
         "IME-FF[CME-IME]",
         "IMW-FF[IMW]",
+        "SM-FF[SM]",
         "SM-HB[SM]",
 
         // Neutral sections
