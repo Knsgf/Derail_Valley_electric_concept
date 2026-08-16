@@ -63,6 +63,7 @@ public partial class overhead_equipment
         "[CP]![IMW]",
         "[FF]![CME-IME]",
         "[FF]![IMW]",
+        "[FF]![SM]",
         "[HB]![SM]"
     ];
 
