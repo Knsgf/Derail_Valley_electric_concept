@@ -28,7 +28,7 @@ internal class pantograph: electric_device
     const float sidepan_relative_movement_speed = 1.0f;
     const int   max_iterations_before_sleep = 6;
     const float powertrain_points = 2000.0f, nominal_current = 2200.0f;
-    const float wear_per_metre = 3.0E-7f * powertrain_points, wear_per_second_at_full_current = 5.4E-6f * powertrain_points;
+    const float wear_per_metre = 1.5E-7f * powertrain_points, wear_per_second_at_full_current = 2.7E-6f * powertrain_points;
     const float drop_delay = 0.5f;
 
     private static readonly Dictionary<string, FieldInfo> _pantograph_parts = [];
