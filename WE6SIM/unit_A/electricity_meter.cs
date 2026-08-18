@@ -81,7 +81,7 @@ internal class electricity_meter: IDisposable
             _energy_used = _game_save_energy.Value;
             _fee_tracker.UpdateDebtValues();
         }
-        if (Mathf.Abs(current) < minimum_current)
+        if (Mathf.Abs(current) >= minimum_current)
         {
             _energy_used           += voltage * current * _usage_factor * Time.deltaTime;
             _game_save_energy.Value = (float) _energy_used;
