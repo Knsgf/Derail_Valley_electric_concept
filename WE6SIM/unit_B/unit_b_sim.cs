@@ -103,15 +103,10 @@ internal class unit_B_sim: electric_device
         if (_driving_axles is null)
             throw new Exception("No powered wheels manager");
         assert.test(_driving_axles.poweredWheels.Length == 3);
-        int motor_status = 1 << ((int) BA2_shift.unit_B_active_motors);
-        for (int axle = 0; axle < 3; ++axle)
-        {
-            toggle_port_signal(_control_BA2, motor_status, _driving_axles.poweredWheels[axle].IsPowered);
-            motor_status <<= 1;
-        }
         _driving_axles.PoweredWheelKilled    += motor_cut_out;
         _driving_axles.PoweredWheelSetOnFire += motor_cut_out;
         _driving_axles.PoweredWheelRepaired  += motor_cut_in;
+        refresh_motor_status();
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
@@ -239,6 +234,16 @@ internal class unit_B_sim: electric_device
         toggle_port_signal(_control_BA2, 1 << ((int) BA2_shift.unit_B_active_motors + axle.index), true);
     }
 
+    private void refresh_motor_status()
+    {
+        int motor_status = 1 << ((int) BA2_shift.unit_B_active_motors);
+        for (int axle = 0; axle < 3; ++axle)
+        {
+            toggle_port_signal(_control_BA2, motor_status, _driving_axles.poweredWheels[axle].IsPowered);
+            motor_status <<= 1;
+        }
+    }
+
     private void cab_activation(float valve)
     {
         if (valve < 0.5f)
@@ -327,6 +332,7 @@ internal class unit_B_sim: electric_device
             _integrity_refresh_time = 10.0f;
             set_port_signal(_control_BA2, (int) BA2_signals.motor_integrity, (int) BA2_shift.motor_integrity, 
                 Mathf.RoundToInt(Mathf.Clamp01(_integrity.Value) * 4095.0f));
+            refresh_motor_status();
         }
     }
 

@@ -494,6 +494,8 @@ internal partial class unit_A_sim: electric_device
         _jogging_mode_on  = port_value_signal_active(BA2, (int) BA2_signals.jog);
         _unit_B_integrity = extract_signal_from_port_value(BA2, (int) BA2_signals.motor_integrity, (int) BA2_shift.motor_integrity)
             / 4095.0f;
+        if (_throttle > 0)
+            toggle_traction_motors(turn_on: _main_breaker_closed.State);
     }
 
     private void calculate_combined_unit_motor_performance(bool is_unit_A, traction_motor[] traction_motors, 
