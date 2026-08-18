@@ -61,10 +61,10 @@ MonoBehaviour:
     damageTolerance: 0.01
     ignoreDamage: 0
     wheelsHP: 2000
-    mechanicalPowertrainHP: 2000
+    mechanicalPowertrainHP: 0
     electricalPowertrainHP: 2000
     bodyPrice: 45000
-    wheelsPrice: 30000
+    wheelsPrice: 20000
     electricalPowertrainPrice: 50000
     mechanicalPowertrainPrice: 50000
   wheelRadius: 0.56
@@ -81,4 +81,4 @@ MonoBehaviour:
   TutorialType: 0
   Tutorial: {fileID: 0}
   brakesJson: '{"brakeCylinderPressureCalculation":"Regular","brakeValveType":"ManualLap","brakingForcePerBogieMultiplier":1,"hasCompressor":true,"hasHandbrake":true,"hasIndependentBrake":true,"hasMainResConnections":true,"ignoreOverheating":false,"IndBrakeCurve":{"keys":[],"postWrapMode":"ClampForever","preWrapMode":"ClampForever"},"IndBrakeCurveType":"LocoDefault","TrainBrakeCurve":{"keys":[],"postWrapMode":"ClampForever","preWrapMode":"ClampForever"},"TrainBrakeCurveType":"LocoDefault"}'
-  damageJson: '{"bodyPrice":45000,"damageMultiplier":1,"damageResistance":50,"damageTolerance":0.01,"electricalPowertrainHP":2000,"electricalPowertrainPrice":50000,"fireDamageMultiplier":1,"fireResistance":7.5,"ignoreDamage":false,"maxHealth":8000,"mechanicalPowertrainHP":2000,"mechanicalPowertrainPrice":50000,"wheelsHP":2000,"wheelsPrice":30000}'
+  damageJson: '{"bodyPrice":45000,"damageMultiplier":1,"damageResistance":50,"damageTolerance":0.01,"electricalPowertrainHP":2000,"electricalPowertrainPrice":50000,"fireDamageMultiplier":1,"fireResistance":7.5,"ignoreDamage":false,"maxHealth":8000,"mechanicalPowertrainHP":0,"mechanicalPowertrainPrice":50000,"wheelsHP":2000,"wheelsPrice":20000}'
