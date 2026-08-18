@@ -2226,8 +2226,7 @@ MonoBehaviour:
   bodyDamagerPortIds: []
   bodyHealthStateExternalInPortIds:
   - compressor.COMPRESSOR_HEALTH_EXT_IN
-  mechanicalPTDamagerPortIds:
-  - '[Pantograph].REGULAR_DAMAGE'
+  mechanicalPTDamagerPortIds: []
   mechanicalPTPercentualDamagerPortIds: []
   mechanicalPTHealthStateExternalInPortIds: []
   mechanicalPTOffExternalInPortIds: []
@@ -2235,6 +2234,7 @@ MonoBehaviour:
   - tm.GENERATED_DAMAGE
   - '[CustomSimulation].RESISTOR_DAMAGE'
   - '[CustomSimulation].IDLING_DAMAGE'
+  - '[Pantograph].REGULAR_DAMAGE'
   electricalPTHealthStateExternalInPortIds:
   - tm.HEALTH_STATE_EXT_IN
   - '[CustomSimulation].MOTOR_INTEGRITY'
