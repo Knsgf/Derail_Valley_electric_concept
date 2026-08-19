@@ -32,7 +32,7 @@ public class editor_settings: ModSettings, IDrawable
     private float _load_limit_factor = 1.0f;
     [Draw("Voltage drop multiplier (requires reload)")]
     private float _voltage_drop_factor = 1.0f;
-    [Draw("Electricity price, $/kWh (requires reload)")]
+    [Draw("Electricity price, $/kWh (only affects 2WE3, requires reload)")]
     private float _kWh_price = default_kWh_price;
     [Draw("Catenary drawing distance, m")]
     private int   _OCS_rendering_distance = 500;
