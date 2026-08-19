@@ -31,3 +31,6 @@ An installed inclinometer gadget shows 1-2° lean forward on a level track.
 Some details, like physical horns, sand pipes, bogie centering devices and underframe air ducts, are missing.
 
 Whistle lever can only be operated with a mouse.
+
+### Acknowledgements
+Special thanks to Kuu Lightwing and laheugan on Discord and "Yama Sama vt vods" and Yosuke Nakajima for extensive testing and feedback.
