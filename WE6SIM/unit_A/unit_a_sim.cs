@@ -597,7 +597,8 @@ internal partial class unit_A_sim: electric_device
             resistor_heat.simulate_overheat_damage(_resistor_grid);
         
             set_powertrain_damage_resistance();
-            bool             rheostatic_brake_on = _selector is (int) selector_modes.rheostatic_brake;
+            int                         selector = _selector;
+            bool             rheostatic_brake_on = selector is (int) selector_modes.rheostatic_brake;
             traction_motor[] traction_motors     = _traction_motors;
             for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
                 traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, currents, named_branches);
@@ -608,7 +609,7 @@ internal partial class unit_A_sim: electric_device
             set_supply_volts(voltmeter_reading);
             _relative_voltage.Value = voltmeter_reading / 1500.0f;
             set_motors_volts(motors_volts);
-            bool regenerative_on = _selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
+            bool regenerative_on = selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
             if (regenerative_on || field_generator.relative_speed >= 0.01f)
                 field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
             _meter.count_energy(voltmeter_reading, rheostatic_brake_on ? 0.0f : current_draw);
@@ -623,7 +624,26 @@ internal partial class unit_A_sim: electric_device
             calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref average_RPM, 
                 ref average_load_B, ref maximum_load, ref average_field_B, ref average_EMF,
                 out total_torque_B, out total_heat_emission_B);
-            _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, motors_volts, maximum_load, current_draw);
+            float maximum_EMF;
+            switch (all_contactors._selector_motor.current_notch)
+            {
+                case 3:
+                    maximum_EMF = 0.0f;
+                    for (int motor_index = 5; motor_index >= 0; --motor_index)
+                        maximum_EMF = Mathf.Max(maximum_EMF, Mathf.Abs(traction_motors[motor_index].EMF));
+                    break;
+
+                case 4:
+                    maximum_EMF = 0.0f;
+                    for (int motor_index = 5; motor_index >= 0; --motor_index)
+                        maximum_EMF += Mathf.Abs(traction_motors[motor_index].EMF);
+                    break;
+
+                default:
+                    maximum_EMF = motors_volts;
+                    break;
+            }
+            _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, current_draw);
             average_RPM     /= motors;
             average_EMF     /= motors;
             average_load_A  /= (motors >> 1);
