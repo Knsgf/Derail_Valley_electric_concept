@@ -33,4 +33,4 @@ Some details, like physical horns, sand pipes, bogie centering devices and under
 Whistle lever can only be operated with a mouse.
 
 ### Acknowledgements
-Special thanks to Kuu Lightwing and laheugan on Discord and "Yama Sama vt vods" and Yosuke Nakajima for extensive testing and feedback.
+Special thanks to Kuu Lightwing and laheugan on Discord and "Yama Sama vt vods" and Yosuke Nakajima on YouTube for extensive testing and feedback.
