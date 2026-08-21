@@ -15,7 +15,6 @@ using Newtonsoft.Json;
 using UnityEngine;
 
 using static electric_sim.utilities.world_position;
-using static UnityEngine.UI.CanvasScaler;
 using static UnityModManagerNet.UnityModManager;
 
 namespace electric_sim.catenary;
@@ -194,6 +193,7 @@ public partial class overhead_equipment
 
     private substation[]? _all_substations = null;
 
+    public static string? alternate_parts_file { get; set; } = null;
     public static overhead_equipment system => _system ?? throw new InvalidOperationException("Catenary not present");
 
     public static event Action? catenary_activated;
@@ -218,9 +218,15 @@ public partial class overhead_equipment
     
     private overhead_equipment(ModEntry mod)
     {
-        _file_path = mod.Path;
-        AssetBundle catenary_assets = AssetBundle.LoadFromFile(Path.Combine(_file_path, "catenary_parts"))
-                ?? throw new FileNotFoundException("Not found " + Path.Combine(_file_path, "catenary_parts"));
+        _file_path                   = mod.Path;
+        AssetBundle? catenary_assets = null;
+        if (!string.IsNullOrEmpty(alternate_parts_file))
+            catenary_assets = AssetBundle.LoadFromFile(alternate_parts_file);
+        if (catenary_assets == null)
+        {
+            catenary_assets = AssetBundle.LoadFromFile(Path.Combine(_file_path, "catenary_parts"))
+                           ?? throw new FileNotFoundException("Not found " + Path.Combine(_file_path, "catenary_parts"));
+        }
         string[] all_assets = catenary_assets.GetAllAssetNames();
         foreach (string template_name in _template_names)
         {
