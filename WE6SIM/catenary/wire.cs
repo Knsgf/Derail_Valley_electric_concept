@@ -139,7 +139,11 @@ public partial class overhead_equipment
             _contact_height = wire_info.contact_height;
 
 #if DEBUG            
-            catenary_object arrow     = system.add_scenery_object(miscellaneous_object.build_generic("GantryArrow"), x, z, y, orientation);
+            Vector3         arrow_offset = orientation * Vector3.forward;
+            int             x_offset     = world_position.float_to_fixed(arrow_offset.x), z_offset = world_position.float_to_fixed(arrow_offset.z);
+            catenary_object arrow        = system.add_scenery_object(miscellaneous_object.build_generic("GantryArrow"),
+                                           x + x_offset, z + z_offset, y, 
+                                           orientation * new Quaternion(0.0f, 1.0f / Mathf.Sqrt(2.0f), 0.0f, 1.0f / Mathf.Sqrt(2.0f)));
             arrow.placed_procedurally = true;
 #endif
         }
