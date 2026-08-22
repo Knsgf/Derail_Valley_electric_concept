@@ -137,6 +137,11 @@ public partial class overhead_equipment
             //Main.log($"WTV = {wire_top_view} h0 = {y} h1 = {_other_end_y}");
 
             _contact_height = wire_info.contact_height;
+
+#if DEBUG            
+            catenary_object arrow     = system.add_scenery_object(miscellaneous_object.build_generic("GantryArrow"), x, z, y, orientation);
+            arrow.placed_procedurally = true;
+#endif
         }
 
         private void reveal_part(string transform_name, Transform entity_location, Vector3 local_offset, GameObject template,
