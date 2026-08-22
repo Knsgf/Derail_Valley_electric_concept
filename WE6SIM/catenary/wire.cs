@@ -139,7 +139,7 @@ public partial class overhead_equipment
             _contact_height = wire_info.contact_height;
 
 #if DEBUG            
-            Vector3         arrow_offset = orientation * Vector3.forward;
+            Vector3         arrow_offset = orientation * Vector3.forward * (length / 5.0f);
             int             x_offset     = world_position.float_to_fixed(arrow_offset.x), z_offset = world_position.float_to_fixed(arrow_offset.z);
             catenary_object arrow        = system.add_scenery_object(miscellaneous_object.build_generic("GantryArrow"),
                                            x + x_offset, z + z_offset, y, 
