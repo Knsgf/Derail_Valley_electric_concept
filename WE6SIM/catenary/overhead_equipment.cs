@@ -44,6 +44,7 @@ public partial class overhead_equipment
         "IME",
         "IMW",
         "OWC",
+        "OWN",
         "SM",
 
         // Mainlines
