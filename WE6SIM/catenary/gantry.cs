@@ -35,7 +35,7 @@ public partial class overhead_equipment
 #endif
         
         [JsonIgnore]
-        private static readonly float[] _gantry_lengths = [8.86f, 13.26f, 17.56f, 0.0f, 26.235f];
+        private static readonly float[] _gantry_lengths = [8.86f, 8.86f, 13.26f, 17.56f, 0.0f, 26.235f];
 
         [JsonProperty]
         private readonly int tracks;
@@ -70,15 +70,18 @@ public partial class overhead_equipment
 
         private static string get_template(int tracks)
         {
-            if (tracks == 6)
-                return "GantryTruss6Tracks";
-            return (tracks is >= 2 and <= 4) ? $"Gantry{tracks}Tracks"
-                : throw new ArgumentOutOfRangeException("Gantries should cover 2, 3, 4 or 6 tracks");
+            return tracks switch
+            {
+                1             => "Gantry1HalfTracks",
+                >= 2 and <= 4 => $"Gantry{tracks}Tracks",
+                6             => "GantryTruss6Tracks",
+                _             => throw new ArgumentOutOfRangeException("Gantries should cover 1.5, 2, 3, 4 or 6 tracks")
+            };
         }
 
         private static (int x, int z) further_pole_position(int x, int z, int tracks, float stretch, Quaternion orientation)
         {
-            Vector3 offset_to_further_pole = orientation * Vector3.left * (_gantry_lengths[tracks - 2] * stretch);
+            Vector3 offset_to_further_pole = orientation * Vector3.left * (_gantry_lengths[tracks - 1] * stretch);
             int further_pole_x = x + world_position.float_to_fixed(offset_to_further_pole.x);
             int further_pole_z = z + world_position.float_to_fixed(offset_to_further_pole.z);
             return (further_pole_x, further_pole_z);
@@ -101,7 +104,7 @@ public partial class overhead_equipment
             ( _gantry_closer_end_x,  _gantry_closer_end_z) = world_position.get_absolute_position(
                 get_relative_position() + orientation * Vector3.right * default_pole_offset);
             (_gantry_further_end_x, _gantry_further_end_z) = world_position.get_absolute_position(
-                get_relative_position() + orientation * Vector3.left  * (_gantry_lengths[tracks - 2] * stretch));
+                get_relative_position() + orientation * Vector3.left  * (_gantry_lengths[tracks - 1] * stretch));
             _mow_movement_intersection = new line_cross(_gantry_closer_end_x,  _gantry_closer_end_z, 
                                                        _gantry_further_end_x, _gantry_further_end_z, 0.01f);
 #endif
@@ -123,7 +126,7 @@ public partial class overhead_equipment
             _further_pole.hide_when_out_of_view();
             (_further_pole.x, _further_pole.z) = further_pole_position(x, z, tracks, _stretch, orientation);
             (_gantry_further_end_x, _gantry_further_end_z) = world_position.get_absolute_position(
-                get_relative_position() + orientation * Vector3.left  * (_gantry_lengths[tracks - 2] * _stretch));
+                get_relative_position() + orientation * Vector3.left  * (_gantry_lengths[tracks - 1] * _stretch));
             _mow_movement_intersection = new line_cross(_gantry_closer_end_x,  _gantry_closer_end_z, 
                                                        _gantry_further_end_x, _gantry_further_end_z, 0.01f);
             system.reconstruct_tree_after_moving_object(_further_pole);

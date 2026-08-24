@@ -73,6 +73,7 @@ public partial class overhead_equipment
 #if DEBUG
         "Gantries/GantryArrow",
 #endif
+        "Gantries/Gantry1HalfTracks",
         "Gantries/Gantry2Tracks",
         "Gantries/Gantry3Tracks",
         "Gantries/Gantry4Tracks",
