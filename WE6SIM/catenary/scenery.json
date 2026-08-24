@@ -138,23 +138,6 @@
     "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
     "orientation": {
       "x": 0.0,
-      "y": -0.154035613,
-      "z": 0.0,
-      "w": 0.9880653
-    },
-    "x": 6456493,
-    "z": 11666640,
-    "y": 144.9379,
-    "pole_type": "Ground",
-    "cantilever_on_near_side": true,
-    "cantilever_on_far_side": false,
-    "anchored": false,
-    "siding_anchor": false
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
-    "orientation": {
-      "x": 0.0,
       "y": 0.994895756,
       "z": 0.0,
       "w": 0.100907773
@@ -1458,22 +1441,6 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
-    "cantilever_type": "MiddleInner",
-    "steady_arm_type": "cantilever",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.154035613,
-      "z": 0.0,
-      "w": 0.9880653
-    },
-    "x": 6456493,
-    "z": 11666640,
-    "y": 144.9379,
-    "dual_wire": false,
-    "wire_attached": false
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
     "steady_arm_type": "cantilever",
     "orientation": {
@@ -2046,6 +2013,39 @@
     "x": 6453576,
     "z": 11565454,
     "y": 144.101379,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.12812233,
+      "z": 0.0,
+      "w": 0.991758347
+    },
+    "x": 6458545,
+    "z": 11660051,
+    "y": 144.927414,
+    "pole_type": "Ground",
+    "cantilever_on_near_side": true,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
+    "cantilever_type": "MiddleInner",
+    "steady_arm_type": "cantilever",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.12812233,
+      "z": 0.0,
+      "w": 0.991758347
+    },
+    "x": 6458545,
+    "z": 11660051,
+    "y": 144.927414,
     "dual_wire": false,
     "wire_attached": false
   }
