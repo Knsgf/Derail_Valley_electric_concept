@@ -53,6 +53,7 @@ public partial class overhead_equipment
         "CP-IMW[IMW]",
         "FF-IME[FF]",
         "FF-IMW[FF]",
+        "FF-OR[FF]",
         "FF-SM[FF]",
         "FM-SM[SM]",
         "HB-SM[HB]",
