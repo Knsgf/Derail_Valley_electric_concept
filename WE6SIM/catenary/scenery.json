@@ -3029,5 +3029,44 @@
     "x": 7429891,
     "z": 13244569,
     "y": 155.830353
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographs",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0701518655,
+      "z": 0.0,
+      "w": 0.9975363
+    },
+    "x": 6373137,
+    "z": 11911822,
+    "y": 147.499786
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/RaisePantographsOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0701518655,
+      "z": 0.0,
+      "w": 0.9975363
+    },
+    "x": 6373137,
+    "z": 11911822,
+    "y": 147.499786
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographsWarning",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.593735933,
+      "z": 0.0,
+      "w": 0.80466
+    },
+    "x": 6463697,
+    "z": 11995493,
+    "y": 148.377563
   }
 ]
