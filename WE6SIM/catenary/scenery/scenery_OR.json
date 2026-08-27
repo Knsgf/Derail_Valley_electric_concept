@@ -1,5 +1,21 @@
 [
   {
+    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
+    "map_location": "OR750",
+    "supply_voltage": 750.0,
+    "maximum_load": 2000.0,
+    "has_inverter": false,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": -0.707106769,
+      "w": 0.707106769
+    },
+    "x": 6502203,
+    "z": 11587063,
+    "y": 144.807587
+  },
+  {
     "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
     "orientation": {
       "x": 0.0,
@@ -15,22 +31,6 @@
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
-    "map_location": "OR750",
-    "supply_voltage": 825.0,
-    "maximum_load": 2000.0,
-    "has_inverter": false,
-    "orientation": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": -0.707106769,
-      "w": 0.707106769
-    },
-    "x": 6502203,
-    "z": 11587063,
-    "y": 144.807587
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
