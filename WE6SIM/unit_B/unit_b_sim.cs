@@ -50,7 +50,7 @@ internal class unit_B_sim: electric_device
 
     private int   _secondary_camshaft_target_notch = 1, _primary_camshaft_current_notch;
     private bool  _cab_active = false;
-    private float _integrity_refresh_time = 0.0f;
+    private float _integrity_refresh_time = 0.0f, _AB1 = 0.0f;
 
     public unit_B_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
         : base("unit_B_sim")
@@ -270,18 +270,19 @@ internal class unit_B_sim: electric_device
         if (disposed)
             return;
         
-        _pantograph.toggle        (!port_value_signal_active(AB1, (int) AB1_signals.unit_B_pantograph));
-        _pantograph.sidepan_toggle(!port_value_signal_active(AB1, (int) AB1_signals.unit_B_sidepan   ));
+        _AB1 = AB1;     // Ensure up-to-date value when recursive calls are generated via port/fuse events
+        _pantograph.toggle        (!port_value_signal_active(_AB1, (int) AB1_signals.unit_B_pantograph));
+        _pantograph.sidepan_toggle(!port_value_signal_active(_AB1, (int) AB1_signals.unit_B_sidepan   ));
         
-        _main_breaker.ChangeState (port_value_signal_active(AB1, (int) AB1_signals.main_breaker    ));
-        _motor_breaker.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.motor_breaker   ));
-        _compressor_on.ChangeState(port_value_signal_active(AB1, (int) AB1_signals.compressor_power));
+        _main_breaker.ChangeState (port_value_signal_active(_AB1, (int) AB1_signals.main_breaker    ));
+        _motor_breaker.ChangeState(port_value_signal_active(_AB1, (int) AB1_signals.motor_breaker   ));
+        _compressor_on.ChangeState(port_value_signal_active(_AB1, (int) AB1_signals.compressor_power));
 
-        set_independent_brake(extract_signal_from_port_value(AB1, (int) AB1_signals.independent_brake, 
+        set_independent_brake(extract_signal_from_port_value(_AB1, (int) AB1_signals.independent_brake, 
             (int) AB1_shift.independent_brake) / independent_brake_last_notch);
-        set_sander(port_value_signal_active(AB1, (int) AB1_signals.sander) ? 1.0f : 0.0f);
+        set_sander(port_value_signal_active(_AB1, (int) AB1_signals.sander) ? 1.0f : 0.0f);
 
-        _secondary_camshaft_target_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_B_camshaft_notch, 
+        _secondary_camshaft_target_notch = extract_signal_from_port_value(_AB1, (int) AB1_signals.unit_B_camshaft_notch, 
             (int) AB1_shift.unit_B_camshaft_notch);
         switch (_secondary_camshaft_target_notch)
         {
@@ -302,14 +303,14 @@ internal class unit_B_sim: electric_device
                 break;
         }
 
-        _primary_camshaft_current_notch = extract_signal_from_port_value(AB1, (int) AB1_signals.unit_A_camshaft_notch, 
+        _primary_camshaft_current_notch = extract_signal_from_port_value(_AB1, (int) AB1_signals.unit_A_camshaft_notch, 
             (int) AB1_shift.unit_A_camshaft_notch);
         set_primary_notch(_primary_camshaft_current_notch);
-        set_reverse_current_lamp(port_value_signal_active(AB1, (int) AB1_signals.reverse_current) ? 1.0f : 0.0f);
-        set_transition_lamp     (port_value_signal_active(AB1, (int) AB1_signals.transition     ) ? 0.5f : 0.0f);
+        set_reverse_current_lamp(port_value_signal_active(_AB1, (int) AB1_signals.reverse_current) ? 1.0f : 0.0f);
+        set_transition_lamp     (port_value_signal_active(_AB1, (int) AB1_signals.transition     ) ? 0.5f : 0.0f);
 
-        _contactor_on_sound.Value  = port_value_signal_active(AB1, (int) AB1_signals.contactor_on ) ? 1.0f : 0.0f;
-        _contactor_off_sound.Value = port_value_signal_active(AB1, (int) AB1_signals.contactor_off) ? 1.0f : 0.0f;
+        _contactor_on_sound.Value  = port_value_signal_active(_AB1, (int) AB1_signals.contactor_on ) ? 1.0f : 0.0f;
+        _contactor_off_sound.Value = port_value_signal_active(_AB1, (int) AB1_signals.contactor_off) ? 1.0f : 0.0f;
     }
 
     private void simulate()

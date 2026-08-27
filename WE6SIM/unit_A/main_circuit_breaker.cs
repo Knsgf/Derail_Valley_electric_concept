@@ -98,14 +98,15 @@ internal partial class unit_A_sim
             Main.release_log($"Trip T={_trip_sound.Value} E={_engaging} S={_switched_on}");
             if (!_engaging && !_switched_on)
                 return;
-            _engaging = _switched_on = false;
+            _engaging       = _switched_on = false;
             unit_A_sim unit = _unit;
             unit._main_breaker_closed.ChangeState(false);
             unit._motor_breaker.ChangeState(false);
             toggle_port_signal(unit._control_AB1, (int) AB1_signals.main_breaker , false);
             toggle_port_signal(unit._control_AB1, (int) AB1_signals.motor_breaker, false);
             unit._contactors.toggle_traction_motors(turn_on: false);
-            _trip_sound.Value = 1.0f;
+            _engage_sound.Value = 0.0f;
+            _trip_sound.Value   = 1.0f;
             await Task.Delay(500);
             _trip_sound.Value = 0.0f;
         }

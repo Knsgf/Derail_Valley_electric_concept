@@ -70,7 +70,7 @@ internal partial class unit_A_sim: electric_device
     private bool  _line_contactrs_on = false;
     private int   _throttle = -1, _secondary_camshaft_notch = 1, _selector = -1, _field_position = -1;
     private Task? _single_notch_movement;
-    private float _reverser_position = 0.5f, _fast_notching_current_limit = 250.0f;
+    private float _reverser_position = 0.5f, _fast_notching_current_limit = 250.0f, _BA1 = 0.0f, _BA2 = 0.0f;
     private float _last_integrity = -1.0f, _resistance_update_time = 0.0f, _unit_B_integrity = 1.0f;
 
     public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
@@ -448,32 +448,33 @@ internal partial class unit_A_sim: electric_device
     {
         if (disposed)
             return;
-        _appliances.ChangeState (port_value_signal_active(BA1, (int) BA1_signals.battery           ));
-        _control_air.ChangeState(port_value_signal_active(BA1, (int) BA1_signals.control_air_usable));
+        _BA1 = BA1;     // Ensure up-to-date value when recursive calls are generated via port/fuse events
+        _appliances.ChangeState (port_value_signal_active(_BA1, (int) BA1_signals.battery           ));
+        _control_air.ChangeState(port_value_signal_active(_BA1, (int) BA1_signals.control_air_usable));
         
-        bool breaker_trip = port_value_signal_active(BA1, (int) BA1_signals.breaker_trip);
+        bool breaker_trip = port_value_signal_active(_BA1, (int) BA1_signals.breaker_trip);
         if (breaker_trip)
             _main_breaker.trip();
-        else if (_main_breaker_closed.State && !port_value_signal_active(BA1, (int) BA1_signals.pantograph_up))
+        else if (_main_breaker_closed.State && !port_value_signal_active(_BA1, (int) BA1_signals.pantograph_up))
             _main_breaker.trip_if_all_pantographs_retracted();
 
         if (!_cab_active)
         {
-            if (!breaker_trip && port_value_signal_active(BA1, (int) BA1_signals.breaker_engage))
+            if (!breaker_trip && port_value_signal_active(_BA1, (int) BA1_signals.breaker_engage))
                 _main_breaker.toggle_on(1.0f);
             
-            float unit_B_reverser = 1.0f - extract_signal_from_port_value(BA1, (int) BA1_signals.reverser, (int) BA1_shift.reverser) / 2.0f;
+            float unit_B_reverser = 1.0f - extract_signal_from_port_value(_BA1, (int) BA1_signals.reverser, (int) BA1_shift.reverser) / 2.0f;
             Main.log($"Rev {unit_B_reverser}");
             reverser_handler(unit_B_reverser, selector_switched: false);
-            handle_relay(BA1, BA1_signals.throttle, BA1_shift.throttle, throttle_last_notch    ,      throttle_handler);
-            handle_relay(BA1, BA1_signals.field   , BA1_shift.field   , field_handle_last_notch, field_control_handler);
-            handle_relay(BA1, BA1_signals.selector, BA1_shift.selector, selector_last_notch    ,      selector_handler);
+            handle_relay(_BA1, BA1_signals.throttle, BA1_shift.throttle, throttle_last_notch    ,      throttle_handler);
+            handle_relay(_BA1, BA1_signals.field   , BA1_shift.field   , field_handle_last_notch, field_control_handler);
+            handle_relay(_BA1, BA1_signals.selector, BA1_shift.selector, selector_last_notch    ,      selector_handler);
         }
-        set_independent_brake(extract_signal_from_port_value(BA1, (int) BA1_signals.independent_brake, 
+        set_independent_brake(extract_signal_from_port_value(_BA1, (int) BA1_signals.independent_brake, 
             (int) BA1_shift.independent_brake) / independent_brake_last_notch);
-        toggle_sander(port_value_signal_active(BA1, (int) BA1_signals.sander) ? 1.0f : 0.0f);
+        toggle_sander(port_value_signal_active(_BA1, (int) BA1_signals.sander) ? 1.0f : 0.0f);
 
-        _secondary_camshaft_notch = get_secondary_camshaft_current_notch(BA1);
+        _secondary_camshaft_notch = get_secondary_camshaft_current_notch(_BA1);
         _contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
         _contactors.switch_primary_contactors(_contactors._primary_controller.current_notch);   // Switch shunting notches at primary #1
         set_seconday_notch(_secondary_camshaft_notch);
@@ -481,18 +482,19 @@ internal partial class unit_A_sim: electric_device
 
     private void MU_BA2_control(float BA2)
     {
+        _BA2 = BA2;     // Ensure up-to-date value when recursive calls are generated via port/fuse events
         if (!_cab_active)
         {
-            toggle_front_pantograph(port_value_signal_active(BA2, (int) BA2_signals.back_pantograph ) ? 1.0f : 0.0f);
-            toggle_back_pantograph (port_value_signal_active(BA2, (int) BA2_signals.front_pantograph) ? 1.0f : 0.0f);
-            toggle_right_sidepan   (port_value_signal_active(BA2, (int) BA2_signals.left_sidepan    ) ? 1.0f : 0.0f);
-            toggle_left_sidepan    (port_value_signal_active(BA2, (int) BA2_signals.right_sidepan   ) ? 1.0f : 0.0f);
+            toggle_front_pantograph(port_value_signal_active(_BA2, (int) BA2_signals.back_pantograph ) ? 1.0f : 0.0f);
+            toggle_back_pantograph (port_value_signal_active(_BA2, (int) BA2_signals.front_pantograph) ? 1.0f : 0.0f);
+            toggle_right_sidepan   (port_value_signal_active(_BA2, (int) BA2_signals.left_sidepan    ) ? 1.0f : 0.0f);
+            toggle_left_sidepan    (port_value_signal_active(_BA2, (int) BA2_signals.right_sidepan   ) ? 1.0f : 0.0f);
             
-            fast_notching_toggle(port_value_signal_active(BA2, (int) BA2_signals.fast_notching) ? 1.0f : 0.0f);
-            blower_speed_toggle (port_value_signal_active(BA2, (int) BA2_signals.blower_mode  ) ? 1.0f : 0.0f);
+            fast_notching_toggle(port_value_signal_active(_BA2, (int) BA2_signals.fast_notching) ? 1.0f : 0.0f);
+            blower_speed_toggle (port_value_signal_active(_BA2, (int) BA2_signals.blower_mode  ) ? 1.0f : 0.0f);
         }
-        _jogging_mode_on  = port_value_signal_active(BA2, (int) BA2_signals.jog);
-        _unit_B_integrity = extract_signal_from_port_value(BA2, (int) BA2_signals.motor_integrity, (int) BA2_shift.motor_integrity)
+        _jogging_mode_on  = port_value_signal_active(_BA2, (int) BA2_signals.jog);
+        _unit_B_integrity = extract_signal_from_port_value(_BA2, (int) BA2_signals.motor_integrity, (int) BA2_shift.motor_integrity)
             / 4095.0f;
         if (_throttle > 0)
             toggle_traction_motors(turn_on: _main_breaker_closed.State);
