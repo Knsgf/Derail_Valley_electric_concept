@@ -26,7 +26,7 @@ internal partial class unit_A_sim
         private readonly PoweredWheelsManager _driving_axles;
         private readonly object               _selector_interlock = new();
 
-        private bool _selector_movement = false;
+        private bool _selector_moving = false;
         private int  _new_selector      = (int) selector_modes.yard_power;
 
         public readonly camshaft_motor           _reverser, _primary_controller, _selector_motor;
@@ -176,16 +176,16 @@ internal partial class unit_A_sim
             lock (_selector_interlock)
             {
                 _new_selector = selector;
-                if (_selector_movement)
+                if (_selector_moving)
                     return;
-                _selector_movement = true;
+                _selector_moving = true;
             }
 
             int current_selector = _selector_motor.current_notch;
             if (current_selector is not (int) selector_modes.series_power and not (int) selector_modes.parallel_power
                 &&     selector  is not (int) selector_modes.series_power and not (int) selector_modes.parallel_power)
             {
-                while (_line_contactor.engaged || _line_contactor2.engaged)
+                while (_line_contactor.engaged || _line_contactor2.engaged || _unit._named_branches["EPS"].current > 10.0f)
                 {
                     _line_contactor.toggle (false);
                     _line_contactor2.toggle(false);
@@ -208,7 +208,7 @@ internal partial class unit_A_sim
                 _dynamic_brake_contactor.toggle(selector is (int) selector_modes.rheostatic_brake);
                 _selector_motor.target_notch = (selector is (int) selector_modes.parallel_power  ) ? 8 : (selector + 1);
                 toggle_transition_lamp(_selector_motor.current_notch != _selector_motor.target_notch);
-                _selector_movement = false;
+                _selector_moving = false;
             }
         }
 

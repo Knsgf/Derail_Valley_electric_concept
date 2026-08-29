@@ -626,24 +626,30 @@ internal partial class unit_A_sim: electric_device
             calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref average_RPM, 
                 ref average_load_B, ref maximum_load, ref average_field_B, ref average_EMF,
                 out total_torque_B, out total_heat_emission_B);
+            bool line_contactor1_on = all_contactors._line_contactor.engaged, line_contactor2_on = all_contactors._line_contactor2.engaged;
             float maximum_EMF;
-            switch (all_contactors._selector_motor.current_notch)
+            if (!line_contactor1_on && !line_contactor2_on)
+                maximum_EMF = 0.0f;
+            else
             {
-                case 3:
-                    maximum_EMF = 0.0f;
-                    for (int motor_index = 5; motor_index >= 0; --motor_index)
-                        maximum_EMF = Mathf.Max(maximum_EMF, Mathf.Abs(traction_motors[motor_index].EMF));
-                    break;
+                switch (all_contactors._selector_motor.current_notch)
+                {
+                    case 3:
+                        maximum_EMF = 0.0f;
+                        for (int motor_index = 5; motor_index >= 0; --motor_index)
+                            maximum_EMF = Mathf.Max(maximum_EMF, Mathf.Abs(traction_motors[motor_index].EMF));
+                        break;
 
-                case 4:
-                    maximum_EMF = 0.0f;
-                    for (int motor_index = 5; motor_index >= 0; --motor_index)
-                        maximum_EMF += Mathf.Abs(traction_motors[motor_index].EMF);
-                    break;
+                    case 4:
+                        maximum_EMF = 0.0f;
+                        for (int motor_index = 5; motor_index >= 0; --motor_index)
+                            maximum_EMF += Mathf.Abs(traction_motors[motor_index].EMF);
+                        break;
 
-                default:
-                    maximum_EMF = motors_volts;
-                    break;
+                    default:
+                        maximum_EMF = motors_volts;
+                        break;
+                }
             }
             _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, current_draw);
             average_RPM     /= motors;
@@ -684,9 +690,8 @@ internal partial class unit_A_sim: electric_device
             _traction_motor_RPM.Value    = average_RPM;
             _traction_motor_EMF.Value    = average_EMF;
 
-            bool line_contactor1_on = all_contactors._line_contactor.engaged, line_contactor2_on = all_contactors._line_contactor2.engaged;
-            bool to_idle            = !line_contactor1_on && !line_contactor2_on && _line_contactrs_on;
-            _line_contactrs_on      =  line_contactor1_on ||  line_contactor2_on;
+            bool to_idle       = !line_contactor1_on && !line_contactor2_on && _line_contactrs_on;
+            _line_contactrs_on =  line_contactor1_on ||  line_contactor2_on;
             if (!to_idle || maximum_load <= minimum_idling_current)
             {
                 _idling_damage.Value = 0.0f;
