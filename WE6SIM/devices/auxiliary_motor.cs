@@ -8,7 +8,7 @@ namespace electric_sim.devices;
 
 internal class auxiliary_motor
 {
-    private readonly float _power, _efficiency, _nominal_voltage, _minimum_voltage, _speedup, _slowdown, _idle_slowdown;
+    private readonly float _power, _efficiency, _nominal_voltage, _load_factor, _minimum_voltage, _speedup, _slowdown, _idle_slowdown;
     private readonly Port  _audio;
 
     public float relative_speed { get; private set; } = 0.0f;
@@ -21,6 +21,7 @@ internal class auxiliary_motor
         _power           = power;
         _efficiency      = efficiency;
         _nominal_voltage = nominal_voltage;
+        _load_factor     = power / (nominal_voltage * nominal_voltage * efficiency);
         _minimum_voltage = minimum_voltage;
         _speedup         = speed_up;
         _slowdown        = slowdown;
@@ -52,7 +53,7 @@ internal class auxiliary_motor
         relative_speed           = Mathf.LerpUnclamped(final_relative_speed, relative_speed, acceleration_ratio);
         _audio.Value             = this.relative_speed = relative_speed;
 
-        float current = !is_running ? 0.0f : (_power / (current_voltage * _efficiency));
+        float current = !is_running ? 0.0f : (_load_factor * current_voltage);
         if (relative_speed > 0.0f)
             current *= Mathf.Min(7.0f, final_relative_speed / relative_speed);
         current_draw = Mathf.LerpUnclamped(current_draw, current, 0.1f);
