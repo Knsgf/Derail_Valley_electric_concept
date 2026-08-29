@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using UnityEngine;
 
 using LocoSim.Implementations;
@@ -14,7 +14,6 @@ using electric_sim.utilities;
 
 using static electric_sim.devices.control_stand;
 using static electric_sim.utilities.signal_cable;
-using System.Threading.Tasks;
 
 namespace electric_sim.unit_A;
 
@@ -181,15 +180,14 @@ internal partial class unit_A_sim
                 _selector_moving = true;
             }
 
-            int current_selector = _selector_motor.current_notch;
-            if (current_selector is not (int) selector_modes.series_power and not (int) selector_modes.parallel_power
-                &&     selector  is not (int) selector_modes.series_power and not (int) selector_modes.parallel_power)
+            if (_selector_motor.current_notch is not (>= 5 and <= 8)
+                || selector is not (int) selector_modes.series_power and not (int) selector_modes.parallel_power)
             {
-                while (_line_contactor.engaged || _line_contactor2.engaged || _unit._named_branches["EPS"].current > 10.0f)
+                while (_line_contactor.engaged || _line_contactor2.engaged)
                 {
                     _line_contactor.toggle (false);
                     _line_contactor2.toggle(false);
-                    await Task.Delay(300);
+                    await Task.Delay(200);
                 }
             }
 
