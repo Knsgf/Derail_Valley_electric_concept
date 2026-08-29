@@ -63,6 +63,20 @@ internal static class car_spawn_handler
             print_hierarchy(child.gameObject, indent + 4);
     }
 
+    static internal (bool is_custom, bool is_unit_A) is_unit_WE(TrainCar vehicle)
+    {
+        string car_type = vehicle.carLivery.id;
+        if (car_type.Length >= "WE6981A".Length)
+        {
+            car_type = car_type.Substring(0, "WE6981A".Length);
+            if (string.Equals(car_type, "WE6981A", StringComparison.Ordinal))
+                return (true, true);
+            if (string.Equals(car_type, "WE6981B", StringComparison.Ordinal))
+                return (true, false);
+        }
+        return (false, false);
+    }
+    
     private static void on_car_spawned(TrainCar vehicle)
     {
         if (vehicle == null || !vehicle.IsLoco)
@@ -79,20 +93,15 @@ internal static class car_spawn_handler
         }
 #endif
 
-        string car_type = vehicle.carLivery.id;
-        if (car_type.Length < "WE6981A".Length)
+        (bool is_WE, bool is_unit_A) = is_unit_WE(vehicle);
+        if (!is_WE)
             return;
-        car_type         = car_type.Substring(0, "WE6981A".Length);
-        bool is_unit_a   = false;
-        int  random_seed = 0;
-        if (string.Equals(car_type, "WE6981A", StringComparison.Ordinal))
+        int random_seed = 0;
+        if (is_unit_A)
         {
-            is_unit_a = true;
             for (int letter_index = 0; letter_index < vehicle.ID.Length; ++letter_index)
                 random_seed += vehicle.ID[letter_index] << (letter_index & 0x7);
         }
-        else if (!string.Equals(car_type, "WE6981B", StringComparison.Ordinal))
-            return;
 
         print_hierarchy(vehicle.gameObject);
         Dictionary<string, Fuse> all_fuses = [];
@@ -113,7 +122,7 @@ internal static class car_spawn_handler
             Main.log($"{port.id} {port.type} {port.valueType}");
             all_ports[port.id] = port;
 #if DEBUG
-            if (is_unit_a)
+            if (is_unit_A)
             {
                 switch (port.id)
                 {
@@ -139,7 +148,7 @@ internal static class car_spawn_handler
 
         //if (vehicle.gameObject != null)
         //	print_hierarchy(vehicle.gameObject);
-        if (is_unit_a)
+        if (is_unit_A)
             _all_a_units[vehicle] = new unit_A_sim(all_fuses, all_ports, vehicle, random_seed);
         else
             _all_b_units[vehicle] = new unit_B_sim(all_fuses, all_ports, vehicle);
