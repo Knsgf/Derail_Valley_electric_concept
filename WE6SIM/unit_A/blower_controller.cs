@@ -18,7 +18,7 @@ internal class blower_controller: electric_device
     
     const float speedup_rate = 0.1f, slowdown_rate = 0.95f;     // Bigger is slower
     const float series_3_parallel_2 = 1.0f / 3.0f, series_2_parallel_3 = 1.0f / 2.0f, parallel_6 = 1.0f;
-    const float motor_power = 40.0E+3f, motor_efficiency = 0.9f, motor_design_voltage = 1000.0f, motor_minimum_voltage = 250.0f;
+    const float motor_power = 50.0E+3f, motor_efficiency = 0.9f, motor_design_voltage = 1000.0f, motor_minimum_voltage = 250.0f;
 
     const float dynamic_braking_parallel_maximum_voltage  = 950.0f;
     const float dynamic_braking_series_minimum_voltage    = 900.0f;
