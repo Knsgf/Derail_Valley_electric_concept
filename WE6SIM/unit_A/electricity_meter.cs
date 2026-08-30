@@ -81,15 +81,15 @@ internal class electricity_meter: IDisposable
 
     const float minimum_current = 10.0f, energy_unit_price = 7.5f * 2.0f;
 
-    private static readonly Dictionary<               TrainCar, electricity_meter      > _new_meters = [];
-    private static readonly Dictionary<               TrainCar, SimulatedCarDebtTracker> _new_trackers = [];
-    private static readonly Dictionary<SimulatedCarDebtTracker, electricity_meter      > _fee_trackers = [];
+    private static readonly Dictionary<           TrainCar,   electricity_meter> _new_meters   = [];
+    private static readonly Dictionary<           TrainCar, LocoDebtTrackerBase> _new_trackers = [];
+    private static readonly Dictionary<LocoDebtTrackerBase,   electricity_meter> _fee_trackers = [];
     
     private readonly unit_A_sim _unit_A;
     private readonly Port       _game_save_energy;
     private readonly float      _usage_factor;
 
-    private SimulatedCarDebtTracker? _fee_tracker;
+    private LocoDebtTrackerBase? _fee_tracker;
 
     private double _energy_used = 0.0;
     private bool   _energy_read = false;
@@ -101,17 +101,16 @@ internal class electricity_meter: IDisposable
         _usage_factor     = (editor_settings.kWh_price / energy_unit_price) / (1000.0f * 3600.0f);
         _new_meters[unit] = this;
         try_set_up_fee_tracker(unit);
-        //_deferred_initialisation = setup_fee_tracker(unit, _initialisation_timeout.Token);
     }
 
     private static void try_set_up_fee_tracker(TrainCar unit)
     {
         if (!_new_meters.ContainsKey(unit) || !_new_trackers.ContainsKey(unit))
             return;
-        Main.log($"Set up a fee tracker for car {unit.ID}");
         electricity_meter setting_meter           = _new_meters  [unit];
         setting_meter._fee_tracker                = _new_trackers[unit];
         _fee_trackers[setting_meter._fee_tracker] = setting_meter;
+        Main.log($"Set up a fee tracker <{setting_meter._fee_tracker.GetType()}> for car {unit.ID}");
         _new_meters.Remove  (unit);
         _new_trackers.Remove(unit);
     }
