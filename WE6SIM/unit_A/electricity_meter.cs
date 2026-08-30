@@ -2,24 +2,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+
+using HarmonyLib;
+using UnityEngine;
 
 using DV.ServicePenalty;
 using DV.Simulation.Cars;
 using DV.ThingTypes;
 using DV.Utils;
+using LocoSim.Implementations;
 
 using electric_sim.catenary_editor;
 using electric_sim.utilities;
-
-using HarmonyLib;
-
-using LocoSim.Implementations;
-
-using UnityEngine;
-
-using static UnityEngine.UI.CanvasScaler;
 
 namespace electric_sim.unit_A;
 
@@ -55,17 +49,13 @@ internal class electricity_meter: IDisposable
     {
         const float start_value = 262143.0f;
         
-        private TrainCar _unit_A;
-        
         public private_electricity_tracker(TrainCar unit_A)
         {
-            _unit_A = unit_A;
             debtData = new(unit_A.ID, unit_A.carType, InitializeDebtComponents());
         }
         
         public override DebtComponent[] InitializeDebtComponents()
         {
-            Main.log($"OWN IDC {_unit_A.ID}");
             return [new(start_value, ResourceType.ElectricCharge)];
         }
 
@@ -73,25 +63,27 @@ internal class electricity_meter: IDisposable
 
         public override void ResetState()
         {
-            Main.log($"OWN RS {_unit_A.ID}");
+            if (_fee_trackers.TryGetValue(this, out electricity_meter meter))
+            {
+                meter._energy_used            = 0.0;
+                meter._game_save_energy.Value = 0.0f;
+            }
         }
 
         public override void TurnOffDebtSources()
         {
-            Main.log($"OWN TODR {_unit_A.ID}");
+            if (_fee_trackers.TryGetValue(this, out electricity_meter meter))
+                meter._unit_A.shut_down();
         }
 
         public override void UpdateDebtValues()
         {
-            Main.log($"OWN UDV {_unit_A.ID}");
             if (_fee_trackers.TryGetValue(this, out electricity_meter meter))
             {
-                Main.log("OWN UDV M");
                 foreach (DebtComponent current_fee in GetTrackedDebts())
                 {
                     if (current_fee.Type == ResourceType.ElectricCharge)
                     { 
-                        Main.log($"OWN UDV {meter._energy_used}");
                         current_fee.UpdateEndValue(start_value - (float) meter._energy_used);
                         break;
                     }
