@@ -53,6 +53,8 @@ internal class electricity_meter: IDisposable
 
     private class private_electricity_tracker: LocoDebtTrackerBase
     {
+        const float start_value = 262143.0f;
+        
         private TrainCar _unit_A;
         
         public private_electricity_tracker(TrainCar unit_A)
@@ -64,7 +66,7 @@ internal class electricity_meter: IDisposable
         public override DebtComponent[] InitializeDebtComponents()
         {
             Main.log($"OWN IDC {_unit_A.ID}");
-            return [new(1.0f, ResourceType.ElectricCharge)];
+            return [new(start_value, ResourceType.ElectricCharge)];
         }
 
         public override bool IsDebtOnlyEnvironmental() => false;
@@ -82,6 +84,19 @@ internal class electricity_meter: IDisposable
         public override void UpdateDebtValues()
         {
             Main.log($"OWN UDV {_unit_A.ID}");
+            if (_fee_trackers.TryGetValue(this, out electricity_meter meter))
+            {
+                Main.log("OWN UDV M");
+                foreach (DebtComponent current_fee in GetTrackedDebts())
+                {
+                    if (current_fee.Type == ResourceType.ElectricCharge)
+                    { 
+                        Main.log($"OWN UDV {meter._energy_used}");
+                        current_fee.UpdateEndValue(start_value - (float) meter._energy_used);
+                        break;
+                    }
+                }
+            }
         }
     }
 
