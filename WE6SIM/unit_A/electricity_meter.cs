@@ -85,16 +85,18 @@ internal class electricity_meter: IDisposable
     private static readonly Dictionary<               TrainCar, SimulatedCarDebtTracker> _new_trackers = [];
     private static readonly Dictionary<SimulatedCarDebtTracker, electricity_meter      > _fee_trackers = [];
     
-    private readonly Port  _game_save_energy;
-    private readonly float _usage_factor;
+    private readonly unit_A_sim _unit_A;
+    private readonly Port       _game_save_energy;
+    private readonly float      _usage_factor;
 
     private SimulatedCarDebtTracker? _fee_tracker;
 
     private double _energy_used = 0.0;
     private bool   _energy_read = false;
 
-    public electricity_meter(TrainCar unit, Dictionary<string, Port> ports)
+    public electricity_meter(TrainCar unit, unit_A_sim unit_A, Dictionary<string, Port> ports)
     {
+        _unit_A           = unit_A;
         _game_save_energy = sensor_grabber.grab_port(ports, "[LeftoverMeter].EXT_IN");
         _usage_factor     = (editor_settings.kWh_price / energy_unit_price) / (1000.0f * 3600.0f);
         _new_meters[unit] = this;
@@ -163,5 +165,12 @@ internal class electricity_meter: IDisposable
             meter._energy_used            = 0.0;
             meter._game_save_energy.Value = 0.0f;
         }
+    }
+
+    [HarmonyPatch("TurnOffDebtSources"), HarmonyPostfix]
+    public static void TurnOffDebtSourcesPostfix(SimulatedCarDebtTracker? __instance)
+    {
+        if (__instance != null && _fee_trackers.TryGetValue(__instance, out electricity_meter meter))
+            meter._unit_A.shut_down();
     }
 }

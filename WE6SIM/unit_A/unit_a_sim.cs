@@ -158,7 +158,7 @@ internal partial class unit_A_sim: electric_device
             grab_port(ports, "[Blowers].RESISTOR_COOLING_RATE" ), 
             _contactor_on_sound, _contactor_off_sound
         );
-        _meter = new(unit, ports);
+        _meter = new(unit, this, ports);
 
         _control_stand = new(_appliances, ports);
         _control_stand.register_handler(     "brake_cutout",                cab_activation, needs_power: false);
@@ -715,6 +715,11 @@ internal partial class unit_A_sim: electric_device
             _torque_A.Value = total_torque_A;
             _torque_B.Value = total_torque_B;
         }
+    }
+
+    public void shut_down()
+    {
+        _main_breaker.trip();
     }
 
     public override void Dispose()
