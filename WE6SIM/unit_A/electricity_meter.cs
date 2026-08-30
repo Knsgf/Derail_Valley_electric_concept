@@ -37,22 +37,28 @@ internal class electricity_meter: IDisposable
             if (!is_WE || !is_unit_A)
                 return;
             Main.log($"EMTR {___train.uniqueCar} {___debt?.ToString() ?? "<null>"}");
-            if (!___train.uniqueCar && ___debt != null)
+            if (___train.uniqueCar)
+            {
+                _new_trackers[___train] = new private_electricity_tracker(___train);
+                SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(___train, _new_trackers[___train]);
+                try_set_up_fee_tracker(___train);
+            }
+            else if (___debt != null)
             {
                 _new_trackers[___train] = ___debt;
                 try_set_up_fee_tracker(___train);
             }
-            //electricity_tracker owned_electricity_debt = new(___train);
         }
     }
 
-    private class electricity_tracker: LocoDebtTrackerBase
+    private class private_electricity_tracker: LocoDebtTrackerBase
     {
         private TrainCar _unit_A;
         
-        public electricity_tracker(TrainCar unit_A)
+        public private_electricity_tracker(TrainCar unit_A)
         {
             _unit_A = unit_A;
+            debtData = new(unit_A.ID, unit_A.carType, InitializeDebtComponents());
         }
         
         public override DebtComponent[] InitializeDebtComponents()
@@ -85,6 +91,7 @@ internal class electricity_meter: IDisposable
     private static readonly Dictionary<           TrainCar, LocoDebtTrackerBase> _new_trackers = [];
     private static readonly Dictionary<LocoDebtTrackerBase,   electricity_meter> _fee_trackers = [];
     
+    private readonly TrainCar   _unit;
     private readonly unit_A_sim _unit_A;
     private readonly Port       _game_save_energy;
     private readonly float      _usage_factor;
@@ -96,6 +103,7 @@ internal class electricity_meter: IDisposable
 
     public electricity_meter(TrainCar unit, unit_A_sim unit_A, Dictionary<string, Port> ports)
     {
+        _unit             = unit;
         _unit_A           = unit_A;
         _game_save_energy = sensor_grabber.grab_port(ports, "[LeftoverMeter].EXT_IN");
         _usage_factor     = (editor_settings.kWh_price / energy_unit_price) / (1000.0f * 3600.0f);
@@ -136,9 +144,20 @@ internal class electricity_meter: IDisposable
     {
         if (_fee_tracker != null && _fee_trackers.ContainsKey(_fee_tracker))
         {
+            if (_fee_tracker is private_electricity_tracker)
+            {
+                Main.log($"Staging energy fees for {_unit.ID}");
+                SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(_fee_tracker);
+            }
             _fee_trackers.Remove(_fee_tracker);
             _fee_tracker = null;
         }
+        
+        // Remove entries for player-spawned vehicles without a tracker
+        if (_new_meters.ContainsKey(_unit))
+            _new_meters.Remove(_unit);
+        if (_new_trackers.ContainsKey(_unit))
+            _new_trackers.Remove(_unit);
     }
 
     [HarmonyPatch("UpdateDebtValues"), HarmonyPostfix]
