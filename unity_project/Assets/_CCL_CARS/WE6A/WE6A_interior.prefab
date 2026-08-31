@@ -523,7 +523,7 @@ MonoBehaviour:
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 6292176033990445586}
   rigidbodyMass: 30
-  rigidbodyDrag: 15
+  rigidbodyDrag: 10
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -531,7 +531,7 @@ MonoBehaviour:
   interactionPoint: {fileID: 1036260921284661273}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
-  scrollWheelHoverScroll: 0.025
+  scrollWheelHoverScroll: 3
   scrollWheelSpring: 0
   useSteppedJoint: 1
   steppedValueUpdate: 0
