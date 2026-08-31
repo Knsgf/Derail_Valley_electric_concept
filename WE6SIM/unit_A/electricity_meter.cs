@@ -30,7 +30,6 @@ internal class electricity_meter: IDisposable
             (bool is_WE, bool is_unit_A) = car_spawn_handler.is_unit_WE(___train);
             if (!is_WE || !is_unit_A)
                 return;
-            Main.log($"EMTR {___train.uniqueCar} {___debt?.ToString() ?? "<null>"}");
             if (___train.uniqueCar)
             {
                 _new_trackers[___train] = new private_electricity_tracker(___train);
@@ -153,7 +152,7 @@ internal class electricity_meter: IDisposable
         {
             if (_fee_tracker is private_electricity_tracker)
             {
-                Main.log($"Staging energy fees for {_unit.ID}");
+                Main.log($"Staging electricity fees for {_unit.ID}");
                 SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(_fee_tracker);
             }
             _fee_trackers.Remove(_fee_tracker);
