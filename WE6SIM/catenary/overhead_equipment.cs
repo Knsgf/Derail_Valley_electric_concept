@@ -33,43 +33,6 @@ public partial class overhead_equipment
     public const float default_pole_offset      = 2.2f;
     public const int   minimum_redering_distance = 10;
 
-    private static readonly string[] _all_locations =
-    [
-        // Yards
-        "CME",
-        "CP",
-        "FM",
-        "FF",
-        "HB",
-        "IME",
-        "IMW",
-        "OWC",
-        "OWN",
-        "OR",
-        "SM",
-
-        // Mainlines
-        "CME-IME",
-        "CP-IMW[IMW]",
-        "FF-IME[FF]",
-        "FF-IMW[FF]",
-        "FF-OR[FF]",
-        "FF-SM[FF]",
-        "FM-SM[SM]",
-        "HB-SM[HB]",
-        "IME-FF[CME-IME]",
-        "IMW-FF[IMW]",
-        "SM-FF[SM]",
-        "SM-HB[SM]",
-
-        // Neutral sections
-        "[CP]![IMW]",
-        "[FF]![CME-IME]",
-        "[FF]![IMW]",
-        "[FF]![SM]",
-        "[HB]![SM]"
-    ];
-
     private static readonly string[] _template_names =
     {
 #if DEBUG
@@ -312,8 +275,20 @@ public partial class overhead_equipment
         AssetBundle catenary = AssetBundle.LoadFromFile(Path.Combine(system._file_path, "catenary"))
             ?? throw new FileNotFoundException("Not found " + Path.Combine(system._file_path, "catenary"));
         _system._loaded_bundles.Add(catenary);
-        foreach (string location in _all_locations)
-            _system.load_scenery_from_bundle(catenary, location);
+        foreach (string asset_name in catenary.GetAllAssetNames())
+        {
+            string lowercase_name = asset_name.ToLower();
+            if (lowercase_name.EndsWith(".json"))
+            {
+                int location_index = lowercase_name.IndexOf("scenery_");
+                if (location_index < 0)
+                    continue;
+                location_index        += "scenery_".Length;
+                int location_end_index = asset_name.Length - ".json".Length;
+                if (location_index < location_end_index)
+                    _system.load_scenery_from_bundle(catenary, asset_name.Substring(location_index, location_end_index - location_index));
+            }
+        }
 #if DEBUG        
         _system.load_scenery_from_file();   
 #endif
