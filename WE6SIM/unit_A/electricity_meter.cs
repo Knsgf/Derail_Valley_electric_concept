@@ -158,16 +158,6 @@ internal class electricity_meter: IDisposable
         }
     }
     
-    public electricity_meter(TrainCar unit, unit_A_sim unit_A, Dictionary<string, Port> ports)
-    {
-        _unit             = unit;
-        _unit_A           = unit_A;
-        _game_save_energy = sensor_grabber.grab_port(ports, "[LeftoverMeter].EXT_IN");
-        _usage_factor     = (editor_settings.kWh_price / energy_unit_price) / (1000.0f * 3600.0f);
-        _new_meters[unit] = this;
-        try_set_up_fee_tracker(unit);
-    }
-
     private static void try_set_up_fee_tracker(TrainCar unit)
     {
         if (!_new_meters.ContainsKey(unit) || !_new_trackers.ContainsKey(unit))
@@ -178,6 +168,16 @@ internal class electricity_meter: IDisposable
         Main.log($"Set up a fee tracker <{setting_meter._fee_tracker.GetType()}> for car {unit.ID}");
         _new_meters.Remove  (unit);
         _new_trackers.Remove(unit);
+    }
+
+    public electricity_meter(TrainCar unit, unit_A_sim unit_A, Dictionary<string, Port> ports)
+    {
+        _unit             = unit;
+        _unit_A           = unit_A;
+        _game_save_energy = sensor_grabber.grab_port(ports, "[LeftoverMeter].EXT_IN");
+        _usage_factor     = (editor_settings.kWh_price / energy_unit_price) / (1000.0f * 3600.0f);
+        _new_meters[unit] = this;
+        try_set_up_fee_tracker(unit);
     }
 
     public void count_energy(float voltage, float current)
