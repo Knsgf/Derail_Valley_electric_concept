@@ -21,26 +21,31 @@ namespace electric_sim.unit_A;
 internal class electricity_meter: IDisposable
 {
     [HarmonyPatch(typeof(SimController), "OnLogicCarInitialized")]
-    private static class LogicCarInitializer
+    private static class logic_car_nitialiser
     {
-        public static void Postfix(SimController __instance, TrainCar? ___train, SimulatedCarDebtTracker? ___debt)
+        public static void Postfix(TrainCar? ___train, SimulatedCarDebtTracker? ___debt)
         {
-            if (___train == null || ___train.playerSpawnedCar)
-                return;
-            (bool is_WE, bool is_unit_A) = car_spawn_handler.is_unit_WE(___train);
-            if (!is_WE || !is_unit_A)
-                return;
-            if (___train.uniqueCar)
-            {
-                _new_trackers[___train] = new private_electricity_tracker(___train);
-                SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(___train, _new_trackers[___train]);
-                try_set_up_fee_tracker(___train);
-            }
-            else if (___debt != null)
-            {
-                _new_trackers[___train] = ___debt;
-                try_set_up_fee_tracker(___train);
-            }
+            add_new_tracker(___train, ___debt);
+        }
+    }
+
+    [HarmonyPatch(typeof(OwnedCarsStateController), "RegisterCarStateTracker")]
+    private static class private_vehicle_registar
+    {
+        public static void Postfix(TrainCar? car)
+        {
+            if (car != null)
+                reassign_tracker(car, null, is_private: true);
+        }
+    }
+
+    [HarmonyPatch(typeof(LocoDebtController), "RegisterLocoDebtTracker")]
+    private static class company_vehicle_registar
+    {
+        public static void Postfix(TrainCar? car, LocoDebtTrackerBase? locoDebtTracker)
+        {
+            if (car != null)
+                reassign_tracker(car, locoDebtTracker as SimulatedCarDebtTracker, is_private: false);
         }
     }
 
@@ -83,7 +88,7 @@ internal class electricity_meter: IDisposable
                 {
                     if (current_fee.Type == ResourceType.ElectricCharge)
                     { 
-                        current_fee.UpdateEndValue(start_value - (float) meter._energy_used);
+                        current_fee.UpdateEndValue(Mathf.Min(start_value - (float) meter._energy_used, start_value));
                         break;
                     }
                 }
@@ -107,6 +112,52 @@ internal class electricity_meter: IDisposable
     private double _energy_used = 0.0;
     private bool   _energy_read = false;
 
+    private static void add_new_tracker(TrainCar? vehicle, SimulatedCarDebtTracker? company_tracker)
+    {
+        if (vehicle == null || vehicle.playerSpawnedCar)
+            return;
+        (bool is_WE, bool is_unit_A) = car_spawn_handler.is_unit_WE(vehicle);
+        if (!is_WE || !is_unit_A)
+            return;
+        if (vehicle.uniqueCar)
+        {
+            _new_trackers[vehicle] = new private_electricity_tracker(vehicle);
+            SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(vehicle, _new_trackers[vehicle]);
+            try_set_up_fee_tracker(vehicle);
+        }
+        else if (company_tracker != null)
+        {
+            _new_trackers[vehicle] = company_tracker;
+            try_set_up_fee_tracker(vehicle);
+        }
+    }
+
+    private static void reassign_tracker(TrainCar vehicle, SimulatedCarDebtTracker? tracker, bool is_private)
+    {
+        TrainCar?          unit            = null;
+        electricity_meter? meter           = null;
+        bool               replace_tracker = false;
+        foreach (KeyValuePair<LocoDebtTrackerBase, electricity_meter> current_tracker in _fee_trackers)
+        {
+            meter = current_tracker.Value;
+            unit  = meter._unit;
+            if (unit == vehicle 
+                && unit.uniqueCar == is_private 
+                && (current_tracker.Key is private_electricity_tracker) != is_private)
+            {
+                replace_tracker = true;
+                break;
+            }
+        }
+        if (replace_tracker)
+        {
+            assert.test(meter != null && unit != null);
+            meter.deregister_tracker(ownership_change: true);
+            _new_meters[unit] = meter;
+            add_new_tracker(unit, tracker);
+        }
+    }
+    
     public electricity_meter(TrainCar unit, unit_A_sim unit_A, Dictionary<string, Port> ports)
     {
         _unit             = unit;
@@ -146,7 +197,7 @@ internal class electricity_meter: IDisposable
         }
     }
 
-    public void Dispose()
+    private void deregister_tracker(bool ownership_change)
     {
         if (_fee_tracker != null && _fee_trackers.ContainsKey(_fee_tracker))
         {
@@ -154,16 +205,26 @@ internal class electricity_meter: IDisposable
             {
                 Main.log($"Staging electricity fees for {_unit.ID}");
                 SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(_fee_tracker);
+                if (ownership_change)
+                {
+                    _energy_used            = 0.0;
+                    _game_save_energy.Value = 0.0f;
+                }
             }
             _fee_trackers.Remove(_fee_tracker);
-            _fee_tracker = null;
         }
-        
+        _fee_tracker = null;
+
         // Remove entries for player-spawned vehicles without a tracker
         if (_new_meters.ContainsKey(_unit))
             _new_meters.Remove(_unit);
         if (_new_trackers.ContainsKey(_unit))
             _new_trackers.Remove(_unit);
+    }
+    
+    public void Dispose()
+    {
+        deregister_tracker(ownership_change: false);
     }
 
     [HarmonyPatch("UpdateDebtValues"), HarmonyPostfix]
