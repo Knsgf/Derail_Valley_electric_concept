@@ -48,8 +48,6 @@ internal static class car_spawn_handler
         overhead_equipment.set_up(Main.mod_info);
         __instance.CarSpawned -= on_car_spawned;
         __instance.CarSpawned += on_car_spawned;
-        __instance.CarAboutToBeDeleted -= on_car_purged;
-        __instance.CarAboutToBeDeleted += on_car_purged;
     }
 
     [Conditional("DEBUG")]
@@ -89,6 +87,7 @@ internal static class car_spawn_handler
             //Main.log($"MOW vehicle {vehicle.ID}");
             _mow_vehicle = vehicle;
             _mow_tracker = new mow_follower(overhead_equipment.system, vehicle);
+            vehicle.OnDestroyCar += on_car_purged;
             return;
         }
 #endif
@@ -152,6 +151,7 @@ internal static class car_spawn_handler
             _all_a_units[vehicle] = new unit_A_sim(all_fuses, all_ports, vehicle, random_seed);
         else
             _all_b_units[vehicle] = new unit_B_sim(all_fuses, all_ports, vehicle);
+        vehicle.OnDestroyCar += on_car_purged;
     }
 
     /*
@@ -227,6 +227,8 @@ internal static class car_spawn_handler
 
     private static void on_car_purged(TrainCar vehicle)
     {
+        vehicle.OnDestroyCar -= on_car_purged;
+
 #if DEBUG
         if (_mow_vehicle == vehicle)
         {
