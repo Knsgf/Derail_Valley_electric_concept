@@ -722,12 +722,12 @@ internal partial class unit_A_sim: electric_device
         _main_breaker.trip();
     }
 
-    public override void Dispose()
+    public void purge(bool session_end)
     {
         if (!disposed)
         {
             base.Dispose();
-            _meter.Dispose();
+            _meter.deregister_tracker(ownership_change: false, session_end);
             _pantograph.Dispose();
             _roof_bus.Dispose();
             _main_breaker.Dispose();
@@ -739,5 +739,10 @@ internal partial class unit_A_sim: electric_device
             _control_BA1.ValueUpdatedInternally  -= MU_BA1_control;
             _control_BA2.ValueUpdatedInternally  -= MU_BA2_control;
         }
+    }
+
+    public override void Dispose()
+    {
+        purge(session_end: false);
     }
 }

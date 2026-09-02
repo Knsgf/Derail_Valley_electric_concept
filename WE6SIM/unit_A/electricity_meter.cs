@@ -18,7 +18,7 @@ using electric_sim.utilities;
 namespace electric_sim.unit_A;
 
 [HarmonyPatch(typeof(SimulatedCarDebtTracker))]
-internal class electricity_meter: IDisposable
+internal class electricity_meter
 {
     [HarmonyPatch(typeof(SimController), "OnLogicCarInitialized")]
     private static class logic_car_nitialiser
@@ -152,7 +152,7 @@ internal class electricity_meter: IDisposable
         if (replace_tracker)
         {
             assert.test(meter != null && unit != null);
-            meter.deregister_tracker(ownership_change: true);
+            meter.deregister_tracker(ownership_change: true, session_end: false);
             _new_meters[unit] = meter;
             add_new_tracker(unit, tracker);
         }
@@ -197,11 +197,11 @@ internal class electricity_meter: IDisposable
         }
     }
 
-    private void deregister_tracker(bool ownership_change)
+    public void deregister_tracker(bool ownership_change, bool session_end)
     {
         if (_fee_tracker != null && _fee_trackers.ContainsKey(_fee_tracker))
         {
-            if (_fee_tracker is private_electricity_tracker)
+            if (!session_end && _fee_tracker is private_electricity_tracker)
             {
                 Main.log($"Staging electricity fees for {_unit.ID}");
                 SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(_fee_tracker);
@@ -222,11 +222,6 @@ internal class electricity_meter: IDisposable
             _new_trackers.Remove(_unit);
     }
     
-    public void Dispose()
-    {
-        deregister_tracker(ownership_change: false);
-    }
-
     [HarmonyPatch("UpdateDebtValues"), HarmonyPostfix]
     public static void UpdateDebtValuesPostfix(SimulatedCarDebtTracker? __instance)
     {
