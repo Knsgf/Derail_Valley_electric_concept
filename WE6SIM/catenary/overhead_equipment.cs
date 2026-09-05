@@ -350,11 +350,12 @@ public partial class overhead_equipment
 
     internal static void dispose()
     {
-#if DEBUG
-        editor.disable();
-#endif
         if (_system == null)
             return;
+#if DEBUG
+        editor.disable();
+        _system.store_scenery();
+#endif
         catenary_deactivated?.Invoke();
         if (_system._OCS_ticker is not null)
         {

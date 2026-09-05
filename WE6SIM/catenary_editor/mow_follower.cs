@@ -38,7 +38,6 @@ internal class mow_follower: IDisposable
         _mow_vehicle.SimController.SimulationFlow.TickEvent -= track_movement;
         editor.use_DM1U    = false;
         editor.mow_monitor = null;
-        _system.store_scenery();
     }
 }
 
