@@ -2610,19 +2610,6 @@
     "wire_attached": true
   },
   {
-    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
-    "template_name": "PoleAnchor",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.203140482,
-      "z": 0.0,
-      "w": -0.97914964
-    },
-    "x": 9537919,
-    "z": 13672058,
-    "y": 119.388176
-  },
-  {
     "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
     "length": 41.4359169,
     "previous_pole_vertical_offset": 0.004432678,
@@ -4367,19 +4354,6 @@
     "wire_type": "plain_single"
   },
   {
-    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
-    "template_name": "PoleAnchor",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.203140482,
-      "z": 0.0,
-      "w": -0.97914964
-    },
-    "x": 9529790,
-    "z": 13675583,
-    "y": 119.388176
-  },
-  {
     "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
     "orientation": {
       "x": 0.0,
@@ -5648,6 +5622,67 @@
     "x": 9524600,
     "z": 13647252,
     "y": 119.364731,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
+    "cantilever_type": "Middle",
+    "steady_arm_type": "gantry",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9833627,
+      "z": 0.0,
+      "w": -0.181653291
+    },
+    "x": 9520770,
+    "z": 13648717,
+    "y": 119.364731,
+    "dual_wire": false,
+    "wire_attached": true
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 28.2381325,
+    "previous_pole_vertical_offset": 0.02344513,
+    "substation": "FF1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.199463323,
+      "z": 0.0,
+      "w": 0.979905248
+    },
+    "x": 9520770,
+    "z": 13648717,
+    "y": 119.364731,
+    "wire_type": "end_anchor_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "PoleAnchor",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.203140482,
+      "z": 0.0,
+      "w": -0.97914964
+    },
+    "x": 9529790,
+    "z": 13675583,
+    "y": 119.388176
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 39.6871262,
+    "previous_pole_vertical_offset": -0.0225067139,
+    "substation": "FF1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.197346881,
+      "z": 0.0,
+      "w": 0.9803337
+    },
+    "x": 9505414,
+    "z": 13612121,
+    "y": 119.387238,
     "wire_type": "plain_single"
   }
 ]
