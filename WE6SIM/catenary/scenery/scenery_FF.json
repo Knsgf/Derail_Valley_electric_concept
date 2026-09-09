@@ -2611,22 +2611,6 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
-    "length": 41.4359169,
-    "previous_pole_vertical_offset": 0.004432678,
-    "substation": "FF1500",
-    "orientation": {
-      "x": 0.0,
-      "y": 0.166112557,
-      "z": 0.0,
-      "w": 0.9861068
-    },
-    "x": 9517959,
-    "z": 13607322,
-    "y": 119.387238,
-    "wire_type": "plain_single"
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
     "length": 39.6854057,
     "previous_pole_vertical_offset": 0.0197525024,
     "substation": "FF1500",
@@ -5682,6 +5666,67 @@
     },
     "x": 9505414,
     "z": 13612121,
+    "y": 119.387238,
+    "wire_type": "plain_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
+    "cantilever_type": "Outer",
+    "steady_arm_type": "gantry",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.181653336,
+      "z": 0.0,
+      "w": -0.9833627
+    },
+    "x": 9531099,
+    "z": 13644765,
+    "y": 119.364731,
+    "dual_wire": false,
+    "wire_attached": true
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 27.87186,
+    "previous_pole_vertical_offset": 0.02344513,
+    "substation": "FF1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.1554189,
+      "z": 0.0,
+      "w": 0.9878487
+    },
+    "x": 9531379,
+    "z": 13644658,
+    "y": 119.364731,
+    "wire_type": "end_anchor_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "PoleAnchor",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.203140482,
+      "z": 0.0,
+      "w": -0.97914964
+    },
+    "x": 9537919,
+    "z": 13672058,
+    "y": 119.388176
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 39.67463,
+    "previous_pole_vertical_offset": -0.0225067139,
+    "substation": "FF1500",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.171674639,
+      "z": 0.0,
+      "w": 0.9851537
+    },
+    "x": 9517959,
+    "z": 13607322,
     "y": 119.387238,
     "wire_type": "plain_single"
   }
