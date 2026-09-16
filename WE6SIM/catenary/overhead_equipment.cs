@@ -268,8 +268,13 @@ public partial class overhead_equipment
     {
         if (_system != null)
             throw new InvalidOperationException("Attempt to create a duplicate catenary in the world");
+        if (Type.GetType("DoubleTrack.TrackPlacerEntry, DoubleTrack", throwOnError: false) != null)
+        {
+            Main.release_log("Double track mod is active, catenary removed");
+            return;
+        }
+
         _system = new overhead_equipment(mod);
-        
         // "catenary_object" and its derivaties require "system" property to be initialised,
         // which precludes doing loading inside constructor
         AssetBundle catenary = AssetBundle.LoadFromFile(Path.Combine(system._file_path, "catenary"))
