@@ -65,8 +65,6 @@ public partial class overhead_equipment
         ["TrussArmOuterDual"] = "Gantries/TrussArmOuterDual",
         ["TrussArmOuterSingle"] = "Gantries/TrussArmOuterSingle",
         ["Pole"] = "PolesAndCantilevers/Pole",
-        ["PoleAnchor"] = "PolesAndCantilevers/PoleAnchor",
-        ["PoleFoundation"] = "PolesAndCantilevers/PoleFoundation",
         ["InnerCantileverDual"] = "PolesAndCantilevers/InnerCantileverDual",
         ["InnerCantileverSingle"] = "PolesAndCantilevers/InnerCantileverSingle",
         ["InnerOutwardCantileverDual"] = "PolesAndCantilevers/InnerOutwardCantileverDual",
@@ -114,20 +112,6 @@ public partial class overhead_equipment
         ["TrolleyOuterSingle"] = "Trolley/TrolleyOuterSingle",
         ["TrolleyWire"] = "Trolley/TrolleyWire",
         ["TrolleyWireEnd"] = "Trolley/TrolleyWireEnd",
-        ["Signs/DropPantographs"] = "Signs/DropPantographs",
-        ["Signs/DropPantographsOtherSide"] = "Signs/DropPantographsOtherSide",
-        ["Signs/DropPantographsWarning"] = "Signs/DropPantographsWarning",
-        ["Signs/DropPantographsWarningOtherSide"] = "Signs/DropPantographsWarningOtherSide",
-        ["Signs/RaisePantographs"] = "Signs/RaisePantographs",
-        ["Signs/RaisePantographsOtherSide"] = "Signs/RaisePantographsOtherSide",
-        ["Signs/NeutralBegin"] = "Signs/NeutralBegin",
-        ["Signs/NeutralBeginOtherSide"] = "Signs/NeutralBeginOtherSide",
-        ["Signs/NeutralEnd"] = "Signs/NeutralEnd",
-        ["Signs/NeutralEndOtherSide"] = "Signs/NeutralEndOtherSide",
-        ["Signs/NeutralEndLowVoltage"] = "Signs/NeutralEndLowVoltage",
-        ["Signs/NeutralEndLowVoltageOtherSide"] = "Signs/NeutralEndLowVoltageOtherSide",
-        ["Signs/NeutralWarning"] = "Signs/NeutralWarning",
-        ["Signs/NeutralWarningOtherSide"] = "Signs/NeutralWarningOtherSide",
     };
 
     private static overhead_equipment? _system;
@@ -175,6 +159,21 @@ public partial class overhead_equipment
             }
         }
     }
+
+    private static CSV_struct<_type_> load_part_definitions<_type_>(AssetBundle parts, string definition_file) 
+        where _type_: struct, catenary_object_definition
+    {
+        string raw_part_definitions = parts.LoadAsset<TextAsset>($"Assets/Catenary/{definition_file}.csv")?.text
+            ?? throw new FileNotFoundException($"No definition {definition_file} found");
+        var CSV_contents = new CSV_struct<_type_>(raw_part_definitions);
+        for (int index = CSV_contents.row_count; index > 0; --index)
+        {
+            _type_ definition = CSV_contents.get_row(index);
+            _all_parts[definition.template_name] = definition.asset_path;
+            Main.log($"OCSD {definition.template_name} {definition.asset_path}");
+        }
+        return CSV_contents;
+    }
     
     private overhead_equipment(ModEntry mod)
     {
@@ -187,6 +186,8 @@ public partial class overhead_equipment
             catenary_assets = AssetBundle.LoadFromFile(Path.Combine(_file_path, "catenary_parts"))
                            ?? throw new FileNotFoundException("Not found " + Path.Combine(_file_path, "catenary_parts"));
         }
+        
+        /*CSV_struct<miscellaneous_object_definition> miscellaneous_definitions =*/ load_part_definitions<miscellaneous_object_definition>(catenary_assets, "miscellaneous");
         
         foreach (KeyValuePair<string, string> current_part in _all_parts)
         {
@@ -244,7 +245,7 @@ public partial class overhead_equipment
         }
         catch (Exception _)
         {
-            raw_scenery = scenery.LoadAsset<TextAsset>($"Assets/Catenary/Scenery/scenery_{location_name}.json").text
+            raw_scenery = scenery.LoadAsset<TextAsset>($"Assets/Catenary/Scenery/scenery_{location_name}.json")?.text
                 ?? throw new FileNotFoundException($"No {location_name} location");
         }
         stuff_scenery(raw_scenery, no_saving: true);

@@ -20,6 +20,12 @@ interface catenary_object_user
 #endif
 }
 
+interface catenary_object_definition
+{
+    string template_name { get; }
+    string asset_path { get; }
+}
+
 public partial class overhead_equipment
 {
     [JsonObject]
