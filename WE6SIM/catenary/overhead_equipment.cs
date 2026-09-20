@@ -5,14 +5,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Newtonsoft.Json;
+using UnityEngine;
+
 using DV.Utils;
 
 using electric_sim.catenary_editor;
 using electric_sim.utilities;
-
-using Newtonsoft.Json;
-
-using UnityEngine;
 
 using static electric_sim.utilities.world_position;
 using static UnityModManagerNet.UnityModManager;
@@ -33,111 +32,104 @@ public partial class overhead_equipment
     public const float default_pole_offset      = 2.2f;
     public const int   minimum_redering_distance = 10;
 
-    private static readonly string[] _template_names =
+    private static Dictionary<string, string> _all_parts = new()
     {
-#if DEBUG
-        "Gantries/GantryArrow",
-#endif
-        "Gantries/Gantry1HalfTracks",
-        "Gantries/Gantry2Tracks",
-        "Gantries/Gantry3Tracks",
-        "Gantries/Gantry4Tracks",
-        "Gantries/RegistrationBracket",
-        "Gantries/RegistrationArmInnerDual",
-        "Gantries/RegistrationArmInnerSingle",
-        "Gantries/RegistrationArmInnerOutwardDual",
-        "Gantries/RegistrationArmInnerOutwardSingle",
-        "Gantries/RegistrationArmMiddleDual",
-        "Gantries/RegistrationArmMiddleSingle",
-        "Gantries/RegistrationArmMiddleInnerDual",
-        "Gantries/RegistrationArmMiddleInnerSingle",
-        "Gantries/RegistrationArmOuterDual",
-        "Gantries/RegistrationArmOuterSingle",
-        "Gantries/GantryTruss6Tracks",
-        "Gantries/TrussGantryBracket",
-        "Gantries/TrussArmInnerDual",
-        "Gantries/TrussArmInnerSingle",
-        "Gantries/TrussArmInnerOutwardDual",
-        "Gantries/TrussArmInnerOutwardSingle",
-        "Gantries/TrussArmMiddleDual",
-        "Gantries/TrussArmMiddleSingle",
-        "Gantries/TrussArmMiddleInnerDual",
-        "Gantries/TrussArmMiddleInnerSingle",
-        "Gantries/TrussArmInwardsOuterDual",
-        "Gantries/TrussArmInwardsOuterSingle",
-        "Gantries/TrussArmOuterDual",
-        "Gantries/TrussArmOuterSingle",
-
-        "PolesAndCantilevers/Pole",
-        "PolesAndCantilevers/PoleAnchor",
-        "PolesAndCantilevers/PoleFoundation",
-        "PolesAndCantilevers/InnerCantileverDual",
-        "PolesAndCantilevers/InnerCantileverSingle",
-        "PolesAndCantilevers/InnerOutwardCantileverDual",
-        "PolesAndCantilevers/InnerOutwardCantileverSingle",
-        "PolesAndCantilevers/MiddleCantileverDual",
-        "PolesAndCantilevers/MiddleCantileverSingle",
-        "PolesAndCantilevers/MiddleInwardCantileverDual",
-        "PolesAndCantilevers/MiddleInwardCantileverSingle",
-        "PolesAndCantilevers/OuterCantileverDual",
-        "PolesAndCantilevers/OuterCantileverSingle",
-        "PolesAndCantilevers/OuterInwardCantileverDual",
-        "PolesAndCantilevers/OuterInwardCantileverSingle",
-
-        "SideRail/SideRail",
-        "SideRail/SideRailEnd",
-        "SideRail/SideRailPole",
-
-        "BridgesAndTunnels/BridgePortal",
-        "BridgesAndTunnels/TunnelPole",
-        "BridgesAndTunnels/TunnelInnerDual",
-        "BridgesAndTunnels/TunnelInnerSingle",
-        "BridgesAndTunnels/TunnelOutwardsInnerDual",
-        "BridgesAndTunnels/TunnelOutwardsInnerSingle",
-        "BridgesAndTunnels/TunnelMiddleInnerDual",
-        "BridgesAndTunnels/TunnelMiddleInnerSingle",
-        "BridgesAndTunnels/TunnelMiddleDual",
-        "BridgesAndTunnels/TunnelMiddleSingle",
-        "BridgesAndTunnels/TunnelInwardsOuterDual",
-        "BridgesAndTunnels/TunnelInwardsOuterSingle",
-        "BridgesAndTunnels/TunnelOuterDual",
-        "BridgesAndTunnels/TunnelOuterSingle",
-
-        "Wires/WireDual",
-        "Wires/WireDualEnd",
-        "Wires/WireDualFixedEnd",
-        "Wires/WireMidpointAnchorDual",
-        "Wires/WireSingle",
-        "Wires/WireSingleEnd",
-        "Wires/WireSingleFixedEnd",
-        "Wires/WireMidpointAnchorSingle",
-        "Wires/WireSingleWallEnd",
-        "Wires/WireQuad",
-        "Wires/WireQuadEnd",
-        "Wires/WireQuadFixedEnd",
-        "Wires/WireMidpointAnchorQuad",
-
-        "Trolley/TrolleyInnerSingle",
-        "Trolley/TrolleyMiddleSingle",
-        "Trolley/TrolleyOuterSingle",
-        "Trolley/TrolleyWire",
-        "Trolley/TrolleyWireEnd",
-
-        "Signs/DropPantographs",
-        "Signs/DropPantographsOtherSide",
-        "Signs/DropPantographsWarning",
-        "Signs/DropPantographsWarningOtherSide",
-        "Signs/RaisePantographs",
-        "Signs/RaisePantographsOtherSide",
-        "Signs/NeutralBegin",
-        "Signs/NeutralBeginOtherSide",
-        "Signs/NeutralEnd",
-        "Signs/NeutralEndOtherSide",
-        "Signs/NeutralEndLowVoltage",
-        "Signs/NeutralEndLowVoltageOtherSide",
-        "Signs/NeutralWarning",
-        "Signs/NeutralWarningOtherSide",
+        ["GantryArrow"] = "Gantries/GantryArrow",
+        ["Gantry1HalfTracks"] = "Gantries/Gantry1HalfTracks",
+        ["Gantry2Tracks"] = "Gantries/Gantry2Tracks",
+        ["Gantry3Tracks"] = "Gantries/Gantry3Tracks",
+        ["Gantry4Tracks"] = "Gantries/Gantry4Tracks",
+        ["RegistrationBracket"] = "Gantries/RegistrationBracket",
+        ["RegistrationArmInnerDual"] = "Gantries/RegistrationArmInnerDual",
+        ["RegistrationArmInnerSingle"] = "Gantries/RegistrationArmInnerSingle",
+        ["RegistrationArmInnerOutwardDual"] = "Gantries/RegistrationArmInnerOutwardDual",
+        ["RegistrationArmInnerOutwardSingle"] = "Gantries/RegistrationArmInnerOutwardSingle",
+        ["RegistrationArmMiddleDual"] = "Gantries/RegistrationArmMiddleDual",
+        ["RegistrationArmMiddleSingle"] = "Gantries/RegistrationArmMiddleSingle",
+        ["RegistrationArmMiddleInnerDual"] = "Gantries/RegistrationArmMiddleInnerDual",
+        ["RegistrationArmMiddleInnerSingle"] = "Gantries/RegistrationArmMiddleInnerSingle",
+        ["RegistrationArmOuterDual"] = "Gantries/RegistrationArmOuterDual",
+        ["RegistrationArmOuterSingle"] = "Gantries/RegistrationArmOuterSingle",
+        ["GantryTruss6Tracks"] = "Gantries/GantryTruss6Tracks",
+        ["TrussGantryBracket"] = "Gantries/TrussGantryBracket",
+        ["TrussArmInnerDual"] = "Gantries/TrussArmInnerDual",
+        ["TrussArmInnerSingle"] = "Gantries/TrussArmInnerSingle",
+        ["TrussArmInnerOutwardDual"] = "Gantries/TrussArmInnerOutwardDual",
+        ["TrussArmInnerOutwardSingle"] = "Gantries/TrussArmInnerOutwardSingle",
+        ["TrussArmMiddleDual"] = "Gantries/TrussArmMiddleDual",
+        ["TrussArmMiddleSingle"] = "Gantries/TrussArmMiddleSingle",
+        ["TrussArmMiddleInnerDual"] = "Gantries/TrussArmMiddleInnerDual",
+        ["TrussArmMiddleInnerSingle"] = "Gantries/TrussArmMiddleInnerSingle",
+        ["TrussArmInwardsOuterDual"] = "Gantries/TrussArmInwardsOuterDual",
+        ["TrussArmInwardsOuterSingle"] = "Gantries/TrussArmInwardsOuterSingle",
+        ["TrussArmOuterDual"] = "Gantries/TrussArmOuterDual",
+        ["TrussArmOuterSingle"] = "Gantries/TrussArmOuterSingle",
+        ["Pole"] = "PolesAndCantilevers/Pole",
+        ["PoleAnchor"] = "PolesAndCantilevers/PoleAnchor",
+        ["PoleFoundation"] = "PolesAndCantilevers/PoleFoundation",
+        ["InnerCantileverDual"] = "PolesAndCantilevers/InnerCantileverDual",
+        ["InnerCantileverSingle"] = "PolesAndCantilevers/InnerCantileverSingle",
+        ["InnerOutwardCantileverDual"] = "PolesAndCantilevers/InnerOutwardCantileverDual",
+        ["InnerOutwardCantileverSingle"] = "PolesAndCantilevers/InnerOutwardCantileverSingle",
+        ["MiddleCantileverDual"] = "PolesAndCantilevers/MiddleCantileverDual",
+        ["MiddleCantileverSingle"] = "PolesAndCantilevers/MiddleCantileverSingle",
+        ["MiddleInwardCantileverDual"] = "PolesAndCantilevers/MiddleInwardCantileverDual",
+        ["MiddleInwardCantileverSingle"] = "PolesAndCantilevers/MiddleInwardCantileverSingle",
+        ["OuterCantileverDual"] = "PolesAndCantilevers/OuterCantileverDual",
+        ["OuterCantileverSingle"] = "PolesAndCantilevers/OuterCantileverSingle",
+        ["OuterInwardCantileverDual"] = "PolesAndCantilevers/OuterInwardCantileverDual",
+        ["OuterInwardCantileverSingle"] = "PolesAndCantilevers/OuterInwardCantileverSingle",
+        ["SideRail"] = "SideRail/SideRail",
+        ["SideRailEnd"] = "SideRail/SideRailEnd",
+        ["SideRailPole"] = "SideRail/SideRailPole",
+        ["BridgePortal"] = "BridgesAndTunnels/BridgePortal",
+        ["TunnelPole"] = "BridgesAndTunnels/TunnelPole",
+        ["TunnelInnerDual"] = "BridgesAndTunnels/TunnelInnerDual",
+        ["TunnelInnerSingle"] = "BridgesAndTunnels/TunnelInnerSingle",
+        ["TunnelOutwardsInnerDual"] = "BridgesAndTunnels/TunnelOutwardsInnerDual",
+        ["TunnelOutwardsInnerSingle"] = "BridgesAndTunnels/TunnelOutwardsInnerSingle",
+        ["TunnelMiddleInnerDual"] = "BridgesAndTunnels/TunnelMiddleInnerDual",
+        ["TunnelMiddleInnerSingle"] = "BridgesAndTunnels/TunnelMiddleInnerSingle",
+        ["TunnelMiddleDual"] = "BridgesAndTunnels/TunnelMiddleDual",
+        ["TunnelMiddleSingle"] = "BridgesAndTunnels/TunnelMiddleSingle",
+        ["TunnelInwardsOuterDual"] = "BridgesAndTunnels/TunnelInwardsOuterDual",
+        ["TunnelInwardsOuterSingle"] = "BridgesAndTunnels/TunnelInwardsOuterSingle",
+        ["TunnelOuterDual"] = "BridgesAndTunnels/TunnelOuterDual",
+        ["TunnelOuterSingle"] = "BridgesAndTunnels/TunnelOuterSingle",
+        ["WireDual"] = "Wires/WireDual",
+        ["WireDualEnd"] = "Wires/WireDualEnd",
+        ["WireDualFixedEnd"] = "Wires/WireDualFixedEnd",
+        ["WireMidpointAnchorDual"] = "Wires/WireMidpointAnchorDual",
+        ["WireSingle"] = "Wires/WireSingle",
+        ["WireSingleEnd"] = "Wires/WireSingleEnd",
+        ["WireSingleFixedEnd"] = "Wires/WireSingleFixedEnd",
+        ["WireMidpointAnchorSingle"] = "Wires/WireMidpointAnchorSingle",
+        ["WireSingleWallEnd"] = "Wires/WireSingleWallEnd",
+        ["WireQuad"] = "Wires/WireQuad",
+        ["WireQuadEnd"] = "Wires/WireQuadEnd",
+        ["WireQuadFixedEnd"] = "Wires/WireQuadFixedEnd",
+        ["WireMidpointAnchorQuad"] = "Wires/WireMidpointAnchorQuad",
+        ["TrolleyInnerSingle"] = "Trolley/TrolleyInnerSingle",
+        ["TrolleyMiddleSingle"] = "Trolley/TrolleyMiddleSingle",
+        ["TrolleyOuterSingle"] = "Trolley/TrolleyOuterSingle",
+        ["TrolleyWire"] = "Trolley/TrolleyWire",
+        ["TrolleyWireEnd"] = "Trolley/TrolleyWireEnd",
+        ["Signs/DropPantographs"] = "Signs/DropPantographs",
+        ["Signs/DropPantographsOtherSide"] = "Signs/DropPantographsOtherSide",
+        ["Signs/DropPantographsWarning"] = "Signs/DropPantographsWarning",
+        ["Signs/DropPantographsWarningOtherSide"] = "Signs/DropPantographsWarningOtherSide",
+        ["Signs/RaisePantographs"] = "Signs/RaisePantographs",
+        ["Signs/RaisePantographsOtherSide"] = "Signs/RaisePantographsOtherSide",
+        ["Signs/NeutralBegin"] = "Signs/NeutralBegin",
+        ["Signs/NeutralBeginOtherSide"] = "Signs/NeutralBeginOtherSide",
+        ["Signs/NeutralEnd"] = "Signs/NeutralEnd",
+        ["Signs/NeutralEndOtherSide"] = "Signs/NeutralEndOtherSide",
+        ["Signs/NeutralEndLowVoltage"] = "Signs/NeutralEndLowVoltage",
+        ["Signs/NeutralEndLowVoltageOtherSide"] = "Signs/NeutralEndLowVoltageOtherSide",
+        ["Signs/NeutralWarning"] = "Signs/NeutralWarning",
+        ["Signs/NeutralWarningOtherSide"] = "Signs/NeutralWarningOtherSide",
     };
+
     private static overhead_equipment? _system;
     private static int                 _default_rendering_distance = 500;
 
@@ -195,17 +187,11 @@ public partial class overhead_equipment
             catenary_assets = AssetBundle.LoadFromFile(Path.Combine(_file_path, "catenary_parts"))
                            ?? throw new FileNotFoundException("Not found " + Path.Combine(_file_path, "catenary_parts"));
         }
-        string[] all_assets = catenary_assets.GetAllAssetNames();
-        foreach (string template_name in _template_names)
+        
+        foreach (KeyValuePair<string, string> current_part in _all_parts)
         {
-            int separator_index = template_name.IndexOf('/');
-            if (separator_index < 0 || separator_index >= template_name.Length - 1)
-                throw new FileNotFoundException($"No {template_name} prefab");
-            string directory = template_name.Substring(0, separator_index);
-            string short_template = string.Equals(directory, "Signs", StringComparison.OrdinalIgnoreCase) 
-                ? template_name : template_name.Substring(separator_index + 1);
-            _templates[short_template] = catenary_assets.LoadAsset<GameObject>($"Assets/Catenary/{template_name}.prefab")
-                ?? throw new FileNotFoundException($"No {template_name} prefab");
+            _templates[current_part.Key] = catenary_assets.LoadAsset<GameObject>($"Assets/Catenary/{current_part.Value}.prefab")
+                ?? throw new FileNotFoundException($"No {current_part.Value} prefab");
         }
 
         _loaded_bundles.Add(catenary_assets);
