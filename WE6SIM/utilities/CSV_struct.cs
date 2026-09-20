@@ -67,7 +67,7 @@ internal class CSV_struct<_type_> where _type_: struct
         List<List<string>> table        = [];
         CSV_contents.ReadAll(table);
         int rows     = table.Count, column_count = highest_index + 1;
-        _row_structs = new _type_[rows];
+        _row_structs = new _type_[rows - 1];
         for (int row = rows - 1; row > 0; --row)
         {
             if (table[row].Count != column_count)
