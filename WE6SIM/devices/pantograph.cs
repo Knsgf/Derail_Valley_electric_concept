@@ -111,8 +111,7 @@ internal class pantograph: electric_device
         FieldInfo[] all_fields = typeof(pantograph).GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
         foreach (FieldInfo field in all_fields)
         {
-            var part = (pantograph_part?) Attribute.GetCustomAttribute(field, typeof(pantograph_part), inherit: false);
-            if (part is not null)
+            if (Attribute.GetCustomAttribute(field, typeof(pantograph_part), inherit: false) is pantograph_part part)
                 _pantograph_parts[part.name] = field;
         }
     }
