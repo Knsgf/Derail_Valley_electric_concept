@@ -7,8 +7,6 @@ using UnityEngine;
 
 using electric_sim.catenary_editor;
 using electric_sim.utilities;
-using System.Text;
-using System.IO;
 
 namespace electric_sim.catenary;
 
