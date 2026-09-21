@@ -10,7 +10,7 @@ namespace electric_sim.catenary;
 
 public partial class overhead_equipment
 {
-    private struct miscellaneous_object_definition: catenary_object_definition
+    private struct miscellaneous_object_template: catenary_object_template
     {
         public readonly string template_name => template;
         public readonly string asset_path    => asset;

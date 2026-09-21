@@ -20,7 +20,7 @@ interface catenary_object_user
 #endif
 }
 
-interface catenary_object_definition
+interface catenary_object_template
 {
     string template_name { get; }
     string asset_path { get; }
