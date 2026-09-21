@@ -18,7 +18,7 @@ When spawning the locomotive in sandbox via the radio, make sure that units A an
 The debug version [Catenary-DC-debug.zip](https://github.com/Knsgf/Derail_Valley_electric_concept/releases/download/v2.5.3/Catenary-DC-debug.zip) includes an infinite power cheat, toggleable in mod settings. When enabled it allows the locomotive to run anywhere on the map. However it doesn't disable electricity costs.
 
 ### Other limitations
-This mod is **incompatible** with VR and multiplayer, as the author doesn't have means to do proper tests in either. It also won't work with Double-Tracked Valley, as catenary doesn't automatically conform to the changed trackage and needs to be manually redone from the ground up to support it.
+This mod is **incompatible** with VR and multiplayer, as the author doesn't have means to do proper tests in either. It also won't work with Double-Tracked Valley, as catenary doesn't automatically conform to the changed trackage and needs to be manually redone from the ground up to support it. To avoid confusion, the overhead catenary is removed whenever Double Track layout is active.
 
 The height of the locomotive causes it to clip through water standpipes and chutes at SM and IME. The collision with them is not enforced and players are free to ignore these.
 
