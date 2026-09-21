@@ -94,24 +94,9 @@ public partial class overhead_equipment
         ["TunnelInwardsOuterSingle"] = "BridgesAndTunnels/TunnelInwardsOuterSingle",
         ["TunnelOuterDual"] = "BridgesAndTunnels/TunnelOuterDual",
         ["TunnelOuterSingle"] = "BridgesAndTunnels/TunnelOuterSingle",
-        ["WireDual"] = "Wires/WireDual",
-        ["WireDualEnd"] = "Wires/WireDualEnd",
-        ["WireDualFixedEnd"] = "Wires/WireDualFixedEnd",
-        ["WireMidpointAnchorDual"] = "Wires/WireMidpointAnchorDual",
-        ["WireSingle"] = "Wires/WireSingle",
-        ["WireSingleEnd"] = "Wires/WireSingleEnd",
-        ["WireSingleFixedEnd"] = "Wires/WireSingleFixedEnd",
-        ["WireMidpointAnchorSingle"] = "Wires/WireMidpointAnchorSingle",
-        ["WireSingleWallEnd"] = "Wires/WireSingleWallEnd",
-        ["WireQuad"] = "Wires/WireQuad",
-        ["WireQuadEnd"] = "Wires/WireQuadEnd",
-        ["WireQuadFixedEnd"] = "Wires/WireQuadFixedEnd",
-        ["WireMidpointAnchorQuad"] = "Wires/WireMidpointAnchorQuad",
         ["TrolleyInnerSingle"] = "Trolley/TrolleyInnerSingle",
         ["TrolleyMiddleSingle"] = "Trolley/TrolleyMiddleSingle",
         ["TrolleyOuterSingle"] = "Trolley/TrolleyOuterSingle",
-        ["TrolleyWire"] = "Trolley/TrolleyWire",
-        ["TrolleyWireEnd"] = "Trolley/TrolleyWireEnd",
     };
 
     private static overhead_equipment? _system;
@@ -161,7 +146,7 @@ public partial class overhead_equipment
     }
 
     private static CSV_struct<_type_> load_part_definitions<_type_>(AssetBundle parts, string definition_file) 
-        where _type_: struct, catenary_object_definition
+        where _type_: struct, catenary_object_template
     {
         string raw_part_definitions = parts.LoadAsset<TextAsset>($"Assets/Catenary/{definition_file}.csv")?.text
             ?? throw new FileNotFoundException($"No definition {definition_file} found");
@@ -187,7 +172,8 @@ public partial class overhead_equipment
                            ?? throw new FileNotFoundException("Not found " + Path.Combine(_file_path, "catenary_parts"));
         }
         
-        /*CSV_struct<miscellaneous_object_definition> miscellaneous_definitions =*/ load_part_definitions<miscellaneous_object_definition>(catenary_assets, "miscellaneous");
+        /*CSV_struct<miscellaneous_object_definition> miscellaneous_definitions =*/ load_part_definitions<miscellaneous_object_template>(catenary_assets, "miscellaneous");
+        wire.set_up_templates(load_part_definitions<wire_template>(catenary_assets, "wires"));
         
         foreach (KeyValuePair<string, string> current_part in _all_parts)
         {

@@ -428,8 +428,8 @@ internal static class editor
                     anchor_pole(closest_pole!, wire_direction);
                     if (_freshly_added_wires.Count >= 5)
                     {
-                        _freshly_added_wires[(_freshly_added_wires.Count + 1) >> 1].wire_type = dual_wire 
-                            ? wire_kind.middle_anchor_dual : wire_kind.middle_anchor_single;
+                        _freshly_added_wires[(_freshly_added_wires.Count + 1) >> 1].wire_type = 
+                            (dual_wire ? wire_kind.middle_anchor_dual : wire_kind.middle_anchor_single).ToString();
                     }
                     _freshly_added_wires.Clear();
                 }

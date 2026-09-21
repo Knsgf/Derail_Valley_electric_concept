@@ -1,0 +1,15 @@
+Template,Asset,Type,DefaultLength,ContactHeight,ResistancePer1m,IsEndAnchor,FixedPart,FixedPartAsset,FixedPartLength
+WireDual,Wires/WireDual,plain_dual,40,6,2.2E-05,False,,,0
+WireSingle,Wires/WireSingle,plain_single,40,6,3.3E-05,False,,,0
+WireQuad,Wires/WireQuad,plain_quad,40,6,1.6E-05,False,,,0
+WireMidpointAnchorDual,Wires/WireMidpointAnchorDual,middle_anchor_dual,40,6,2.2E-05,False,,,0
+WireMidpointAnchorSingle,Wires/WireMidpointAnchorSingle,middle_anchor_single,40,6,3.3E-05,False,,,0
+WireMidpointAnchorQuad,Wires/WireMidpointAnchorQuad,middle_anchor_quad,40,6,1.6E-05,False,,,0
+WireDualEnd,Wires/WireDualEnd,end_anchor_dual,40,6,2.2E-05,True,WireDualFixedEnd,Wires/WireDualFixedEnd,4.994701
+WireSingleEnd,Wires/WireSingleEnd,end_anchor_single,40,6,3.3E-05,True,WireSingleFixedEnd,Wires/WireSingleFixedEnd,4.994701
+WireQuadEnd,Wires/WireQuadEnd,end_anchor_quad,40,6,1.6E-05,True,WireQuadFixedEnd,Wires/WireQuadFixedEnd,4.994701
+WireSingleWallEnd,Wires/WireSingleWallEnd,wall_anchor_single,40,6,3.3E-05,True,,,0
+SideRail,SideRail/SideRail,side_rail,10,4.5,2.314E-05,False,,,0
+SideRailEnd,SideRail/SideRailEnd,termination_rail,10,4.5,2.314E-05,False,,,0
+TrolleyWire,Trolley/TrolleyWire,trolley,40,6,6.6E-05,False,,,0
+TrolleyWireEnd,Trolley/TrolleyWireEnd,trolley_anchor,40,6,6.6E-05,True,,,0

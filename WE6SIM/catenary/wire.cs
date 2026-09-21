@@ -7,49 +7,52 @@ using UnityEngine;
 
 using electric_sim.catenary_editor;
 using electric_sim.utilities;
+using System.Text;
+using System.IO;
 
 namespace electric_sim.catenary;
 
 interface wire_user: catenary_object_user
 {
-    overhead_equipment.wire_kind wire_type { get; set; }
+    string wire_type { get; set; }
 }
 
 public partial class overhead_equipment
 {
+    private struct wire_template: catenary_object_template
+    {
+        public readonly string template_name => template;
+        public readonly string asset_path    => asset;
+        
+        [CSV_column(0)]
+        public string template;
+        [CSV_column(1)]
+        public string asset;
+        [CSV_column(2)]
+        public string kind;
+        [CSV_column(3)]
+        public float section_length;
+        [CSV_column(4)]
+        public float contact_height;
+        [CSV_column(5)]
+        public float resistance_per_metre;
+        [CSV_column(6)]
+        public bool end_anchor;
+        [CSV_column(7)]
+        public string? fixed_template;
+        [CSV_column(8)]
+        public string fixed_asset_path;
+        [CSV_column(9)]
+        public float fixed_part_length;
+    }
+
     [JsonObject]
     private class wire: catenary_object, wire_user
     {
-        const float default_section_length = 40.0f, default_wire_height = 6.0f, end_anchor_dead_length = 4.0f, end_anchor_raise = 0.2f, end_achor_fixed_part_length = default_section_length - 35.0053f;
-        const float default_side_rail_length = 10.0f, default_side_rail_height = 4.5f;
-        const float single_wire_1m_resistance = 3.3E-5f, dual_wire_1m_resistance = 2.2E-5f, quad_wire_1m_resistance = 1.6E-5f, side_rail_1m_resistance = 2.314E-5f, trolley_wire_1m_resistance = 6.6E-5f;
-
-        private struct wire_internal
-        {
-            public string  template;
-            public string? fixed_template;
-            public float   section_length, contact_height, resistance_per_metre, fixed_part_length;
-            public bool    end_anchor;
-        }
+        const float end_anchor_dead_length = 4.0f, end_anchor_raise = 0.2f;
 
         [JsonIgnore]
-        private static readonly Dictionary<wire_kind, wire_internal> _wire_sections = new()
-        {
-            [wire_kind.plain_dual          ] = new() { template = "WireDual"                , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = dual_wire_1m_resistance   },
-            [wire_kind.plain_single        ] = new() { template = "WireSingle"              , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = single_wire_1m_resistance },
-            [wire_kind.plain_quad          ] = new() { template = "WireQuad"                , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = quad_wire_1m_resistance   },
-            [wire_kind.middle_anchor_dual  ] = new() { template = "WireMidpointAnchorDual"  , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = dual_wire_1m_resistance   },
-            [wire_kind.middle_anchor_single] = new() { template = "WireMidpointAnchorSingle", section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = single_wire_1m_resistance },
-            [wire_kind.middle_anchor_quad  ] = new() { template = "WireMidpointAnchorQuad"  , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = quad_wire_1m_resistance   },
-            [wire_kind.end_anchor_dual     ] = new() { template = "WireDualEnd"             , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = dual_wire_1m_resistance  , end_anchor = true, fixed_template = "WireDualFixedEnd"  , fixed_part_length = end_achor_fixed_part_length },
-            [wire_kind.end_anchor_single   ] = new() { template = "WireSingleEnd"           , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = single_wire_1m_resistance, end_anchor = true, fixed_template = "WireSingleFixedEnd", fixed_part_length = end_achor_fixed_part_length },
-            [wire_kind.end_anchor_quad     ] = new() { template = "WireQuadEnd"             , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = quad_wire_1m_resistance  , end_anchor = true, fixed_template = "WireQuadFixedEnd"  , fixed_part_length = end_achor_fixed_part_length },
-            [wire_kind.wall_anchor_single  ] = new() { template = "WireSingleWallEnd"       , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = single_wire_1m_resistance, end_anchor = true },
-            [wire_kind.side_rail           ] = new() { template = "SideRail"                , section_length = default_side_rail_length, contact_height = default_side_rail_height, resistance_per_metre = side_rail_1m_resistance    },
-            [wire_kind.termination_rail    ] = new() { template = "SideRailEnd"             , section_length = default_side_rail_length, contact_height = default_side_rail_height, resistance_per_metre = side_rail_1m_resistance    },
-            [wire_kind.trolley             ] = new() { template = "TrolleyWire"             , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = trolley_wire_1m_resistance },
-            [wire_kind.trolley_anchor      ] = new() { template = "TrolleyWireEnd"          , section_length = default_section_length  , contact_height = default_wire_height     , resistance_per_metre = trolley_wire_1m_resistance, end_anchor = true }
-        };
+        private static readonly Dictionary<string, wire_template> _wire_sections = [];
         
         [JsonIgnore]
         private static readonly float y_scale = Mathf.Sqrt(2.0f);
@@ -81,9 +84,19 @@ public partial class overhead_equipment
         public float length_1m_resistance;
 
         [JsonProperty]
-        public wire_kind wire_type { get; set; }
+        public string wire_type { get; set; }
 
-        private static string wire_template(wire_kind wire_type) => _wire_sections[wire_type].template;
+        public static void set_up_templates(CSV_struct<wire_template> templates)
+        {
+            for (int row = templates.row_count; row > 0; --row)
+            {
+                wire_template current_definition        = templates.get_row(row);
+                _wire_sections[current_definition.kind] = current_definition;
+                if (!string.IsNullOrWhiteSpace(current_definition.fixed_template))
+                    _all_parts[current_definition.fixed_template!] = current_definition.fixed_asset_path;
+            }
+        }
+
 
         private (Quaternion primary_orientation, Vector3 primary_scale, Vector3 secondary_scale) 
             compute_shear_scale_transform(float shear_angle, float length, float template_section_length)
@@ -97,18 +110,18 @@ public partial class overhead_equipment
         }
         
         [JsonConstructor]
-        public wire(wire_kind wire_type, string substation, float length, float previous_pole_vertical_offset, 
-            int x, int z, float y, Quaternion orientation): base(wire_template(wire_type), x, z, y, orientation)
+        public wire(string wire_type, string substation, float length, float previous_pole_vertical_offset, 
+            int x, int z, float y, Quaternion orientation): base(_wire_sections[wire_type].template, x, z, y, orientation)
         {
             assert.test(length > 0.0f);
-            wire_internal wire_info            = _wire_sections[wire_type];
+            wire_template wire_info            = _wire_sections[wire_type];
             this.wire_type                     = wire_type;
             this.substation                    = substation;
             this.length                        = length;
             this.previous_pole_vertical_offset = previous_pole_vertical_offset;
             this.length_1m_resistance          = wire_info.resistance_per_metre * editor_settings.voltage_drop_factor;
 
-            if (wire_info.fixed_template == null)
+            if (string.IsNullOrWhiteSpace(wire_info.fixed_template))
             {
                 float shear_angle = Mathf.Atan(previous_pole_vertical_offset / length);
                 (_primary_vertical_orientation, _primary_vertical_scale, _secondary_vertical_scale) 
@@ -118,7 +131,7 @@ public partial class overhead_equipment
             {
                 previous_pole_vertical_offset += end_anchor_raise;
                 float shear_angle = Mathf.Atan(previous_pole_vertical_offset / length);
-                _fixed_part_template = system._templates[wire_info.fixed_template];
+                _fixed_part_template = system._templates[wire_info.fixed_template!];
                 (_fixed_part_primary_vertical_orientation, _fixed_part_primary_vertical_scale, _fixed_part_secondary_vertical_scale)
                     = compute_shear_scale_transform(shear_angle, wire_info.fixed_part_length, wire_info.fixed_part_length);
                 float lengthwise_offset = length - wire_info.section_length;
