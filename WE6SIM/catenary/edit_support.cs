@@ -67,7 +67,7 @@ public partial class overhead_equipment
                     steady_arm_type = steady_arm_kind.tunnel;
                 else
                     steady_arm_type = steady_arm_kind.cantilever;
-                return new cantilever(cantilever_type, steady_arm_type, dual_wire, x, z, y, orientation);
+                return new cantilever(cantilever_type.ToString(), steady_arm_type.ToString(), dual_wire, x, z, y, orientation);
             }, 
             relative_position, orientation);
     }

@@ -40,63 +40,14 @@ public partial class overhead_equipment
         ["Gantry3Tracks"] = "Gantries/Gantry3Tracks",
         ["Gantry4Tracks"] = "Gantries/Gantry4Tracks",
         ["RegistrationBracket"] = "Gantries/RegistrationBracket",
-        ["RegistrationArmInnerDual"] = "Gantries/RegistrationArmInnerDual",
-        ["RegistrationArmInnerSingle"] = "Gantries/RegistrationArmInnerSingle",
-        ["RegistrationArmInnerOutwardDual"] = "Gantries/RegistrationArmInnerOutwardDual",
-        ["RegistrationArmInnerOutwardSingle"] = "Gantries/RegistrationArmInnerOutwardSingle",
-        ["RegistrationArmMiddleDual"] = "Gantries/RegistrationArmMiddleDual",
-        ["RegistrationArmMiddleSingle"] = "Gantries/RegistrationArmMiddleSingle",
-        ["RegistrationArmMiddleInnerDual"] = "Gantries/RegistrationArmMiddleInnerDual",
-        ["RegistrationArmMiddleInnerSingle"] = "Gantries/RegistrationArmMiddleInnerSingle",
-        ["RegistrationArmOuterDual"] = "Gantries/RegistrationArmOuterDual",
-        ["RegistrationArmOuterSingle"] = "Gantries/RegistrationArmOuterSingle",
         ["GantryTruss6Tracks"] = "Gantries/GantryTruss6Tracks",
         ["TrussGantryBracket"] = "Gantries/TrussGantryBracket",
-        ["TrussArmInnerDual"] = "Gantries/TrussArmInnerDual",
-        ["TrussArmInnerSingle"] = "Gantries/TrussArmInnerSingle",
-        ["TrussArmInnerOutwardDual"] = "Gantries/TrussArmInnerOutwardDual",
-        ["TrussArmInnerOutwardSingle"] = "Gantries/TrussArmInnerOutwardSingle",
-        ["TrussArmMiddleDual"] = "Gantries/TrussArmMiddleDual",
-        ["TrussArmMiddleSingle"] = "Gantries/TrussArmMiddleSingle",
-        ["TrussArmMiddleInnerDual"] = "Gantries/TrussArmMiddleInnerDual",
-        ["TrussArmMiddleInnerSingle"] = "Gantries/TrussArmMiddleInnerSingle",
-        ["TrussArmInwardsOuterDual"] = "Gantries/TrussArmInwardsOuterDual",
-        ["TrussArmInwardsOuterSingle"] = "Gantries/TrussArmInwardsOuterSingle",
-        ["TrussArmOuterDual"] = "Gantries/TrussArmOuterDual",
-        ["TrussArmOuterSingle"] = "Gantries/TrussArmOuterSingle",
         ["Pole"] = "PolesAndCantilevers/Pole",
-        ["InnerCantileverDual"] = "PolesAndCantilevers/InnerCantileverDual",
-        ["InnerCantileverSingle"] = "PolesAndCantilevers/InnerCantileverSingle",
-        ["InnerOutwardCantileverDual"] = "PolesAndCantilevers/InnerOutwardCantileverDual",
-        ["InnerOutwardCantileverSingle"] = "PolesAndCantilevers/InnerOutwardCantileverSingle",
-        ["MiddleCantileverDual"] = "PolesAndCantilevers/MiddleCantileverDual",
-        ["MiddleCantileverSingle"] = "PolesAndCantilevers/MiddleCantileverSingle",
-        ["MiddleInwardCantileverDual"] = "PolesAndCantilevers/MiddleInwardCantileverDual",
-        ["MiddleInwardCantileverSingle"] = "PolesAndCantilevers/MiddleInwardCantileverSingle",
-        ["OuterCantileverDual"] = "PolesAndCantilevers/OuterCantileverDual",
-        ["OuterCantileverSingle"] = "PolesAndCantilevers/OuterCantileverSingle",
-        ["OuterInwardCantileverDual"] = "PolesAndCantilevers/OuterInwardCantileverDual",
-        ["OuterInwardCantileverSingle"] = "PolesAndCantilevers/OuterInwardCantileverSingle",
         ["SideRail"] = "SideRail/SideRail",
         ["SideRailEnd"] = "SideRail/SideRailEnd",
         ["SideRailPole"] = "SideRail/SideRailPole",
         ["BridgePortal"] = "BridgesAndTunnels/BridgePortal",
         ["TunnelPole"] = "BridgesAndTunnels/TunnelPole",
-        ["TunnelInnerDual"] = "BridgesAndTunnels/TunnelInnerDual",
-        ["TunnelInnerSingle"] = "BridgesAndTunnels/TunnelInnerSingle",
-        ["TunnelOutwardsInnerDual"] = "BridgesAndTunnels/TunnelOutwardsInnerDual",
-        ["TunnelOutwardsInnerSingle"] = "BridgesAndTunnels/TunnelOutwardsInnerSingle",
-        ["TunnelMiddleInnerDual"] = "BridgesAndTunnels/TunnelMiddleInnerDual",
-        ["TunnelMiddleInnerSingle"] = "BridgesAndTunnels/TunnelMiddleInnerSingle",
-        ["TunnelMiddleDual"] = "BridgesAndTunnels/TunnelMiddleDual",
-        ["TunnelMiddleSingle"] = "BridgesAndTunnels/TunnelMiddleSingle",
-        ["TunnelInwardsOuterDual"] = "BridgesAndTunnels/TunnelInwardsOuterDual",
-        ["TunnelInwardsOuterSingle"] = "BridgesAndTunnels/TunnelInwardsOuterSingle",
-        ["TunnelOuterDual"] = "BridgesAndTunnels/TunnelOuterDual",
-        ["TunnelOuterSingle"] = "BridgesAndTunnels/TunnelOuterSingle",
-        ["TrolleyInnerSingle"] = "Trolley/TrolleyInnerSingle",
-        ["TrolleyMiddleSingle"] = "Trolley/TrolleyMiddleSingle",
-        ["TrolleyOuterSingle"] = "Trolley/TrolleyOuterSingle",
     };
 
     private static overhead_equipment? _system;
@@ -172,8 +123,9 @@ public partial class overhead_equipment
                            ?? throw new FileNotFoundException("Not found " + Path.Combine(_file_path, "catenary_parts"));
         }
         
-        /*CSV_struct<miscellaneous_object_definition> miscellaneous_definitions =*/ load_part_definitions<miscellaneous_object_template>(catenary_assets, "miscellaneous");
-        wire.set_up_templates(load_part_definitions<wire_template>(catenary_assets, "wires"));
+        load_part_definitions<miscellaneous_object_template>(catenary_assets, "miscellaneous");
+        cantilever.set_up_templates(load_part_definitions<cantilever_template>(catenary_assets, "cantilevers"));
+        wire.set_up_templates      (load_part_definitions<      wire_template>(catenary_assets,       "wires"));
         
         foreach (KeyValuePair<string, string> current_part in _all_parts)
         {
