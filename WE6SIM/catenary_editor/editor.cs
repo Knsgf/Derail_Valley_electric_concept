@@ -222,8 +222,7 @@ internal static class editor
                 if (part_placement == placement.FlippedBracket)
                     orientation *= flip_around_vertical;
                 Vector3    bracket_true_position = bracket_position + orientation * Vector3.left * default_pole_offset;
-                pole_user? closest_bracket       = get_closest(nearby_objects, bracket_true_position, 
-                                                               (pole_user pole) => pole.pole_type is pole_kind.Bracket or pole_kind.TrussBracket);
+                pole_user? closest_bracket       = get_closest(nearby_objects, bracket_true_position, (pole_user pole) => pole.is_bracket);
                 Vector3? closest_bracket_position = closest_bracket?.get_pole_true_position();
                 //if (closest_bracket_position != null && closest_bracket != null)
                 //    Main.log($"PlBr {((Vector3) closest_bracket_position - bracket_true_position).magnitude} {get_absolute_position(bracket_position)} {get_absolute_position(bracket_true_position)} {closest_bracket.get_world_position()}");
@@ -238,7 +237,7 @@ internal static class editor
     {
         pole_user? closest_pole;
         closest_pole = get_closest(nearby_objects, relative_position, 
-            (pole_user pole) => look_for_gantry_brackets == (pole.pole_type is pole_kind.Bracket or pole_kind.TrussBracket));
+            (pole_user pole) => look_for_gantry_brackets == pole.is_bracket);
         if (closest_pole == null)
             return (null, Vector3.zero);
         return (closest_pole, closest_pole.get_pole_true_position());
@@ -254,7 +253,7 @@ internal static class editor
 
         Quaternion pole_orientation           = pole.get_orientation();
         Vector3    offset_to_pole             = pole_position - relative_position;
-        Vector3    registration_arm_direction = pole_orientation * (is_gantry_registration_arm ? Vector3.right : Vector3.left);
+        Vector3    registration_arm_direction = pole_orientation * ((pole.offset < 0.0f) ? Vector3.right : Vector3.left);
         bool       place_on_near_side         = false, place_on_far_side = false;
         if (offset_to_pole.sqrMagnitude < 16.0f)
         {
@@ -305,16 +304,14 @@ internal static class editor
 
         if (place_on_near_side)
         {
-            system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type == pole_kind.TrussBracket,
-                pole.pole_type is pole_kind.Tunnel or pole_kind.Bridge, dual_wire, pole.get_relative_position(), pole_orientation);
+            system.add_cantilever(pole, cantilever_type, dual_wire, pole.get_relative_position(), pole_orientation);
             pole.cantilever_on_near_side = true;
             //Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
         }
         else
         {
-            system.add_cantilever(cantilever_type, is_gantry_registration_arm, pole.pole_type == pole_kind.TrussBracket, 
-                pole.pole_type == pole_kind.Tunnel, dual_wire, pole.get_relative_position() + registration_arm_direction 
-                * (default_pole_offset * 2.0f), pole_orientation * flip_around_vertical);
+            system.add_cantilever(pole, cantilever_type, dual_wire, pole.get_relative_position() + registration_arm_direction 
+                * (pole.offset * 2.0f), pole_orientation * flip_around_vertical);
             pole.cantilever_on_far_side = true;
             //Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
         }
@@ -350,9 +347,11 @@ internal static class editor
             wire_type = dual_wire ? wire_kind.plain_dual : wire_kind.plain_single;
         List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 
             (wire_type == wire_kind.side_rail) ? 2.0f : 10.0f);
-        pole_kind  pole_type_to_search = (pole_type == pole_kind.SideRail) ? pole_kind.SideRail : pole_kind.Ground;
-        pole_user? closest_pole        = get_closest(nearby_objects, relative_position,
-            (pole_user current_pole) => !current_pole.anchored && current_pole.pole_type == pole_type_to_search
+        bool       look_for_side_rail_poles = pole_type == pole_kind.SideRail;
+        pole_user? closest_pole             = get_closest(nearby_objects, relative_position,
+            (pole_user current_pole) =>  !current_pole.anchored 
+                                     &&   current_pole.is_ground 
+                                     &&   current_pole.is_siderail == look_for_side_rail_poles
                                      && !(current_pole is side_rail_pole_user side_pole && side_pole.wire_attached));
         if (_anchor_pole == null)
         {
@@ -409,7 +408,7 @@ internal static class editor
             Vector3 wire_direction = end_attachment_point - beginning_attachment_point;
             float   wire_length    = wire_direction.magnitude;
             //Main.log($"{end_attachment_point} {beginning_attachment_point} {wire_direction} {wire_length}");
-            if (wire_length < default_pole_offset * ((wire_type != wire_kind.side_rail) ? 4.0f : 2.5f))
+            if (wire_length < ((wire_type != wire_kind.side_rail) ? 8.0f : 5.0f))
                 return false;
             var wire_horizontal_direction = new Vector3(wire_direction.x, 0.0f, wire_direction.z);
             var wire_orientation          = safe_from_to_rotation(Vector3.back, wire_horizontal_direction, Vector3.up);

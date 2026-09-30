@@ -39,15 +39,8 @@ public partial class overhead_equipment
         ["Gantry2Tracks"] = "Gantries/Gantry2Tracks",
         ["Gantry3Tracks"] = "Gantries/Gantry3Tracks",
         ["Gantry4Tracks"] = "Gantries/Gantry4Tracks",
-        ["RegistrationBracket"] = "Gantries/RegistrationBracket",
         ["GantryTruss6Tracks"] = "Gantries/GantryTruss6Tracks",
-        ["TrussGantryBracket"] = "Gantries/TrussGantryBracket",
-        ["Pole"] = "PolesAndCantilevers/Pole",
-        ["SideRail"] = "SideRail/SideRail",
-        ["SideRailEnd"] = "SideRail/SideRailEnd",
         ["SideRailPole"] = "SideRail/SideRailPole",
-        ["BridgePortal"] = "BridgesAndTunnels/BridgePortal",
-        ["TunnelPole"] = "BridgesAndTunnels/TunnelPole",
     };
 
     private static overhead_equipment? _system;
@@ -124,6 +117,7 @@ public partial class overhead_equipment
         }
         
         load_part_definitions<miscellaneous_object_template>(catenary_assets, "miscellaneous");
+        pole.set_up_templates      (load_part_definitions<      pole_template>(catenary_assets,       "poles"));
         cantilever.set_up_templates(load_part_definitions<cantilever_template>(catenary_assets, "cantilevers"));
         wire.set_up_templates      (load_part_definitions<      wire_template>(catenary_assets,       "wires"));
         

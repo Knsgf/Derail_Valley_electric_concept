@@ -1,0 +1,6 @@
+Template,Asset,Kind,Placement,FoundationTemplate,Offset,IsGround,IsBridge,IsTunnel,IsBracket,MatchingArmType,InnerType,OutwardsInnerType,MiddleInnerType,MiddleType,InwardsOuterType,OuterType
+Pole,PolesAndCantilevers/Pole,default,Ground,PoleFoundation,2.2,True,False,False,False,cantilever,Inner,OutwardsInner,MiddleInner,Middle,InwardsOuter,Outer
+BridgePortal,BridgesAndTunnels/BridgePortal,default,Bridge,,2.2,False,True,False,False,tunnel,Inner,OutwardsInner,MiddleInner,Middle,InwardsOuter,Outer
+TunnelPole,BridgesAndTunnels/TunnelPole,default,Tunnel,,2.2,False,False,True,False,tunnel,Inner,OutwardsInner,MiddleInner,Middle,InwardsOuter,Outer
+RegistrationBracket,Gantries/RegistrationBracket,default,Bracket,,-2.2,False,False,False,True,gantry,Inner,OutwardsInner,MiddleInner,Middle,,Outer
+TrussGantryBracket,Gantries/TrussGantryBracket,default,TrussBracket,,-2.2,False,False,False,True,truss_gantry,Inner,OutwardsInner,MiddleInner,Middle,InwardsOuter,Outer

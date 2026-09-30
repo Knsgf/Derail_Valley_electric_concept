@@ -54,6 +54,19 @@ public partial class overhead_equipment
         [JsonProperty]
         public bool wire_attached { get; set; }
 
+        [JsonIgnore]
+        public float offset => side_rail_pole_offset;
+        [JsonIgnore]
+        public bool is_ground   => true;
+        [JsonIgnore]
+        public bool is_tunnel   => false;
+        [JsonIgnore]
+        public bool is_bridge   => false;
+        [JsonIgnore]
+        public bool is_bracket  => false;
+        [JsonIgnore]
+        public bool is_siderail => true;
+
         public side_rail_pole(int x, int z, float y, Quaternion orientation): base("SideRailPole", x, z, y, orientation)
         {
             _rail_attachment_point_offset = orientation * Vector3.right * side_rail_pole_offset;
@@ -62,5 +75,7 @@ public partial class overhead_equipment
         public Vector3 get_pole_true_position() => get_relative_position() + _rail_attachment_point_offset;
         
         public Vector3 relative_wire_attachment_point() => get_pole_true_position();
+        
+        public (string?, string?) matching_cantilever(cantilever_kind direction) => (null, null);
     }
 }

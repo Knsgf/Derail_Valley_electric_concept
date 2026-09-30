@@ -45,31 +45,27 @@ public partial class overhead_equipment
                 new side_rail_pole(x, z, y, orientation), relative_position, orientation);
         }
         return add_scenery_object((int x, int z, float y, Quaternion orientation) => 
-            new pole(pole_type, is_siding_anchor_pole, x, z, y, orientation), relative_position, orientation);
+            new pole(null, pole_type.ToString(), is_siding_anchor_pole, x, z, y, orientation), relative_position, orientation);
     }
 
     internal void add_gantry(int tracks, Vector3 relative_position, Quaternion orientation)
     {
-        add_scenery_object((int x, int z, float y, Quaternion orientation) => new gantry(tracks, x, z, y, orientation),
+        add_scenery_object((int x, int z, float y, Quaternion orientation) => new gantry(null, tracks, x, z, y, orientation),
             relative_position, orientation);
     }
 
-    internal void add_cantilever(cantilever_kind cantilever_type, bool is_gantry_registration_arm, bool on_truss_gantry,
-        bool is_tunnel_registration_arm, bool dual_wire, Vector3 relative_position, Quaternion orientation)
+    internal void add_cantilever(pole_user attachment_pole, cantilever_kind direction, bool dual_wire, Vector3 relative_position, Quaternion orientation)
     {
-        add_scenery_object(
-            delegate (int x, int z, float y, Quaternion orientation) 
-            { 
-                steady_arm_kind steady_arm_type;
-                if (is_gantry_registration_arm)
-                    steady_arm_type = on_truss_gantry ? steady_arm_kind.truss_gantry : steady_arm_kind.gantry;
-                else if (is_tunnel_registration_arm)
-                    steady_arm_type = steady_arm_kind.tunnel;
-                else
-                    steady_arm_type = steady_arm_kind.cantilever;
-                return new cantilever(cantilever_type.ToString(), steady_arm_type.ToString(), dual_wire, x, z, y, orientation);
-            }, 
-            relative_position, orientation);
+        (string? steady_arm_type, string? cantilever_type) = attachment_pole.matching_cantilever(direction);
+        if (steady_arm_type != null && cantilever_type != null)
+        {
+            add_scenery_object(
+                delegate (int x, int z, float y, Quaternion orientation) 
+                { 
+                    return new cantilever(cantilever_type, steady_arm_type, dual_wire, x, z, y, orientation);
+                }, 
+                relative_position, orientation);
+        }
     }
 
     internal wire_user add_wire(wire_kind wire_type, string substation, float length, float previous_pole_vertical_offset,
@@ -181,9 +177,9 @@ public partial class overhead_equipment
         for (int index = 0; index < all_poles.Count; ++index)
         {
             pole current_pole = all_poles[index];
-            if (current_pole.pole_type == pole_kind.Tunnel && tunnel_start < 0)
+            if (current_pole.is_tunnel && tunnel_start < 0)
                 tunnel_start = index;
-            else if (tunnel_start >= 0 && current_pole.pole_type != pole_kind.Tunnel)
+            else if (tunnel_start >= 0 && !current_pole.is_tunnel)
                 tunnel_end = index;
             if (tunnel_start >= 0 && tunnel_end > 0)
             {

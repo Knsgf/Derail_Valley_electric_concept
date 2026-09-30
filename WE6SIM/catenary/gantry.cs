@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 
 using electric_sim.utilities;
+using System.Text;
 
 namespace electric_sim.catenary;
 
@@ -22,6 +23,23 @@ interface gantry_user: catenary_object_user
 
 public partial class overhead_equipment
 {
+    private struct gantry_template: catenary_object_template
+    {
+        public readonly string template_name => template;
+        public readonly string asset_path    => asset;
+        
+        [CSV_column(0)]
+        public string template;
+        [CSV_column(1)]
+        public string asset;
+        [CSV_column(2)]
+        public string type;
+        [CSV_column(3)]
+        public float width;
+        [CSV_column(4)]
+        public string far_side_pole_template;
+    }
+
     [JsonObject]
     private class gantry: catenary_object, gantry_user
     {
@@ -36,7 +54,20 @@ public partial class overhead_equipment
         
         [JsonIgnore]
         private static readonly float[] _gantry_lengths = [8.86f, 8.86f, 13.26f, 17.56f, 0.0f, 26.235f];
+        public static void csv(string file_name)
+        {
+            StringBuilder csv_text = new("Template,Asset,Kind,Width,FarSidePoleKind,FarSidePolePlacementType");
+            for (int tracks = 1; tracks <= 6; ++tracks)
+            {
+                if (tracks == 5)
+                    continue;
+                int width_index = tracks - 1;
+                string template = get_template(tracks);
+            }
+        }
 
+        [JsonProperty]
+        private readonly string type;
         [JsonProperty]
         private readonly int tracks;
         [JsonIgnore]
@@ -87,16 +118,30 @@ public partial class overhead_equipment
             return (further_pole_x, further_pole_z);
         }
 
+        private static string designated_or_default_type(string? type, int tracks)
+        {
+            if (!string.IsNullOrEmpty(type))
+                return type!;
+            return tracks switch
+            {
+                >= 1 and <= 4 => "slim",
+                6             => "truss",
+                _             => throw new ArgumentOutOfRangeException("Default gantries should cover 1, 2, 3, 4 or 6 tracks")
+            };
+        }
+
         [JsonConstructor]
-        public gantry(int tracks, int x, int z, float y, Quaternion orientation, float stretch = 1.0f)
+        public gantry(string? type, int tracks, int x, int z, float y, Quaternion orientation, float stretch = 1.0f)
             : base(get_template(tracks), x, z, y, orientation)
         {
+            this.type   = designated_or_default_type(type, tracks);
             this.tracks = tracks;
             _stretch    = stretch;
             (int further_pole_x, int further_pole_z) = further_pole_position(x, z, tracks, stretch, orientation);
             _further_pole = system.add_scenery_object((int x, int z, float y, Quaternion orientation) 
-                => new pole(pole_kind.Ground, is_siding_anchor_pole: false, x, z, y, orientation), further_pole_x, further_pole_z, y, orientation);
+                => new pole(null, pole_kind.Ground.ToString(), is_siding_anchor_pole: false, x, z, y, orientation), further_pole_x, further_pole_z, y, orientation);
             _further_pole.placed_procedurally = _further_pole.cantilever_on_far_side = true;
+            Main.log($"GNTR {tracks} '{this.type}' '{type ?? "<null>"}'");
 
 #if DEBUG
             catenary_object arrow = system.add_scenery_object(miscellaneous_object.build_generic("GantryArrow"), x, z, y, orientation);
@@ -155,7 +200,7 @@ public partial class overhead_equipment
             catenary_object? base_pole = null;
             for (int index = nearby_objects.Count - 1; index >= 0; --index)
             { 
-                if (nearby_objects[index] is pole regular_pole && regular_pole.pole_type == pole_kind.Ground)
+                if (nearby_objects[index] is pole regular_pole && regular_pole.is_ground)
                 {
                     base_pole = regular_pole;
                     break;
