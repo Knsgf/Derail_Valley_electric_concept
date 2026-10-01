@@ -36,7 +36,7 @@ public partial class overhead_equipment
         return add_scenery_object(miscellaneous_object.build_generic(template_name), relative_position, orientation);
     }
 
-    internal pole_user add_pole(pole_kind pole_type, Vector3 relative_position, Quaternion orientation, 
+    internal pole_user add_pole(pole_kind pole_type, gantry_user? gantry, Vector3 relative_position, Quaternion orientation, 
         bool is_siding_anchor_pole = false)
     {
         if (pole_type == pole_kind.SideRail)
@@ -44,8 +44,22 @@ public partial class overhead_equipment
             return add_scenery_object((int x, int z, float y, Quaternion orientation) => 
                 new side_rail_pole(x, z, y, orientation), relative_position, orientation);
         }
+        
+        string? new_pole_kind;
+        string  new_pole_placement;
+        if (pole_type != pole_kind.Bracket)
+        {
+            new_pole_kind      = null;
+            new_pole_placement = pole_type.ToString();
+        }
+        else
+        {
+            if (gantry == null)
+                throw new ArgumentException("Attempt to place gantry bracket without a gantry");
+            (new_pole_kind, new_pole_placement) = gantry.matching_bracket();
+        }
         return add_scenery_object((int x, int z, float y, Quaternion orientation) => 
-            new pole(null, pole_type.ToString(), is_siding_anchor_pole, x, z, y, orientation), relative_position, orientation);
+            new pole(new_pole_kind, new_pole_placement, is_siding_anchor_pole, x, z, y, orientation), relative_position, orientation);
     }
 
     internal void add_gantry(int tracks, Vector3 relative_position, Quaternion orientation)

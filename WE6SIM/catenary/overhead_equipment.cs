@@ -35,11 +35,6 @@ public partial class overhead_equipment
     private static Dictionary<string, string> _all_parts = new()
     {
         ["GantryArrow"] = "Gantries/GantryArrow",
-        ["Gantry1HalfTracks"] = "Gantries/Gantry1HalfTracks",
-        ["Gantry2Tracks"] = "Gantries/Gantry2Tracks",
-        ["Gantry3Tracks"] = "Gantries/Gantry3Tracks",
-        ["Gantry4Tracks"] = "Gantries/Gantry4Tracks",
-        ["GantryTruss6Tracks"] = "Gantries/GantryTruss6Tracks",
         ["SideRailPole"] = "SideRail/SideRailPole",
     };
 
@@ -118,6 +113,7 @@ public partial class overhead_equipment
         
         load_part_definitions<miscellaneous_object_template>(catenary_assets, "miscellaneous");
         pole.set_up_templates      (load_part_definitions<      pole_template>(catenary_assets,       "poles"));
+        gantry.set_up_templates    (load_part_definitions<    gantry_template>(catenary_assets,    "gantries"));
         cantilever.set_up_templates(load_part_definitions<cantilever_template>(catenary_assets, "cantilevers"));
         wire.set_up_templates      (load_part_definitions<      wire_template>(catenary_assets,       "wires"));
         

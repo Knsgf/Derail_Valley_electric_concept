@@ -72,7 +72,7 @@ internal static class editor
         _last_pole_orientation       = orientation;
     }
     
-    public static void place_pole(Vector3 relative_position, Quaternion orientation, bool truss_gantry = false)
+    public static void place_pole(Vector3 relative_position, Quaternion orientation, gantry_user? gantry = null)
     {
         bool is_siding_anchor_pole = part_placement == placement.Front;
         if (is_siding_anchor_pole && _anchor_pole != null)
@@ -86,12 +86,7 @@ internal static class editor
             orientation *= flip_around_vertical;
         else if (part_placement == placement.Front)
             orientation *= turn_by_90_counter_clockwise_vertical;
-        pole_kind current_pole_type;
-        if (part_placement != placement.Bracket)
-            current_pole_type = pole_type;
-        else 
-            current_pole_type = truss_gantry ? pole_kind.TrussBracket : pole_kind.Bracket;
-        pole_user last_pole = system.add_pole(current_pole_type, relative_position 
+        pole_user last_pole = system.add_pole(pole_type, gantry, relative_position 
             + orientation * Vector3.right * pole_horizontal_offset + Vector3.up * pole_height_offset, 
             orientation, is_siding_anchor_pole);
         if (is_siding_anchor_pole && _anchor_pole == null)
@@ -227,7 +222,7 @@ internal static class editor
                 //if (closest_bracket_position != null && closest_bracket != null)
                 //    Main.log($"PlBr {((Vector3) closest_bracket_position - bracket_true_position).magnitude} {get_absolute_position(bracket_position)} {get_absolute_position(bracket_true_position)} {closest_bracket.get_world_position()}");
                 if (closest_bracket_position == null || ((Vector3) closest_bracket_position - bracket_true_position).sqrMagnitude >= 0.3f * 0.3f)
-                    place_pole(bracket_position, orientation, gantry.is_truss);
+                    place_pole(bracket_position, orientation, gantry);
             }
         }
     }

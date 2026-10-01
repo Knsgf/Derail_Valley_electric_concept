@@ -7,16 +7,15 @@ using Newtonsoft.Json;
 using UnityEngine;
 
 using electric_sim.utilities;
-using System.Text;
 
 namespace electric_sim.catenary;
 
 interface gantry_user: catenary_object_user
 {
 #if DEBUG
-    bool  is_truss { get; }
     float stretch  { get; set; }
     Vector3? cross_point(Vector3 travel_relative_start, Vector3 travel_vector);
+    (string bracket_kind, string bracket_placement) matching_bracket();
     void change_orientation(Quaternion new_orientation);
 #endif
 }
@@ -33,16 +32,28 @@ public partial class overhead_equipment
         [CSV_column(1)]
         public string asset;
         [CSV_column(2)]
-        public string type;
+        public string kind;
         [CSV_column(3)]
         public float width;
         [CSV_column(4)]
-        public string far_side_pole_template;
+        public int tracks;
+        [CSV_column(5)]
+        public float near_side_offset;
+        [CSV_column(6)]
+        public string far_side_pole_kind;
+        [CSV_column(7)]
+        public string far_side_pole_placement;
+        [CSV_column(8)]
+        public string bracket_kind;
+        [CSV_column(9)]
+        public string bracket_placement;
     }
 
     [JsonObject]
     private class gantry: catenary_object, gantry_user
     {
+        public static Dictionary<string, Dictionary<int, gantry_template>> _gantry_templates = [];
+
 #if DEBUG
         [JsonIgnore]
         private readonly int  _gantry_closer_end_x, _gantry_closer_end_z;
@@ -52,22 +63,8 @@ public partial class overhead_equipment
         private line_cross _mow_movement_intersection;
 #endif
         
-        [JsonIgnore]
-        private static readonly float[] _gantry_lengths = [8.86f, 8.86f, 13.26f, 17.56f, 0.0f, 26.235f];
-        public static void csv(string file_name)
-        {
-            StringBuilder csv_text = new("Template,Asset,Kind,Width,FarSidePoleKind,FarSidePolePlacementType");
-            for (int tracks = 1; tracks <= 6; ++tracks)
-            {
-                if (tracks == 5)
-                    continue;
-                int width_index = tracks - 1;
-                string template = get_template(tracks);
-            }
-        }
-
         [JsonProperty]
-        private readonly string type;
+        private readonly string kind;
         [JsonProperty]
         private readonly int tracks;
         [JsonIgnore]
@@ -91,28 +88,36 @@ public partial class overhead_equipment
 #endif
         }
 
-        [JsonIgnore]
-        public bool is_truss => tracks == 6;
-
-        private static Vector3 get_frame_relative_position(int x, int z, float y, Quaternion orientation, float stretch)
+        public static void set_up_templates(CSV_struct<gantry_template> templates)
         {
-            return world_position.get_relative_position(x, z, y) + orientation * Vector3.left * (default_pole_offset * (stretch - 1.0f));
-        }
-
-        private static string get_template(int tracks)
-        {
-            return tracks switch
+            for (int row = templates.row_count; row > 0; --row)
             {
-                1             => "Gantry1HalfTracks",
-                >= 2 and <= 4 => $"Gantry{tracks}Tracks",
-                6             => "GantryTruss6Tracks",
-                _             => throw new ArgumentOutOfRangeException("Gantries should cover 1.5, 2, 3, 4 or 6 tracks")
-            };
+                gantry_template current_definition        = templates.get_row(row);
+                if (!_gantry_templates.TryGetValue(current_definition.kind, out Dictionary<int, gantry_template> gantries_of_kind))
+                    _gantry_templates[current_definition.kind] = gantries_of_kind = [];
+                gantries_of_kind[current_definition.tracks] = current_definition;
+            }
+        } 
+        
+        private Vector3 get_frame_relative_position(int x, int z, float y, Quaternion orientation, float stretch)
+        {
+            return world_position.get_relative_position(x, z, y) + orientation * Vector3.left 
+                * (_gantry_templates[kind][tracks].near_side_offset * (stretch - 1.0f));
         }
 
-        private static (int x, int z) further_pole_position(int x, int z, int tracks, float stretch, Quaternion orientation)
+        private static string get_template(string? kind, int tracks)
         {
-            Vector3 offset_to_further_pole = orientation * Vector3.left * (_gantry_lengths[tracks - 1] * stretch);
+            kind = designated_or_default_type(kind, tracks);
+            if (!_gantry_templates.TryGetValue(kind, out Dictionary<int, gantry_template> gantries_of_kind))
+                throw new ArgumentException($"Unknown gantry kind {kind}");
+            if (!gantries_of_kind.TryGetValue(tracks, out gantry_template definition))
+                throw new ArgumentException($"No gantry of kind {kind} has {tracks} tracks");
+            return definition.template_name;
+        }
+
+        private (int x, int z) further_pole_position(int x, int z, float stretch, Quaternion orientation)
+        {
+            Vector3 offset_to_further_pole = orientation * Vector3.left * _gantry_templates[kind][tracks].width * stretch;
             int further_pole_x = x + world_position.float_to_fixed(offset_to_further_pole.x);
             int further_pole_z = z + world_position.float_to_fixed(offset_to_further_pole.z);
             return (further_pole_x, further_pole_z);
@@ -131,25 +136,26 @@ public partial class overhead_equipment
         }
 
         [JsonConstructor]
-        public gantry(string? type, int tracks, int x, int z, float y, Quaternion orientation, float stretch = 1.0f)
-            : base(get_template(tracks), x, z, y, orientation)
+        public gantry(string? kind, int tracks, int x, int z, float y, Quaternion orientation, float stretch = 1.0f)
+            : base(get_template(kind, tracks), x, z, y, orientation)
         {
-            this.type   = designated_or_default_type(type, tracks);
+            this.kind   = designated_or_default_type(kind, tracks);
             this.tracks = tracks;
             _stretch    = stretch;
-            (int further_pole_x, int further_pole_z) = further_pole_position(x, z, tracks, stretch, orientation);
+            (int further_pole_x, int further_pole_z) = further_pole_position(x, z, stretch, orientation);
+            gantry_template definition               = _gantry_templates[this.kind][tracks];
             _further_pole = system.add_scenery_object((int x, int z, float y, Quaternion orientation) 
-                => new pole(null, pole_kind.Ground.ToString(), is_siding_anchor_pole: false, x, z, y, orientation), further_pole_x, further_pole_z, y, orientation);
+                => new pole(definition.far_side_pole_kind, definition.far_side_pole_placement, is_siding_anchor_pole: false, 
+                    x, z, y, orientation), further_pole_x, further_pole_z, y, orientation);
             _further_pole.placed_procedurally = _further_pole.cantilever_on_far_side = true;
-            Main.log($"GNTR {tracks} '{this.type}' '{type ?? "<null>"}'");
 
 #if DEBUG
             catenary_object arrow = system.add_scenery_object(miscellaneous_object.build_generic("GantryArrow"), x, z, y, orientation);
             arrow.placed_procedurally = true;
             ( _gantry_closer_end_x,  _gantry_closer_end_z) = world_position.get_absolute_position(
-                get_relative_position() + orientation * Vector3.right * default_pole_offset);
+                get_relative_position() + orientation * Vector3.right * definition.near_side_offset);
             (_gantry_further_end_x, _gantry_further_end_z) = world_position.get_absolute_position(
-                get_relative_position() + orientation * Vector3.left  * (_gantry_lengths[tracks - 1] * stretch));
+                get_relative_position() + orientation * Vector3.left  * (definition.width * stretch));
             _mow_movement_intersection = new line_cross(_gantry_closer_end_x,  _gantry_closer_end_z, 
                                                        _gantry_further_end_x, _gantry_further_end_z, 0.01f);
 #endif
@@ -169,9 +175,9 @@ public partial class overhead_equipment
         {
             _further_pole.is_visible = false;
             _further_pole.hide_when_out_of_view();
-            (_further_pole.x, _further_pole.z) = further_pole_position(x, z, tracks, _stretch, orientation);
+            (_further_pole.x, _further_pole.z) = further_pole_position(x, z, _stretch, orientation);
             (_gantry_further_end_x, _gantry_further_end_z) = world_position.get_absolute_position(
-                get_relative_position() + orientation * Vector3.left  * (_gantry_lengths[tracks - 1] * _stretch));
+                get_relative_position() + orientation * Vector3.left  * (_gantry_templates[kind][tracks].width * _stretch));
             _mow_movement_intersection = new line_cross(_gantry_closer_end_x,  _gantry_closer_end_z, 
                                                        _gantry_further_end_x, _gantry_further_end_z, 0.01f);
             system.reconstruct_tree_after_moving_object(_further_pole);
@@ -215,6 +221,12 @@ public partial class overhead_equipment
             base_pole.orientation = _further_pole.orientation = orientation = new_orientation;
             reposition_further_pole();
             system.handle_scenery_visibility(PlayerManager.PlayerTransform.position);
+        }
+
+        public (string bracket_kind, string bracket_placement) matching_bracket()
+        {
+            gantry_template definition = _gantry_templates[kind][tracks];
+            return (definition.bracket_kind, definition.bracket_placement);
         }
 #endif
     }
