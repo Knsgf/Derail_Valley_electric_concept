@@ -342,11 +342,9 @@ internal static class editor
             wire_type = dual_wire ? wire_kind.plain_dual : wire_kind.plain_single;
         List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 
             (wire_type == wire_kind.side_rail) ? 2.0f : 10.0f);
-        bool       look_for_side_rail_poles = pole_type == pole_kind.SideRail;
-        pole_user? closest_pole             = get_closest(nearby_objects, relative_position,
+        pole_user? closest_pole = get_closest(nearby_objects, relative_position,
             (pole_user current_pole) =>  !current_pole.anchored 
                                      &&   current_pole.is_ground 
-                                     &&   current_pole.is_siderail == look_for_side_rail_poles
                                      && !(current_pole is side_rail_pole_user side_pole && side_pole.wire_attached));
         if (_anchor_pole == null)
         {

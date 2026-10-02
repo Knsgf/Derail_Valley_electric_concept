@@ -34,8 +34,7 @@ public partial class overhead_equipment
 
     private static Dictionary<string, string> _all_parts = new()
     {
-        ["GantryArrow"] = "Gantries/GantryArrow",
-        ["SideRailPole"] = "SideRail/SideRailPole",
+        ["GantryArrow"] = "Gantries/GantryArrow"
     };
 
     private static overhead_equipment? _system;
@@ -112,10 +111,11 @@ public partial class overhead_equipment
         }
         
         load_part_definitions<miscellaneous_object_template>(catenary_assets, "miscellaneous");
-        pole.set_up_templates      (load_part_definitions<      pole_template>(catenary_assets,       "poles"));
-        gantry.set_up_templates    (load_part_definitions<    gantry_template>(catenary_assets,    "gantries"));
-        cantilever.set_up_templates(load_part_definitions<cantilever_template>(catenary_assets, "cantilevers"));
-        wire.set_up_templates      (load_part_definitions<      wire_template>(catenary_assets,       "wires"));
+        pole.set_up_templates          (load_part_definitions<      pole_template>(catenary_assets,       "poles"));
+        side_rail_pole.set_up_templates(load_part_definitions< side_pole_template>(catenary_assets,  "side_poles"));
+        gantry.set_up_templates        (load_part_definitions<    gantry_template>(catenary_assets,    "gantries"));
+        cantilever.set_up_templates    (load_part_definitions<cantilever_template>(catenary_assets, "cantilevers"));
+        wire.set_up_templates          (load_part_definitions<      wire_template>(catenary_assets,       "wires"));
         
         foreach (KeyValuePair<string, string> current_part in _all_parts)
         {

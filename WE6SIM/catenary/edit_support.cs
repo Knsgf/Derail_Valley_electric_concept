@@ -42,7 +42,7 @@ public partial class overhead_equipment
         if (pole_type == pole_kind.SideRail)
         {
             return add_scenery_object((int x, int z, float y, Quaternion orientation) => 
-                new side_rail_pole(x, z, y, orientation), relative_position, orientation);
+                new side_rail_pole(null, x, z, y, orientation), relative_position, orientation);
         }
         
         string? new_pole_kind;
