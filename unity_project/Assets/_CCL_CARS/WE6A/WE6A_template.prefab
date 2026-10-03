@@ -2277,6 +2277,7 @@ GameObject:
   - component: {fileID: 2146032500030120122}
   - component: {fileID: 5855897656167277605}
   - component: {fileID: 5335905771126441051}
+  - component: {fileID: 1393552480547607495}
   m_Layer: 0
   m_Name: WE6A_template
   m_TagString: Untagged
@@ -2474,6 +2475,18 @@ MonoBehaviour:
   collisionMeshes: []
   drillDisableMeshes: []
   generateFromTrainInteriorCols: 1
+--- !u!114 &1393552480547607495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1688182864204300644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1925742286, guid: b247489fc36790c41b197410cd8386d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1689142341426152797
 GameObject:
   m_ObjectHideFlags: 0
