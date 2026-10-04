@@ -26,8 +26,6 @@ The catenary has no hitboxes to both help with performance and permit players to
 
 Gadgets which directly control a locomotive, such as amp limiter or overheat protector, are **not compatible**. Neither is "Start-up" function of the comms radio.
 
-An installed inclinometer gadget shows 1-2° lean forward on a level track.
-
 Some details, like physical horns, sand pipes, bogie centering devices and underframe air ducts, are missing.
 
 ### Acknowledgements
