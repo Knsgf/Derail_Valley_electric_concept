@@ -2,11 +2,12 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!43 &4300000
 Mesh:
+  serializedVersion: 10
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: HookPlate
-  serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
     firstByte: 0
@@ -16,21 +17,21 @@ Mesh:
     firstVertex: 0
     vertexCount: 260
     localAABB:
-      m_Center: {x: 0, y: -7.450581E-09, z: 0.04379209}
-      m_Extent: {x: 0.381081, y: 0.1493608, z: 0.04379212}
+      m_Center: {x: 0, y: -7.450581E-09, z: 0.043792088}
+      m_Extent: {x: 0.38108096, y: 0.1493608, z: 0.043792117}
   m_Shapes:
     vertices: []
     shapes: []
     channels: []
     fullWeights: []
   m_BindPose: []
-  m_BoneNameHashes:
+  m_BoneNameHashes: []
   m_RootBoneNameHash: 0
   m_BonesAABB: []
   m_VariableBoneCountWeights:
-    m_Data:
+    m_Data: []
   m_MeshCompression: 0
-  m_IsReadable: 1
+  m_IsReadable: 0
   m_KeepVertices: 1
   m_KeepIndices: 1
   m_IndexFormat: 0
@@ -150,12 +151,12 @@ Mesh:
       m_BitSize: 0
     m_UVInfo: 0
   m_LocalAABB:
-    m_Center: {x: 0, y: -7.450581E-09, z: 0.04379209}
-    m_Extent: {x: 0.381081, y: 0.1493608, z: 0.04379212}
+    m_Center: {x: 0, y: -7.450581E-09, z: 0.043792088}
+    m_Extent: {x: 0.38108096, y: 0.1493608, z: 0.043792117}
   m_MeshUsageFlags: 0
   m_BakedConvexCollisionMesh:
   m_BakedTriangleCollisionMesh:
-  m_MeshMetrics[0]: 24.86478
+  m_MeshMetrics[0]: 24.864779
   m_MeshMetrics[1]: 1
   m_MeshOptimizationFlags: -1
   m_StreamData:

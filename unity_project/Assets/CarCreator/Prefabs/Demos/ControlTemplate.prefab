@@ -538,6 +538,7 @@ MonoBehaviour:
   portId: 
   indicatorRangeScalerPortId: 
   fuseId: 
+  useZeroAsDefaultValue: 0
   valueMultiplier: 1
   valueOffset: 0
   useAbsoluteValue: 0
@@ -2137,10 +2138,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scrollAction:
-    name: ThrottleIncremental
+    name: BrakeIncremental
     flip: 0
   onlyScrollOnce: 0
-  _json: '{"flip":false,"name":"ThrottleIncremental"}'
+  _json: '{"flip":false,"name":"BrakeIncremental"}'
 --- !u!114 &7017662311714754358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2154,10 +2155,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   action:
-    name: ThrottleAbsolute
+    name: BrakeAbsolute
     flip: 0
   compressZeroToOne: 0
-  _json: '{"flip":false,"name":"ThrottleAbsolute"}'
+  _json: '{"flip":false,"name":"BrakeAbsolute"}'
 --- !u!1 &4706908160305246605
 GameObject:
   m_ObjectHideFlags: 0
@@ -3597,10 +3598,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scrollAction:
-    name: ThrottleIncremental
+    name: IndependentBrakeIncremental
     flip: 0
   onlyScrollOnce: 0
-  _json: '{"flip":false,"name":"ThrottleIncremental"}'
+  _json: '{"flip":false,"name":"IndependentBrakeIncremental"}'
 --- !u!114 &3315981763832400443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3614,10 +3615,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   action:
-    name: ThrottleAbsolute
+    name: IndependentBrakeAbsolute
     flip: 0
   compressZeroToOne: 0
-  _json: '{"flip":false,"name":"ThrottleAbsolute"}'
+  _json: '{"flip":false,"name":"IndependentBrakeAbsolute"}'
 --- !u!1 &6778343673374676550
 GameObject:
   m_ObjectHideFlags: 0
