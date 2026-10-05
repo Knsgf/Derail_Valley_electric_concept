@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c878e01d44c1f7f448627fc40d98d77b
+guid: 20d7c85d240b7c248a21deec7427bbbd
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
@@ -7,7 +7,7 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: bridge_insulatorsMat
+      name: half_arch_innerMat
     second: {fileID: 2100000, guid: 184b0b836bb73ba4c8da3fe2099b8394, type: 2}
   materials:
     materialImportMode: 1
@@ -98,5 +98,5 @@ ModelImporter:
   avatarSetup: 0
   additionalBone: 0
   userData: 
-  assetBundleName: catenary_parts
+  assetBundleName: 
   assetBundleVariant: 

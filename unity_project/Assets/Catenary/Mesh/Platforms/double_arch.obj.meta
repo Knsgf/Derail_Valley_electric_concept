@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: 75370b27c66d50f4980d845c98355ae8
+guid: 9dcf8bda0b4c7254da9d1bb165011265
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: double_archMat
+    second: {fileID: 2100000, guid: 184b0b836bb73ba4c8da3fe2099b8394, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -93,5 +98,5 @@ ModelImporter:
   avatarSetup: 0
   additionalBone: 0
   userData: 
-  assetBundleName: catenary_parts
+  assetBundleName: 
   assetBundleVariant: 

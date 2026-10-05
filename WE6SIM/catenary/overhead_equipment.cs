@@ -22,7 +22,7 @@ public partial class overhead_equipment
 {
     const int scenery_tree_objects_per_node = 64, wires_tree_objects_per_node = 4;
     
-    public enum pole_kind { Ground, Bridge, Tunnel, Bracket, SideRail, PlatformFixture, PlatformArch, BridgeInsulators };
+    public enum pole_kind { Ground, Bridge, Tunnel, Bracket, SideRail, PlatformArch, BridgeInsulators };
     public enum cantilever_kind { Inner, OutwardsInner, MiddleInner, Middle, InwardsOuter, Outer };
     public enum steady_arm_kind { cantilever, gantry, truss_gantry, tunnel, trolley };
     public enum wire_kind { plain_dual, plain_single, plain_quad, end_anchor_dual, end_anchor_single, end_anchor_quad, 

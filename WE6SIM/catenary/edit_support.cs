@@ -39,7 +39,7 @@ public partial class overhead_equipment
     internal pole_user add_pole(pole_kind pole_type, gantry_user? gantry, Vector3 relative_position, Quaternion orientation, 
         bool is_siding_anchor_pole = false)
     {
-        if (pole_type is pole_kind.SideRail or pole_kind.PlatformFixture or pole_kind.PlatformArch)
+        if (pole_type is pole_kind.SideRail or pole_kind.PlatformArch)
         {
             return add_scenery_object((int x, int z, float y, Quaternion orientation) => 
                 new side_rail_pole(pole_type.ToString(), x, z, y, orientation), relative_position, orientation);
