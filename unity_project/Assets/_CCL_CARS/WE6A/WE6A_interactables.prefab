@@ -1,174 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &72814342
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 72814343}
-  - component: {fileID: 72814346}
-  - component: {fileID: 72814345}
-  - component: {fileID: 72814344}
-  m_Layer: 0
-  m_Name: ResistorBankHatch
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &72814343
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 72814342}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 681954336}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &72814346
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 72814342}
-  m_Mesh: {fileID: -6080943502109694654, guid: 4b476d5b8f19b104ca1b6482688887b5, type: 3}
---- !u!23 &72814345
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 72814342}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: fdabe6123698fed4ebc218d9da6b824b, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!65 &72814344
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 72814342}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.0601999, y: 0.1291568, z: 0.03177011}
-  m_Center: {x: -0.039480053, y: 0.3139637, z: 0.637347}
---- !u!1 &350428719
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 350428720}
-  m_Layer: 0
-  m_Name: ResistorBankHatchInteractionPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &350428720
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 350428719}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.037, y: -0.316, z: -0.62}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 681954336}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &681954335
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 681954336}
-  - component: {fileID: 681954337}
-  m_Layer: 0
-  m_Name: ResistorBankHatchPivot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &681954336
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 681954335}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 350428720}
-  - {fileID: 72814343}
-  m_Father: {fileID: 1549654720}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &681954337
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 681954335}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.06544316, y: 0.116102874, z: 0.03307104}
-  m_Center: {x: -0.043127835, y: -0.31487045, z: 0.6354719}
 --- !u!1 &805045482
 GameObject:
   m_ObjectHideFlags: 0
@@ -233,7 +64,7 @@ MonoBehaviour:
   interactionPoint: {fileID: 1337256737}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
-  scrollWheelHoverScroll: 2
+  scrollWheelHoverScroll: 5
   scrollWheelSpring: 0
   useSteppedJoint: 1
   steppedValueUpdate: 1
@@ -243,8 +74,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 90
   jointAxis: {x: 0, y: 1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 30
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
@@ -267,82 +98,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[ResistorBankDoorLeft].EXT_IN'
---- !u!1 &1337256736
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1337256737}
-  m_Layer: 0
-  m_Name: ResistorBankHatchInteractionPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1337256737
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1337256736}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.037, y: -0.316, z: -0.62}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1362712515}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1362712514
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1362712515}
-  - component: {fileID: 1362712516}
-  m_Layer: 0
-  m_Name: ResistorBankHatchPivot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1362712515
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1362712514}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1337256737}
-  - {fileID: 6875786129323976071}
-  m_Father: {fileID: 805045483}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1362712516
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1362712514}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.06544316, y: 0.116102874, z: 0.03307104}
-  m_Center: {x: -0.043127835, y: -0.31487045, z: -0.6354719}
 --- !u!1 &1549654719
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,7 +162,7 @@ MonoBehaviour:
   interactionPoint: {fileID: 350428720}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
-  scrollWheelHoverScroll: 2
+  scrollWheelHoverScroll: 5
   scrollWheelSpring: 0
   useSteppedJoint: 1
   steppedValueUpdate: 1
@@ -417,8 +172,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 90
   jointAxis: {x: 0, y: -1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 30
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
@@ -607,8 +362,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.0011601448, z: 0.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 265525048389928785}
   - {fileID: 3034424782377381975}
+  - {fileID: 5650852196454987075}
   m_Father: {fileID: 8998232549175693402}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -626,8 +381,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   disallowShortTriggerLockHold: 0
   colliderGameObjects:
-  - {fileID: 265525048389928784}
-  - {fileID: 6318916513753250087}
+  - {fileID: 5650852196454987074}
+  - {fileID: 1906646255647574837}
   handPosesOverride:
     nearTouchPose: -1
     touchPose: -1
@@ -639,10 +394,10 @@ MonoBehaviour:
   blockDrag: 0
   blockAngularDrag: 0
   invertDirection: 0
-  interactionPoint: {fileID: 265525048499878835}
+  interactionPoint: {fileID: 0}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
-  scrollWheelHoverScroll: 2
+  scrollWheelHoverScroll: 5
   scrollWheelSpring: 0
   useSteppedJoint: 1
   steppedValueUpdate: 1
@@ -652,8 +407,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 90
   jointAxis: {x: 0, y: 1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 30
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
@@ -676,175 +431,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[ResistorBankDoorRightFront].EXT_IN'
---- !u!1 &265525046940572813
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 265525046940572850}
-  - component: {fileID: 265525046940572851}
-  m_Layer: 0
-  m_Name: ResistorBankHatchPivot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &265525046940572850
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265525046940572813}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 265525047271771810}
-  - {fileID: 265525047533133717}
-  m_Father: {fileID: 265525048203577938}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &265525046940572851
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265525046940572813}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.06544316, y: 0.116102874, z: 0.03307104}
-  m_Center: {x: -0.043127835, y: -0.31487045, z: 0.6354719}
---- !u!1 &265525047271771837
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 265525047271771810}
-  m_Layer: 0
-  m_Name: ResistorBankHatchInteractionPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &265525047271771810
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265525047271771837}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.037, y: -0.316, z: -0.62}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 265525046940572850}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &265525047533133716
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 265525047533133717}
-  - component: {fileID: 265525047533133720}
-  - component: {fileID: 265525047533133723}
-  - component: {fileID: 265525047533133722}
-  m_Layer: 0
-  m_Name: ResistorBankHatch
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &265525047533133717
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265525047533133716}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 265525046940572850}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &265525047533133720
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265525047533133716}
-  m_Mesh: {fileID: -6080943502109694654, guid: 4b476d5b8f19b104ca1b6482688887b5, type: 3}
---- !u!23 &265525047533133723
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265525047533133716}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: fdabe6123698fed4ebc218d9da6b824b, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!65 &265525047533133722
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265525047533133716}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.0601999, y: 0.1291568, z: 0.03177011}
-  m_Center: {x: -0.039480053, y: 0.3139637, z: 0.637347}
 --- !u!1 &265525048127662976
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,7 +461,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 265525048203577938}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &265525048127662983
 BoxCollider:
@@ -931,8 +517,8 @@ Transform:
   m_LocalPosition: {x: 0, y: -0.0011599064, z: -0.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 265525046940572850}
   - {fileID: 265525048127662977}
+  - {fileID: 2716138560012303063}
   m_Father: {fileID: 8998232549175693402}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -950,8 +536,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   disallowShortTriggerLockHold: 0
   colliderGameObjects:
-  - {fileID: 265525046940572813}
-  - {fileID: 265525047533133716}
+  - {fileID: 2716138560012303080}
+  - {fileID: 2716138559281363441}
   handPosesOverride:
     nearTouchPose: -1
     touchPose: -1
@@ -963,10 +549,10 @@ MonoBehaviour:
   blockDrag: 0
   blockAngularDrag: 0
   invertDirection: 0
-  interactionPoint: {fileID: 265525047271771810}
+  interactionPoint: {fileID: 0}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
-  scrollWheelHoverScroll: 2
+  scrollWheelHoverScroll: 5
   scrollWheelSpring: 0
   useSteppedJoint: 1
   steppedValueUpdate: 1
@@ -976,8 +562,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 90
   jointAxis: {x: 0, y: -1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 30
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
@@ -1000,82 +586,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[ResistorBankDoorRightFront].EXT_IN'
---- !u!1 &265525048389928784
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 265525048389928785}
-  - component: {fileID: 265525048389928790}
-  m_Layer: 0
-  m_Name: ResistorBankHatchPivot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &265525048389928785
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265525048389928784}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 265525048499878835}
-  - {fileID: 6684721260063143189}
-  m_Father: {fileID: 265525046884521081}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &265525048389928790
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265525048389928784}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.06544316, y: 0.116102874, z: 0.03307104}
-  m_Center: {x: -0.043127835, y: -0.31487045, z: -0.6354719}
---- !u!1 &265525048499878834
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 265525048499878835}
-  m_Layer: 0
-  m_Name: ResistorBankHatchInteractionPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &265525048499878835
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265525048499878834}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.037, y: -0.316, z: -0.62}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 265525048389928785}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &488383854164859583
 GameObject:
   m_ObjectHideFlags: 0
@@ -1145,6 +655,7 @@ MonoBehaviour:
   portId: '[LeftoverMeter].EXT_IN'
   indicatorRangeScalerPortId: 
   fuseId: 
+  useZeroAsDefaultValue: 0
   valueMultiplier: 1
   valueOffset: 0
   useAbsoluteValue: 0
@@ -1519,7 +1030,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3818583206924606873}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1546221026289271407
 BoxCollider:
@@ -2060,7 +1571,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3391267462746071897
 Transform:
   m_ObjectHideFlags: 0
@@ -2435,82 +1946,6 @@ Transform:
   m_Father: {fileID: 7827193555322370895}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 5.3570004, y: 90, z: 0}
---- !u!1 &3818583205318734418
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3818583205318734419}
-  m_Layer: 0
-  m_Name: ResistorBankHatchInteractionPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3818583205318734419
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3818583205318734418}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.037, y: -0.316, z: -0.62}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3818583205494525617}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3818583205494525616
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3818583205494525617}
-  - component: {fileID: 3818583205494525622}
-  m_Layer: 0
-  m_Name: ResistorBankHatchPivot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3818583205494525617
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3818583205494525616}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 3818583205318734419}
-  - {fileID: 7752355495470873845}
-  m_Father: {fileID: 3818583206924606873}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &3818583205494525622
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3818583205494525616}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.06544316, y: 0.116102874, z: 0.03307104}
-  m_Center: {x: -0.043127835, y: -0.31487045, z: -0.6354719}
 --- !u!1 &3818583205576082381
 GameObject:
   m_ObjectHideFlags: 0
@@ -2540,8 +1975,8 @@ Transform:
   m_LocalPosition: {x: 0, y: -0.0011599064, z: -0.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 3818583206980654418}
   - {fileID: 3818583205751562849}
+  - {fileID: 4700450080572335821}
   m_Father: {fileID: 5454180731527862714}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2559,8 +1994,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   disallowShortTriggerLockHold: 0
   colliderGameObjects:
-  - {fileID: 3818583206980654445}
-  - {fileID: 3818583206247552628}
+  - {fileID: 4700450080572335858}
+  - {fileID: 4700450079952774635}
   handPosesOverride:
     nearTouchPose: -1
     touchPose: -1
@@ -2572,10 +2007,10 @@ MonoBehaviour:
   blockDrag: 0
   blockAngularDrag: 0
   invertDirection: 0
-  interactionPoint: {fileID: 3818583206506809154}
+  interactionPoint: {fileID: 0}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
-  scrollWheelHoverScroll: 2
+  scrollWheelHoverScroll: 5
   scrollWheelSpring: 0
   useSteppedJoint: 1
   steppedValueUpdate: 1
@@ -2585,8 +2020,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 90
   jointAxis: {x: 0, y: -1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 30
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
@@ -2639,7 +2074,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3818583205576082354}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &3818583205751562855
 BoxCollider:
@@ -2666,129 +2101,6 @@ MonoBehaviour:
   m_Script: {fileID: -112135585, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &3818583206247552628
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3818583206247552629}
-  - component: {fileID: 3818583206247552632}
-  - component: {fileID: 3818583206247552635}
-  - component: {fileID: 3818583206247552634}
-  m_Layer: 0
-  m_Name: ResistorBankHatch
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3818583206247552629
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3818583206247552628}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3818583206980654418}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3818583206247552632
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3818583206247552628}
-  m_Mesh: {fileID: -6080943502109694654, guid: 4b476d5b8f19b104ca1b6482688887b5, type: 3}
---- !u!23 &3818583206247552635
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3818583206247552628}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: fdabe6123698fed4ebc218d9da6b824b, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!65 &3818583206247552634
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3818583206247552628}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.0601999, y: 0.1291568, z: 0.03177011}
-  m_Center: {x: -0.039480053, y: 0.3139637, z: 0.637347}
---- !u!1 &3818583206506809181
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3818583206506809154}
-  m_Layer: 0
-  m_Name: ResistorBankHatchInteractionPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3818583206506809154
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3818583206506809181}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.037, y: -0.316, z: -0.62}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3818583206980654418}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3818583206924606872
 GameObject:
   m_ObjectHideFlags: 0
@@ -2818,8 +2130,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.0011601448, z: 0.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 3818583205494525617}
   - {fileID: 2111469064298232247}
+  - {fileID: 4293911678408439995}
   m_Father: {fileID: 5454180731527862714}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2837,8 +2149,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   disallowShortTriggerLockHold: 0
   colliderGameObjects:
-  - {fileID: 3818583205494525616}
-  - {fileID: 6980664881252577479}
+  - {fileID: 4293911678408439994}
+  - {fileID: 8036974127383512781}
   handPosesOverride:
     nearTouchPose: -1
     touchPose: -1
@@ -2850,10 +2162,10 @@ MonoBehaviour:
   blockDrag: 0
   blockAngularDrag: 0
   invertDirection: 0
-  interactionPoint: {fileID: 3818583205318734419}
+  interactionPoint: {fileID: 0}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
-  scrollWheelHoverScroll: 2
+  scrollWheelHoverScroll: 5
   scrollWheelSpring: 0
   useSteppedJoint: 1
   steppedValueUpdate: 1
@@ -2863,8 +2175,8 @@ MonoBehaviour:
   innerLimitMaxNotch: 90
   jointAxis: {x: 0, y: 1, z: 0}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 100
+  jointSpring: 500
+  jointDamper: 30
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
@@ -2887,52 +2199,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portId: '[ResistorBankDoorRightBack].EXT_IN'
---- !u!1 &3818583206980654445
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3818583206980654418}
-  - component: {fileID: 3818583206980654419}
-  m_Layer: 0
-  m_Name: ResistorBankHatchPivot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3818583206980654418
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3818583206980654445}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 3818583206506809154}
-  - {fileID: 3818583206247552629}
-  m_Father: {fileID: 3818583205576082354}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &3818583206980654419
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3818583206980654445}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.06544316, y: 0.116102874, z: 0.03307104}
-  m_Center: {x: -0.043127835, y: -0.31487045, z: 0.6354719}
 --- !u!1 &4009641307838574413
 GameObject:
   m_ObjectHideFlags: 0
@@ -3042,7 +2308,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 265525046884521081}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &2460169888727059343
 BoxCollider:
@@ -3212,9 +2478,11 @@ MonoBehaviour:
     nearTouchPose: -1
     touchPose: -1
     grabPose: -1
-  nonVrStaticInteractionArea: {fileID: 0}
+  nonVrStaticInteractionArea: {fileID: 3659835254844889939}
   rigidbodyMass: 5
   rigidbodyDrag: 15
+  zeroCenterOfMass: 0
+  insideVolume: {fileID: 0}
   useSteppedPuller: 1
   notches: 20
   invertDirection: 0
@@ -3867,99 +3135,6 @@ Transform:
   m_Father: {fileID: 7601137027796453993}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &6061309123749079477
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6875786129323976071}
-  - component: {fileID: 7595215997444435245}
-  - component: {fileID: 2700596282479906075}
-  - component: {fileID: 2013379054379477613}
-  m_Layer: 0
-  m_Name: ResistorBankHatch
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6875786129323976071
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6061309123749079477}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1362712515}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &7595215997444435245
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6061309123749079477}
-  m_Mesh: {fileID: -4311404858779228960, guid: abcf8d77069ec4c4aacd16f918d63ab6, type: 3}
---- !u!23 &2700596282479906075
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6061309123749079477}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: fdabe6123698fed4ebc218d9da6b824b, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!65 &2013379054379477613
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6061309123749079477}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.0601999, y: 0.1291568, z: 0.03177011}
-  m_Center: {x: -0.039480053, y: 0.3139637, z: -0.637347}
 --- !u!1 &6102577585164776722
 GameObject:
   m_ObjectHideFlags: 0
@@ -4066,99 +3241,6 @@ Transform:
   m_Father: {fileID: 5183527156118121276}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &6318916513753250087
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6684721260063143189}
-  - component: {fileID: 7694669527815257535}
-  - component: {fileID: 2798186299004935561}
-  - component: {fileID: 1756298347124718335}
-  m_Layer: 0
-  m_Name: ResistorBankHatch
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6684721260063143189
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6318916513753250087}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 265525048389928785}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &7694669527815257535
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6318916513753250087}
-  m_Mesh: {fileID: -4311404858779228960, guid: abcf8d77069ec4c4aacd16f918d63ab6, type: 3}
---- !u!23 &2798186299004935561
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6318916513753250087}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: fdabe6123698fed4ebc218d9da6b824b, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!65 &1756298347124718335
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6318916513753250087}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.0601999, y: 0.1291568, z: 0.03177011}
-  m_Center: {x: -0.039480053, y: 0.3139637, z: -0.637347}
 --- !u!1 &6372135479396375233
 GameObject:
   m_ObjectHideFlags: 0
@@ -4609,7 +3691,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6715853986896959351}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.04782198, y: 0.02371502, z: 0.1276174}
@@ -4624,7 +3706,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9173675535438495944}
   m_Layer: 0
-  m_Name: ResistorBankHatchLeft
+  m_Name: ResistorBankHatchLeftSide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4708,99 +3790,6 @@ Transform:
   m_Father: {fileID: 3803093731690240986}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &6980664881252577479
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7752355495470873845}
-  - component: {fileID: 6744691867032843359}
-  - component: {fileID: 1262176897564660841}
-  - component: {fileID: 3390824199508423455}
-  m_Layer: 0
-  m_Name: ResistorBankHatch
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7752355495470873845
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6980664881252577479}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3818583205494525617}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6744691867032843359
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6980664881252577479}
-  m_Mesh: {fileID: -4311404858779228960, guid: abcf8d77069ec4c4aacd16f918d63ab6, type: 3}
---- !u!23 &1262176897564660841
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6980664881252577479}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: fdabe6123698fed4ebc218d9da6b824b, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!65 &3390824199508423455
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6980664881252577479}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.0601999, y: 0.1291568, z: 0.03177011}
-  m_Center: {x: -0.039480053, y: 0.3139637, z: -0.637347}
 --- !u!1 &7048167112213515967
 GameObject:
   m_ObjectHideFlags: 0
@@ -5459,6 +4448,540 @@ MonoBehaviour:
   m_Script: {fileID: -43728086, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &1281204224933578992
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 3818583205576082354}
+    m_Modifications:
+    - target: {fileID: 5835708567442501122, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_Name
+      value: ResistorBankRightHatchPivot
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0de5302f5870ffd4b83a0874c153b2fb, type: 3}
+--- !u!1 &4700450080572335858 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5835708567442501122, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1281204224933578992}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4700450080572335821 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1281204224933578992}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4700450079952774635 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5835708566718115099, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1281204224933578992}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3013007079362332872
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 265525046884521081}
+    m_Modifications:
+    - target: {fileID: 7474715184491036042, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_Name
+      value: ResistorBankLeftHatchPivot
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 47f33ccfc373c6b459f7ce4149f901b0, type: 3}
+--- !u!4 &5650852196454987075 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3013007079362332872}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1906646255647574837 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3721553648830039037, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3013007079362332872}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5650852196454987074 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7474715184491036042, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3013007079362332872}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5835708566781616669
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1549654720}
+    m_Modifications:
+    - target: {fileID: 5835708567442501122, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_Name
+      value: ResistorBankRightHatchPivot
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0de5302f5870ffd4b83a0874c153b2fb, type: 3}
+--- !u!1 &681954335 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5835708567442501122, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 5835708566781616669}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &350428720 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5835708566976855085, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 5835708566781616669}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &72814342 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5835708566718115099, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 5835708566781616669}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &681954336 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 5835708566781616669}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6641837690006390064
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 3818583206924606873}
+    m_Modifications:
+    - target: {fileID: 7474715184491036042, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_Name
+      value: ResistorBankLeftHatchPivot
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 47f33ccfc373c6b459f7ce4149f901b0, type: 3}
+--- !u!4 &4293911678408439995 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 6641837690006390064}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8036974127383512781 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3721553648830039037, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 6641837690006390064}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4293911678408439994 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7474715184491036042, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 6641837690006390064}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7474715185852656200
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 805045483}
+    m_Modifications:
+    - target: {fileID: 7474715184491036042, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_Name
+      value: ResistorBankLeftHatchPivot
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 47f33ccfc373c6b459f7ce4149f901b0, type: 3}
+--- !u!4 &1337256737 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7474715184716824937, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7474715185852656200}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6061309123749079477 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3721553648830039037, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7474715185852656200}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1362712515 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7474715184491036043, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7474715185852656200}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1362712514 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7474715184491036042, guid: 47f33ccfc373c6b459f7ce4149f901b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7474715185852656200}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8452468858355913962
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 265525048203577938}
+    m_Modifications:
+    - target: {fileID: 5835708567442501122, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_Name
+      value: ResistorBankRightHatchPivot
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0de5302f5870ffd4b83a0874c153b2fb, type: 3}
+--- !u!1 &2716138560012303080 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5835708567442501122, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 8452468858355913962}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2716138560012303063 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5835708567442501181, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 8452468858355913962}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2716138559281363441 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5835708566718115099, guid: 0de5302f5870ffd4b83a0874c153b2fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 8452468858355913962}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9181767099577100512
 PrefabInstance:
   m_ObjectHideFlags: 0
