@@ -48,3 +48,9 @@ TunnelOuterDual,BridgesAndTunnels/TunnelOuterDual,tunnel,Outer,True,-0.3
 TrolleyInnerSingle,Trolley/TrolleyInnerSingle,trolley,Inner,False,0.3
 TrolleyMiddleSingle,Trolley/TrolleyMiddleSingle,trolley,Middle,False,0
 TrolleyOuterSingle,Trolley/TrolleyOuterSingle,trolley,Outer,False,-0.3
+IntermediateInnerDual,PolesAndCantilevers/IntermediateInnerDual,intermediate,Inner,True,0.3
+IntermediateInnerSingle,PolesAndCantilevers/IntermediateInnerSingle,intermediate,Inner,False,0.3
+IntermediateMiddleDual,PolesAndCantilevers/IntermediateMiddleDual,intermediate,MiddleInner,True,0
+IntermediateMiddleSingle,PolesAndCantilevers/IntermediateMiddleSingle,intermediate,MiddleInner,False,0
+IntermediateOuterDual,PolesAndCantilevers/IntermediateOuterDual,intermediate,InwardsOuter,True,-0.3
+IntermediateOuterSingle,PolesAndCantilevers/IntermediateOuterSingle,intermediate,InwardsOuter,False,-0.3
