@@ -1096,5 +1096,95 @@
     "z": 5334749,
     "y": 122.478096,
     "wire_type": "trolley"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.928656042,
+      "z": 0.0,
+      "w": -0.370942
+    },
+    "x": 1788845,
+    "z": 5433410,
+    "y": 122.462509,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.929652,
+      "z": 0.0,
+      "w": -0.3684388
+    },
+    "x": 1761332,
+    "z": 5404267,
+    "y": 122.484039,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.929669,
+      "z": 0.0,
+      "w": -0.368395865
+    },
+    "x": 1733894,
+    "z": 5375140,
+    "y": 122.482826,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.92986995,
+      "z": 0.0,
+      "w": -0.3678885
+    },
+    "x": 1706425,
+    "z": 5345947,
+    "y": 122.45137,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.929436147,
+      "z": 0.0,
+      "w": -0.36898306
+    },
+    "x": 1687139,
+    "z": 5325472,
+    "y": 122.483208,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
   }
 ]
