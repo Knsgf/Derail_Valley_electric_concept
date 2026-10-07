@@ -2136,7 +2136,7 @@
     "x": 15591515,
     "z": 11089697,
     "y": 204.4321,
-    "wire_type": "wall_anchor_single"
+    "wire_type": "wall_anchor_half_single"
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
@@ -3314,7 +3314,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Inner",
-    "steady_arm_type": "cantilever",
+    "steady_arm_type": "intermediate",
     "orientation": {
       "x": 0.0,
       "y": 0.0307177249,
@@ -3517,7 +3517,7 @@
     "x": 15641827,
     "z": 11088195,
     "y": 204.436447,
-    "wire_type": "wall_anchor_single"
+    "wire_type": "wall_anchor_half_single"
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
@@ -3693,7 +3693,7 @@
     "x": 15728464,
     "z": 11276640,
     "y": 204.4106,
-    "wire_type": "plain_single"
+    "wire_type": "plain_half2_single"
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
@@ -3709,7 +3709,7 @@
     "x": 15726169,
     "z": 11298502,
     "y": 204.399124,
-    "wire_type": "plain_single"
+    "wire_type": "plain_half1_single"
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
