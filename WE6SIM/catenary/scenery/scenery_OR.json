@@ -605,9 +605,9 @@
     "z": 10740242,
     "y": 142.70462,
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
-    "anchored": true,
+    "anchored": false,
     "siding_anchor": false
   },
   {
@@ -2669,35 +2669,6 @@
     "z": 10766006,
     "y": 143.16095,
     "wire_type": "plain_single"
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
-    "length": 28.96035,
-    "previous_pole_vertical_offset": -0.456329346,
-    "substation": "OR750",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.9798065,
-      "z": 0.0,
-      "w": 0.199948087
-    },
-    "x": 6158082,
-    "z": 10766006,
-    "y": 143.16095,
-    "wire_type": "end_anchor_single"
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
-    "template_name": "PoleAnchor",
-    "orientation": {
-      "x": 0.0,
-      "y": 0.9790147,
-      "z": 0.0,
-      "w": -0.203789756
-    },
-    "x": 6148754,
-    "z": 10738486,
-    "y": 142.70462
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
@@ -7763,7 +7734,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
-    "template_name": "Signs/DropPantographsWarning",
+    "template_name": "Signs/NeutralWarning",
     "orientation": {
       "x": 0.0,
       "y": 0.489114881,
@@ -7776,20 +7747,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
-    "template_name": "Signs/DropPantographs",
-    "orientation": {
-      "x": 0.0,
-      "y": 0.271093458,
-      "z": 0.0,
-      "w": 0.962553
-    },
-    "x": 6158338,
-    "z": 10765849,
-    "y": 143.16095
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
-    "template_name": "Signs/RaisePantographsOtherSide",
+    "template_name": "Signs/NeutralBegin",
     "orientation": {
       "x": 0.0,
       "y": 0.271093458,
@@ -7811,6 +7769,6 @@
     },
     "x": 6158338,
     "z": 10765849,
-    "y": 143.860947
+    "y": 143.16095
   }
 ]

@@ -107,14 +107,16 @@ public partial class overhead_equipment
             return (primary_vertical_orientation, primary_vertical_scale, secondary_vertical_scale);
         }
         
-#if DEBUG
         private static string get_template(string wire_type, float length)
         {
-            return (length < 25.0f && _wire_sections[wire_type].kind.Contains("plain_") && !_wire_sections[wire_type].kind.Contains("plain_half")) 
-                ? "TrolleyWire" 
+#if DEBUG
+            return (length < 25.0f && _wire_sections[wire_type].kind.Contains("plain_") && !_wire_sections[wire_type].kind.Contains("plain_half"))
+                ? "TrolleyWire"
                 : _wire_sections[wire_type].template;
-        }
+#else
+            return _wire_sections[wire_type].template;
 #endif
+        }
 
         [JsonConstructor]
         public wire(string wire_type, string substation, float length, float previous_pole_vertical_offset, 

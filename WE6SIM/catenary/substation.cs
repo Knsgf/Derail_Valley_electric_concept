@@ -48,6 +48,17 @@ public partial class overhead_equipment
                 _voltage_regulation = Mathf.Max(0.0f, (supply_voltage - 1300.0f) / maximum_load);
         }
 
+        // The GantryArrow prefab is a diagnostic marker, not a physical substation.
+        // Keep it visible in Debug for editing, but hide it in the game release.
+        public override bool reveal()
+        {
+#if DEBUG
+            return base.reveal();
+#else
+            return false;
+#endif
+        }
+
         public float wire_voltage(int wire_x, int wire_z, float wire_y, float load_current, float wire_1m_resistance)
         {
             int   x_offset = x - wire_x, z_offset = z - wire_z;
