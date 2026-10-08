@@ -108,5 +108,41 @@
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.717624545,
+      "z": 0.0,
+      "w": -0.696430147
+    },
+    "x": 2296570,
+    "z": 10825595,
+    "y": 158.564835,
+    "kind": "default",
+    "pole_type": "BridgeInsulators",
+    "cantilever_on_near_side": true,
+    "cantilever_on_far_side": true,
+    "anchored": true,
+    "siding_anchor": true
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0142007805,
+      "z": 0.0,
+      "w": 0.999899149
+    },
+    "x": 2297187,
+    "z": 10847062,
+    "y": 158.863541,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
   }
 ]
