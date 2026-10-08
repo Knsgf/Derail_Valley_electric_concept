@@ -77,7 +77,8 @@ internal static class editor
         bool is_siding_anchor_pole = part_placement == placement.Front;
         if (is_siding_anchor_pole && _anchor_pole != null)
         {
-            _anchor_pole.set_relative_position(relative_position + _anchor_pole.get_orientation() * Vector3.right * pole_horizontal_offset);
+            _anchor_pole.set_relative_position(relative_position + _anchor_pole.get_orientation() 
+                * (Vector3.right * pole_horizontal_offset + Vector3.up * pole_height_offset));
             return;
         }
 
