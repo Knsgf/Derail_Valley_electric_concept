@@ -34,7 +34,9 @@ public partial class overhead_equipment
 
     private static Dictionary<string, string> _all_parts = new()
     {
+#if DEBUG
         ["GantryArrow"] = "Gantries/GantryArrow"
+#endif
     };
 
     private static overhead_equipment? _system;
@@ -92,8 +94,9 @@ public partial class overhead_equipment
         for (int index = CSV_contents.row_count; index > 0; --index)
         {
             _type_ definition = CSV_contents.get_row(index);
-            _all_parts[definition.template_name] = definition.asset_path;
-            Main.log($"OCSD {definition.template_name} {definition.asset_path}");
+            if (!string.IsNullOrWhiteSpace(definition.template_name) && !string.IsNullOrWhiteSpace(definition.asset_path))
+                _all_parts[definition.template_name] = definition.asset_path;
+            Main.log($"OCSD '{definition.template_name}' '{definition.asset_path}'");
         }
         return CSV_contents;
     }

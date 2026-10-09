@@ -48,7 +48,10 @@ public partial class overhead_equipment
 
         protected catenary_object(string template_name, int x, int z, float y, Quaternion orientation)
         {
-            if (!system._templates.TryGetValue(template_name, out GameObject? template))
+            GameObject? template;
+            if (string.IsNullOrWhiteSpace(template_name))
+                template = null;
+            else if (!system._templates.TryGetValue(template_name, out template))
             {
                 if (!string.Equals(template_name, "GantryArrow", StringComparison.Ordinal))
                     throw new ArgumentException($"{template_name} not defined");
