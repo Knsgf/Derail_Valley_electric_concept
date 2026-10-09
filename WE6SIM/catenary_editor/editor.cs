@@ -22,7 +22,7 @@ internal static class editor
 {
     public enum placement 
     { 
-        Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryTruss6, GantryStretch, GantryAlign, Bracket, FlippedBracket,
+        Disabled, Left, Right, Front, Gantry2, Gantry3, Gantry4, GantryTruss6, GantryInvisible, GantryStretch, GantryAlign, Bracket, FlippedBracket,
         Cantilever, GantryRegistrationArm, Wire, Substation, SubstationSideRail, LowClearancesYardCP, LowClearancesYardOR,
         SaveNow, SinkTunnelPoles1, SinkTunnelPoles2, Reload
     };
@@ -180,17 +180,19 @@ internal static class editor
         {
             List<catenary_object_user> nearby_objects = grab_nearby_objects(relative_position, 2.5f);
             pole_user? closest_pole = get_closest<pole_user>(nearby_objects, relative_position);
-            if (closest_pole != null && !closest_pole.cantilever_on_near_side)
+            if (closest_pole != null && !closest_pole.cantilever_on_near_side 
+                && (part_placement != placement.GantryInvisible || get_closest<gantry_user>(nearby_objects, relative_position) == null))
             {
                 int tracks = part_placement switch
                 {
-                    placement.Gantry2      => 2,
-                    placement.Gantry3      => 3,
-                    placement.Gantry4      => 4,
-                    placement.GantryTruss6 => 6,
+                    placement.Gantry2         => 2,
+                    placement.Gantry3         => 3,
+                    placement.Gantry4         => 4,
+                    placement.GantryTruss6    => 6,
+                    placement.GantryInvisible => 0,
                     _ => throw new InvalidOperationException($"Gantry placement routine called in {part_placement} mode")
                 };
-                closest_pole.cantilever_on_near_side = true;
+                closest_pole.cantilever_on_near_side = part_placement != placement.GantryInvisible;
                 system.add_gantry(tracks, closest_pole.get_relative_position(), closest_pole.get_orientation());
             }
         }
@@ -506,6 +508,7 @@ internal static class editor
             case placement.Gantry3:
             case placement.Gantry4:
             case placement.GantryTruss6:
+            case placement.GantryInvisible:
             case placement.GantryStretch:
                 _anchor_pole           = null;
                 _last_registration_arm = null;

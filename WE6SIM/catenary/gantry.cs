@@ -47,6 +47,8 @@ public partial class overhead_equipment
         public string bracket_kind;
         [CSV_column(9)]
         public string bracket_placement;
+        [CSV_column(10)]
+        public bool allow_cantileves;
     }
 
     [JsonObject]
@@ -129,9 +131,10 @@ public partial class overhead_equipment
                 return type!;
             return tracks switch
             {
+                0             => "invisible",
                 >= 1 and <= 4 => "slim",
                 6             => "truss",
-                _             => throw new ArgumentOutOfRangeException("Default gantries should cover 1, 2, 3, 4 or 6 tracks")
+                _             => throw new ArgumentOutOfRangeException("Default gantries should cover 0, 1, 2, 3, 4 or 6 tracks")
             };
         }
 
@@ -147,7 +150,8 @@ public partial class overhead_equipment
             _further_pole = system.add_scenery_object((int x, int z, float y, Quaternion orientation) 
                 => new pole(definition.far_side_pole_kind, definition.far_side_pole_placement, is_siding_anchor_pole: false, 
                     x, z, y, orientation), further_pole_x, further_pole_z, y, orientation);
-            _further_pole.placed_procedurally = _further_pole.cantilever_on_far_side = true;
+            _further_pole.placed_procedurally    = true;
+            _further_pole.cantilever_on_far_side = !definition.allow_cantileves;
 
 #if DEBUG
             catenary_object arrow = system.add_scenery_object(miscellaneous_object.build_generic("GantryArrow"), x, z, y, orientation);
@@ -163,9 +167,10 @@ public partial class overhead_equipment
 
         public override bool reveal()
         {
-            assert.test(template is not null);
+            if (template is null)
+                return false;
             is_visible = true;
-            entity ??= GameObject.Instantiate(template, get_frame_relative_position(x, z, y, orientation, _stretch), orientation);
+            entity   ??= GameObject.Instantiate(template, get_frame_relative_position(x, z, y, orientation, _stretch), orientation);
             entity.transform.localScale = new Vector3(_stretch, 1.0f, 1.0f);
             return true;
         }
