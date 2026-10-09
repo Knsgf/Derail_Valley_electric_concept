@@ -25,10 +25,10 @@ internal class blower_controller: electric_device
     const float traction_low_speed_maximum_motor_current  = 350.0f;
     const float traction_high_speed_minimum_motor_current = 250.0f;
 
-    private readonly Port _contactor_on_sound, _contactor_off_sound;
     private readonly Port _traction_motor_temperature, _motor_cooling_rate, _resistor_temperature, _resistor_cooling_rate;
 
     private readonly auxiliary_motor _fan_motors;
+    private readonly unit_A_sim      _simulation;
     
     private float _line_voltage = 0.0f, _motor_current = 0.0f;
     private float _line_voltage_multiplier = series_3_parallel_2;
@@ -52,14 +52,12 @@ internal class blower_controller: electric_device
     public float fan_voltage    { get; private set; }
 
     public blower_controller(Fuse electric_supply, Port audio, Port traction_motor_temperature, Port motor_cooling_rate, 
-        Port resistor_temperature, Port resistor_cooling_rate, 
-        Port contactor_on_sound, Port contactor_off_sound): base("blower", electric_supply)
+        Port resistor_temperature, Port resistor_cooling_rate, unit_A_sim simulation): base("blower", electric_supply)
     {
         _fan_motors = new(audio, motor_power, motor_efficiency, motor_design_voltage, motor_minimum_voltage, 
             speedup_rate, slowdown_rate);
-        _contactor_on_sound  = contactor_on_sound;
-        _contactor_off_sound = contactor_off_sound;
 
+        _simulation                 = simulation;
         _traction_motor_temperature = traction_motor_temperature;
         _motor_cooling_rate         = motor_cooling_rate;
         _resistor_temperature       = resistor_temperature;
@@ -96,12 +94,11 @@ internal class blower_controller: electric_device
     {
         if (_reconfiguration || voltage_divider() == _line_voltage_multiplier)
             return;
-        _reconfiguration           = true;
-        _contactor_off_sound.Value = 1.0f;
+        _simulation.contactor_off_click = _reconfiguration = true;
         await Task.Delay(1000);
-        _line_voltage_multiplier  = voltage_divider();
-        _contactor_on_sound.Value = 1.0f;
-        _reconfiguration          = false;
+        _line_voltage_multiplier       = voltage_divider();
+        _simulation.contactor_on_click = true;
+        _reconfiguration               = false;
     }
     
     public void simulate()
@@ -114,13 +111,13 @@ internal class blower_controller: electric_device
             if (_line_voltage >= 500.0f)
                 switch_configuration();
             if (_previously_active && !_reconfiguration)
-                _contactor_off_sound.Value = 1.0f;
+                _simulation.contactor_off_click = true;
             _previously_active = false;
         }
         else
         {
             if (!_previously_active)
-                _contactor_on_sound.Value = 1.0f;
+                _simulation.contactor_on_click = true;
             _previously_active = true;
             fan_motor_voltage  = _line_voltage * _line_voltage_multiplier;
             if (    rheostatic_braking_on && _line_voltage is > dynamic_braking_parallel_maximum_voltage 
@@ -137,8 +134,12 @@ internal class blower_controller: electric_device
         current_draw         = rheostatic_braking_on ? 0.0f : (_fan_motors.current_draw * (6 * _line_voltage_multiplier));
         float relative_speed = _fan_motors.relative_speed;
         this.relative_speed  = relative_speed;
+    }
 
+    public void update_external_ports()
+    {
         _motor_cooling_rate.Value    = relative_speed * (ambient_temperature_C - _traction_motor_temperature.Value) * full_motor_cooling_power_at_1C;
         _resistor_cooling_rate.Value = relative_speed * (ambient_temperature_C -       _resistor_temperature.Value) * full_resistor_cooling_power_at_1C;
+        _fan_motors.update_external_ports();
     }
 }

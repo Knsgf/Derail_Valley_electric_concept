@@ -41,6 +41,8 @@ internal static class car_spawn_handler
     private static mow_follower? _mow_tracker = null;
 #endif
 
+    private static event Action? all_units_simulation;
+
     public static void Postfix(CarSpawner __instance)
     {
         //Main.log("car_spawn_handler.Postfix");
@@ -151,9 +153,15 @@ internal static class car_spawn_handler
         //if (vehicle.gameObject != null)
         //	print_hierarchy(vehicle.gameObject);
         if (is_unit_A)
-            _all_A_units[vehicle] = new unit_A_sim(all_fuses, all_ports, vehicle, random_seed);
+        { 
+            _all_A_units[vehicle] = new unit_A_sim(all_fuses, all_ports, vehicle, random_seed); 
+            all_units_simulation += _all_A_units[vehicle].simulate;
+        }
         else
-            _all_B_units[vehicle] = new unit_B_sim(all_fuses, all_ports, vehicle);
+        { 
+            _all_B_units[vehicle] = new unit_B_sim(all_fuses, all_ports, vehicle); 
+            all_units_simulation += _all_B_units[vehicle].simulate;
+        }
         vehicle.OnDestroyCar += on_car_purge;
     }
 
@@ -164,7 +172,7 @@ internal static class car_spawn_handler
 #if DEBUG
         if (_mow_vehicle == vehicle)
         {
-            Main.log("Remove MOW " + vehicle.ID);
+            Main.log("Remove MOW");
             _mow_tracker?.Dispose();
             _mow_vehicle = null;
             _mow_tracker = null;
@@ -173,14 +181,16 @@ internal static class car_spawn_handler
 
         if (_all_A_units.TryGetValue(vehicle, out unit_A_sim disposed_unit_a))
         {
-            Main.log("Remove A " + vehicle.ID + " " + vehicle.carLivery.id);
+            Main.log($"Remove A {vehicle.carLivery.id}");
+            all_units_simulation -= disposed_unit_a.simulate;
             disposed_unit_a.purge(session_end);
             _all_A_units.Remove(vehicle);
             Main.diagnostics = Main.diagnostics2 = null;
         }
         else if (_all_B_units.TryGetValue(vehicle, out unit_B_sim disposed_unit_b))
         {
-            Main.log("Remove B " + vehicle.ID + " " + vehicle.carLivery.id);
+            Main.log($"Remove B {vehicle.carLivery.id}");
+            all_units_simulation -= disposed_unit_b.simulate;
             disposed_unit_b.Dispose();
             _all_B_units.Remove(vehicle);
         }
@@ -201,5 +211,10 @@ internal static class car_spawn_handler
             purge_vehicle(unit_A, session_end: true);
         foreach (TrainCar unit_B in _all_B_units.Keys.ToArray())
             purge_vehicle(unit_B, session_end: true);
+    }
+
+    public static void simulate_all_units()
+    {
+        all_units_simulation?.Invoke();
     }
 }

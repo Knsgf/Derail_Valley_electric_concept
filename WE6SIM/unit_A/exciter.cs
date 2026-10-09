@@ -59,5 +59,10 @@ internal partial class unit_A_sim
             unit._named_branches["EXT"].EMF = exciter_EMF;
             current_draw = _drive.current_draw;
         }
+
+        public void update_external_ports()
+        {
+            _drive.update_external_ports();
+        }
     }
 }

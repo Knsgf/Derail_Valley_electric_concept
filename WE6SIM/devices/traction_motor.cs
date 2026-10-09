@@ -84,13 +84,13 @@ internal class traction_motor
         if (_dynamic_brake_kickstarter_winding_on)
             magnetic_flux += kickstarter_winding_flux;
 
-        float  motor_EMF     = _EMF_factor * magnetic_flux * motor_RPM;
-        EMF                  = named_branches[armature_name].EMF = named_branches[armature_name].EMF * 0.7f + motor_EMF * 0.3f;
-        RPM                  = motor_RPM;
-        wheel_torque         = _torque_factor * armature_current * magnetic_flux;
-        heat_emission        = armature_current * armature_current * _armature_resistance 
-                             +   field1_current *   field1_current *   _field1_resistance
-                             +   field2_current *   field2_current *   _field2_resistance;
+        float  motor_EMF = _EMF_factor * magnetic_flux * motor_RPM;
+        EMF              = named_branches[armature_name].EMF = Mathf.LerpUnclamped(named_branches[armature_name].EMF, motor_EMF, 0.75f);
+        RPM              = motor_RPM;
+        wheel_torque     = _torque_factor * armature_current * magnetic_flux;
+        heat_emission    = armature_current * armature_current * _armature_resistance 
+                         +   field1_current *   field1_current *   _field1_resistance
+                         +   field2_current *   field2_current *   _field2_resistance;
 
         /*
         if (_motor_number == 1)

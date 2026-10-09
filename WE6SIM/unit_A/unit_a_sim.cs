@@ -67,13 +67,19 @@ internal partial class unit_A_sim: electric_device
     private readonly float _motor_voltmeter_resistance;
 
     private bool  _fast_notching_enabled = false, _jogging_mode_on = false, _jog_active = false, _cab_active = false;
-    private bool  _line_contactrs_on = false;
+    private bool  _line_contactors_on = false, _zero_currents = false, _simulation_go = false;
     private int   _throttle = -1, _secondary_camshaft_notch = 1, _selector = -1, _field_position = -1;
     private Task? _single_notch_movement;
     private float _reverser_position = 0.5f, _fast_notching_current_limit = 250.0f, _BA1 = 0.0f, _BA2 = 0.0f;
     private float _last_integrity = -1.0f, _resistance_update_time = 0.0f, _unit_B_integrity = 1.0f;
+    private float _voltmeter_reading = 0.0f, _maximum_load, _average_load_A, _average_load_B, _average_field_A, _average_field_B;
+    private float _total_heat_emission_A, _total_heat_emission_B, _average_RPM, _average_EMF, _motors_volts, _jog_voltage, _total_draw;
+    private float _total_torque_A, _total_torque_B, _idling_arc_damage;
 
     public const int camshaft_notches = 7, roll_over_to_1 = camshaft_notches + 1, roll_over_to_full = camshaft_notches + 2;
+
+    public bool  contactor_on_click { get; set; } = false;
+    public bool contactor_off_click { get; set; } = false;
 
     public unit_A_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit, int random_seed)
         : base("unit_A_sim")
@@ -131,7 +137,7 @@ internal partial class unit_A_sim: electric_device
 
         _contactor_on_sound  = grab_port(ports, "[CustomSimulation].CONTACTOR_ON" );
         _contactor_off_sound = grab_port(ports, "[CustomSimulation].CONTACTOR_OFF");
-        _contactors   = new(unit, this, _appliances, _control_air, _main_breaker_closed, _contactor_locations, _contactor_on_sound, _contactor_off_sound);
+        _contactors   = new(unit, this, _appliances, _control_air, _main_breaker_closed, _contactor_locations);
         _roof_bus     = new(ports, is_unit_A: true);
         _pantograph   = new(unit.gameObject, _roof_bus, _appliances, _control_air, _main_breaker_closed, ports);
         _main_breaker = new(_appliances, _control_air, ports, this);
@@ -156,7 +162,7 @@ internal partial class unit_A_sim: electric_device
             grab_port(ports, "[Blowers].MOTOR_COOLING_RATE"    ), 
             grab_port(ports, "[ResistorHeat].TEMPERATURE"      ), 
             grab_port(ports, "[Blowers].RESISTOR_COOLING_RATE" ), 
-            _contactor_on_sound, _contactor_off_sound
+            this
         );
         _meter = new(unit, this, ports);
 
@@ -202,7 +208,7 @@ internal partial class unit_A_sim: electric_device
 
         _unit       = unit;
         _simulation = simulation;
-        simulation.SimulationFlow.TickEvent += simulate;
+        simulation.SimulationFlow.TickEvent += update_gauges_and_external_ports;
         _control_BA1.ValueUpdatedInternally += MU_BA1_control;
         _control_BA2.ValueUpdatedInternally += MU_BA2_control;
 
@@ -263,7 +269,6 @@ internal partial class unit_A_sim: electric_device
 
     private void signal_primary_camshaft_notch(int current_notch)
     {
-        set_primary_notch(current_notch);
         set_port_signal(_control_AB1, (int) AB1_signals.unit_A_camshaft_notch, (int) AB1_shift.unit_A_camshaft_notch, current_notch);
     }
 
@@ -477,7 +482,6 @@ internal partial class unit_A_sim: electric_device
         _secondary_camshaft_notch = get_secondary_camshaft_current_notch(_BA1);
         _contactors._secondary_camshaft.switch_contactors(_secondary_camshaft_notch);
         _contactors.switch_primary_contactors(_contactors._primary_controller.current_notch);   // Switch shunting notches at primary #1
-        set_seconday_notch(_secondary_camshaft_notch);
     }
 
     private void MU_BA2_control(float BA2)
@@ -534,9 +538,11 @@ internal partial class unit_A_sim: electric_device
         }
     }
 
-    private void simulate()
+    public void simulate()
     {
         check_if_disposed();
+        if (!_simulation_go)
+            return;
         
         contactors                      all_contactors  = _contactors;
         blower_controller               blowers         = _blowers;
@@ -553,8 +559,8 @@ internal partial class unit_A_sim: electric_device
                 all_contactors.toggle_jogging(turn_on: true);
                 _jog_active = true;
             }
-            current_draw      = 0.0f;
-            _jog_volts.Value  = battery_panel.battery_EMF - currents["BAT"] * battery_panel.battery_internal_resistance;
+            current_draw = 0.0f;
+            _jog_voltage = battery_panel.battery_EMF - currents["BAT"] * battery_panel.battery_internal_resistance;
             _pantograph.simulate(0.0f);
         }
         else
@@ -562,39 +568,40 @@ internal partial class unit_A_sim: electric_device
             if (_jog_active)
             {
                 all_contactors.toggle_jogging(turn_on: false);
-                _jog_volts.Value = 0.0f;
-                _jog_active      = false;
+                _jog_voltage = 0.0f;
+                _jog_active  = false;
             }
             current_draw = currents["EPS"] + blowers.current_draw + field_generator.current_draw;
             if (supply.EMF > 1.0f)
                 current_draw += _compressor_power.Value / supply.EMF;
             _pantograph.simulate(current_draw);
         }
-        _total_load.Value = current_draw;
+        _total_draw = current_draw;
         
-        float primary_current_position = all_contactors._primary_controller.current_position;
-        set_primary_notch(primary_current_position);
-        _HUD_notch_readout.update(Mathf.RoundToInt(primary_current_position), _secondary_camshaft_notch);
-        _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
-        toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_on , false);
-        toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_off, false);
-
         if (!jog && !_main_breaker_closed.State && _roof_bus.voltage < 10.0f && supply.EMF < 10.0f && _wheel_RPM.Value < 20.0f 
             && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && field_generator.relative_speed < 0.01f)
         {
-            _torque_A.Value = _torque_B.Value = _resistance_update_time = 0.0f;
-            _meter.count_energy(0.0f, 0.0f);
+            if (!_zero_currents)
+            {
+                _total_torque_A = _total_torque_B = _resistance_update_time = 0.0f; 
+                _meter.count_energy(0.0f, 0.0f);
+                foreach (string branch_name in named_branches.Keys)
+                    currents[branch_name] = 0.0f;
+                _zero_currents = true;
+            }
         }
         else
         {
+            _zero_currents = false;
             lock (currents)
             {
                 //circuit_telemetry.log_sorted_currents(_circuit, -1.0f, -1.0f);
                 //circuit_telemetry.log_sorted_voltages(_circuit);
-                foreach (KeyValuePair<string, branch_user> branch in named_branches)
-                    currents[branch.Key] = currents[branch.Key] * 0.95f + branch.Value.current * 0.05f;
+                foreach (KeyValuePair<string, branch_user> current_branch in named_branches)
+                    currents[current_branch.Key] = Mathf.LerpUnclamped(currents[current_branch.Key], current_branch.Value.current, 0.02f);
             }
             float motors_volts = Mathf.Abs(currents["VM34"] * _motor_voltmeter_resistance);
+            _motors_volts      = motors_volts;
             _resistor_grid.simulate(currents);
             resistor_heat.simulate_overheat_damage(_resistor_grid);
         
@@ -608,24 +615,21 @@ internal partial class unit_A_sim: electric_device
 
             supply.EMF              = supply.EMF * 0.9f + (rheostatic_brake_on ? 0.0f : _roof_bus.voltage) * 0.1f;
             float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : Mathf.Max(supply.EMF - currents["EPS"] / supply.conductance, 0.0f);
-            set_supply_volts(voltmeter_reading);
-            _relative_voltage.Value = voltmeter_reading / 1500.0f;
-            set_motors_volts(motors_volts);
-            bool regenerative_on = selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
+            _voltmeter_reading      = voltmeter_reading;
+            bool regenerative_on    = selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
             if (regenerative_on || field_generator.relative_speed >= 0.01f)
                 field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
             _meter.count_energy(voltmeter_reading, rheostatic_brake_on ? 0.0f : current_draw);
             
             _compressor_on.ChangeState(voltmeter_reading >= 1000.0f && _main_breaker_closed.State);
-            float average_RPM = 0.0f, average_load_A = 0.0f, average_load_B = 0.0f, maximum_load = 0.0f; 
-            float average_field_A = 0.0f, average_field_B = 0.0f, average_EMF = 0.0f;
-            float total_torque_A, total_heat_emission_A, total_torque_B, total_heat_emission_B;
-            calculate_combined_unit_motor_performance(is_unit_A:  true, traction_motors, ref average_RPM, 
-                ref average_load_A, ref maximum_load, ref average_field_A, ref average_EMF,
-                out total_torque_A, out total_heat_emission_A);
-            calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref average_RPM, 
-                ref average_load_B, ref maximum_load, ref average_field_B, ref average_EMF,
-                out total_torque_B, out total_heat_emission_B);
+            float RPM_sum     = 0.0f, load_A_sum  = 0.0f, load_B_sum = 0.0f, maximum_load = 0.0f; 
+            float field_A_sum = 0.0f, field_B_sum = 0.0f, EMF_sum    = 0.0f;
+            calculate_combined_unit_motor_performance(is_unit_A:  true, traction_motors, ref RPM_sum, 
+                ref load_A_sum, ref maximum_load, ref field_A_sum, ref EMF_sum,
+                out _total_torque_A, out _total_heat_emission_A);
+            calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref RPM_sum, 
+                ref load_B_sum, ref maximum_load, ref field_B_sum, ref EMF_sum,
+                out _total_torque_B, out _total_heat_emission_B);
             bool line_contactor1_on = all_contactors._line_contactor.engaged, line_contactor2_on = all_contactors._line_contactor2.engaged;
             float maximum_EMF;
             if (!line_contactor1_on && !line_contactor2_on)
@@ -652,69 +656,94 @@ internal partial class unit_A_sim: electric_device
                 }
             }
             _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, current_draw);
-            average_RPM     /= motors;
-            average_EMF     /= motors;
-            average_load_A  /= (motors >> 1);
-            average_load_B  /= (motors >> 1);
-            average_field_A /= (motors >> 1);
-            if (maximum_load < 10.0f)
-            {
-                set_reverse_current_lamp(0.0f);
-                toggle_port_signal(_control_AB1, (int) AB1_signals.reverse_current, false);
-            }
-            else
-            {
-                float average_load, average_field;
-                if (average_load_A > average_load_B)
-                {
-                    average_load  = average_load_A;
-                    average_field = average_field_A;
-                }
-                else
-                {
-                    average_load  = average_load_B;
-                    average_field = average_field_B;
-                }
-                bool reverse_current = average_load * average_field * (_reverser_position - 0.5f) < 0.0f;
-                set_reverse_current_lamp(reverse_current ? 1.0f : 0.0f);
-                toggle_port_signal(_control_AB1, (int) AB1_signals.reverse_current, reverse_current);
-            }
-            for (int group_index = 2; group_index >= 0; --group_index)
-            {
-                set_motor_group_load [group_index](traction_motors[group_index << 1].load_current );
-                set_motor_group_field[group_index](traction_motors[group_index << 1].field_current);
-            }
-            _traction_motor_load.Value   = average_load_A;
-            _traction_motor_load_B.Value = average_load_B;
-            _traction_motor_heat_B.Value = total_heat_emission_B;
-            _traction_motor_RPM.Value    = average_RPM;
-            _traction_motor_EMF.Value    = average_EMF;
+            _average_RPM     =     RPM_sum /  motors;
+            _average_EMF     =     EMF_sum /  motors;
+            _average_load_A  =  load_A_sum / (motors >> 1);
+            _average_load_B  =  load_B_sum / (motors >> 1);
+            _average_field_A = field_A_sum / (motors >> 1);
+            _average_field_B = field_B_sum / (motors >> 1);
+            _maximum_load    = maximum_load;
 
-            bool to_idle       = !line_contactor1_on && !line_contactor2_on && _line_contactrs_on;
-            _line_contactrs_on =  line_contactor1_on ||  line_contactor2_on;
-            if (!to_idle || maximum_load <= minimum_idling_current)
+            bool to_idle        = !line_contactor1_on && !line_contactor2_on && _line_contactors_on;
+            _line_contactors_on =  line_contactor1_on ||  line_contactor2_on;
+            if (to_idle && maximum_load > minimum_idling_current)
             {
-                _idling_damage.Value = 0.0f;
-            }
-            else
-            {
-                float idling_damage  = (maximum_idling_damage / (maximum_idling_current - minimum_idling_current)) 
+                float idling_damage = (maximum_idling_damage / (maximum_idling_current - minimum_idling_current)) 
                                                               * (          maximum_load - minimum_idling_current);
-                idling_damage        = Mathf.Clamp(idling_damage * UnityEngine.Random.Range(0.8f, 1.2f), 0.0f, maximum_idling_damage);
-                _idling_damage.Value = idling_damage;
+                _idling_arc_damage += Mathf.Clamp(idling_damage * UnityEngine.Random.Range(0.8f, 1.2f), 0.0f, maximum_idling_damage);
             }
-            //Main.log($"ID = {_idling_damage.Value}");
+            //Main.log($"ID = {_idling_arc_damage}");
         
             blowers.active                = /*rheostatic_brake_on || _throttle >= 1*/ Mathf.Abs(_reverser_position - 0.5f) > 0.1f;
             blowers.rheostatic_braking_on = rheostatic_brake_on;
             blowers.motor_current         = maximum_load;
             blowers.line_voltage          = rheostatic_brake_on ? motors_volts : voltmeter_reading;
             blowers.simulate();
-            _traction_motor_temperature.simulate(total_heat_emission_A, average_RPM);
-
-            _torque_A.Value = total_torque_A;
-            _torque_B.Value = total_torque_B;
         }
+    }
+
+    private void update_gauges_and_external_ports()
+    {
+        _simulation_go = true;
+        float primary_current_position = _contactors._primary_controller.current_position;
+        set_primary_notch(primary_current_position);
+        set_seconday_notch(_secondary_camshaft_notch);
+        _HUD_notch_readout.update(Mathf.RoundToInt(primary_current_position), _secondary_camshaft_notch);
+        _contactor_on_sound.Value  =  contactor_on_click ? 1.0f : 0.0f;
+        _contactor_off_sound.Value = contactor_off_click ? 1.0f : 0.0f;
+        contactor_on_click        = contactor_off_click = false;
+        toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_on , false);
+        toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_off, false);
+
+        _jog_volts.Value  = _jog_voltage;
+        _total_load.Value = _total_draw;
+        _relative_voltage.Value = _voltmeter_reading / 1500.0f;
+        set_supply_volts(_voltmeter_reading);
+        set_motors_volts(_motors_volts);
+        if (_maximum_load < 10.0f)
+        {
+            set_reverse_current_lamp(0.0f);
+            toggle_port_signal(_control_AB1, (int) AB1_signals.reverse_current, false);
+        }
+        else
+        {
+            float average_load, average_field;
+            if (_average_load_A > _average_load_B)
+            {
+                average_load  = _average_load_A;
+                average_field = _average_field_A;
+            }
+            else
+            {
+                average_load  = _average_load_B;
+                average_field = _average_field_B;
+            }
+            bool reverse_current = average_load * average_field * (_reverser_position - 0.5f) < 0.0f;
+            set_reverse_current_lamp(reverse_current ? 1.0f : 0.0f);
+            toggle_port_signal(_control_AB1, (int) AB1_signals.reverse_current, reverse_current);
+        }
+        traction_motor[] traction_motors = _traction_motors;
+        for (int group_index = 2; group_index >= 0; --group_index)
+        {
+            set_motor_group_load [group_index](traction_motors[group_index << 1].load_current );
+            set_motor_group_field[group_index](traction_motors[group_index << 1].field_current);
+        }
+        _traction_motor_load.Value   = _average_load_A;
+        _traction_motor_load_B.Value = _average_load_B;
+        _traction_motor_heat_B.Value = _total_heat_emission_B;
+        _traction_motor_RPM.Value    = _average_RPM;
+        _traction_motor_EMF.Value    = _average_EMF;
+            
+        _torque_A.Value = _total_torque_A;
+        _torque_B.Value = _total_torque_B;
+
+        _idling_damage.Value = _idling_arc_damage;
+        _idling_arc_damage   = 0.0f;
+
+        _pantograph.update_external_ports();
+        _blowers.update_external_ports();
+        _regenerative_field.update_external_ports();
+        _traction_motor_temperature.simulate(_total_heat_emission_A, _average_RPM);
     }
 
     public void shut_down()
@@ -735,7 +764,7 @@ internal partial class unit_A_sim: electric_device
             _contactors.Dispose();
             _control_stand.Dispose();
             _red_light_controller.Dispose();
-            _simulation.SimulationFlow.TickEvent -= simulate;
+            _simulation.SimulationFlow.TickEvent -= update_gauges_and_external_ports;
             _control_BA1.ValueUpdatedInternally  -= MU_BA1_control;
             _control_BA2.ValueUpdatedInternally  -= MU_BA2_control;
         }

@@ -40,8 +40,7 @@ internal partial class unit_A_sim
         public Action<float>? set_transition_lamp;
 
         public contactors(TrainCar unit, unit_A_sim simulation, Fuse appliances, Fuse air_supply, Fuse main_breaker,
-            Dictionary<string, circuit.branch_user> contactor_locations, 
-            Port contactor_on_sound, Port contactor_off_sound)
+            Dictionary<string, circuit.branch_user> contactor_locations)
         {
             _unit = simulation;
             foreach (GameObject current_object in unit.gameObject.AllChildren())
@@ -67,9 +66,9 @@ internal partial class unit_A_sim
             Action<bool> contactor_click_on_A = delegate (bool engage)
             {
                 if (engage)
-                    contactor_on_sound.Value = 1.0f;
+                    simulation.contactor_on_click = true;
                 else
-                    contactor_off_sound.Value = 1.0f;
+                    simulation.contactor_off_click = true;
             };
             Action<bool> contactor_click_on_B = delegate (bool engage)
             {

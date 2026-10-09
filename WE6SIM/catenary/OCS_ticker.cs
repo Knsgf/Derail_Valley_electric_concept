@@ -27,7 +27,15 @@ public partial class overhead_equipment
                 //Main.log($"x={x} z={z}");
                 _system.handle_scenery_visibility(player_view.position);
             }
-            _system.simulate_all_substations_load();
+        }
+
+        void FixedUpdate()
+        {
+            if (_system != null)
+            {
+                car_spawn_handler.simulate_all_units();
+                _system.simulate_all_substations_load();
+            }
         }
 
         public void suspend_tracker()

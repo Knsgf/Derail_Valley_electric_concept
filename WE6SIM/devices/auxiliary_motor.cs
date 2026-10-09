@@ -31,7 +31,7 @@ internal class auxiliary_motor
     public void run(float current_voltage)
     {
         bool  is_running;
-        float final_relative_speed, relative_speed = this.relative_speed;
+        float final_relative_speed, current_relative_speed = relative_speed;
         if (current_voltage >= _minimum_voltage)
         {
             is_running           = true;
@@ -39,7 +39,7 @@ internal class auxiliary_motor
         }
         else
         {
-            if (relative_speed < 0.001f)
+            if (current_relative_speed < 0.001f)
                 return;
             is_running      = false;
             current_voltage = final_relative_speed = 0.0f;
@@ -48,14 +48,19 @@ internal class auxiliary_motor
         if (!is_running)
             relative_acceleration = _idle_slowdown;
         else
-            relative_acceleration = (relative_speed <= final_relative_speed) ? _speedup : _slowdown;
+            relative_acceleration = (current_relative_speed <= final_relative_speed) ? _speedup : _slowdown;
         float acceleration_ratio = Mathf.Pow(relative_acceleration, Time.deltaTime);
-        relative_speed           = Mathf.LerpUnclamped(final_relative_speed, relative_speed, acceleration_ratio);
-        _audio.Value             = this.relative_speed = relative_speed;
+        current_relative_speed   = Mathf.LerpUnclamped(final_relative_speed, current_relative_speed, acceleration_ratio);
+        relative_speed           = current_relative_speed;
 
         float current = !is_running ? 0.0f : (_load_factor * current_voltage);
-        if (relative_speed > 0.0f)
-            current *= Mathf.Min(7.0f, final_relative_speed / relative_speed);
+        if (current_relative_speed > 0.0f)
+            current *= Mathf.Min(7.0f, final_relative_speed / current_relative_speed);
         current_draw = Mathf.LerpUnclamped(current_draw, current, 0.1f);
+    }
+
+    public void update_external_ports()
+    {
+        _audio.Value = relative_speed;
     }
 }

@@ -49,7 +49,7 @@ internal class unit_B_sim: electric_device
     private readonly Action<float> throttle_relay, field_handle_relay, selector_relay;
 
     private int   _secondary_camshaft_target_notch = 1, _primary_camshaft_current_notch;
-    private bool  _cab_active = false;
+    private bool  _cab_active = false, _simulation_go = false,  _contactor_on_click = false, _contactor_off_click = false;
     private float _integrity_refresh_time = 0.0f, _AB1 = 0.0f;
 
     public unit_B_sim(Dictionary<string, Fuse> fuses, Dictionary<string, Port> ports, TrainCar unit)
@@ -160,8 +160,7 @@ internal class unit_B_sim: electric_device
         _unit       = unit;
         _simulation = simulation;
         _control_AB1.ValueUpdatedInternally += MU_AB1_control;
-        simulation.SimulationFlow.TickEvent += simulate;
-        
+        simulation.SimulationFlow.TickEvent += update_gauges_and_external_ports;
     }
 
     private void pantographs_status()
@@ -305,28 +304,21 @@ internal class unit_B_sim: electric_device
 
         _primary_camshaft_current_notch = extract_signal_from_port_value(_AB1, (int) AB1_signals.unit_A_camshaft_notch, 
             (int) AB1_shift.unit_A_camshaft_notch);
-        set_primary_notch(_primary_camshaft_current_notch);
-        set_reverse_current_lamp(port_value_signal_active(_AB1, (int) AB1_signals.reverse_current) ? 1.0f : 0.0f);
-        set_transition_lamp     (port_value_signal_active(_AB1, (int) AB1_signals.transition     ) ? 0.5f : 0.0f);
-
-        _contactor_on_sound.Value  = port_value_signal_active(_AB1, (int) AB1_signals.contactor_on ) ? 1.0f : 0.0f;
-        _contactor_off_sound.Value = port_value_signal_active(_AB1, (int) AB1_signals.contactor_off) ? 1.0f : 0.0f;
+        _contactor_on_click  = port_value_signal_active(_AB1, (int) AB1_signals.contactor_on );
+        _contactor_off_click = port_value_signal_active(_AB1, (int) AB1_signals.contactor_off);
     }
 
-    private void simulate()
+    public void simulate()
     {
         check_if_disposed();
-        _contactor_on_sound.Value = _contactor_off_sound.Value = 0.0f;
-        _traction_motor_RPM.Value = _wheel_RPM.Value * traction_motor.gear_ratio;
-        _traction_motor_temperature.simulate(_traction_motor_heat.Value, _traction_motor_RPM.Value);
+        if (!_simulation_go)
+            return;
+
         _motor_cooling.Value = _blower_speed.Value * (blower_controller.ambient_temperature_C 
             - _motor_current_temperature.Value) * blower_controller.full_motor_cooling_power_at_1C;
         resistor_heat.simulate_overheat_damage(damage_per_frame: _resistor_damage, resistor_temperature: _resistor_temperature.Value);
         _pantograph.simulate(_total_load.Value);
 
-        float secondary_position = _secondary_controller.current_position;
-        set_seconday_notch(secondary_position);
-        _HUD_notch_readout.update(_primary_camshaft_current_notch, Mathf.RoundToInt(secondary_position));
         _integrity_refresh_time -= Time.deltaTime;
         if (_integrity_refresh_time <= 0.0f)
         {
@@ -335,6 +327,24 @@ internal class unit_B_sim: electric_device
                 Mathf.RoundToInt(Mathf.Clamp01(_integrity.Value) * 4095.0f));
             refresh_motor_status();
         }
+    }
+
+    private void update_gauges_and_external_ports()
+    {
+        _simulation_go = true;
+
+        _contactor_on_sound.Value  =  _contactor_on_click ? 1.0f : 0.0f;
+        _contactor_off_sound.Value = _contactor_off_click ? 1.0f : 0.0f;
+        _contactor_on_click        = _contactor_off_click = false;
+        set_primary_notch(_primary_camshaft_current_notch);
+        float secondary_position = _secondary_controller.current_position;
+        set_seconday_notch(secondary_position);
+        _HUD_notch_readout.update(_primary_camshaft_current_notch, Mathf.RoundToInt(secondary_position));
+        set_reverse_current_lamp(port_value_signal_active(_AB1, (int) AB1_signals.reverse_current) ? 1.0f : 0.0f);
+        set_transition_lamp     (port_value_signal_active(_AB1, (int) AB1_signals.transition     ) ? 0.5f : 0.0f);
+        _pantograph.update_external_ports();
+        _traction_motor_RPM.Value = _wheel_RPM.Value * traction_motor.gear_ratio;
+        _traction_motor_temperature.simulate(_traction_motor_heat.Value, _traction_motor_RPM.Value);
     }
 
     public override void Dispose()
@@ -348,7 +358,7 @@ internal class unit_B_sim: electric_device
             _battery_cabinet.Dispose();
             _control_stand.Dispose();
             _red_light_controller.Dispose();
-            _simulation.SimulationFlow.TickEvent -= simulate;
+            _simulation.SimulationFlow.TickEvent -= update_gauges_and_external_ports;
             _control_AB1.ValueUpdatedInternally  -= MU_AB1_control;
             _main_breaker.StateUpdated           -= main_breaker_trip_relay;
             _motor_breaker.StateUpdated          -= main_breaker_trip_relay;

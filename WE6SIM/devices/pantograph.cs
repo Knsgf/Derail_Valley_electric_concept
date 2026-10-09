@@ -98,6 +98,7 @@ internal class pantograph: electric_device
     private bool  _sidepan_stowed = true, _at_either_end = false;
 
     private float _last_pantograph_voltage = 0.0f, _remaining_time_till_drop = 0.0f, _remaining_time_till_retract = 0.0f;
+    private float _accumulated_wear = 0.0f;
 
     public static bool infinite_power { get; set; }
     
@@ -417,7 +418,7 @@ internal class pantograph: electric_device
                 _last_x = x;
                 _last_z = z;
             }
-            _regular_damage.Value = regular_damage;
+            _accumulated_wear += regular_damage;
         }
     }
 
@@ -433,5 +434,11 @@ internal class pantograph: electric_device
         check_if_disposed();
         _sidepan_stowed = stowed || _arcing_damage.Value > 0.0f;
         sidepan_toggled?.Invoke();
+    }
+
+    public void update_external_ports()
+    {
+        _regular_damage.Value = _accumulated_wear;
+        _accumulated_wear     = 0.0f;
     }
 }
