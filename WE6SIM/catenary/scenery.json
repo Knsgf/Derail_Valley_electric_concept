@@ -2838,5 +2838,122 @@
     "z": 11131088,
     "y": 158.985489,
     "wire_type": "trolley"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographsOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0145647544,
+      "z": 0.0,
+      "w": 0.9998939
+    },
+    "x": 2298931,
+    "z": 10751204,
+    "y": 158.791641
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/RaisePantographs",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0145647544,
+      "z": 0.0,
+      "w": 0.9998939
+    },
+    "x": 2298931,
+    "z": 10751204,
+    "y": 158.791641
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographs",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.014337643,
+      "z": 0.0,
+      "w": 0.999897242
+    },
+    "x": 2299806,
+    "z": 10781507,
+    "y": 158.77005
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/RaisePantographsOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.014337643,
+      "z": 0.0,
+      "w": 0.999897242
+    },
+    "x": 2299806,
+    "z": 10781507,
+    "y": 158.77005
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographsWarning",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0137107177,
+      "z": 0.0,
+      "w": 0.999906
+    },
+    "x": 2304099,
+    "z": 10931451,
+    "y": 158.780487
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographsWarningOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.00260507781,
+      "z": 0.0,
+      "w": 0.9999966
+    },
+    "x": 2297241,
+    "z": 10677198,
+    "y": 158.7692
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographs",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9999993,
+      "z": 0.0,
+      "w": 0.00121982465
+    },
+    "x": 2316312,
+    "z": 11371477,
+    "y": 159.413513
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/NeutralEndLowVoltageOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9999993,
+      "z": 0.0,
+      "w": 0.00121982465
+    },
+    "x": 2316312,
+    "z": 11371477,
+    "y": 159.413513
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographsWarningOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.0166077521,
+      "z": 0.0,
+      "w": 0.9998621
+    },
+    "x": 2311655,
+    "z": 11171183,
+    "y": 159.064423
   }
 ]
