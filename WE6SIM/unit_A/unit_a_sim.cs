@@ -584,11 +584,11 @@ internal partial class unit_A_sim: electric_device
             if (!_zero_currents)
             {
                 _total_torque_A = _total_torque_B = _resistance_update_time = 0.0f; 
-                _meter.count_energy(0.0f, 0.0f);
                 foreach (string branch_name in named_branches.Keys)
                     currents[branch_name] = 0.0f;
                 _zero_currents = true;
             }
+            _meter.count_energy(0.0f, 0.0f);    // Required to properly track ownership changes
         }
         else
         {

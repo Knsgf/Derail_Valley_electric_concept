@@ -32,10 +32,10 @@ internal class electricity_meter
     [HarmonyPatch(typeof(OwnedCarsStateController), "RegisterCarStateTracker")]
     private static class private_vehicle_registar
     {
-        public static void Postfix(TrainCar? car)
+        public static void Postfix(TrainCar? car, LocoDebtTrackerBase? carDebtTracker)
         {
             if (car != null)
-                reassign_tracker(car, null, is_private: true);
+                reassign_tracker(car, carDebtTracker as SimulatedCarDebtTracker);
         }
     }
 
@@ -45,7 +45,7 @@ internal class electricity_meter
         public static void Postfix(TrainCar? car, LocoDebtTrackerBase? locoDebtTracker)
         {
             if (car != null)
-                reassign_tracker(car, locoDebtTracker as SimulatedCarDebtTracker, is_private: false);
+                schedule_ownership_check(car, locoDebtTracker as SimulatedCarDebtTracker);
         }
     }
 
@@ -102,15 +102,33 @@ internal class electricity_meter
     private static readonly Dictionary<           TrainCar, LocoDebtTrackerBase> _new_trackers = [];
     private static readonly Dictionary<LocoDebtTrackerBase,   electricity_meter> _fee_trackers = [];
     
+    const string ownership_controller_type_name = "LocoOwnership.OwnershipHandler.LocoOwnershipController, LocoOwnership";
+    private static Type? _ownership_controller_type         = null;
+    private static bool  _ownership_controller_type_queried = false;
+
     private readonly TrainCar   _unit;
     private readonly unit_A_sim _unit_A;
     private readonly Port       _game_save_energy;
     private readonly float      _usage_factor;
 
-    private LocoDebtTrackerBase? _fee_tracker;
+    private LocoDebtTrackerBase?     _fee_tracker;
+    private SimulatedCarDebtTracker? _scheduled_tracker = null;
 
     private double _energy_used = 0.0;
     private bool   _energy_read = false;
+    private int    _ownership_check_frames_left;
+
+    private static bool is_vehicle_private(TrainCar vehicle)
+    {
+        if (vehicle.uniqueCar)
+            return true;
+        if (!_ownership_controller_type_queried)
+        {
+            _ownership_controller_type_queried = true;
+            _ownership_controller_type         = Type.GetType(ownership_controller_type_name, throwOnError: false);
+        }
+        return _ownership_controller_type != null && vehicle.gameObject.GetComponent(_ownership_controller_type) != null;
+    }
 
     private static void add_new_tracker(TrainCar? vehicle, SimulatedCarDebtTracker? company_tracker)
     {
@@ -119,7 +137,7 @@ internal class electricity_meter
         (bool is_WE, bool is_unit_A) = car_spawn_handler.is_unit_WE(vehicle);
         if (!is_WE || !is_unit_A)
             return;
-        if (vehicle.uniqueCar)
+        if (is_vehicle_private(vehicle))
         {
             _new_trackers[vehicle] = new private_electricity_tracker(vehicle);
             SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(vehicle, _new_trackers[vehicle]);
@@ -132,32 +150,40 @@ internal class electricity_meter
         }
     }
 
-    private static void reassign_tracker(TrainCar vehicle, SimulatedCarDebtTracker? tracker, bool is_private)
+    private static void reassign_tracker(TrainCar vehicle, SimulatedCarDebtTracker? tracker)
     {
-        TrainCar?          unit            = null;
-        electricity_meter? meter           = null;
-        bool               replace_tracker = false;
+        TrainCar?          unit  = null;
+        electricity_meter? meter = null;
         foreach (KeyValuePair<LocoDebtTrackerBase, electricity_meter> current_tracker in _fee_trackers)
         {
-            meter = current_tracker.Value;
-            unit  = meter._unit;
-            if (unit == vehicle 
-                && unit.uniqueCar == is_private 
-                && (current_tracker.Key is private_electricity_tracker) != is_private)
+            meter           = current_tracker.Value;
+            unit            = meter._unit;
+            bool is_private = is_vehicle_private(vehicle);
+            if (unit == vehicle && (current_tracker.Key is private_electricity_tracker) != is_private)
             {
-                replace_tracker = true;
+                meter.deregister_tracker(ownership_change: true, session_end: false);
+                _new_meters[unit] = meter;
+                add_new_tracker(unit, tracker);
                 break;
             }
         }
-        if (replace_tracker)
-        {
-            assert.test(meter != null && unit != null);
-            meter.deregister_tracker(ownership_change: true, session_end: false);
-            _new_meters[unit] = meter;
-            add_new_tracker(unit, tracker);
-        }
     }
     
+    private static void schedule_ownership_check(TrainCar vehicle, SimulatedCarDebtTracker? standard_tracker)
+    {
+        if (standard_tracker == null)
+            return;
+        foreach (electricity_meter meter in _fee_trackers.Values)
+        {
+            if (meter._unit == vehicle)
+            {
+                meter._scheduled_tracker           = standard_tracker;
+                meter._ownership_check_frames_left = 3;
+                break;
+            }
+        }
+    }
+
     private static void try_set_up_fee_tracker(TrainCar unit)
     {
         if (!_new_meters.ContainsKey(unit) || !_new_trackers.ContainsKey(unit))
@@ -182,6 +208,16 @@ internal class electricity_meter
 
     public void count_energy(float voltage, float current)
     {
+        if (_scheduled_tracker != null)
+        {
+            if (_ownership_check_frames_left > 0)
+                --_ownership_check_frames_left;
+            else
+            {
+                reassign_tracker(_unit, _scheduled_tracker);
+                _scheduled_tracker = null;
+            }
+        }
         if (_fee_tracker == null)
             return;
         if (!_energy_read)
