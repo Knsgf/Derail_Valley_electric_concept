@@ -42,6 +42,7 @@
     "x": 14968422,
     "z": 15073666,
     "y": 248.242035,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -59,6 +60,7 @@
     "x": 14985288,
     "z": 15109976,
     "y": 248.228928,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -76,6 +78,7 @@
     "x": 15002160,
     "z": 15146256,
     "y": 248.23941,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -93,6 +96,7 @@
     "x": 15019011,
     "z": 15182585,
     "y": 248.23175,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -110,6 +114,7 @@
     "x": 15035877,
     "z": 15218898,
     "y": 248.2562,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -127,6 +132,7 @@
     "x": 15049926,
     "z": 15249173,
     "y": 248.260666,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -135,6 +141,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
+    "kind": "slim",
     "tracks": 3,
     "orientation": {
       "x": 0.0,
@@ -149,6 +156,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
+    "kind": "slim",
     "tracks": 3,
     "orientation": {
       "x": 0.0,
@@ -163,6 +171,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
+    "kind": "slim",
     "tracks": 3,
     "orientation": {
       "x": 0.0,
@@ -177,6 +186,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
+    "kind": "slim",
     "tracks": 3,
     "orientation": {
       "x": 0.0,
@@ -191,6 +201,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
+    "kind": "slim",
     "tracks": 3,
     "orientation": {
       "x": 0.0,
@@ -205,6 +216,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
+    "kind": "slim",
     "tracks": 3,
     "orientation": {
       "x": 0.0,
@@ -228,6 +240,7 @@
     "x": 14962148,
     "z": 15045171,
     "y": 248.247971,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -245,6 +258,7 @@
     "x": 14951782,
     "z": 15027172,
     "y": 248.2373,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -262,6 +276,7 @@
     "x": 14924711,
     "z": 14972808,
     "y": 248.244858,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -279,6 +294,7 @@
     "x": 14912492,
     "z": 14956107,
     "y": 248.244186,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -296,6 +312,7 @@
     "x": 14898652,
     "z": 14941193,
     "y": 248.229263,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -313,6 +330,7 @@
     "x": 14883216,
     "z": 14927957,
     "y": 248.236023,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -330,6 +348,7 @@
     "x": 14864301,
     "z": 14915380,
     "y": 248.24823,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -347,6 +366,7 @@
     "x": 14834817,
     "z": 14898820,
     "y": 248.379623,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -364,6 +384,7 @@
     "x": 14812484,
     "z": 14888941,
     "y": 248.751312,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -381,6 +402,7 @@
     "x": 14783398,
     "z": 14879242,
     "y": 249.417313,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": false,
@@ -398,6 +420,7 @@
     "x": 14744684,
     "z": 14869123,
     "y": 250.217636,
+    "kind": "default",
     "pole_type": "Bridge",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": false,
@@ -415,6 +438,7 @@
     "x": 15070042,
     "z": 15281720,
     "y": 248.23851,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -432,6 +456,7 @@
     "x": 15120525,
     "z": 15390850,
     "y": 248.247131,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": false,
@@ -449,6 +474,7 @@
     "x": 15103615,
     "z": 15354046,
     "y": 248.244751,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -466,6 +492,7 @@
     "x": 15086786,
     "z": 15318068,
     "y": 248.2586,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -483,6 +510,7 @@
     "x": 14975258,
     "z": 15239394,
     "y": 248.231125,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -500,6 +528,7 @@
     "x": 14964498,
     "z": 15200808,
     "y": 248.245041,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -517,6 +546,7 @@
     "x": 14953783,
     "z": 15162200,
     "y": 248.229416,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -534,6 +564,7 @@
     "x": 14945176,
     "z": 15131144,
     "y": 248.2549,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -551,6 +582,7 @@
     "x": 14919434,
     "z": 15055407,
     "y": 248.250031,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -568,6 +600,7 @@
     "x": 14897671,
     "z": 14978345,
     "y": 248.250275,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -585,6 +618,7 @@
     "x": 14889089,
     "z": 14953224,
     "y": 248.244461,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -602,6 +636,7 @@
     "x": 14881454,
     "z": 14937933,
     "y": 248.234985,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -619,6 +654,7 @@
     "x": 14873026,
     "z": 14926198,
     "y": 248.257339,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -636,6 +672,7 @@
     "x": 14863623,
     "z": 14917142,
     "y": 248.234253,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -653,6 +690,7 @@
     "x": 14910616,
     "z": 15024108,
     "y": 248.244888,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -670,6 +708,7 @@
     "x": 14937207,
     "z": 15102506,
     "y": 248.244843,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -991,6 +1030,7 @@
     "x": 14936319,
     "z": 14993906,
     "y": 248.247711,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -1015,6 +1055,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
+    "kind": "slim",
     "tracks": 3,
     "orientation": {
       "x": 0.0,
@@ -1054,6 +1095,7 @@
     "x": 14960518,
     "z": 15045927,
     "y": 248.247971,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -1071,6 +1113,7 @@
     "x": 14972490,
     "z": 15071777,
     "y": 248.242035,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -1088,6 +1131,7 @@
     "x": 14989346,
     "z": 15108090,
     "y": 248.228928,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -1105,6 +1149,7 @@
     "x": 15006217,
     "z": 15144365,
     "y": 248.23941,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -1122,6 +1167,7 @@
     "x": 15023076,
     "z": 15180697,
     "y": 248.23175,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -1139,6 +1185,7 @@
     "x": 15039959,
     "z": 15216983,
     "y": 248.2562,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -1156,6 +1203,7 @@
     "x": 15054022,
     "z": 15247294,
     "y": 248.260666,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": true,
@@ -1679,6 +1727,7 @@
     "x": 14955732,
     "z": 15034557,
     "y": 248.267319,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -1808,6 +1857,7 @@
     "x": 15049915,
     "z": 15249178,
     "y": 248.260666,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -1825,6 +1875,7 @@
     "x": 15035881,
     "z": 15218897,
     "y": 248.2562,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -1842,6 +1893,7 @@
     "x": 15019012,
     "z": 15182585,
     "y": 248.23175,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -1859,6 +1911,7 @@
     "x": 15002155,
     "z": 15146259,
     "y": 248.23941,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -1876,6 +1929,7 @@
     "x": 14985283,
     "z": 15109978,
     "y": 248.228928,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -1893,6 +1947,7 @@
     "x": 14968417,
     "z": 15073669,
     "y": 248.242035,
+    "kind": "default",
     "pole_type": "Bracket",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -1910,6 +1965,7 @@
     "x": 14941392,
     "z": 15005958,
     "y": 248.266586,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2209,6 +2265,7 @@
     "x": 15068904,
     "z": 15279280,
     "y": 248.246231,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": false,
@@ -2396,6 +2453,7 @@
     "x": 14828328,
     "z": 14895665,
     "y": 248.4673,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2429,6 +2487,7 @@
     "x": 14985224,
     "z": 15275142,
     "y": 248.227478,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": true,
@@ -2446,6 +2505,7 @@
     "x": 14791871,
     "z": 14881784,
     "y": 249.228867,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": false,
@@ -2463,6 +2523,7 @@
     "x": 14846574,
     "z": 14905313,
     "y": 248.238022,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2762,6 +2823,7 @@
     "x": 14999457,
     "z": 15485156,
     "y": 248.245941,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2779,6 +2841,7 @@
     "x": 15001565,
     "z": 15445151,
     "y": 248.236,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2796,6 +2859,7 @@
     "x": 15004855,
     "z": 15416421,
     "y": 248.235413,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2813,6 +2877,7 @@
     "x": 15007686,
     "z": 15392521,
     "y": 248.2254,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2830,6 +2895,7 @@
     "x": 15007565,
     "z": 15376989,
     "y": 248.250229,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2847,6 +2913,7 @@
     "x": 14999892,
     "z": 15337693,
     "y": 248.243317,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2864,6 +2931,7 @@
     "x": 14994280,
     "z": 15297988,
     "y": 248.25769,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2881,6 +2949,7 @@
     "x": 14932891,
     "z": 15089037,
     "y": 248.259155,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -2898,6 +2967,7 @@
     "x": 14913508,
     "z": 15038421,
     "y": 248.245773,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": false,
@@ -3360,6 +3430,7 @@
     "x": 14928719,
     "z": 15054360,
     "y": 248.013657,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": false,
@@ -3377,6 +3448,7 @@
     "x": 14912382,
     "z": 15017215,
     "y": 248.213028,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -3394,6 +3466,7 @@
     "x": 14902079,
     "z": 14992682,
     "y": 248.265335,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -3443,6 +3516,7 @@
     "x": 14897062,
     "z": 14976320,
     "y": 248.240463,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -3566,6 +3640,7 @@
     "x": 14923915,
     "z": 15071563,
     "y": 248.245056,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3579,6 +3654,7 @@
     "x": 14926552,
     "z": 15081223,
     "y": 248.234,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3592,6 +3668,7 @@
     "x": 14929270,
     "z": 15090850,
     "y": 248.2639,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3605,6 +3682,7 @@
     "x": 14931941,
     "z": 15100500,
     "y": 248.236679,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3618,6 +3696,7 @@
     "x": 14934617,
     "z": 15110167,
     "y": 248.22908,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3631,6 +3710,7 @@
     "x": 14937337,
     "z": 15119818,
     "y": 248.267029,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3644,6 +3724,7 @@
     "x": 14940027,
     "z": 15129464,
     "y": 248.257187,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3657,6 +3738,7 @@
     "x": 14942736,
     "z": 15139164,
     "y": 248.248138,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3670,6 +3752,7 @@
     "x": 14945387,
     "z": 15148844,
     "y": 248.278473,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3683,6 +3766,7 @@
     "x": 14948099,
     "z": 15158520,
     "y": 248.238632,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3696,6 +3780,7 @@
     "x": 14950813,
     "z": 15168240,
     "y": 248.233551,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3709,6 +3794,7 @@
     "x": 14953497,
     "z": 15177971,
     "y": 248.253052,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3722,6 +3808,7 @@
     "x": 14956190,
     "z": 15187630,
     "y": 248.2554,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3735,6 +3822,7 @@
     "x": 14958868,
     "z": 15197286,
     "y": 248.257584,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3748,6 +3836,7 @@
     "x": 14961552,
     "z": 15206941,
     "y": 248.232422,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3761,6 +3850,7 @@
     "x": 14964247,
     "z": 15216638,
     "y": 248.226471,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3774,6 +3864,7 @@
     "x": 14966965,
     "z": 15226323,
     "y": 248.234512,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3787,6 +3878,7 @@
     "x": 14969647,
     "z": 15236001,
     "y": 248.25766,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3800,6 +3892,7 @@
     "x": 14972330,
     "z": 15245661,
     "y": 248.226273,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3813,6 +3906,7 @@
     "x": 14975046,
     "z": 15255338,
     "y": 248.236237,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3826,6 +3920,7 @@
     "x": 14977701,
     "z": 15264990,
     "y": 248.2451,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -3839,6 +3934,7 @@
     "x": 14980418,
     "z": 15274676,
     "y": 248.225922,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4188,6 +4284,7 @@
     "x": 14934260,
     "z": 15108903,
     "y": 248.221634,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4201,6 +4298,7 @@
     "x": 14937005,
     "z": 15118625,
     "y": 248.266541,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4214,6 +4312,7 @@
     "x": 14939702,
     "z": 15128315,
     "y": 248.254257,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4227,6 +4326,7 @@
     "x": 14942420,
     "z": 15138003,
     "y": 248.248428,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4240,6 +4340,7 @@
     "x": 14945064,
     "z": 15147669,
     "y": 248.276733,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4253,6 +4354,7 @@
     "x": 14947760,
     "z": 15157309,
     "y": 248.242157,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4266,6 +4368,7 @@
     "x": 14950466,
     "z": 15166990,
     "y": 248.230911,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4279,6 +4382,7 @@
     "x": 14953133,
     "z": 15176638,
     "y": 248.248337,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4292,6 +4396,7 @@
     "x": 14955814,
     "z": 15186291,
     "y": 248.256973,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4305,6 +4410,7 @@
     "x": 14958509,
     "z": 15195982,
     "y": 248.255341,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4318,6 +4424,7 @@
     "x": 14961185,
     "z": 15205631,
     "y": 248.240723,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4331,6 +4438,7 @@
     "x": 14963880,
     "z": 15215307,
     "y": 248.223984,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4344,6 +4452,7 @@
     "x": 14966602,
     "z": 15225037,
     "y": 248.2358,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4357,6 +4466,7 @@
     "x": 14969287,
     "z": 15234688,
     "y": 248.258072,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4370,6 +4480,7 @@
     "x": 14971974,
     "z": 15244372,
     "y": 248.228729,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4383,6 +4494,7 @@
     "x": 14974691,
     "z": 15254074,
     "y": 248.235718,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4396,6 +4508,7 @@
     "x": 14977358,
     "z": 15263744,
     "y": 248.2442,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4409,6 +4522,7 @@
     "x": 14980077,
     "z": 15273459,
     "y": 248.230164,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4422,6 +4536,7 @@
     "x": 14985452,
     "z": 15292772,
     "y": 248.251129,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4435,6 +4550,7 @@
     "x": 14988170,
     "z": 15302474,
     "y": 248.256409,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4448,6 +4564,7 @@
     "x": 14990828,
     "z": 15312137,
     "y": 248.2455,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4461,6 +4578,7 @@
     "x": 14982088,
     "z": 15280732,
     "y": 248.237045,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4794,6 +4912,7 @@
     "x": 14967925,
     "z": 15246477,
     "y": 248.226608,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4807,6 +4926,7 @@
     "x": 14970617,
     "z": 15256154,
     "y": 248.2363,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4820,6 +4940,7 @@
     "x": 14973247,
     "z": 15265833,
     "y": 248.245178,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4833,6 +4954,7 @@
     "x": 14976051,
     "z": 15275468,
     "y": 248.227386,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4846,6 +4968,7 @@
     "x": 14982427,
     "z": 15294504,
     "y": 248.254,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4859,6 +4982,7 @@
     "x": 14986066,
     "z": 15303836,
     "y": 248.251846,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4872,6 +4996,7 @@
     "x": 14989903,
     "z": 15313105,
     "y": 248.2461,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4885,6 +5010,7 @@
     "x": 14993467,
     "z": 15322492,
     "y": 248.268784,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4898,6 +5024,7 @@
     "x": 14996419,
     "z": 15332138,
     "y": 248.256134,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4911,6 +5038,7 @@
     "x": 14999064,
     "z": 15341798,
     "y": 248.244843,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4924,6 +5052,7 @@
     "x": 15001799,
     "z": 15351486,
     "y": 248.267471,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4937,6 +5066,7 @@
     "x": 15004505,
     "z": 15361168,
     "y": 248.235,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4950,6 +5080,7 @@
     "x": 15006813,
     "z": 15370945,
     "y": 248.269257,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4963,6 +5094,7 @@
     "x": 15007822,
     "z": 15380894,
     "y": 248.245041,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4976,6 +5108,7 @@
     "x": 15007779,
     "z": 15390904,
     "y": 248.232742,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -4989,6 +5122,7 @@
     "x": 15006980,
     "z": 15400925,
     "y": 248.243546,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5002,6 +5136,7 @@
     "x": 15005683,
     "z": 15410861,
     "y": 248.241119,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5015,6 +5150,7 @@
     "x": 15001539,
     "z": 15446818,
     "y": 248.244354,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5028,6 +5164,7 @@
     "x": 15001673,
     "z": 15456875,
     "y": 248.2568,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5041,6 +5178,7 @@
     "x": 15002262,
     "z": 15466923,
     "y": 248.248367,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5054,6 +5192,7 @@
     "x": 15003256,
     "z": 15476908,
     "y": 248.231277,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5067,6 +5206,7 @@
     "x": 15006159,
     "z": 15494608,
     "y": 248.2502,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5080,6 +5220,7 @@
     "x": 15008606,
     "z": 15504372,
     "y": 248.2306,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5093,6 +5234,7 @@
     "x": 15011704,
     "z": 15513887,
     "y": 248.248947,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5106,6 +5248,7 @@
     "x": 15015570,
     "z": 15523149,
     "y": 248.221451,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5119,6 +5262,7 @@
     "x": 15020262,
     "z": 15532030,
     "y": 248.245941,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5132,6 +5276,7 @@
     "x": 15025909,
     "z": 15540402,
     "y": 248.255035,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5145,6 +5290,7 @@
     "x": 15032377,
     "z": 15548052,
     "y": 248.262466,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5158,6 +5304,7 @@
     "x": 15039751,
     "z": 15554834,
     "y": 248.234512,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5171,6 +5318,7 @@
     "x": 15047958,
     "z": 15560649,
     "y": 248.2295,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5184,6 +5332,7 @@
     "x": 15056984,
     "z": 15565233,
     "y": 248.256912,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5197,6 +5346,7 @@
     "x": 15066576,
     "z": 15568363,
     "y": 248.255386,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5210,6 +5360,7 @@
     "x": 15076574,
     "z": 15569908,
     "y": 248.235031,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5223,6 +5374,7 @@
     "x": 15086656,
     "z": 15569704,
     "y": 248.2547,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5236,6 +5388,7 @@
     "x": 15096511,
     "z": 15567693,
     "y": 248.221542,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5249,6 +5402,7 @@
     "x": 15105794,
     "z": 15563871,
     "y": 248.248291,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5262,6 +5416,7 @@
     "x": 15114269,
     "z": 15558451,
     "y": 248.266891,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5275,6 +5430,7 @@
     "x": 15121798,
     "z": 15551790,
     "y": 248.226257,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5288,6 +5444,7 @@
     "x": 15128184,
     "z": 15543992,
     "y": 248.251343,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5301,6 +5458,7 @@
     "x": 15133408,
     "z": 15535349,
     "y": 248.259064,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5314,6 +5472,7 @@
     "x": 15137439,
     "z": 15526108,
     "y": 248.259857,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5327,6 +5486,7 @@
     "x": 15140393,
     "z": 15516448,
     "y": 248.2577,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5340,6 +5500,7 @@
     "x": 15142105,
     "z": 15474115,
     "y": 248.2591,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5353,6 +5514,7 @@
     "x": 15140595,
     "z": 15464213,
     "y": 248.251389,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5366,6 +5528,7 @@
     "x": 15138622,
     "z": 15454369,
     "y": 248.254822,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5379,6 +5542,7 @@
     "x": 15136227,
     "z": 15444570,
     "y": 248.222137,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5392,6 +5556,7 @@
     "x": 15133592,
     "z": 15434914,
     "y": 248.2361,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5405,6 +5570,7 @@
     "x": 15125523,
     "z": 15405761,
     "y": 248.234573,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5418,6 +5584,7 @@
     "x": 15122500,
     "z": 15396173,
     "y": 248.241989,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5431,6 +5598,7 @@
     "x": 15118852,
     "z": 15386750,
     "y": 248.240585,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5444,6 +5612,7 @@
     "x": 15114795,
     "z": 15377548,
     "y": 248.235764,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5457,6 +5626,7 @@
     "x": 15110484,
     "z": 15368434,
     "y": 248.246536,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5470,6 +5640,7 @@
     "x": 15106103,
     "z": 15359334,
     "y": 248.26683,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5480,9 +5651,10 @@
       "z": 0.0,
       "w": 0.133220285
     },
-    "x": 15127753,
-    "z": 15413983,
+    "x": 15127378,
+    "z": 15412613,
     "y": 248.230087,
+    "kind": "SideRailWall",
     "wire_attached": true
   },
   {
@@ -5496,6 +5668,7 @@
     "x": 15131624,
     "z": 15427997,
     "y": 248.240753,
+    "kind": "SideRailWall",
     "wire_attached": true
   },
   {
@@ -5509,6 +5682,7 @@
     "x": 15083246,
     "z": 15311679,
     "y": 248.262466,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5522,6 +5696,7 @@
     "x": 15077988,
     "z": 15303071,
     "y": 248.245819,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5535,6 +5710,7 @@
     "x": 15072578,
     "z": 15294534,
     "y": 248.266663,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5548,6 +5724,7 @@
     "x": 15067168,
     "z": 15286038,
     "y": 248.268951,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5561,6 +5738,7 @@
     "x": 15061741,
     "z": 15277566,
     "y": 248.245117,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5574,6 +5752,7 @@
     "x": 15056428,
     "z": 15269068,
     "y": 248.221954,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5587,6 +5766,7 @@
     "x": 15051366,
     "z": 15260430,
     "y": 248.249374,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5600,6 +5780,7 @@
     "x": 15046510,
     "z": 15251596,
     "y": 248.266479,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5613,6 +5794,7 @@
     "x": 15042001,
     "z": 15242630,
     "y": 248.22551,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5626,6 +5808,7 @@
     "x": 15037695,
     "z": 15233582,
     "y": 248.2522,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5639,6 +5822,7 @@
     "x": 15033483,
     "z": 15224446,
     "y": 248.258759,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5652,6 +5836,7 @@
     "x": 15029239,
     "z": 15215335,
     "y": 248.259811,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5665,6 +5850,7 @@
     "x": 15025042,
     "z": 15206228,
     "y": 248.257629,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5678,6 +5864,7 @@
     "x": 15020830,
     "z": 15197130,
     "y": 248.266449,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5691,6 +5878,7 @@
     "x": 15016562,
     "z": 15188026,
     "y": 248.226883,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5704,6 +5892,7 @@
     "x": 15012302,
     "z": 15178891,
     "y": 248.235886,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5717,6 +5906,7 @@
     "x": 15008103,
     "z": 15169809,
     "y": 248.259735,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5730,6 +5920,7 @@
     "x": 15003858,
     "z": 15160722,
     "y": 248.250687,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5743,6 +5934,7 @@
     "x": 14999642,
     "z": 15151589,
     "y": 248.261139,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5756,6 +5948,7 @@
     "x": 14995416,
     "z": 15142484,
     "y": 248.220642,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5769,6 +5962,7 @@
     "x": 14991191,
     "z": 15133348,
     "y": 248.233734,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5782,6 +5976,7 @@
     "x": 14986929,
     "z": 15124230,
     "y": 248.240692,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5795,6 +5990,7 @@
     "x": 14982719,
     "z": 15115116,
     "y": 248.246262,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5808,6 +6004,7 @@
     "x": 14978486,
     "z": 15106031,
     "y": 248.229675,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5821,6 +6018,7 @@
     "x": 14974207,
     "z": 15096930,
     "y": 248.23941,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5834,6 +6032,7 @@
     "x": 14970002,
     "z": 15087827,
     "y": 248.246384,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5847,6 +6046,7 @@
     "x": 14965942,
     "z": 15078598,
     "y": 248.226669,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5860,6 +6060,7 @@
     "x": 14962198,
     "z": 15069299,
     "y": 248.245956,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -5873,6 +6074,7 @@
     "x": 14958684,
     "z": 15059806,
     "y": 248.267624,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -6318,6 +6520,7 @@
     "x": 14978491,
     "z": 15283257,
     "y": 248.241669,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7267,6 +7470,7 @@
     "x": 15119048,
     "z": 15387222,
     "y": 248.240921,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7280,6 +7484,7 @@
     "x": 15115024,
     "z": 15378051,
     "y": 248.235016,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7293,6 +7498,7 @@
     "x": 15110740,
     "z": 15368965,
     "y": 248.246246,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7306,6 +7512,7 @@
     "x": 15106398,
     "z": 15359945,
     "y": 248.268158,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7319,6 +7526,7 @@
     "x": 15098366,
     "z": 15341585,
     "y": 248.2669,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7332,6 +7540,7 @@
     "x": 15095090,
     "z": 15332083,
     "y": 248.245575,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7345,6 +7554,7 @@
     "x": 15092015,
     "z": 15322525,
     "y": 248.255371,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7358,6 +7568,7 @@
     "x": 15088606,
     "z": 15313072,
     "y": 248.2351,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7371,6 +7582,7 @@
     "x": 15084905,
     "z": 15303766,
     "y": 248.242355,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7384,6 +7596,7 @@
     "x": 15080941,
     "z": 15294540,
     "y": 248.260345,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7397,6 +7610,7 @@
     "x": 15076726,
     "z": 15285386,
     "y": 248.250244,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7410,6 +7624,7 @@
     "x": 15072460,
     "z": 15276307,
     "y": 248.247513,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7423,6 +7638,7 @@
     "x": 15068212,
     "z": 15267231,
     "y": 248.227859,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7436,6 +7652,7 @@
     "x": 15064007,
     "z": 15258135,
     "y": 248.22879,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7449,6 +7666,7 @@
     "x": 15059756,
     "z": 15249058,
     "y": 248.261292,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7462,6 +7680,7 @@
     "x": 15101546,
     "z": 15349460,
     "y": 248.235229,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7715,6 +7934,7 @@
     "x": 15067108,
     "z": 15275431,
     "y": 248.255737,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7728,6 +7948,7 @@
     "x": 15062874,
     "z": 15266286,
     "y": 248.22052,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7741,6 +7962,7 @@
     "x": 15058646,
     "z": 15257144,
     "y": 248.242981,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7754,6 +7976,7 @@
     "x": 15054390,
     "z": 15248069,
     "y": 248.267456,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7767,6 +7990,7 @@
     "x": 15050184,
     "z": 15238944,
     "y": 248.230713,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7780,6 +8004,7 @@
     "x": 15045963,
     "z": 15229867,
     "y": 248.24263,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7793,6 +8018,7 @@
     "x": 15041726,
     "z": 15220789,
     "y": 248.263565,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7806,6 +8032,7 @@
     "x": 15037477,
     "z": 15211688,
     "y": 248.260925,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7819,6 +8046,7 @@
     "x": 15033211,
     "z": 15202481,
     "y": 248.25235,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7832,6 +8060,7 @@
     "x": 15029010,
     "z": 15193377,
     "y": 248.274277,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7845,6 +8074,7 @@
     "x": 15024767,
     "z": 15184308,
     "y": 248.231079,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7858,6 +8088,7 @@
     "x": 15020504,
     "z": 15175151,
     "y": 248.2357,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7871,6 +8102,7 @@
     "x": 15016282,
     "z": 15166005,
     "y": 248.258072,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7884,6 +8116,7 @@
     "x": 15012043,
     "z": 15156925,
     "y": 248.252289,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7897,6 +8130,7 @@
     "x": 15007798,
     "z": 15147760,
     "y": 248.260574,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7910,6 +8144,7 @@
     "x": 15003564,
     "z": 15138663,
     "y": 248.223053,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7923,6 +8158,7 @@
     "x": 14999327,
     "z": 15129531,
     "y": 248.231064,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7936,6 +8172,7 @@
     "x": 14995076,
     "z": 15120460,
     "y": 248.23555,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7949,6 +8186,7 @@
     "x": 14990846,
     "z": 15111309,
     "y": 248.251968,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7962,6 +8200,7 @@
     "x": 14986618,
     "z": 15102208,
     "y": 248.22641,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7975,6 +8214,7 @@
     "x": 14982365,
     "z": 15093111,
     "y": 248.237366,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -7988,6 +8228,7 @@
     "x": 14978182,
     "z": 15084025,
     "y": 248.246109,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -8001,6 +8242,7 @@
     "x": 14973944,
     "z": 15074942,
     "y": 248.224045,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -8366,6 +8608,7 @@
     "x": 14955480,
     "z": 15050190,
     "y": 248.239471,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -8379,6 +8622,7 @@
     "x": 14952513,
     "z": 15040638,
     "y": 248.256668,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -8392,6 +8636,7 @@
     "x": 14949510,
     "z": 15031091,
     "y": 248.247,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -8405,6 +8650,7 @@
     "x": 14946534,
     "z": 15021528,
     "y": 248.24678,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
@@ -8418,6 +8664,7 @@
     "x": 14943523,
     "z": 15011980,
     "y": 248.246338,
+    "kind": "SideRail",
     "wire_attached": true
   },
   {
