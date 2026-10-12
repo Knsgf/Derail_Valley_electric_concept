@@ -111,7 +111,7 @@ public partial class overhead_equipment
         private static string get_template(string wire_type, float length)
         {
             return (length < 25.0f && _wire_sections[wire_type].kind.Contains("plain_") && !_wire_sections[wire_type].kind.Contains("plain_half")) 
-                ? "TrolleyWire" 
+                ? "ShortWireMarker" 
                 : _wire_sections[wire_type].template;
         }
 #endif
