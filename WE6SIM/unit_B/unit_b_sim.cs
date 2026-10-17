@@ -304,8 +304,8 @@ internal class unit_B_sim: electric_device
 
         _primary_camshaft_current_notch = extract_signal_from_port_value(_AB1, (int) AB1_signals.unit_A_camshaft_notch, 
             (int) AB1_shift.unit_A_camshaft_notch);
-        _contactor_on_click  = port_value_signal_active(_AB1, (int) AB1_signals.contactor_on );
-        _contactor_off_click = port_value_signal_active(_AB1, (int) AB1_signals.contactor_off);
+        _contactor_on_click  |= port_value_signal_active(_AB1, (int) AB1_signals.contactor_on );
+        _contactor_off_click |= port_value_signal_active(_AB1, (int) AB1_signals.contactor_off);
     }
 
     public void simulate()

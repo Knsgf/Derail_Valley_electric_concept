@@ -691,7 +691,7 @@ internal partial class unit_A_sim: electric_device
         _HUD_notch_readout.update(Mathf.RoundToInt(primary_current_position), _secondary_camshaft_notch);
         _contactor_on_sound.Value  =  contactor_on_click ? 1.0f : 0.0f;
         _contactor_off_sound.Value = contactor_off_click ? 1.0f : 0.0f;
-        contactor_on_click        = contactor_off_click = false;
+        contactor_on_click         = contactor_off_click = false;
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_on , false);
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_off, false);
 
