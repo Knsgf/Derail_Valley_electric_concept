@@ -23,7 +23,7 @@ internal partial class circuit
     private readonly   node[] _nodes;
     private readonly branch[] _branches;
 
-    private readonly object        _background_blocker;
+    private readonly object        _circuit_update;
     private readonly sparse_matrix _incidence, _transposed_incidence, _negative_incidence;
     private readonly sparse_matrix _conductance, _EMFs, _conductance_staged, _EMFs_staged;
     private readonly sparse_matrix _left1 = new(), _left = new(), _virtual_currents = new();
@@ -93,9 +93,9 @@ internal partial class circuit
     }
 
     public circuit(circuit_builder circuit_info, Dictionary<string, branch_user> named_branches, 
-        Dictionary<string, branch_user> contactor_locations, object background_blocker)
+        Dictionary<string, branch_user> contactor_locations, object circuit_update_lock)
     {
-        _background_blocker = background_blocker;
+        _circuit_update = circuit_update_lock;
 
         node_builder.remove_extraneous_nodes();
         _nodes    = new   node[circuit_info.node_count  ];
@@ -145,7 +145,7 @@ internal partial class circuit
         node.circuit_setup_finished();
         branch.circuit_setup_finished();
         circuit_info.finish_set_up();
-        _branch_conductances_changed = [.. _branches];
+        _branch_conductances_changed = new(_branches);
     }
 
     private void update_conductances()
@@ -181,40 +181,44 @@ internal partial class circuit
             return;
         _simulation_in_progress = true;
 
-        if (_matrices_recalculation != null && _matrices_recalculation.IsCompleted)
+        bool matrices_redone = _matrices_recalculation != null && _matrices_recalculation.IsCompleted;
+        if (matrices_redone)
         {
-            sparse_matrix conductances = _conductance_staged;
-            foreach (branch current_branch in _branch_conductances_staged)
-                current_branch.conductance = conductances[current_branch.id, current_branch.id];
-            _branch_conductances_staged.Clear();
             (_right , _background_right ) = (_background_right , _right );
             (_solver, _background_solver) = (_background_solver, _solver);
-            _matrices_recalculation = null;
+            _matrices_recalculation       = null;
         }
 
         assert.test(_branch_EMFs_staged.Count == 0);
         (_branch_EMFs_staged, _branch_EMFs_changed) = (_branch_EMFs_changed, _branch_EMFs_staged);
         _EMFs_staged.copy_from(_EMFs);
-        if (_branch_conductances_changed.Count > 0 && _branch_conductances_staged.Count == 0)
+        if (_branch_conductances_changed.Count > 0 && _branch_conductances_staged.Count == 0 && _matrices_recalculation == null)
         {
             (_branch_conductances_staged, _branch_conductances_changed) = (_branch_conductances_changed, _branch_conductances_staged);
-            assert.test(_branch_conductances_staged.Count > 0);
             _conductance_staged.copy_from(_conductance);
             _matrices_recalculation = Task.Run(update_conductances);
         }
         
         await Task.Run(run_solver);
-        lock (_background_blocker)
+        node [] nodes           = _nodes;
+        float[] node_potentials = _potentials;
+        lock (_circuit_update)
         {
-            node [] nodes           = _nodes;
-            float[] node_potentials = _potentials;
+            if (matrices_redone)
+            {
+                sparse_matrix conductances = _conductance_staged;
+                foreach (branch current_branch in _branch_conductances_staged)
+                    current_branch.conductance = conductances[current_branch.id, current_branch.id];
+                _branch_conductances_staged.Clear();
+            }
+
             for (int node_index = _last_active_node; node_index >= 0; --node_index)
                 nodes[node_index].set_potential(node_potentials[node_index]);
             sparse_matrix EMFs = _EMFs_staged;
             foreach (branch current_branch in _branch_EMFs_staged)
                 current_branch.set_current_EMF_from_matrix(EMFs[current_branch.id, 0]);
-            _branch_EMFs_staged.Clear();
         }
+        _branch_EMFs_staged.Clear();
         _simulation_in_progress = false;
     }
 }
