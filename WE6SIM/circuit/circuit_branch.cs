@@ -15,6 +15,7 @@ internal partial class circuit
         float closed_resistance  { get; set; }
         float conductance        { get; }
         float current            { get; }
+        float voltage_drop       { get; }
         float EMF                { get; set; }
         void toggle_contactor(string designation, bool switch_on);
         bool is_contactor_on(string designation);
@@ -72,7 +73,15 @@ internal partial class circuit
             get
             {
                 float current = (_start_ptential - _end_potential + _matrix_EMF) * _current_conductance;
-                return _reversed_EMF ? -current : current;
+                return _reversed_EMF ? (-current) : current;
+            }
+        }
+        public float voltage_drop
+        {
+            get
+            {
+                float voltage = _start_ptential - _end_potential;
+                return _reversed_EMF ? (-voltage) : voltage;
             }
         }
 
