@@ -9,6 +9,8 @@ using LocoSim.Implementations;
 using electric_sim.circuit_sim;
 using electric_sim.utilities;
 
+using static electric_sim.circuit_sim.circuit;
+
 namespace electric_sim.devices;
 
 internal class traction_motor
@@ -21,7 +23,8 @@ internal class traction_motor
     private readonly string _armature_name, _field1_name, _field2_name;
     private readonly float  _armature_resistance, _field1_resistance, _field2_resistance, _torque_factor, _EMF_factor;
 
-    private bool _dynamic_brake_kickstarter_winding_on = false;
+    private bool  _dynamic_brake_kickstarter_winding_on = false;
+    private float _EMF_correction = 0.0f;
 
     public const float gear_ratio = 5.36f, internal_resistance = 0.21f, armature_part = 0.65f, field_partitioning = 0.75f;
 
@@ -32,11 +35,13 @@ internal class traction_motor
     public float EMF           { get; private set; }
     public float heat_emission { get; private set; }
 
-    //private readonly int _motor_number;
+#if DEBUG
+    private readonly int _motor_number;
+#endif
     private readonly bool _has_kickstarter;
 
     public traction_motor(int motor_number, float torque_multiplier, float EMF_multiplier, 
-        Port wheel_RPM, Dictionary<string, circuit.branch_user> named_branches)
+        Port wheel_RPM, Dictionary<string, branch_user> named_branches)
     {
         _wheel_RPM = wheel_RPM;
         assert.test(motor_number >= 1 && motor_number <= 6);
@@ -54,23 +59,27 @@ internal class traction_motor
         _torque_factor = torque_multiplier * torque_factor * gear_ratio;
         _EMF_factor    =    EMF_multiplier * (-EMF_factor);
 
-        //_motor_number = motor_number;
+#if DEBUG
+        _motor_number = motor_number;
+#endif
         _has_kickstarter = (motor_number & 1) != 0;
     }
     
-    public void simulate(bool rheostatic_braking, Dictionary<string, float> currents, Dictionary<string, circuit.branch_user> named_branches)
+    public void simulate(bool rheostatic_braking, bool separate_excitation,
+        Dictionary<string, float> currents, Dictionary<string, circuit.branch_user> named_branches)
     {
         float motor_RPM = _wheel_RPM.Value * gear_ratio, armature_current, field1_current, field2_current;
 
         //const float test_speed = 10.0f;
         //motor_RPM = (test_speed / 3.6f) / 0.56f * (30.0f / Mathf.PI) * gear_ratio;
         
-        string armature_name = _armature_name;
-        load_current         = armature_current = currents[armature_name];
-        field1_current                          = currents[ _field1_name];
-        field_current        = field2_current   = currents[ _field2_name];
-        float magnetic_flux1 = (min_flux + Mathf.Clamp(Mathf.Abs(field1_current), 0.0f, max_flux - min_flux)) * (1.0f - field_partitioning);
-        float magnetic_flux2 = (min_flux + Mathf.Clamp(Mathf.Abs(field2_current), 0.0f, max_flux - min_flux)) *         field_partitioning;
+        string armature_name  = _armature_name;
+        load_current          = armature_current = currents[armature_name];
+        field1_current                           = currents[ _field1_name];
+        field_current         = field2_current   = currents[ _field2_name];
+        float magnetic_flux1  = (min_flux + Mathf.Clamp(Mathf.Abs(field1_current), 0.0f, max_flux - min_flux)) * (1.0f - field_partitioning);
+        float magnetic_flux2  = (min_flux + Mathf.Clamp(Mathf.Abs(field2_current), 0.0f, max_flux - min_flux)) *         field_partitioning;
+        bool  dynamic_braking = rheostatic_braking || separate_excitation;
         if (field1_current < 0.0f)
             magnetic_flux1 = -magnetic_flux1;
         if (field2_current < 0.0f)
@@ -84,21 +93,30 @@ internal class traction_motor
         if (_dynamic_brake_kickstarter_winding_on)
             magnetic_flux += kickstarter_winding_flux;
 
-        float  motor_EMF = _EMF_factor * magnetic_flux * motor_RPM;
-        EMF              = named_branches[armature_name].EMF = Mathf.LerpUnclamped(named_branches[armature_name].EMF, motor_EMF, 0.75f);
-        RPM              = motor_RPM;
-        wheel_torque     = _torque_factor * armature_current * magnetic_flux;
-        heat_emission    = armature_current * armature_current * _armature_resistance 
-                         +   field1_current *   field1_current *   _field1_resistance
-                         +   field2_current *   field2_current *   _field2_resistance;
-
-        /*
-        if (_motor_number == 1)
-        {
-            Main.diagnostics?.Value = armature_current;
+        branch_user armature_branch       = named_branches[armature_name];
+        float       armature_voltage_drop = armature_branch.voltage_drop, motor_EMF;
+        if (dynamic_braking || absolute_current < 1.0f || armature_voltage_drop * motor_RPM < 0.0f)
+        { 
+            motor_EMF = _EMF_factor * magnetic_flux * motor_RPM; 
+            //Main.log($"MTRD{_motor_number} ME={armature_branch.EMF} AV={armature_voltage_drop} AC={armature_current} MF={magnetic_flux} WF={Mathf.Abs(magnetic_flux / armature_current)} NME={motor_EMF} MEC={_EMF_correction} IAC={armature_branch.current} IMC={named_branches[_field1_name].current} IMC2={named_branches[_field2_name].current}");
         }
-        else if (_motor_number == 2)
-            Main.diagnostics2?.Value = armature_current;
-        */
+        else
+        {
+            float EMF_RPM_EFW_product = _EMF_factor * Mathf.Abs(motor_RPM * magnetic_flux / armature_current);
+            float predicted_current   = Mathf.Abs(armature_voltage_drop / (_armature_resistance - EMF_RPM_EFW_product));
+            motor_EMF                 = EMF_RPM_EFW_product * predicted_current;
+            if (motor_RPM < 0.0f)
+                motor_EMF = -motor_EMF;
+            //Main.log($"MTRS{_motor_number} ME={armature_branch.EMF} AV={armature_voltage_drop} AC={armature_current} MF={magnetic_flux} WF={Mathf.Abs(magnetic_flux / armature_current)} PC={predicted_current} NME={motor_EMF} MEC={_EMF_correction} IAC={armature_branch.current} IMC={named_branches[_field1_name].current} IMC2={named_branches[_field2_name].current}");
+        }
+
+        _EMF_correction    += EMF       - armature_branch.EMF;
+        EMF                 = motor_EMF;
+        armature_branch.EMF = motor_EMF + _EMF_correction;
+        RPM                 = motor_RPM;
+        wheel_torque        = _torque_factor * armature_current * magnetic_flux;
+        heat_emission       = armature_current * armature_current * _armature_resistance 
+                            +   field1_current *   field1_current *   _field1_resistance
+                            +   field2_current *   field2_current *   _field2_resistance;
     }
 }
