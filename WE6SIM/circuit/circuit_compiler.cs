@@ -134,7 +134,7 @@ internal class circuit_compiler
 
             case element_type.named_branch:
                 if (branch_definition.branch_name != null)
-                    throw new MalformedCircuitException("$Branch with multiple names at {row}, {column}");
+                    throw new MalformedCircuitException($"Branch with multiple names at {row}, {column}");
                 branch_definition.branch_name  = name;
                 branch_definition.reversed_EMF = false;
                 branch_definition.add_resistance(name, resistance);
@@ -142,7 +142,7 @@ internal class circuit_compiler
 
             case element_type.named_branch_reversed:
                 if (branch_definition.branch_name != null)
-                    throw new MalformedCircuitException("$Branch with multiple names at {row}, {column}");
+                    throw new MalformedCircuitException($"Branch with multiple names at {row}, {column}");
                 branch_definition.branch_name  = name;
                 branch_definition.reversed_EMF = true;
                 branch_definition.add_resistance(name, resistance);
