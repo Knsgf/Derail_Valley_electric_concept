@@ -66,7 +66,7 @@ internal partial class circuit
                 if (!log_started)
                 {
                     log_started = true;
-                    Main.log("----------------------------------------------------------------------------------------------------------");
+                    Main.log("-A--------------------------------------------------------------------------------------------------------");
                 }
                 bool has_name = _branch_names.TryGetValue(current_branch, out string? branch_name);
                 if (!has_name)
@@ -121,7 +121,7 @@ internal partial class circuit
                 if (!log_started)
                 {
                     log_started = true;
-                    Main.log("----------------------------------------------------------------------------------------------------------");
+                    Main.log("-V--------------------------------------------------------------------------------------------------------");
                 }
                 bool has_name = _branch_names.TryGetValue(current_branch, out string? branch_name);
                 if (!has_name)
