@@ -51,6 +51,16 @@ internal partial class circuit_builder
             }
         }
 
+        private static node_builder locate_incoming_node(branch_builder branch)
+        {
+            foreach (node_builder current in __all_nodes)
+            {
+                if (current.incoming_branches.Contains(branch))
+                    return current;
+            }
+            throw new MalformedCircuitException($"Dangling branch {branch.branch_name}");
+        }
+        
         private void squish_empty_branches()
         {
             if (__setup_done)
@@ -60,19 +70,12 @@ internal partial class circuit_builder
                 node_builder? connected_node = null;
                 foreach (branch_builder branch in outgoing_branches)
                 {
-                    if (!branch.is_empty)
-                        continue;
-                    foreach (node_builder current in __all_nodes)
+                    if (branch.is_empty)
                     {
-                        if (current.incoming_branches.Contains(branch))
-                        {
-                            connected_node = current;
-                            assert.test(connected_node != this);
-                            goto loop_exit;
-                        }
+                        connected_node = locate_incoming_node(branch);
+                        break;
                     }
                 }
-            loop_exit:
                 if (connected_node == null)
                     return;
 
@@ -107,6 +110,29 @@ internal partial class circuit_builder
                     node_builders[index].squish_empty_branches();
             }
             assert.test(!__base_node.squished);
+        }
+
+        public static void flip_revesed_branches()
+        {
+            List<branch_builder> examined_branches = [];
+            foreach (node_builder outgoing_node in __all_nodes)
+            {
+                examined_branches.Clear();
+                examined_branches.AddRange(outgoing_node.outgoing_branches);
+                foreach (branch_builder current_branch in examined_branches)
+                {
+                    if (current_branch.reversed_EMF)
+                    {
+                        node_builder incoming_node = locate_incoming_node(current_branch);
+                        assert.test(incoming_node.incoming_branches.Contains(current_branch));
+                        outgoing_node.outgoing_branches.Remove(current_branch);
+                        outgoing_node.incoming_branches.Add   (current_branch);
+                        incoming_node.incoming_branches.Remove(current_branch);
+                        incoming_node.outgoing_branches.Add   (current_branch);
+                        current_branch.reversed_EMF = false;
+                    }
+                }
+            }
         }
     }
 }
