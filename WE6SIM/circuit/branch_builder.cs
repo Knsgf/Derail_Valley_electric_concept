@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace electric_sim.circuit_sim;
 
-internal partial class circuit_builder
+public partial class circuit_builder
 {
-    internal class branch_builder
+    public class branch_builder
     {
         private static int __next_id = 0;
         

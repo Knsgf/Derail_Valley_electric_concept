@@ -7,9 +7,9 @@ using electric_sim.utilities;
 
 namespace electric_sim.circuit_sim;
 
-internal partial class circuit_builder
+public partial class circuit_builder
 {
-    internal class node_builder
+    public class node_builder
     {
         private (int diagram_row, int diagram_column) _location;
 

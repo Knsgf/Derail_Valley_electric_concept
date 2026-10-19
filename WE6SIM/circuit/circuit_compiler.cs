@@ -9,7 +9,7 @@ using static electric_sim.circuit_sim.circuit_builder;
 
 namespace electric_sim.circuit_sim;
 
-internal class circuit_compiler
+public class circuit_compiler
 {
     enum element_type { unknown, untracked_resistor, named_branch, named_branch_reversed, contactor };
     

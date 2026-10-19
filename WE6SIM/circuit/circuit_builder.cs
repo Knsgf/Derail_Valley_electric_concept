@@ -7,7 +7,7 @@ using electric_sim.utilities;
 
 namespace electric_sim.circuit_sim;
 
-internal partial class circuit_builder
+public partial class circuit_builder
 {
     private static readonly HashSet<node_builder> __all_nodes = [];
     private static node_builder? __base_node = null;

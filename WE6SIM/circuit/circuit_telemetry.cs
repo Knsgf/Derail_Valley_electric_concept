@@ -8,7 +8,7 @@ using electric_sim.utilities;
 
 namespace electric_sim.circuit_sim;
 
-internal partial class circuit
+public partial class circuit
 {
     internal static class circuit_telemetry
     {

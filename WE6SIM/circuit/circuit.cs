@@ -13,7 +13,7 @@ namespace electric_sim.circuit_sim;
 internal class MalformedCircuitException(string message): Exception(message)
 { }
 
-internal partial class circuit
+public partial class circuit
 {
     private enum connection { not_connected = 0, at_start = 1, at_end = 2, at_both = 3 }
     

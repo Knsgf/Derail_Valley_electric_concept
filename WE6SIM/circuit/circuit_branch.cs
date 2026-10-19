@@ -7,7 +7,7 @@ using electric_sim.utilities;
 
 namespace electric_sim.circuit_sim;
 
-internal partial class circuit
+public partial class circuit
 {
     public interface branch_user
     {

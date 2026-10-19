@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace electric_sim.circuit_sim;
 
-internal partial class circuit
+public partial class circuit
 {
     private struct node
     {
