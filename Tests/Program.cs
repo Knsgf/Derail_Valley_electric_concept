@@ -12,15 +12,17 @@ namespace Tests
     {
         const string test_diagram = 
             "\n"
-            + "                  *-----#C#---*  \n"
-            + "                  |           |  \n"
-            + "                  |  *--<R4@--*  \n"
-            + "                  |  |           \n"
-            + "*--@R1>--*--<R2@--+--*           \n"
-            + "|                 |  |           \n"
-            + "|                 |  *--@R3>--*  \n"
-            + "|                 |           |  \n"
-            + "*------<B@--------*-----[R5]--*  \n";
+            +  "                    *--#C#--*       \n"
+            + @"                   /         \ " + "\n"
+            +  "                  *           *     \n"
+            +  "                  |           |     \n"
+            +  "                  |  *--<R4@--*     \n"
+            +  "                  |  |              \n"
+            +  "*--@R1>--*--<R2@--+--*              \n"
+            +  "|                 |  |              \n"
+            +  "|                 |  *--@R3>--*     \n"
+            +  "|                 |           |     \n"
+            +  "*------<B@--------*-----[R5]--*     \n";
         static readonly Dictionary<string, float> _resistances = new Dictionary<string, float>()
         {
             ["B" ] = 1.0f,
