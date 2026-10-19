@@ -44,12 +44,14 @@ internal partial class unit_A_sim
             {
                 _drive.run(line_voltage);
                 float raw_field_position = field_handle_postion / control_stand.field_handle_last_notch;
-                float voltage_adjust = (1.0f - motors_volts / line_voltage) * max_exciter_voltage;
-                exciter_EMF = Mathf.Clamp(min_exciter_voltage * (1.0f - raw_field_position) 
-                    + max_exciter_voltage * raw_field_position + voltage_adjust, min_exciter_voltage, max_exciter_voltage);
-                float exciter_power  = unit._currents["EXT"] * exciter_EMF;
-                float handle_power   = Mathf.LerpUnclamped(min_exciter_power, max_exciter_power, field_handle_postion / control_stand.field_handle_last_notch);
-                float relative_speed = _drive.relative_speed;
+                float voltage_adjust     = (motors_volts <= line_voltage) 
+                                         ? 0.0f 
+                                         : (1.0f - motors_volts / line_voltage) * max_exciter_voltage;
+                exciter_EMF              = Mathf.Clamp(Mathf.LerpUnclamped(min_exciter_voltage, max_exciter_voltage, raw_field_position)
+                                         + voltage_adjust, min_exciter_voltage, max_exciter_voltage);
+                float exciter_power      = unit._currents["EXT"] * exciter_EMF;
+                float handle_power       = Mathf.LerpUnclamped(min_exciter_power, max_exciter_power, raw_field_position);
+                float relative_speed     = _drive.relative_speed;
                 if (relative_speed < 1.0f)
                     handle_power *= relative_speed;
                 if (exciter_power > handle_power)
@@ -57,7 +59,7 @@ internal partial class unit_A_sim
                 this.relative_speed = relative_speed;
             }
             unit._named_branches["EXT"].EMF = exciter_EMF;
-            current_draw = _drive.current_draw;
+            current_draw                    = _drive.current_draw;
         }
 
         public void update_external_ports()
