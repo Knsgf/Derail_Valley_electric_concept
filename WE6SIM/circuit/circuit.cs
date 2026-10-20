@@ -73,7 +73,8 @@ public partial class circuit
             return current_branch;
         }
 
-        current_branch = new(branch_definition.resistances, branch_definition.reversed_EMF, branch_definition.contactors);
+        assert.test(!branch_definition.reversed_EMF);
+        current_branch = new(branch_definition.resistances, branch_definition.contactors);
         if (!string.IsNullOrWhiteSpace(branch_definition.branch_name))
         {
             if (named_branches.ContainsKey(branch_definition.branch_name!))  //  Someone forgot to tag that IsNullOrWhiteSpace() always returns true if argument is null
@@ -98,6 +99,7 @@ public partial class circuit
         _circuit_update = circuit_update_lock;
 
         node_builder.remove_extraneous_nodes();
+        node_builder.flip_reversed_branches();
         _nodes    = new   node[circuit_info.node_count  ];
         _branches = new branch[circuit_info.branch_count];
         set_up_nodes(circuit_info, named_branches, contactor_locations);

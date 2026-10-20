@@ -31,10 +31,8 @@ public partial class circuit
 
         private int _contactors_off = int.MaxValue;
 
-        private readonly bool _reversed_EMF = false;
-
         private float _closed_conductance = 0.0f, _current_conductance = 0.0f;
-        private float _start_ptential = 0.0f, _end_potential = 0.0f, _EMF = 0.0f, _future_EMF = 0.0f, _matrix_EMF = 0.0f;
+        private float _start_ptential     = 0.0f, _end_potential       = 0.0f, _EMF = 0.0f, _future_EMF = 0.0f;
 
 
         public float future_conductance => (_contactors_off != 0) ? 0.0f : _closed_conductance;
@@ -64,26 +62,12 @@ public partial class circuit
             get => _EMF;
             set
             {
-                _future_EMF = _reversed_EMF ? -value : value;
+                _future_EMF = value;
                 EMF_changed?.Invoke(this);
             }
         }
-        public float current
-        {
-            get
-            {
-                float current = (_start_ptential - _end_potential + _matrix_EMF) * _current_conductance;
-                return _reversed_EMF ? (-current) : current;
-            }
-        }
-        public float voltage_drop
-        {
-            get
-            {
-                float voltage = _start_ptential - _end_potential;
-                return _reversed_EMF ? (-voltage) : voltage;
-            }
-        }
+        public float current      => (_start_ptential - _end_potential + _EMF) * _current_conductance;
+        public float voltage_drop =>  _start_ptential - _end_potential;
 
         public int id { get; private set; }
 
@@ -92,8 +76,7 @@ public partial class circuit
 
         public void set_current_EMF_from_matrix(float EMF)
         {
-            _matrix_EMF = EMF;
-            _EMF        = _reversed_EMF ? -EMF : EMF;
+            _EMF = EMF;
         }
         
         private void copy_dict<_type_>(Dictionary<string, _type_> source, Dictionary<string, _type_> destination)
@@ -102,7 +85,7 @@ public partial class circuit
                 destination[item.Key] = item.Value;
         }
 
-        public branch(Dictionary<string, float> resistances, bool reverse_EMF, Dictionary<string, int> contactors)
+        public branch(Dictionary<string, float> resistances, Dictionary<string, int> contactors)
         {
             id = __next_available_id++;
 
@@ -112,8 +95,6 @@ public partial class circuit
             if (total_resistance < min_branch_resistance)
                 total_resistance = min_branch_resistance;
             _closed_conductance = 1.0f / total_resistance;
-
-            _reversed_EMF = reverse_EMF;
 
             copy_dict(contactors, _contactors);
             assert.test(_contactors.Count <= 30);

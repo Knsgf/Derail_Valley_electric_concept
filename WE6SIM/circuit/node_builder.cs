@@ -112,7 +112,7 @@ public partial class circuit_builder
             assert.test(!__base_node.squished);
         }
 
-        public static void flip_revesed_branches()
+        public static void flip_reversed_branches()
         {
             List<branch_builder> examined_branches = [];
             foreach (node_builder outgoing_node in __all_nodes)
