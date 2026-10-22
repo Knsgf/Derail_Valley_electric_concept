@@ -15,7 +15,7 @@ public class traction_motor
 {
     const float max_flux = 300.0f, min_flux = 1.0f, kickstarter_winding_flux = 10.0f;
     const float kickstarter_on_maximum_current = 50.0f, kickstarter_off_minimum_current = 100.0f;
-    const float torque_factor = 0.0347f, EMF_factor = 0.003634f, inductance = 1.0f;
+    const float torque_factor = 0.0347f, EMF_factor = 0.003634f, inductance = 5.7f;
 
     private readonly branch_user _armature_branch, _field1_branch, _field2_branch;
     private readonly float       _armature_resistance, _field1_resistance, _field2_resistance, _torque_factor, _EMF_factor;
