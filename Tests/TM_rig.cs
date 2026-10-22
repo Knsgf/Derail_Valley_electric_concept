@@ -1,4 +1,4 @@
-#define INPUT_OFF
+//#define INPUT_OFF
 
 using System;
 using System.Collections.Generic;
@@ -82,6 +82,7 @@ namespace Tests
             _TM_rig = circuit_compiler.trace(_resistances, TM_test_rig).set_up_simulation(out _named_branches, out _contactor_locations, _simulation_sync);
             _motor1 = new traction_motor(1, 1.0f, multiplier, _named_branches);
             circuit.telemetry.set_up(_TM_rig, _named_branches, Console.WriteLine);
+            traction_motor.print = Console.WriteLine;
 
             _supply_voltage    = Mathf.Clamp(starting_voltage, 0.0f, 2000.0f);
             _supply_resistance = Mathf.Max(starting_resistance, 0.0f);
@@ -109,10 +110,10 @@ namespace Tests
         
         internal void run()
         {
-            var currents = new Dictionary<string, float>();
             while (true)
             {
-                circuit.telemetry.log_sorted_currents(_TM_rig, -1.0f, -1.0f);
+                lock (_simulation_sync)
+                    circuit.telemetry.log_sorted_currents(_TM_rig, -1.0f, 10.0f); 
 
 #if !INPUT_OFF            
                 switch(char.ToLowerInvariant(Console.ReadKey().KeyChar))
@@ -167,9 +168,7 @@ namespace Tests
                 }
 #endif
                 
-                foreach (KeyValuePair<string, circuit.branch_user> current_branch in _named_branches)
-                    currents[current_branch.Key] = current_branch.Value.current;
-                _motor1.simulate(false, false, wheel_RPM(_speed), currents, _named_branches);
+                _motor1.simulate(false, false, wheel_RPM(_speed));
                 _TM_rig.simulate();
             }
         }

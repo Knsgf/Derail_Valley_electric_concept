@@ -684,12 +684,12 @@ internal partial class unit_A_sim: electric_device
             for (int motor_index = motors / 2; motor_index >= 0; --motor_index)
             {
                 traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, 
-                    rheostatic_brake_on || regenerative_on, wheel_RPM_A, currents, named_branches); 
+                    rheostatic_brake_on || regenerative_on, wheel_RPM_A); 
             }
             for (int motor_index = motors / 2 + 1; motor_index <= motors; ++motor_index)
             {
                 traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, 
-                    rheostatic_brake_on || regenerative_on, wheel_RPM_B, currents, named_branches); 
+                    rheostatic_brake_on || regenerative_on, wheel_RPM_B); 
             }
             _circuit.simulate();
         }
