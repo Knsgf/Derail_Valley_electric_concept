@@ -5,19 +5,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using electric_sim.utilities;
+using System;
 
 namespace electric_sim.circuit_sim;
 
 public partial class circuit
 {
-    internal static class circuit_telemetry
+    public static class telemetry
     {
         private static readonly List<branch> _branches_sorted = [];
         private static readonly Dictionary<branch_user, string> _branch_names      = [];
         private static readonly Dictionary<     string,   bool> _branch_contactors = [];
         private static circuit? _monitored_circuit;
 
-        public static void set_up(circuit monitored_circuit, Dictionary<string, branch_user> named_branches)
+        private static Action<string> print = (_) => {};
+
+        public static void set_up(circuit monitored_circuit, Dictionary<string, branch_user> named_branches, 
+            Action<string> printer)
         {
             if (_monitored_circuit == null)
             {
@@ -25,6 +29,7 @@ public partial class circuit
                 foreach (KeyValuePair<string, branch_user> current_branch in named_branches)
                     _branch_names[current_branch.Value] = current_branch.Key;
                 _branches_sorted.AddRange(monitored_circuit._branches);
+                print = printer;
             }
         }
 
@@ -66,7 +71,7 @@ public partial class circuit
                 if (!log_started)
                 {
                     log_started = true;
-                    Main.log("-A--------------------------------------------------------------------------------------------------------");
+                    print("-A--------------------------------------------------------------------------------------------------------");
                 }
                 bool has_name = _branch_names.TryGetValue(current_branch, out string? branch_name);
                 if (!has_name)
@@ -75,10 +80,10 @@ public partial class circuit
                 current_branch.contactor_telemetry(_branch_contactors);
                 foreach (KeyValuePair<string, bool> current_contactor in _branch_contactors)
                     output += $"; {current_contactor.Key}: {(current_contactor.Value ? "ON" : "off")}";
-                Main.log(output);
+                print(output);
             }
             if (log_started)
-                Main.log("----------------------------------------------------------------------------------------------------------");
+                print($"-PR={heat_power}--PE={EMF_power}--ERR={Mathf.Abs(heat_power - EMF_power)}------------------------------------");
 
             Main.diagnostics?.Value = heat_power;
             Main.diagnostics2?.Value = heat_power - EMF_power;
@@ -121,7 +126,7 @@ public partial class circuit
                 if (!log_started)
                 {
                     log_started = true;
-                    Main.log("-V--------------------------------------------------------------------------------------------------------");
+                    print("-V--------------------------------------------------------------------------------------------------------");
                 }
                 bool has_name = _branch_names.TryGetValue(current_branch, out string? branch_name);
                 if (!has_name)
@@ -130,10 +135,10 @@ public partial class circuit
                 current_branch.contactor_telemetry(_branch_contactors);
                 foreach (KeyValuePair<string, bool> current_contactor in _branch_contactors)
                     output += $"; {current_contactor.Key}: {(current_contactor.Value ? "ON" : "off")}";
-                Main.log(output);
+                print(output);
             }
             if (log_started)
-                Main.log("----------------------------------------------------------------------------------------------------------");
+                print($"-PR={heat_power}--PE={EMF_power}--ERR={Mathf.Abs(heat_power - EMF_power)}------------------------------------");
 
             Main.diagnostics?.Value = heat_power;
             Main.diagnostics2?.Value = heat_power - EMF_power;

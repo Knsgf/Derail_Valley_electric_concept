@@ -55,6 +55,7 @@ namespace Tests
 
         static void Main(string[] args)
         {
+#if !CIRCUIT_TEST_OFF
             _test_circuit = circuit_compiler.trace(_resistances, test_diagram).set_up_simulation(out _named_branches, out _contactor_locations, _dummy);
             _named_branches["B"].EMF = 6.0f;
             _contactor_locations["C"].toggle_contactor("C", false);
@@ -62,6 +63,12 @@ namespace Tests
             _named_branches["B"].EMF = 5.0f;
             _contactor_locations["C"].toggle_contactor("C", true);
             print_currents();
+#endif
+
+#if !MOTOR_TEST_OFF
+            var test_rig = new TM_rig(250.0f, 6.0f, 0.0f, 0, false);
+            test_rig.run();
+#endif
         }
     }
 }

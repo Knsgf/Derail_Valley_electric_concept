@@ -1,5 +1,9 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
+#if DEBUG
+//#define TELEMETRY
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,8 +26,7 @@ namespace electric_sim.unit_A;
 
 internal partial class unit_A_sim: electric_device
 {
-    const int   motors           = 6;
-    const float compressor_power = 50.0E+3f;
+    const int motors = 6;
 
     public const float motor_hitpoints        = 2000.0f, maximum_idling_damage  = 0.1f * motor_hitpoints;
     public const float maximum_idling_current =  800.0f, minimum_idling_current = 250.0f;
@@ -146,12 +149,12 @@ internal partial class unit_A_sim: electric_device
         for (int motor_number = 1; motor_number <= motors / 2; ++motor_number)
         {
             _traction_motors[motor_number - 1] = new(motor_number, motor_torque_variations[motor_number - 1], motor_EMF_variations[motor_number - 1],
-                _wheel_RPM  , _named_branches);
+                _named_branches);
         }
         for (int motor_number = motors / 2 + 1; motor_number <= motors; ++motor_number)
         {
             _traction_motors[motor_number - 1] = new(motor_number, motor_torque_variations[motor_number - 1], motor_EMF_variations[motor_number - 1],
-                _wheel_RPM_B, _named_branches);
+                _named_branches);
         }
         _traction_motor_temperature = new(ports);
         _regenerative_field = new(this, grab_port(ports, "[CustomSimulation].EXCITER_RELATIVE_SPEED"));
@@ -212,7 +215,9 @@ internal partial class unit_A_sim: electric_device
         _control_BA1.ValueUpdatedInternally += MU_BA1_control;
         _control_BA2.ValueUpdatedInternally += MU_BA2_control;
 
-        //circuit_telemetry.set_up(_circuit, _named_branches);
+#if TELEMETRY
+        circuit.telemetry.set_up(_circuit, _named_branches, (string message) => Main.log(message));
+#endif
     }
 
     private void power_toggle(bool turn_on)
@@ -593,37 +598,26 @@ internal partial class unit_A_sim: electric_device
         else
         {
             _zero_currents = false;
+            int             selector = _selector;
+            bool rheostatic_brake_on = selector is (int) selector_modes.rheostatic_brake;
             lock (currents)
             {
-                //circuit_telemetry.log_sorted_currents(_circuit, -1.0f, -1.0f);
-                //circuit_telemetry.log_sorted_voltages(_circuit);
+#if TELEMETRY
+                circuit.telemetry.log_sorted_currents(_circuit, -1.0f, 500.0f);
+                circuit.telemetry.log_sorted_voltages(_circuit);
+#endif
                 foreach (KeyValuePair<string, branch_user> current_branch in named_branches)
-                    currents[current_branch.Key] = Mathf.LerpUnclamped(currents[current_branch.Key], current_branch.Value.current, 0.02f);
+                    currents[current_branch.Key] = Mathf.LerpUnclamped(currents[current_branch.Key], current_branch.Value.current, 0.05f);
             }
-            float motors_volts = Mathf.Abs(currents["VM34"] * _motor_voltmeter_resistance);
-            _motors_volts      = motors_volts;
-            _resistor_grid.simulate(currents);
-            resistor_heat.simulate_overheat_damage(_resistor_grid);
-        
-            set_powertrain_damage_resistance();
-            int                         selector = _selector;
-            bool             rheostatic_brake_on = selector is (int) selector_modes.rheostatic_brake;
-            traction_motor[] traction_motors     = _traction_motors;
-            for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
-                traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, currents, named_branches);
-            _circuit.simulate();
-
-            supply.EMF              = supply.EMF * 0.9f + (rheostatic_brake_on ? 0.0f : _roof_bus.voltage) * 0.1f;
-            float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : Mathf.Max(supply.EMF - currents["EPS"] / supply.conductance, 0.0f);
-            _voltmeter_reading      = voltmeter_reading;
-            bool regenerative_on    = selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
-            if (regenerative_on || field_generator.relative_speed >= 0.01f)
-                field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
-            _meter.count_energy(voltmeter_reading, rheostatic_brake_on ? 0.0f : current_draw);
-            
-            _compressor_on.ChangeState(voltmeter_reading >= 1000.0f && _main_breaker_closed.State);
+            float       motors_volts = Mathf.Abs(currents["VM34"] * _motor_voltmeter_resistance);
+            _motors_volts            = motors_volts;
+            supply.EMF               = supply.EMF * 0.9f + (rheostatic_brake_on ? 0.0f : _roof_bus.voltage) * 0.1f;
+            float voltmeter_reading  = rheostatic_brake_on ? blowers.fan_voltage : Mathf.Max(supply.EMF - currents["EPS"] / supply.conductance, 0.0f);
+            _voltmeter_reading       = voltmeter_reading;
+            bool  regenerative_on    = selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
             float RPM_sum     = 0.0f, load_A_sum  = 0.0f, load_B_sum = 0.0f, maximum_load = 0.0f; 
             float field_A_sum = 0.0f, field_B_sum = 0.0f, EMF_sum    = 0.0f;
+            traction_motor[] traction_motors = _traction_motors;
             calculate_combined_unit_motor_performance(is_unit_A:  true, traction_motors, ref RPM_sum, 
                 ref load_A_sum, ref maximum_load, ref field_A_sum, ref EMF_sum,
                 out _total_torque_A, out _total_heat_emission_A);
@@ -655,7 +649,6 @@ internal partial class unit_A_sim: electric_device
                         break;
                 }
             }
-            _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, current_draw);
             _average_RPM     =     RPM_sum /  motors;
             _average_EMF     =     EMF_sum /  motors;
             _average_load_A  =  load_A_sum / (motors >> 1);
@@ -674,11 +667,31 @@ internal partial class unit_A_sim: electric_device
             }
             //Main.log($"ID = {_idling_arc_damage}");
         
+            _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, current_draw);
+            _compressor_on.ChangeState(voltmeter_reading >= 1000.0f && _main_breaker_closed.State);
             blowers.active                = /*rheostatic_brake_on || _throttle >= 1*/ Mathf.Abs(_reverser_position - 0.5f) > 0.1f;
             blowers.rheostatic_braking_on = rheostatic_brake_on;
             blowers.motor_current         = maximum_load;
             blowers.line_voltage          = rheostatic_brake_on ? motors_volts : voltmeter_reading;
             blowers.simulate();
+            _meter.count_energy(voltmeter_reading, rheostatic_brake_on ? 0.0f : current_draw);
+            _resistor_grid.simulate(currents);
+            resistor_heat.simulate_overheat_damage(_resistor_grid);
+            set_powertrain_damage_resistance();
+            if (regenerative_on || field_generator.relative_speed >= 0.01f)
+                field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
+            float wheel_RPM_A = _wheel_RPM.Value, wheel_RPM_B = _wheel_RPM_B.Value;
+            for (int motor_index = motors / 2; motor_index >= 0; --motor_index)
+            {
+                traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, 
+                    rheostatic_brake_on || regenerative_on, wheel_RPM_A, currents, named_branches); 
+            }
+            for (int motor_index = motors / 2 + 1; motor_index <= motors; ++motor_index)
+            {
+                traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, 
+                    rheostatic_brake_on || regenerative_on, wheel_RPM_B, currents, named_branches); 
+            }
+            _circuit.simulate();
         }
     }
 
