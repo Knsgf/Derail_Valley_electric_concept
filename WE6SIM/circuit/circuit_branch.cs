@@ -66,7 +66,7 @@ public partial class circuit
                 EMF_changed?.Invoke(this);
             }
         }
-        public float current      => (_start_ptential - _end_potential + _EMF) * _current_conductance;
+        public float current      => (voltage_drop + _EMF) * _current_conductance;
         public float voltage_drop =>  _start_ptential - _end_potential;
 
         public int id { get; private set; }
