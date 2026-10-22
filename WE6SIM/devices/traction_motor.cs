@@ -106,10 +106,10 @@ public class traction_motor
                                +   field1_current *   field1_current *   _field1_resistance
                                +   field2_current *   field2_current *   _field2_resistance;
 
-        armature_current = Mathf.Abs(armature_branch.current);
-        field1_current   = Mathf.Abs(  field1_branch.current);
-        field2_current   = Mathf.Abs(  field2_branch.current);
-        float circuit_current_sum = armature_current + field1_current + field2_current;
+        armature_current = armature_branch.current;
+        field1_current   = field1_branch.current;
+        field2_current   = field2_branch.current;
+        float circuit_current_sum = Mathf.Abs(armature_current) + Mathf.Abs(field1_current) + Mathf.Abs(field2_current);
         if (circuit_current_sum >= 1.0f)
         {
             float motor_current_sum = Mathf.Abs(_armature_current) + Mathf.Abs(_field1_current) + Mathf.Abs(_field2_current);
@@ -118,7 +118,7 @@ public class traction_motor
             float field2_ratio      =   field2_current / circuit_current_sum;
             _armature_current       = armature_ratio   * motor_current_sum;
             _field1_current         =   field1_ratio   * motor_current_sum;
-            _field2_current         =   field1_ratio   * motor_current_sum;
+            _field2_current         =   field2_ratio   * motor_current_sum;
         }
 
 #if DEBUG
