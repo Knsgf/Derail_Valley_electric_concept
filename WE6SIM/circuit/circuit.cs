@@ -181,13 +181,12 @@ public partial class circuit
     {
         if (_simulation_in_progress)
             return false;
-        bool conductances_changed                 = _branch_conductances_changed.Count > 0;
-        bool conductances_calculation_in_progress = _matrices_recalculation           != null;
-        if (!conductances_changed && !conductances_calculation_in_progress && _branch_EMFs_changed.Count == 0)
+        bool conductances_changed = _branch_conductances_changed.Count > 0;
+        bool matrices_redone      = permit_topology_changes && _matrices_recalculation != null && _matrices_recalculation.IsCompleted;
+        if (!conductances_changed && !matrices_redone && _branch_EMFs_changed.Count == 0)
             return true;
         _simulation_in_progress = true;
 
-        bool matrices_redone = permit_topology_changes && conductances_calculation_in_progress && _matrices_recalculation!.IsCompleted;
         if (matrices_redone)
         {
             (_right , _background_right ) = (_background_right , _right );
@@ -197,8 +196,13 @@ public partial class circuit
 
         assert.test(_branch_EMFs_staged.Count == 0);
         (_branch_EMFs_staged, _branch_EMFs_changed) = (_branch_EMFs_changed, _branch_EMFs_staged);
-        _EMFs_staged.copy_from(_EMFs);
-        if (conductances_changed && !conductances_calculation_in_progress && _branch_conductances_staged.Count == 0)
+        sparse_matrix EMFs_staged = _EMFs_staged, EMFs = _EMFs;
+        foreach (branch current_branch in _branch_EMFs_staged)
+        { 
+            int row             = current_branch.id;
+            EMFs_staged[row, 0] = EMFs[row, 0];
+        }
+        if (conductances_changed && _matrices_recalculation == null && _branch_conductances_staged.Count == 0)
         {
             (_branch_conductances_staged, _branch_conductances_changed) = (_branch_conductances_changed, _branch_conductances_staged);
             _conductance_staged.copy_from(_conductance);
@@ -220,9 +224,8 @@ public partial class circuit
 
             for (int node_index = _last_active_node; node_index >= 0; --node_index)
                 nodes[node_index].set_potential(node_potentials[node_index]);
-            sparse_matrix EMFs = _EMFs_staged;
             foreach (branch current_branch in _branch_EMFs_staged)
-                current_branch.set_current_EMF_from_matrix(EMFs[current_branch.id, 0]);
+                current_branch.set_current_EMF_from_matrix(EMFs_staged[current_branch.id, 0]);
         }
         _branch_EMFs_staged.Clear();
         _simulation_in_progress = false;
