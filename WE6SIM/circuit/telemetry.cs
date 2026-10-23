@@ -83,7 +83,7 @@ public partial class circuit
                 print(output);
             }
             if (log_started)
-                print($"-PR={heat_power}--PE={EMF_power}--ERR={Mathf.Abs(heat_power - EMF_power)}------------------------------------");
+                print($"-PR={heat_power}--PE={EMF_power}--ERR={Mathf.Abs(heat_power - EMF_power) / Mathf.Min(heat_power, Mathf.Abs(EMF_power))}------------------------------------");
 
             Main.diagnostics?.Value = heat_power;
             Main.diagnostics2?.Value = heat_power - EMF_power;
@@ -138,7 +138,7 @@ public partial class circuit
                 print(output);
             }
             if (log_started)
-                print($"-PR={heat_power}--PE={EMF_power}--ERR={Mathf.Abs(heat_power - EMF_power)}------------------------------------");
+                print($"-PR={heat_power}--PE={EMF_power}--ERR={Mathf.Abs(heat_power - EMF_power) / Mathf.Min(heat_power, Mathf.Abs(EMF_power))}------------------------------------");
 
             Main.diagnostics?.Value = heat_power;
             Main.diagnostics2?.Value = heat_power - EMF_power;
