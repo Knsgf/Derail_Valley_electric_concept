@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 using electric_sim.circuit_sim;
 
@@ -39,15 +40,16 @@ namespace Tests
         static circuit _test_circuit;
         static Dictionary<string, branch_user> _named_branches, _contactor_locations;
         static object _dummy = new object();
+        static Task _simulation_progress;
 
         static void print_currents()
         {
-            _test_circuit.simulate();
-            Thread.Sleep(500);
-            _test_circuit.simulate();
-            Thread.Sleep(500);
-            _test_circuit.simulate();
-            Thread.Sleep(500);
+            for (int runs = 5; runs > 0; --runs)
+            {
+                _simulation_progress =_test_circuit.simulate(permit_topology_changes: true);
+                while (!_simulation_progress.IsCompleted)
+                    Thread.Sleep(200);
+            }
             foreach (KeyValuePair<string, branch_user> current_branch in _named_branches)
                 Console.WriteLine($"{current_branch.Key}={current_branch.Value.current}");
             Console.WriteLine();

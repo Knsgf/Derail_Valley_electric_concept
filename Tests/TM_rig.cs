@@ -1,12 +1,14 @@
 //#define INPUT_OFF
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
 
 using electric_sim.circuit_sim;
 using electric_sim.devices;
+using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -43,10 +45,12 @@ namespace Tests
         readonly object         _simulation_sync = new object();
         readonly circuit        _TM_rig;
         readonly traction_motor _motor1/*, _motor2*/;
+        readonly IEnumerator    _simulation_step;
 
         float _supply_voltage, _supply_resistance, _speed;
         int   _WF;
         bool  _reversed;
+        Task  _simulation_progress;
 
         static float shunt_resistance(float field_resistance, float ratio)
         {
@@ -93,6 +97,7 @@ namespace Tests
             set_reverser(start_reversed);
             _named_branches["EPS"].EMF               = _supply_voltage;
             _named_branches["EPS"].closed_resistance = _supply_resistance;
+            _simulation_step = simulation_cycle().GetEnumerator();
         }
 
         static float wheel_RPM(float speed) => (speed / 3.6f) / (Mathf.PI * wheel_diameter) * 60.0f;
@@ -107,13 +112,29 @@ namespace Tests
                 _contactor_locations["RR1b"].toggle_contactor("RR1b",  reversed);
             }
         }
+
+        private IEnumerable simulation_cycle()
+        {
+            while (true)
+            {
+                _simulation_progress = _TM_rig.simulate(permit_topology_changes: true);
+                while (!_simulation_progress.IsCompleted)
+                    yield return null;
+                _motor1.estalblish_EMFs(false, wheel_RPM(_speed));
+                _simulation_progress = _TM_rig.simulate(permit_topology_changes: false);
+                while (!_simulation_progress.IsCompleted)
+                    yield return null;
+                _motor1.establish_currents();
+                yield return null;
+            }
+        }
         
         internal void run()
         {
             while (true)
             {
                 lock (_simulation_sync)
-                    circuit.telemetry.log_sorted_currents(_TM_rig, -1.0f, 10.0f); 
+                    circuit.telemetry.log_sorted_voltages(_TM_rig); 
 
 #if !INPUT_OFF            
                 switch(char.ToLowerInvariant(Console.ReadKey().KeyChar))
@@ -167,9 +188,7 @@ namespace Tests
                         continue;
                 }
 #endif
-                
-                _motor1.simulate(false, false, wheel_RPM(_speed));
-                _TM_rig.simulate();
+                _simulation_step.MoveNext();
             }
         }
     }
