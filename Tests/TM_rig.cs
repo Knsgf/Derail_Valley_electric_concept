@@ -133,8 +133,7 @@ namespace Tests
         {
             while (true)
             {
-                lock (_simulation_sync)
-                    circuit.telemetry.log_sorted_voltages(_TM_rig); 
+                Console.WriteLine($"v={_speed} km/h, V={_supply_voltage} V, r={_supply_resistance} Ω, {(_reversed ? 'R' : 'F')}");
 
 #if !INPUT_OFF            
                 switch(char.ToLowerInvariant(Console.ReadKey().KeyChar))
@@ -189,6 +188,8 @@ namespace Tests
                 }
 #endif
                 _simulation_step.MoveNext();
+                lock (_simulation_sync)
+                    circuit.telemetry.log_sorted_voltages(_TM_rig); 
             }
         }
     }
