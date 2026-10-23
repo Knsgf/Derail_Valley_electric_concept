@@ -14,16 +14,24 @@ namespace Tests
 {
     internal class TM_rig
     {
-        const int    motors         = 1;
+        const int    motors         = 2;
         const float  wheel_diameter = 1.12f;
         const string TM_test_rig    = "\n"
-            + "*---@EPS>------------------------------------------------*   \n"
-            + "|                                                        |   \n"
-            + "|                                   *-------#RR1a#-------*   \n"
-            + "|                                   |                    |   \n"
-            + "*--<MF1b@--*--<MF1a@--*--*--#RF1b#--*--<MA1@--*--#RF1a#--*   \n"
-            + "|          |          |  |                    |              \n"
-            + "*--<WF1b@--*--<WF1a@--*  *--------#RR1b#------*              \n";
+            +  "*---@EPS>----------------------------------------------------------*     \n"
+            +  "|                                                                  |     \n"
+            +  "|                                             *-------#RR1a#-------*     \n"
+            +  "|                                             |                    |     \n"
+            +  "*--<MF1b@--*--<MF1a@--*------#S1#--*--#RF1b#--*--<MA1@--*--#RF1a#--*     \n"
+            +  "|          |          |            |                    |          |     \n"
+            +  "*--<WF1b@--*--<WF1a@--*   *--#C1#--*--------#RR1b#------* *--------*     \n"
+            + @"|                      \ /                                |         " + "\n"
+            +  "|                       +                                 *--#M2#--*     \n"
+            + @"|                      / \                                         |" + "\n"
+            +  "|                     *   *                   *-------#RR2a#-------*     \n"
+            +  "|                     |   |                   |                    |     \n"
+            +  "*--<MF2b@--*--<MF2a@--*   *--#C2#--*--#RF2b#--*--<MA2@--*--#RF2a#--*     \n"
+            +  "|          |          |            |                    |                \n"
+            +  "*--<WF2b@--*--<WF2a@--*------#S2#--*--------#RR2b#------*                \n";
         static readonly (float ratio_a, float ratio_b)[] _field_ratios = new (float, float)[]
         {
             (1.0f, 1.00f),
@@ -44,7 +52,7 @@ namespace Tests
 
         readonly object         _simulation_sync = new object();
         readonly circuit        _TM_rig;
-        readonly traction_motor _motor1/*, _motor2*/;
+        readonly traction_motor _motor1, _motor2;
         readonly IEnumerator    _simulation_step;
 
         float _supply_voltage, _supply_resistance, _speed;
@@ -71,7 +79,8 @@ namespace Tests
             }
         }
 
-        internal TM_rig(float starting_voltage, float starting_resistance, float starting_speed, int starting_WF, bool start_reversed)
+        internal TM_rig(float starting_voltage, float starting_resistance, float starting_speed, int starting_WF, 
+            bool start_reversed)
         {
             float multiplier = 1.0f;
             for (int motor_branch = 1; motor_branch <= motors; ++motor_branch)
@@ -84,7 +93,8 @@ namespace Tests
                 multiplier += 0.003f;
             }
             _TM_rig = circuit_compiler.trace(_resistances, TM_test_rig).set_up_simulation(out _named_branches, out _contactor_locations, _simulation_sync);
-            _motor1 = new traction_motor(1, 1.0f, multiplier, _named_branches);
+            _motor1 = new traction_motor(1, 1.0f, multiplier         , _named_branches);
+            _motor2 = new traction_motor(2, 1.0f, multiplier + 0.003f, _named_branches);
             circuit.telemetry.set_up(_TM_rig, _named_branches, Console.WriteLine);
             traction_motor.print = Console.WriteLine;
 
@@ -95,6 +105,7 @@ namespace Tests
             _reversed          = start_reversed;
 
             set_reverser(start_reversed);
+            set_field(false);
             _named_branches["EPS"].EMF               = _supply_voltage;
             _named_branches["EPS"].closed_resistance = _supply_resistance;
             _simulation_step = simulation_cycle().GetEnumerator();
@@ -106,11 +117,19 @@ namespace Tests
         {
             for (int motor_branch = 1; motor_branch <= motors; ++motor_branch)
             {
-                _contactor_locations["RF1a"].toggle_contactor("RF1a", !reversed);
-                _contactor_locations["RF1b"].toggle_contactor("RF1b", !reversed);
-                _contactor_locations["RR1a"].toggle_contactor("RR1a",  reversed);
-                _contactor_locations["RR1b"].toggle_contactor("RR1b",  reversed);
+                _contactor_locations[$"RF{motor_branch}a"].toggle_contactor($"RF{motor_branch}a", !reversed);
+                _contactor_locations[$"RF{motor_branch}b"].toggle_contactor($"RF{motor_branch}b", !reversed);
+                _contactor_locations[$"RR{motor_branch}a"].toggle_contactor($"RR{motor_branch}a",  reversed);
+                _contactor_locations[$"RR{motor_branch}b"].toggle_contactor($"RR{motor_branch}b",  reversed);
             }
+        }
+
+        void set_field(bool crossed)
+        {
+            _contactor_locations["S1"].toggle_contactor("S1", !crossed);
+            _contactor_locations["S2"].toggle_contactor("S2", !crossed);
+            _contactor_locations["C1"].toggle_contactor("C1",  crossed);
+            _contactor_locations["C2"].toggle_contactor("C2",  crossed);
         }
 
         private IEnumerable simulation_cycle()
@@ -121,10 +140,12 @@ namespace Tests
                 while (!_simulation_progress.IsCompleted)
                     yield return null;
                 _motor1.estalblish_EMFs(false, wheel_RPM(_speed));
+                _motor2.estalblish_EMFs(false, wheel_RPM(_speed));
                 _simulation_progress = _TM_rig.simulate(permit_topology_changes: false);
                 while (!_simulation_progress.IsCompleted)
                     yield return null;
                 _motor1.establish_currents();
+                _motor2.establish_currents();
                 yield return null;
             }
         }
