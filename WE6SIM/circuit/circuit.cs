@@ -177,13 +177,17 @@ public partial class circuit
         _solver.solve(_potentials, _virtual_currents);
     }
 
-    public async void simulate()
+    public async Task<bool> simulate(bool permit_topology_changes)
     {
         if (_simulation_in_progress)
-            return;
+            return false;
+        bool conductances_changed                 = _branch_conductances_changed.Count > 0;
+        bool conductances_calculation_in_progress = _matrices_recalculation           != null;
+        if (!conductances_changed && !conductances_calculation_in_progress && _branch_EMFs_changed.Count == 0)
+            return true;
         _simulation_in_progress = true;
 
-        bool matrices_redone = _matrices_recalculation != null && _matrices_recalculation.IsCompleted;
+        bool matrices_redone = permit_topology_changes && conductances_calculation_in_progress && _matrices_recalculation!.IsCompleted;
         if (matrices_redone)
         {
             (_right , _background_right ) = (_background_right , _right );
@@ -194,7 +198,7 @@ public partial class circuit
         assert.test(_branch_EMFs_staged.Count == 0);
         (_branch_EMFs_staged, _branch_EMFs_changed) = (_branch_EMFs_changed, _branch_EMFs_staged);
         _EMFs_staged.copy_from(_EMFs);
-        if (_branch_conductances_changed.Count > 0 && _branch_conductances_staged.Count == 0 && _matrices_recalculation == null)
+        if (conductances_changed && !conductances_calculation_in_progress && _branch_conductances_staged.Count == 0)
         {
             (_branch_conductances_staged, _branch_conductances_changed) = (_branch_conductances_changed, _branch_conductances_staged);
             _conductance_staged.copy_from(_conductance);
@@ -222,5 +226,6 @@ public partial class circuit
         }
         _branch_EMFs_staged.Clear();
         _simulation_in_progress = false;
+        return true;
     }
 }
