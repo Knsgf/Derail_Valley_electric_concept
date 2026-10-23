@@ -23,7 +23,7 @@ public partial class circuit
 
     private class branch: branch_user
     {
-        const float min_branch_resistance = 1.0E-4f;
+        const float min_branch_resistance = 1.0E-4f, max_accumulated_difference = 1.0f;
 
         private static int __next_available_id = 0;
 
@@ -31,8 +31,9 @@ public partial class circuit
 
         private int _contactors_off = int.MaxValue;
 
-        private float _closed_conductance = 0.0f, _current_conductance = 0.0f;
-        private float _start_ptential     = 0.0f, _end_potential       = 0.0f, _EMF = 0.0f, _future_EMF = 0.0f;
+        private float _closed_conductance     = 0.0f, _current_conductance = 0.0f;
+        private float _start_ptential         = 0.0f, _end_potential       = 0.0f;
+        private float _accumulated_difference = 0.0f, _future_EMF          = 0.0f, _EMF = 0.0f;
 
 
         public float future_conductance => (_contactors_off != 0) ? 0.0f : _closed_conductance;
@@ -62,8 +63,13 @@ public partial class circuit
             get => _EMF;
             set
             {
-                _future_EMF = value;
-                EMF_changed?.Invoke(this);
+                _accumulated_difference += value - _EMF;
+                if (_accumulated_difference is <= -max_accumulated_difference or >= max_accumulated_difference)
+                {
+                    _future_EMF             = value;
+                    _accumulated_difference = 0.0f;
+                    EMF_changed?.Invoke(this);
+                }
             }
         }
         public float current      => (voltage_drop + _EMF) * _current_conductance;
