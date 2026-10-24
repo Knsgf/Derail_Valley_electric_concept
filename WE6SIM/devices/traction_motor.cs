@@ -15,7 +15,7 @@ public class traction_motor
 {
     const float max_flux = 300.0f, min_flux = 1.0f, kickstarter_winding_flux = 10.0f;
     const float kickstarter_on_maximum_current = 50.0f, kickstarter_off_minimum_current = 100.0f;
-    const float torque_factor = 0.0347f, EMF_factor = 0.003634f, inductance = 5.7f;
+    const float torque_factor = 0.0347f, EMF_factor = 0.003634f, fixed_delta_time = 60.0f, inductance = 350.0f / fixed_delta_time;
 
     private readonly branch_user _armature_branch, _field1_branch, _field2_branch;
     private readonly float       _armature_resistance, _field1_resistance, _field2_resistance, _torque_factor, _EMF_factor;
@@ -78,7 +78,7 @@ public class traction_motor
         field1_branch.EMF = self_induction_EMF(field1_branch.voltage_drop, _field1_resistance, _field1_current);
         field2_branch.EMF = self_induction_EMF(field2_branch.voltage_drop, _field2_resistance, _field2_current);
 
-        float field1_current = _field1_current, field2_current = _field2_current;
+        float field1_current = field1_branch.current, field2_current = field2_branch.current;
         float magnetic_flux1 = (min_flux + Mathf.Clamp(Mathf.Abs(field1_current), 0.0f, max_flux - min_flux)) * (1.0f - field_partitioning);
         float magnetic_flux2 = (min_flux + Mathf.Clamp(Mathf.Abs(field2_current), 0.0f, max_flux - min_flux)) *         field_partitioning;
         if (field1_current < 0.0f)
