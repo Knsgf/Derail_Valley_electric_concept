@@ -5,6 +5,7 @@
 #endif
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -32,7 +33,7 @@ internal partial class unit_A_sim: electric_device
     public const float maximum_idling_current =  800.0f, minimum_idling_current = 250.0f;
 
     private readonly Dictionary<string, branch_user> _named_branches, _contactor_locations;
-    private readonly Dictionary<string, float> _currents = [], _element_resistances = [];
+    private readonly Dictionary<string,       float> _element_resistances = [];
 
     private readonly Fuse _appliances, _control_air, _main_breaker_closed, _compressor_on, _motor_breaker;
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
@@ -57,6 +58,7 @@ internal partial class unit_A_sim: electric_device
     private readonly dummy_voltage_regulator    _traction_motor_temperature;
     private readonly electricity_meter          _meter;
     private readonly throttle_HUD               _HUD_notch_readout;
+    private readonly IEnumerator                _simulation_cycle;
     
     private readonly TrainCar _unit;
 
@@ -70,7 +72,7 @@ internal partial class unit_A_sim: electric_device
     private readonly float _motor_voltmeter_resistance;
 
     private bool  _fast_notching_enabled = false, _jogging_mode_on = false, _jog_active = false, _cab_active = false;
-    private bool  _line_contactors_on = false, _zero_currents = false, _simulation_go = false;
+    private bool  _line_contactors_on = false, _simulation_go = false;
     private int   _throttle = -1, _secondary_camshaft_notch = 1, _selector = -1, _field_position = -1;
     private Task? _single_notch_movement;
     private float _reverser_position = 0.5f, _fast_notching_current_limit = 250.0f, _BA1 = 0.0f, _BA2 = 0.0f;
@@ -124,10 +126,8 @@ internal partial class unit_A_sim: electric_device
             motor_torque_variations[motor_index] = UnityEngine.Random.Range(1.0f - variation, 1.0f + variation);
         }
         UnityEngine.Random.state = old_state;
-        _circuit = circuit_compiler.trace(_element_resistances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations, _currents);
-        _resistor_grid = new(ports, _element_resistances);
-        foreach (string branch_name in _named_branches.Keys)
-            _currents[branch_name] = 0.0f;
+        _circuit = circuit_compiler.trace(_element_resistances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations);
+        _resistor_grid = new(ports, _named_branches);
         _named_branches["BAT"].EMF = battery_panel.battery_EMF;
 
         _torque_B              = grab_port(ports, "[internal_MU].TM4-6"            );
@@ -218,6 +218,8 @@ internal partial class unit_A_sim: electric_device
 #if TELEMETRY
         circuit.telemetry.set_up(_circuit, _named_branches, (string message) => Main.log(message));
 #endif
+
+        _simulation_cycle = simulation_cycle().GetEnumerator();
     }
 
     private void power_toggle(bool turn_on)
@@ -543,156 +545,160 @@ internal partial class unit_A_sim: electric_device
         }
     }
 
-    public void simulate()
+    private IEnumerable simulation_cycle()
     {
         check_if_disposed();
-        if (!_simulation_go)
-            return;
         
-        contactors                      all_contactors  = _contactors;
-        blower_controller               blowers         = _blowers;
-        exciter                         field_generator = _regenerative_field;
-        bool                            jog             = _jogging_mode_on && !is_powered;
-        Dictionary<string, branch_user> named_branches  = _named_branches;
-        branch_user                     supply          = named_branches["EPS"];
-        Dictionary<string,       float> currents        = _currents;
-        float                           current_draw;
-        if (jog)
+        contactors        all_contactors  = _contactors;
+        blower_controller blowers         = _blowers;
+        exciter           field_generator = _regenerative_field;
+        branch_user       motor_voltmeter = _named_branches["VM34"], supply = _named_branches["EPS"], battery = _named_branches["BAT"];
+        while (true)
         {
-            if (!_jog_active)
+            while (!_simulation_go)
+                yield return null;
+            
+            float current_draw;
+            bool  jog = _jogging_mode_on && !is_powered;
+            if (jog)
             {
-                all_contactors.toggle_jogging(turn_on: true);
-                _jog_active = true;
+                if (!_jog_active)
+                {
+                    all_contactors.toggle_jogging(turn_on: true);
+                    _jog_active = true;
+                }
+                current_draw = 0.0f;
+                _jog_voltage = battery_panel.battery_EMF - battery.current * battery_panel.battery_internal_resistance;
+                _pantograph.simulate(0.0f);
             }
-            current_draw = 0.0f;
-            _jog_voltage = battery_panel.battery_EMF - currents["BAT"] * battery_panel.battery_internal_resistance;
-            _pantograph.simulate(0.0f);
-        }
-        else
-        {
-            if (_jog_active)
-            {
-                all_contactors.toggle_jogging(turn_on: false);
-                _jog_voltage = 0.0f;
-                _jog_active  = false;
-            }
-            current_draw = currents["EPS"] + blowers.current_draw + field_generator.current_draw;
-            if (supply.EMF > 1.0f)
-                current_draw += _compressor_power.Value / supply.EMF;
-            _pantograph.simulate(current_draw);
-        }
-        _total_draw = current_draw;
-        
-        if (!jog && !_main_breaker_closed.State && _roof_bus.voltage < 10.0f && supply.EMF < 10.0f && _wheel_RPM.Value < 20.0f 
-            && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && field_generator.relative_speed < 0.01f)
-        {
-            if (!_zero_currents)
-            {
-                _total_torque_A = _total_torque_B = _resistance_update_time = 0.0f; 
-                foreach (string branch_name in named_branches.Keys)
-                    currents[branch_name] = 0.0f;
-                _zero_currents = true;
-            }
-            _meter.count_energy(0.0f, 0.0f);    // Required to properly track ownership changes
-        }
-        else
-        {
-            _zero_currents = false;
-            int             selector = _selector;
-            bool rheostatic_brake_on = selector is (int) selector_modes.rheostatic_brake;
-            lock (currents)
-            {
-#if TELEMETRY
-                circuit.telemetry.log_sorted_currents(_circuit, -1.0f, 500.0f);
-                circuit.telemetry.log_sorted_voltages(_circuit);
-#endif
-                foreach (KeyValuePair<string, branch_user> current_branch in named_branches)
-                    currents[current_branch.Key] = Mathf.LerpUnclamped(currents[current_branch.Key], current_branch.Value.current, 0.05f);
-            }
-            float       motors_volts = Mathf.Abs(currents["VM34"] * _motor_voltmeter_resistance);
-            _motors_volts            = motors_volts;
-            supply.EMF               = supply.EMF * 0.9f + (rheostatic_brake_on ? 0.0f : _roof_bus.voltage) * 0.1f;
-            float voltmeter_reading  = rheostatic_brake_on ? blowers.fan_voltage : Mathf.Max(supply.EMF - currents["EPS"] / supply.conductance, 0.0f);
-            _voltmeter_reading       = voltmeter_reading;
-            bool  regenerative_on    = selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
-            float RPM_sum     = 0.0f, load_A_sum  = 0.0f, load_B_sum = 0.0f, maximum_load = 0.0f; 
-            float field_A_sum = 0.0f, field_B_sum = 0.0f, EMF_sum    = 0.0f;
-            traction_motor[] traction_motors = _traction_motors;
-            calculate_combined_unit_motor_performance(is_unit_A:  true, traction_motors, ref RPM_sum, 
-                ref load_A_sum, ref maximum_load, ref field_A_sum, ref EMF_sum,
-                out _total_torque_A, out _total_heat_emission_A);
-            calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref RPM_sum, 
-                ref load_B_sum, ref maximum_load, ref field_B_sum, ref EMF_sum,
-                out _total_torque_B, out _total_heat_emission_B);
-            bool line_contactor1_on = all_contactors._line_contactor.engaged, line_contactor2_on = all_contactors._line_contactor2.engaged;
-            float maximum_EMF;
-            if (!line_contactor1_on && !line_contactor2_on)
-                maximum_EMF = 0.0f;
             else
             {
-                switch (all_contactors._selector_motor.current_notch)
+                if (_jog_active)
                 {
-                    case 3:
-                        maximum_EMF = 0.0f;
-                        for (int motor_index = 5; motor_index >= 0; --motor_index)
-                            maximum_EMF = Mathf.Max(maximum_EMF, Mathf.Abs(traction_motors[motor_index].EMF));
-                        break;
-
-                    case 4:
-                        maximum_EMF = 0.0f;
-                        for (int motor_index = 5; motor_index >= 0; --motor_index)
-                            maximum_EMF += Mathf.Abs(traction_motors[motor_index].EMF);
-                        break;
-
-                    default:
-                        maximum_EMF = motors_volts;
-                        break;
+                    all_contactors.toggle_jogging(turn_on: false);
+                    _jog_voltage = 0.0f;
+                    _jog_active  = false;
                 }
+                current_draw = supply.current + blowers.current_draw + field_generator.current_draw;
+                if (supply.EMF > 1.0f)
+                    current_draw += _compressor_power.Value / supply.EMF;
+                _pantograph.simulate(current_draw);
             }
-            _average_RPM     =     RPM_sum /  motors;
-            _average_EMF     =     EMF_sum /  motors;
-            _average_load_A  =  load_A_sum / (motors >> 1);
-            _average_load_B  =  load_B_sum / (motors >> 1);
-            _average_field_A = field_A_sum / (motors >> 1);
-            _average_field_B = field_B_sum / (motors >> 1);
-            _maximum_load    = maximum_load;
-
-            bool to_idle        = !line_contactor1_on && !line_contactor2_on && _line_contactors_on;
-            _line_contactors_on =  line_contactor1_on ||  line_contactor2_on;
-            if (to_idle && maximum_load > minimum_idling_current)
-            {
-                float idling_damage = (maximum_idling_damage / (maximum_idling_current - minimum_idling_current)) 
-                                                              * (          maximum_load - minimum_idling_current);
-                _idling_arc_damage += Mathf.Clamp(idling_damage * UnityEngine.Random.Range(0.8f, 1.2f), 0.0f, maximum_idling_damage);
-            }
-            //Main.log($"ID = {_idling_arc_damage}");
+            _total_draw = current_draw;
         
-            _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, current_draw);
-            _compressor_on.ChangeState(voltmeter_reading >= 1000.0f && _main_breaker_closed.State);
-            blowers.active                = /*rheostatic_brake_on || _throttle >= 1*/ Mathf.Abs(_reverser_position - 0.5f) > 0.1f;
-            blowers.rheostatic_braking_on = rheostatic_brake_on;
-            blowers.motor_current         = maximum_load;
-            blowers.line_voltage          = rheostatic_brake_on ? motors_volts : voltmeter_reading;
-            blowers.simulate();
-            _meter.count_energy(voltmeter_reading, rheostatic_brake_on ? 0.0f : current_draw);
-            _resistor_grid.simulate(currents);
-            resistor_heat.simulate_overheat_damage(_resistor_grid);
-            set_powertrain_damage_resistance();
-            if (regenerative_on || field_generator.relative_speed >= 0.01f)
-                field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
-            float wheel_RPM_A = _wheel_RPM.Value, wheel_RPM_B = _wheel_RPM_B.Value;
-            for (int motor_index = motors / 2; motor_index >= 0; --motor_index)
+            if (!jog && !_main_breaker_closed.State && _roof_bus.voltage < 10.0f && supply.EMF < 10.0f && _wheel_RPM.Value < 20.0f 
+                && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && field_generator.relative_speed < 0.01f)
             {
-                traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, 
-                    rheostatic_brake_on || regenerative_on, wheel_RPM_A); 
+                _total_torque_A = _total_torque_B = _resistance_update_time = 0.0f; 
+                _meter.count_energy(0.0f, 0.0f);    // Required to properly track ownership changes
+                yield return null;
             }
-            for (int motor_index = motors / 2 + 1; motor_index <= motors; ++motor_index)
+            else
             {
-                traction_motors[motor_index].simulate(rheostatic_brake_on && _throttle >= 1, 
-                    rheostatic_brake_on || regenerative_on, wheel_RPM_B); 
+                int             selector = _selector;
+                bool rheostatic_brake_on = selector is (int) selector_modes.rheostatic_brake;
+
+    #if TELEMETRY
+                circuit.telemetry.log_sorted_currents(_circuit, -1.0f, 500.0f);
+                circuit.telemetry.log_sorted_voltages(_circuit);
+    #endif
+
+                float motors_volts      = Mathf.Abs(motor_voltmeter.current * _motor_voltmeter_resistance);
+                _motors_volts           = motors_volts;
+                supply.EMF              = Mathf.LerpUnclamped(supply.EMF, rheostatic_brake_on ? 0.0f : _roof_bus.voltage, 0.1f);
+                float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : Mathf.Max(supply.EMF - supply.current / supply.conductance, 0.0f);
+                _voltmeter_reading      = voltmeter_reading;
+                bool  regenerative_on   = selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
+                float RPM_sum     = 0.0f, load_A_sum  = 0.0f, load_B_sum = 0.0f, maximum_load = 0.0f; 
+                float field_A_sum = 0.0f, field_B_sum = 0.0f, EMF_sum    = 0.0f;
+                traction_motor[] traction_motors = _traction_motors;
+                calculate_combined_unit_motor_performance(is_unit_A:  true, traction_motors, ref RPM_sum, 
+                    ref load_A_sum, ref maximum_load, ref field_A_sum, ref EMF_sum,
+                    out _total_torque_A, out _total_heat_emission_A);
+                calculate_combined_unit_motor_performance(is_unit_A: false, traction_motors, ref RPM_sum, 
+                    ref load_B_sum, ref maximum_load, ref field_B_sum, ref EMF_sum,
+                    out _total_torque_B, out _total_heat_emission_B);
+                bool line_contactor1_on = all_contactors._line_contactor.engaged, line_contactor2_on = all_contactors._line_contactor2.engaged;
+                float maximum_EMF;
+                if (!line_contactor1_on && !line_contactor2_on)
+                    maximum_EMF = 0.0f;
+                else
+                {
+                    switch (all_contactors._selector_motor.current_notch)
+                    {
+                        case 3:
+                            maximum_EMF = 0.0f;
+                            for (int motor_index = 5; motor_index >= 0; --motor_index)
+                                maximum_EMF = Mathf.Max(maximum_EMF, Mathf.Abs(traction_motors[motor_index].EMF));
+                            break;
+
+                        case 4:
+                            maximum_EMF = 0.0f;
+                            for (int motor_index = 5; motor_index >= 0; --motor_index)
+                                maximum_EMF += Mathf.Abs(traction_motors[motor_index].EMF);
+                            break;
+
+                        default:
+                            maximum_EMF = motors_volts;
+                            break;
+                    }
+                }
+                _average_RPM     =     RPM_sum /  motors;
+                _average_EMF     =     EMF_sum /  motors;
+                _average_load_A  =  load_A_sum / (motors >> 1);
+                _average_load_B  =  load_B_sum / (motors >> 1);
+                _average_field_A = field_A_sum / (motors >> 1);
+                _average_field_B = field_B_sum / (motors >> 1);
+                _maximum_load    = maximum_load;
+
+                bool to_idle        = !line_contactor1_on && !line_contactor2_on && _line_contactors_on;
+                _line_contactors_on =  line_contactor1_on ||  line_contactor2_on;
+                if (to_idle && maximum_load > minimum_idling_current)
+                {
+                    float idling_damage = (maximum_idling_damage / (maximum_idling_current - minimum_idling_current)) 
+                                                                 * (          maximum_load - minimum_idling_current);
+                    _idling_arc_damage += Mathf.Clamp(idling_damage * UnityEngine.Random.Range(0.8f, 1.2f), 0.0f, maximum_idling_damage);
+                }
+                //Main.log($"ID = {_idling_arc_damage}");
+        
+                _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, _total_draw);
+                _compressor_on.ChangeState(voltmeter_reading >= 1000.0f && _main_breaker_closed.State);
+                blowers.active                = /*rheostatic_brake_on || _throttle >= 1*/ Mathf.Abs(_reverser_position - 0.5f) > 0.1f;
+                blowers.rheostatic_braking_on = rheostatic_brake_on;
+                blowers.motor_current         = maximum_load;
+                blowers.line_voltage          = rheostatic_brake_on ? motors_volts : voltmeter_reading;
+                blowers.simulate();
+                _meter.count_energy(voltmeter_reading, rheostatic_brake_on ? 0.0f : _total_draw);
+                _resistor_grid.simulate();
+                resistor_heat.simulate_overheat_damage(_resistor_grid);
+                set_powertrain_damage_resistance();
+                if (regenerative_on || field_generator.relative_speed >= 0.01f)
+                    field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
+                
+                float wheel_RPM_A = _wheel_RPM.Value, wheel_RPM_B = _wheel_RPM_B.Value;
+                Task<bool> simulation_run = _circuit.simulate(permit_topology_changes: true);
+                do
+                { 
+                    yield return null; 
+                }
+                while (!simulation_run.IsCompleted);
+                bool kickstarters_on = rheostatic_brake_on && _throttle >= 1;
+                for (int motor_index = motors / 2 - 1; motor_index >= 0; --motor_index)
+                    traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_A); 
+                for (int motor_index = motors / 2; motor_index < motors; ++motor_index)
+                    traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_B); 
+                simulation_run = _circuit.simulate(permit_topology_changes: false);
+                while (!simulation_run.IsCompleted)
+                    yield return null; 
+                for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
+                    traction_motors[motor_index].establish_currents(); 
             }
-            _circuit.simulate();
         }
+    }
+
+    public void simulate()
+    {
+        _simulation_cycle.MoveNext();
     }
 
     private void update_gauges_and_external_ports()
@@ -769,6 +775,8 @@ internal partial class unit_A_sim: electric_device
         if (!disposed)
         {
             base.Dispose();
+            if (_simulation_cycle is IDisposable cycle_program)
+                cycle_program.Dispose();
             _meter.deregister_tracker(ownership_change: false, session_end);
             _pantograph.Dispose();
             _roof_bus.Dispose();
