@@ -23,7 +23,6 @@ public partial class circuit
     private readonly   node[] _nodes;
     private readonly branch[] _branches;
 
-    private readonly object        _circuit_update;
     private readonly sparse_matrix _incidence, _transposed_incidence, _negative_incidence;
     private readonly sparse_matrix _conductance, _EMFs, _conductance_staged, _EMFs_staged;
     private readonly sparse_matrix _left1 = new(), _left = new(), _virtual_currents = new();
@@ -94,10 +93,8 @@ public partial class circuit
     }
 
     public circuit(circuit_builder circuit_info, Dictionary<string, branch_user> named_branches, 
-        Dictionary<string, branch_user> contactor_locations, object circuit_update_lock)
+        Dictionary<string, branch_user> contactor_locations)
     {
-        _circuit_update = circuit_update_lock;
-
         node_builder.remove_extraneous_nodes();
         node_builder.flip_reversed_branches();
         _nodes    = new   node[circuit_info.node_count  ];
@@ -212,21 +209,18 @@ public partial class circuit
         await Task.Run(run_solver);
         node [] nodes           = _nodes;
         float[] node_potentials = _potentials;
-        lock (_circuit_update)
+        if (matrices_redone)
         {
-            if (matrices_redone)
-            {
-                sparse_matrix conductances = _conductance_staged;
-                foreach (branch current_branch in _branch_conductances_staged)
-                    current_branch.conductance = conductances[current_branch.id, current_branch.id];
-                _branch_conductances_staged.Clear();
-            }
-
-            for (int node_index = _last_active_node; node_index >= 0; --node_index)
-                nodes[node_index].set_potential(node_potentials[node_index]);
-            foreach (branch current_branch in _branch_EMFs_staged)
-                current_branch.set_current_EMF_from_matrix(EMFs_staged[current_branch.id, 0]);
+            sparse_matrix conductances = _conductance_staged;
+            foreach (branch current_branch in _branch_conductances_staged)
+                current_branch.conductance = conductances[current_branch.id, current_branch.id];
+            _branch_conductances_staged.Clear();
         }
+
+        for (int node_index = _last_active_node; node_index >= 0; --node_index)
+            nodes[node_index].set_potential(node_potentials[node_index]);
+        foreach (branch current_branch in _branch_EMFs_staged)
+            current_branch.set_current_EMF_from_matrix(EMFs_staged[current_branch.id, 0]);
         _branch_EMFs_staged.Clear();
         _simulation_in_progress = false;
         return true;
