@@ -39,7 +39,6 @@ namespace Tests
 
         static circuit _test_circuit;
         static Dictionary<string, branch_user> _named_branches, _contactor_locations;
-        static object _dummy = new object();
         static Task _simulation_progress;
 
         static void print_currents()
@@ -58,7 +57,7 @@ namespace Tests
         static void Main(string[] args)
         {
 #if !CIRCUIT_TEST_OFF
-            _test_circuit = circuit_compiler.trace(_resistances, test_diagram).set_up_simulation(out _named_branches, out _contactor_locations, _dummy);
+            _test_circuit = circuit_compiler.trace(_resistances, test_diagram).set_up_simulation(out _named_branches, out _contactor_locations);
             _named_branches["B"].EMF = 6.0f;
             _contactor_locations["C"].toggle_contactor("C", false);
             print_currents();

@@ -50,7 +50,6 @@ namespace Tests
         };
         readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
 
-        readonly object         _simulation_sync = new object();
         readonly circuit        _TM_rig;
         readonly traction_motor _motor1, _motor2;
         readonly IEnumerator    _simulation_step;
@@ -92,7 +91,7 @@ namespace Tests
                 _resistances[$"WF{motor_branch}b"] = _WF_b_resistances[starting_WF];
                 multiplier += 0.003f;
             }
-            _TM_rig = circuit_compiler.trace(_resistances, TM_test_rig).set_up_simulation(out _named_branches, out _contactor_locations, _simulation_sync);
+            _TM_rig = circuit_compiler.trace(_resistances, TM_test_rig).set_up_simulation(out _named_branches, out _contactor_locations);
             _motor1 = new traction_motor(1, 1.0f, multiplier         , _named_branches);
             _motor2 = new traction_motor(2, 1.0f, multiplier + 0.003f, _named_branches);
             circuit.telemetry.set_up(_TM_rig, _named_branches, Console.WriteLine);
@@ -228,8 +227,7 @@ namespace Tests
                 }
 #endif
                 _simulation_step.MoveNext();
-                lock (_simulation_sync)
-                    circuit.telemetry.log_sorted_voltages(_TM_rig); 
+                circuit.telemetry.log_sorted_voltages(_TM_rig); 
             }
         }
     }
