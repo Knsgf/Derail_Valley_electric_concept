@@ -57,7 +57,7 @@ namespace Tests
 
         float _supply_voltage, _supply_resistance, _speed;
         int   _WF;
-        bool  _reversed;
+        bool  _reversed, _fields_crossed, _M2_on;
         Task  _simulation_progress;
 
         static float shunt_resistance(float field_resistance, float ratio)
@@ -80,7 +80,7 @@ namespace Tests
         }
 
         internal TM_rig(float starting_voltage, float starting_resistance, float starting_speed, int starting_WF, 
-            bool start_reversed)
+            bool start_reversed, bool fields_crossed, bool M2_on)
         {
             float multiplier = 1.0f;
             for (int motor_branch = 1; motor_branch <= motors; ++motor_branch)
@@ -103,9 +103,12 @@ namespace Tests
             _speed             = starting_speed;
             _WF                = Math.Max(0, Math.Min(_field_ratios.Length - 1, starting_WF));
             _reversed          = start_reversed;
+            _fields_crossed    = fields_crossed;
+            _M2_on             = M2_on;
 
             set_reverser(start_reversed);
-            set_field(false);
+            set_field_crossover(fields_crossed);
+            _contactor_locations["M2"].toggle_contactor("M2", M2_on);
             _named_branches["EPS"].EMF               = _supply_voltage;
             _named_branches["EPS"].closed_resistance = _supply_resistance;
             _simulation_step = simulation_cycle().GetEnumerator();
@@ -124,7 +127,7 @@ namespace Tests
             }
         }
 
-        void set_field(bool crossed)
+        void set_field_crossover(bool crossed)
         {
             _contactor_locations["S1"].toggle_contactor("S1", !crossed);
             _contactor_locations["S2"].toggle_contactor("S2", !crossed);
@@ -139,8 +142,8 @@ namespace Tests
                 _simulation_progress = _TM_rig.simulate(permit_topology_changes: true);
                 while (!_simulation_progress.IsCompleted)
                     yield return null;
-                _motor1.estalblish_EMFs(false, wheel_RPM(_speed));
-                _motor2.estalblish_EMFs(false, wheel_RPM(_speed));
+                _motor1.estalblish_EMFs(_fields_crossed, wheel_RPM(_speed));
+                _motor2.estalblish_EMFs(_fields_crossed, wheel_RPM(_speed));
                 _simulation_progress = _TM_rig.simulate(permit_topology_changes: false);
                 while (!_simulation_progress.IsCompleted)
                     yield return null;
@@ -154,7 +157,7 @@ namespace Tests
         {
             while (true)
             {
-                Console.WriteLine($"v={_speed} km/h, V={_supply_voltage} V, r={_supply_resistance} Ω, {(_reversed ? 'R' : 'F')}");
+                Console.WriteLine($"v={_speed} km/h, V={_supply_voltage} V, r={_supply_resistance} Ω, WF{_WF} {(_reversed ? 'R' : 'F')} {(_fields_crossed ? 'C' : 'S')} M2={(_M2_on ? "on" : "off")}");
 
 #if !INPUT_OFF            
                 switch(char.ToLowerInvariant(Console.ReadKey().KeyChar))
@@ -182,10 +185,12 @@ namespace Tests
 
                     case '9':
                         _supply_resistance += 0.1f;
+                        _named_branches["EPS"].closed_resistance = _supply_resistance;
                         continue;
                 
                     case '3':
                         _supply_resistance = Mathf.Max(_supply_resistance - 0.1f, 0.0f);
+                        _named_branches["EPS"].closed_resistance = _supply_resistance;
                         continue;
 
                     case '/':
@@ -193,18 +198,32 @@ namespace Tests
                         set_reverser(_reversed);
                         continue;
 
-                    /*
                     case '.':
-                        fields_crossed = !fields_crossed;
+                        _fields_crossed = !_fields_crossed;
+                        set_field_crossover(_fields_crossed);
                         continue;
-                    */
 
                     case '+':
                         _WF = Math.Min(_WF + 1, _field_ratios.Length - 1);
+                        for (int motor_branch = 1; motor_branch <= motors; ++motor_branch)
+                        {
+                            _named_branches[$"WF{motor_branch}a"].closed_resistance = _WF_a_resistances[_WF];
+                            _named_branches[$"WF{motor_branch}b"].closed_resistance = _WF_b_resistances[_WF];
+                        }
                         continue;
 
                     case '-':
                         _WF = Math.Max(_WF - 1, 0);
+                        for (int motor_branch = 1; motor_branch <= motors; ++motor_branch)
+                        {
+                            _named_branches[$"WF{motor_branch}a"].closed_resistance = _WF_a_resistances[_WF];
+                            _named_branches[$"WF{motor_branch}b"].closed_resistance = _WF_b_resistances[_WF];
+                        }
+                        continue;
+
+                    case '0':
+                        _M2_on = !_M2_on;
+                        _contactor_locations["M2"].toggle_contactor("M2", _M2_on);
                         continue;
                 }
 #endif

@@ -68,7 +68,10 @@ namespace Tests
 #endif
 
 #if !MOTOR_TEST_OFF
-            var test_rig = new TM_rig(250.0f, 6.0f, 0.0f, 0, false);
+            var test_rig = new TM_rig(0.0f, 0.0f, 0.0f, 0, false, false, false);
+            //var test_rig = new TM_rig(1500.0f, 0.0f, 50.0f, 0, false, false, false);
+            //var test_rig = new TM_rig(250.0f, 0.0f, 120.0f, 0, false, false, false);
+            //var test_rig = new TM_rig(250.0f, 0.0f, 180.0f, 0, false, false, false);
             test_rig.run();
 #endif
         }
