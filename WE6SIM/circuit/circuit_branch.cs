@@ -66,7 +66,7 @@ public partial class circuit
                 _accumulated_difference += value - _EMF;
                 if (_accumulated_difference is <= -max_accumulated_difference or >= max_accumulated_difference)
                 {
-                    _future_EMF             = value;
+                    _future_EMF             = _EMF + _accumulated_difference;
                     _accumulated_difference = 0.0f;
                     EMF_changed?.Invoke(this);
                 }
