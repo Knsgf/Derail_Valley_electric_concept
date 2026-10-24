@@ -99,10 +99,6 @@ public class traction_motor
         float core_EMF      = self_induction_EMF(armature_branch.voltage_drop + back_EMF, _armature_resistance, _armature_current);
         armature_branch.EMF = EMF = core_EMF + back_EMF;
         _magnetic_flux      = magnetic_flux;
-
-#if DEBUG
-        print?.Invoke($"M{_motor_number} IA={_armature_current} IF1={_field1_current} IF2={_field2_current}");
-#endif
     }
 
     public void establish_currents()
@@ -114,5 +110,8 @@ public class traction_motor
         heat_emission          = armature_current  * armature_current * _armature_resistance 
                                +   field1_current  *   field1_current *   _field1_resistance
                                +   field2_current  *   field2_current *   _field2_resistance;
+#if DEBUG
+        print?.Invoke($"M{_motor_number} IA={_armature_current} IF1={_field1_current} IF2={_field2_current} E={_armature_branch.EMF} E1={_field1_branch.EMF} E2={_field2_branch.EMF}");
+#endif
     }
 }
