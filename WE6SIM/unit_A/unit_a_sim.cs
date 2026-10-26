@@ -1,7 +1,8 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
 #if DEBUG
-//#define TELEMETRY
+//#define CURRENT_TELEMETRY
+//#define VOLTAGE_TELEMETRY
 #endif
 
 using System;
@@ -215,7 +216,7 @@ internal partial class unit_A_sim: electric_device
         _control_BA1.ValueUpdatedInternally += MU_BA1_control;
         _control_BA2.ValueUpdatedInternally += MU_BA2_control;
 
-#if TELEMETRY
+#if CURRENT_TELEMETRY || VOLTAGE_TELEMETRY
         circuit.telemetry.set_up(_circuit, _named_branches, (string message) => Main.log(message));
 #endif
 
@@ -598,8 +599,10 @@ internal partial class unit_A_sim: electric_device
                 int             selector = _selector;
                 bool rheostatic_brake_on = selector is (int) selector_modes.rheostatic_brake;
 
-    #if TELEMETRY
+    #if CURRENT_TELEMETRY
                 circuit.telemetry.log_sorted_currents(_circuit, -1.0f, 500.0f);
+    #endif
+    #if VOLTAGE_TELEMETRY
                 circuit.telemetry.log_sorted_voltages(_circuit);
     #endif
 
@@ -676,7 +679,7 @@ internal partial class unit_A_sim: electric_device
                     field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
                 
                 float wheel_RPM_A = _wheel_RPM.Value, wheel_RPM_B = _wheel_RPM_B.Value;
-                Task<bool> simulation_run = _circuit.simulate(permit_topology_changes: true);
+                Task<bool> simulation_run = _circuit.simulate(permit_commutation: true);
                 do
                 { 
                     yield return null; 
@@ -687,7 +690,7 @@ internal partial class unit_A_sim: electric_device
                     traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_A); 
                 for (int motor_index = motors / 2; motor_index < motors; ++motor_index)
                     traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_B); 
-                simulation_run = _circuit.simulate(permit_topology_changes: false);
+                simulation_run = _circuit.simulate(permit_commutation: false);
                 while (!simulation_run.IsCompleted)
                     yield return null; 
                 for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
