@@ -15,7 +15,7 @@ public class traction_motor
 {
     const float max_flux = 300.0f, min_flux = 1.0f, kickstarter_winding_flux = 10.0f;
     const float kickstarter_on_maximum_current = 50.0f, kickstarter_off_minimum_current = 100.0f;
-    const float torque_factor = 0.0347f, EMF_factor = 0.003634f, fixed_delta_time = 60.0f, inductance = 350.0f / fixed_delta_time;
+    const float torque_factor = 0.0347f, EMF_factor = 0.003634f, fixed_delta_time = 1.0f / 60.0f, inductance = 0.1f;
 
     private readonly branch_user _armature_branch, _field1_branch, _field2_branch;
     private readonly float       _armature_resistance, _field1_resistance, _field2_resistance, _torque_factor, _EMF_factor;
@@ -67,8 +67,9 @@ public class traction_motor
 
     private static float self_induction_EMF(float voltage_drop, float resistance, float current)
     {
-        float new_current = (voltage_drop + inductance * current) / (resistance + inductance);
-        return new_current * resistance - voltage_drop;
+        float new_current = (fixed_delta_time * voltage_drop + inductance * current) 
+                          / (fixed_delta_time *   resistance + inductance);
+        return inductance / fixed_delta_time * (current - new_current);
     }
     
     public void estalblish_EMFs(bool rheostatic_braking, float wheel_RPM)
