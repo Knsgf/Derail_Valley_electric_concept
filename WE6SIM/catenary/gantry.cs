@@ -218,7 +218,7 @@ public partial class overhead_equipment
                 }
             }
             
-            assert.test(base_pole != null);
+            assert.condition(base_pole != null);
             base_pole.is_visible = _further_pole.is_visible = is_visible = false;
             hide_when_out_of_view();
             base_pole.hide_when_out_of_view();

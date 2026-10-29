@@ -368,7 +368,7 @@ internal static class editor
                 beginning_attachment_point = _last_registration_arm.relative_wire_attachment_point();
             else
             {
-                assert.test(closest_registration_arm != null);
+                assert.condition(closest_registration_arm != null);
                 beginning_attachment_point = _anchor_pole.get_pole_true_position();
                 if (wire_type != wire_kind.side_rail)
                     wire_type = dual_wire ? wire_kind.end_anchor_dual : wire_kind.end_anchor_single;
@@ -381,7 +381,7 @@ internal static class editor
             Vector3 end_attachment_point; 
             if (terminate_at_next_pole)
             {
-                assert.test(closest_pole != null);
+                assert.condition(closest_pole != null);
                 end_attachment_point  = closest_pole.get_pole_true_position();
                 if (wire_type != wire_kind.side_rail)
                     wire_type = dual_wire ? wire_kind.end_anchor_dual : wire_kind.end_anchor_single;
@@ -394,7 +394,7 @@ internal static class editor
             }
             else
             {
-                assert.test(closest_registration_arm != null);
+                assert.condition(closest_registration_arm != null);
                 if (closest_registration_arm.dual_wire != dual_wire)
                     return false;
                 end_attachment_point = closest_registration_arm.relative_wire_attachment_point();

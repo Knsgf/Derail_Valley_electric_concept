@@ -43,12 +43,12 @@ public class traction_motor
     public traction_motor(int motor_number, float torque_multiplier, float EMF_multiplier, 
         Dictionary<string, branch_user> named_branches)
     {
-        assert.test(motor_number >= 1 && motor_number <= 6);
+        assert.condition(motor_number >= 1 && motor_number <= 6);
         _armature_branch = named_branches[$"MA{motor_number}" ];
         _field1_branch   = named_branches[$"MF{motor_number}a"];
         _field2_branch   = named_branches[$"MF{motor_number}b"];
 
-        assert.test(_armature_branch.closed_conductance > 0.0f 
+        assert.condition(_armature_branch.closed_conductance > 0.0f 
                  &&   _field1_branch.closed_conductance > 0.0f
                  &&   _field2_branch.closed_conductance > 0.0f);
         _armature_resistance = _armature_branch.closed_resistance;

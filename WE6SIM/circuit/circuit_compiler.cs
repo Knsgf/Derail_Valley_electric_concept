@@ -99,7 +99,7 @@ public class circuit_compiler
             default:
                 throw new MalformedCircuitException($"Unrecognised element at {row}, {column}");
         }
-        assert.test(element != element_type.unknown && termination_symbol != '\0');
+        assert.condition(element != element_type.unknown && termination_symbol != '\0');
 
         string name;
         int    termination_position;
@@ -171,7 +171,7 @@ public class circuit_compiler
         */
         row_dir    *= node_row_offset;
         column_dir *= node_column_offset;
-        assert.test(!_visited.Contains((row, column)));
+        assert.condition(!_visited.Contains((row, column)));
         _visited.Add((row, column));
         branch_builder new_branch = new();
 
@@ -199,7 +199,7 @@ public class circuit_compiler
                     break;
 
                 case '*':
-                    assert.test(row == start_row && column == start_column || !_visited.Contains((row, column)));
+                    assert.condition(row == start_row && column == start_column || !_visited.Contains((row, column)));
                     _visited.Add((row, column));
                     trace_node(elements, diagram, test_row, test_column, new_branch);
                     return new_branch;
@@ -217,7 +217,7 @@ public class circuit_compiler
     private static void trace_node(Dictionary<string, float> elements, string[] diagram, int row, int column, 
         branch_builder? incoming_branch = null)
     {
-        assert.test(diagram[row][column] == '*');
+        assert.condition(diagram[row][column] == '*');
         bool existing_node = _nodes.TryGetValue((row, column), out node_builder? node);
         if (!existing_node)
             _nodes[(row, column)] = node = new node_builder((row, column), _nodes.Count == 0);

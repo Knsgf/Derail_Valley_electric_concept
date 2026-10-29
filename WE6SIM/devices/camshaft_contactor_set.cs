@@ -35,7 +35,7 @@ internal class camshaft_contactor_set: electric_device
             if (char.IsWhiteSpace(input[right_margin]))
                 break;
         }
-        assert.test(right_margin > left_margin && right_margin <= input.Length);
+        assert.condition(right_margin > left_margin && right_margin <= input.Length);
         return (input.Substring(left_margin, right_margin - left_margin), left_margin, right_margin);
     }
 

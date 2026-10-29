@@ -128,7 +128,7 @@ public partial class overhead_equipment
 
         _loaded_bundles.Add(catenary_assets);
         WorldMover floating_origin = SingletonBehaviour<WorldMover>.Instance;
-        assert.test(floating_origin != null);
+        assert.condition(floating_origin != null);
         floating_origin.WorldMoved    += floating_origin_shift;
         UnloadWatcher.UnloadRequested += dispose;
     }
@@ -360,7 +360,7 @@ public partial class overhead_equipment
 
 #if DEBUG        
         foreach (var current_object in _currently_visible_objects)
-            assert.test(current_object.entity != null);
+            assert.condition(current_object.entity != null);
 #endif
     }
 

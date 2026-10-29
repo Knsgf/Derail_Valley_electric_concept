@@ -109,7 +109,7 @@ public partial class circuit_builder
                 if (!node_builders[index].squished)
                     node_builders[index].squish_empty_branches();
             }
-            assert.test(!__base_node.squished);
+            assert.condition(!__base_node.squished);
         }
 
         public static void flip_reversed_branches()
@@ -124,7 +124,7 @@ public partial class circuit_builder
                     if (current_branch.reversed_EMF)
                     {
                         node_builder incoming_node = locate_incoming_node(current_branch);
-                        assert.test(incoming_node.incoming_branches.Contains(current_branch));
+                        assert.condition(incoming_node.incoming_branches.Contains(current_branch));
                         outgoing_node.outgoing_branches.Remove(current_branch);
                         outgoing_node.incoming_branches.Add   (current_branch);
                         incoming_node.incoming_branches.Remove(current_branch);

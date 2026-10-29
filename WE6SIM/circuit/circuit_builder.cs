@@ -23,7 +23,7 @@ public partial class circuit_builder
     {
         if (!__setup_done)
             throw new InvalidOperationException("Previous circuit setup unfinished");
-        assert.test(__branch_count == 0 && __all_nodes.Count == 0 && __base_node == null);
+        assert.condition(__branch_count == 0 && __all_nodes.Count == 0 && __base_node == null);
         __setup_done = false;
     }
 
@@ -33,7 +33,7 @@ public partial class circuit_builder
         named_branches      = [];
         contactor_locations = [];
         circuit simulation = new(this, named_branches, contactor_locations);
-        assert.test(__setup_done && __all_nodes.Count == 0 && __branch_count == 0 && __base_node == null);
+        assert.condition(__setup_done && __all_nodes.Count == 0 && __branch_count == 0 && __base_node == null);
         return simulation;
     }
 

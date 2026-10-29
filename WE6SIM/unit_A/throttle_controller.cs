@@ -68,7 +68,7 @@ internal partial class unit_A_sim
         {
             unit_A_sim unit = _unit;
 
-            assert.test(target_notch >= 1 && target_notch <= roll_over_to_full);
+            assert.condition(target_notch >= 1 && target_notch <= roll_over_to_full);
             unit.set_secondary_camshaft_target_notch(target_notch);
             if (target_notch == roll_over_to_1)
                 target_notch = 1;
@@ -98,7 +98,7 @@ internal partial class unit_A_sim
             int current_primary_notch   = unit._contactors._primary_controller.current_notch; 
             int current_secondary_notch = unit.get_secondary_camshaft_current_notch(unit._control_BA1.Value);
             bool secondary_at_1 = current_secondary_notch == 1;
-            assert.test(current_primary_notch >= 1 && current_secondary_notch >= 1);
+            assert.condition(current_primary_notch >= 1 && current_secondary_notch >= 1);
             if (!_camshaft_unlocked || secondary_at_1 && current_primary_notch == 1)
                 return;
             _camshaft_unlocked = false;
@@ -135,7 +135,7 @@ internal partial class unit_A_sim
             int current_primary_notch   = unit._contactors._primary_controller.current_notch; 
             int current_secondary_notch = unit.get_secondary_camshaft_current_notch(unit._control_BA1.Value);
             bool secondary_at_7 = current_secondary_notch == camshaft_notches;
-            assert.test(current_primary_notch <= camshaft_notches && current_secondary_notch <= camshaft_notches);
+            assert.condition(current_primary_notch <= camshaft_notches && current_secondary_notch <= camshaft_notches);
             if (!_camshaft_unlocked || secondary_at_7 && current_primary_notch == camshaft_notches)
                 return;
             _camshaft_unlocked = false;

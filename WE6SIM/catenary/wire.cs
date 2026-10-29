@@ -120,7 +120,7 @@ public partial class overhead_equipment
         public wire(string wire_type, string substation, float length, float previous_pole_vertical_offset, 
             int x, int z, float y, Quaternion orientation): base(/*_wire_sections[wire_type].template*/ get_template(wire_type, length), x, z, y, orientation)
         {
-            assert.test(length > 0.0f);
+            assert.condition(length > 0.0f);
             wire_template wire_info            = _wire_sections[wire_type];
             this.wire_type                     = wire_type;
             this.substation                    = substation;
@@ -145,7 +145,7 @@ public partial class overhead_equipment
                 _fixed_part_offset = new Vector3(0.0f, previous_pole_vertical_offset / length * lengthwise_offset, 
                     lengthwise_offset);
                 float stretch_part_length = length - wire_info.fixed_part_length;
-                assert.test(stretch_part_length > 0.0f);
+                assert.condition(stretch_part_length > 0.0f);
                 (_primary_vertical_orientation, _primary_vertical_scale, _secondary_vertical_scale) 
                     = compute_shear_scale_transform(shear_angle, stretch_part_length, wire_info.section_length - wire_info.fixed_part_length);
             }
@@ -195,7 +195,7 @@ public partial class overhead_equipment
                 entity_location.position  = get_relative_position();
                 entity_location.rotation  = orientation;
 
-                assert.test(template is not null);
+                assert.condition(template is not null);
                 reveal_part("ShearA", entity_location, Vector3.zero, template, 
                     _primary_vertical_orientation, _primary_vertical_scale, _secondary_vertical_scale,
                     ref _primary_transform, ref _secondary_transform);
@@ -213,7 +213,7 @@ public partial class overhead_equipment
         {
             if (!is_visible && entity is not null)
             {
-                assert.test(_primary_transform is not null && _secondary_transform is not null);
+                assert.condition(_primary_transform is not null && _secondary_transform is not null);
                 GameObject.Destroy(_secondary_transform);
                 GameObject.Destroy(  _primary_transform);
                 GameObject.Destroy(              entity);

@@ -43,7 +43,7 @@ public partial class circuit
             get => _closed_conductance;
             set
             {
-                assert.test(value >= 0.0f);
+                assert.condition(value >= 0.0f);
                 _closed_conductance = value;
                 conductance_changed?.Invoke(this);
             }
@@ -109,13 +109,13 @@ public partial class circuit
             _closed_conductance = 1.0f / total_resistance;
 
             copy_dict(contactors, _contactors);
-            assert.test(_contactors.Count <= 30);
+            assert.condition(_contactors.Count <= 30);
             _contactors_off = (1 << _contactors.Count) - 1;
         }
 
         public void establish_self_inductance(float delta_time)
         {
-            assert.test(_inductance != 0.0f);
+            assert.condition(_inductance != 0.0f);
             if (_current_conductance == 0.0f)
                 _self_inductance_EMF = 0.0f;
             else
@@ -146,7 +146,7 @@ public partial class circuit
             bool contactor_present = _contactors.TryGetValue(contactor_designation, out int contactor_number);
             if (!contactor_present)
                 throw new ArgumentException($"Non-existent contactor {contactor_designation}");
-            assert.test(contactor_number <= 30 && contactor_number < _contactors.Count);
+            assert.condition(contactor_number <= 30 && contactor_number < _contactors.Count);
             bool branch_was_closed = _contactors_off == 0;
             int contactor_mask = 1 << contactor_number;
             if (!switch_on)
@@ -163,7 +163,7 @@ public partial class circuit
             bool contactor_present = _contactors.TryGetValue(contactor_designation, out int contactor_number);
             if (!contactor_present)
                 throw new ArgumentException($"Non-existent contactor {contactor_designation}");
-            assert.test(contactor_number <= 30 && contactor_number < _contactors.Count);
+            assert.condition(contactor_number <= 30 && contactor_number < _contactors.Count);
             int contactor_mask = 1 << contactor_number;
             return (_contactors_off & contactor_mask) == 0;
         }

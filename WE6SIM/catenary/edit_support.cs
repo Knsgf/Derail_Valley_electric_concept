@@ -146,7 +146,7 @@ public partial class overhead_equipment
                     break;
                 }
             }
-            assert.test(index >= 0);
+            assert.condition(index >= 0);
             reconstruct_tree();
             _all_objects.Add(entity);
             _freshly_added_objects.Add(entity);

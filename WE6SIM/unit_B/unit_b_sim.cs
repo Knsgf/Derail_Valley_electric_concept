@@ -102,7 +102,7 @@ internal class unit_B_sim: electric_device
         }
         if (_driving_axles is null)
             throw new Exception("No powered wheels manager");
-        assert.test(_driving_axles.poweredWheels.Length == 3);
+        assert.condition(_driving_axles.poweredWheels.Length == 3);
         _driving_axles.PoweredWheelKilled    += motor_cut_out;
         _driving_axles.PoweredWheelSetOnFire += motor_cut_out;
         _driving_axles.PoweredWheelRepaired  += motor_cut_in;
@@ -223,13 +223,13 @@ internal class unit_B_sim: electric_device
 
     private void motor_cut_out(PoweredWheel axle)
     {
-        assert.test(axle.index is >= 0 and < 3);
+        assert.condition(axle.index is >= 0 and < 3);
         toggle_port_signal(_control_BA2, 1 << ((int) BA2_shift.unit_B_active_motors + axle.index), false);
     }
 
     private void motor_cut_in(PoweredWheel axle)
     {
-        assert.test(axle.index is >= 0 and < 3);
+        assert.condition(axle.index is >= 0 and < 3);
         toggle_port_signal(_control_BA2, 1 << ((int) BA2_shift.unit_B_active_motors + axle.index), true);
     }
 
@@ -297,7 +297,7 @@ internal class unit_B_sim: electric_device
                 break;
 
             default:
-                assert.test(_secondary_camshaft_target_notch >= 1 && _secondary_camshaft_target_notch <= unit_A_sim.camshaft_notches);
+                assert.condition(_secondary_camshaft_target_notch >= 1 && _secondary_camshaft_target_notch <= unit_A_sim.camshaft_notches);
                 _secondary_controller.target_notch = _secondary_camshaft_target_notch;
                 break;
         }

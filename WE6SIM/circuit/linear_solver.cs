@@ -18,9 +18,9 @@ internal partial class sparse_matrix
             int[] row_map, sparse_matrix right_side)
         {
             int size = lower._num_rows;
-            assert.test(size == lower._num_columns && size == upper._num_rows && size == upper._num_columns);
-            assert.test(size == upper_diagonal.Length && size == right_side._num_rows && right_side._num_columns == 1);
-            assert.test(size == results.Length && _intermediate_vector != null && size <= _intermediate_vector.Length);
+            assert.condition(size == lower._num_columns && size == upper._num_rows && size == upper._num_columns);
+            assert.condition(size == upper_diagonal.Length && size == right_side._num_rows && right_side._num_columns == 1);
+            assert.condition(size == results.Length && _intermediate_vector != null && size <= _intermediate_vector.Length);
 
             float[] temporary = _intermediate_vector;
             temporary[0] = right_side[row_map[0], 0];
@@ -30,7 +30,7 @@ internal partial class sparse_matrix
                 float result = right_side[row_map[row], 0];
                 foreach (KeyValuePair<int, float> row_item in lower_contents[row])
                 {
-                    assert.test(row_item.Key >= 0 && row_item.Key < row);
+                    assert.condition(row_item.Key >= 0 && row_item.Key < row);
                     result -= row_item.Value * temporary[row_item.Key];
                 }
                 temporary[row] = result;
@@ -48,7 +48,7 @@ internal partial class sparse_matrix
                     float result = temporary[row];
                     foreach (KeyValuePair<int, float> row_item in upper_contents[row])
                     {
-                        assert.test(row_item.Key > row && row_item.Key < size);
+                        assert.condition(row_item.Key > row && row_item.Key < size);
                         result -= row_item.Value * results[row_item.Key];
                     }
                     results[row] = result / upper_diagonal[row];
@@ -70,10 +70,10 @@ internal partial class sparse_matrix
 
         public void solve(float[] results, sparse_matrix right_hand_side)
         {
-            assert.test(_U_diagonal != null && _row_map != null && _intermediate_vector != null);
-            assert.test(_U_diagonal.Length <= _intermediate_vector.Length);
-            assert.test(results.Length == _U_diagonal.Length);
-            assert.test(right_hand_side._num_rows == _U_diagonal.Length && right_hand_side._num_columns == 1);
+            assert.condition(_U_diagonal != null && _row_map != null && _intermediate_vector != null);
+            assert.condition(_U_diagonal.Length <= _intermediate_vector.Length);
+            assert.condition(results.Length == _U_diagonal.Length);
+            assert.condition(right_hand_side._num_rows == _U_diagonal.Length && right_hand_side._num_columns == 1);
             compute(_L, _U_diagonal, _U, results, _row_map, right_hand_side);
         }
     }

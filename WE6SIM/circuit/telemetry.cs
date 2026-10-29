@@ -56,7 +56,7 @@ public partial class circuit
             for (int index = 0; index < _branches_sorted.Count; ++index)
             {
                 branch current_branch = _branches_sorted[index];
-                assert.test(current_branch.conductance >= 0.0f);
+                assert.condition(current_branch.conductance >= 0.0f);
                 float branch_heat_power = 0.0f;
                 if (current_branch.conductance > 0.0f)
                 {
@@ -113,7 +113,7 @@ public partial class circuit
             for (int index = 0; index < _branches_sorted.Count; ++index)
             {
                 branch current_branch = _branches_sorted[index];
-                assert.test(current_branch.conductance >= 0.0f);
+                assert.condition(current_branch.conductance >= 0.0f);
                 float branch_heat_power = 0.0f;
                 if (current_branch.conductance > 0.0f)
                 {

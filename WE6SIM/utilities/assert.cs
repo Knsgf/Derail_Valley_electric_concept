@@ -9,7 +9,7 @@ namespace electric_sim.utilities;
 internal static class assert
 {
     [Conditional("DEBUG")]
-    public static void test([DoesNotReturnIf(false)] bool passed)
+    public static void condition([DoesNotReturnIf(false)] bool passed)
     {
         if (!passed)
             throw new assertion_failed_exception();

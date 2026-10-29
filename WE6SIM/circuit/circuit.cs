@@ -45,7 +45,7 @@ public partial class circuit
         int index = 0;
         foreach (node_builder node_definition in circuit_info.all_nodes)
         {
-            assert.test(!node_definition.squished);
+            assert.condition(!node_definition.squished);
             if (node_definition.is_base_node)
                 base_node = node_definition;
             else
@@ -65,7 +65,7 @@ public partial class circuit
         bool branch_built = __built_branches.TryGetValue(branch_definition, out branch? current_branch);
         if (branch_built)
         {
-            assert.test(current_branch != null && __connected_terminals.ContainsKey(current_branch));
+            assert.condition(current_branch != null && __connected_terminals.ContainsKey(current_branch));
             connection previous_status = __connected_terminals[current_branch];
             __connected_terminals[current_branch] |= connect_at_start ? connection.at_start : connection.at_end;
             if (__connected_terminals[current_branch] == previous_status)
@@ -73,7 +73,7 @@ public partial class circuit
             return current_branch;
         }
 
-        assert.test(!branch_definition.reversed_EMF);
+        assert.condition(!branch_definition.reversed_EMF);
         current_branch = new(branch_definition.resistances, branch_definition.contactors);
         if (current_branch.inductance > 0.0f)
             __inductive_branches.Add(current_branch);
@@ -118,7 +118,7 @@ public partial class circuit
         Array.Sort(_branches, (branch left, branch right) => left.id - right.id);
 
         _last_active_node = _nodes.Length - 2;
-        assert.test(_last_active_node >= 0);
+        assert.condition(_last_active_node >= 0);
 
         _incidence        = new(_last_active_node + 1, _branches.Length);
         _right            = new(_last_active_node + 1, _branches.Length);
@@ -212,7 +212,7 @@ public partial class circuit
             _matrices_recalculation       = null;
         }
 
-        assert.test(_branch_EMFs_staged.Count == 0);
+        assert.condition(_branch_EMFs_staged.Count == 0);
         (_branch_EMFs_staged, _branch_EMFs_changed) = (_branch_EMFs_changed, _branch_EMFs_staged);
         sparse_matrix EMFs_staged = _EMFs_staged, EMFs = _EMFs;
         /*
