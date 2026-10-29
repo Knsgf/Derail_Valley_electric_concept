@@ -23,8 +23,8 @@ public partial class circuit
 
     private class branch: branch_user
     {
-        const float min_branch_resistance = 1.0E-4f, max_accumulated_difference = 1.0f;
-        const float inductance_ratio = 0.5f, maximum_inductance = 0.1f;
+        const float min_branch_resistance = 1.0E-4f;
+        const float inductance_ratio = 0.5f * 2.0f, maximum_inductance = 0.1f * 1.5f;
 
         private static int __next_available_id = 0;
 
