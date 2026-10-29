@@ -683,7 +683,7 @@ internal partial class unit_A_sim: electric_device
                 float wheel_RPM_A = _wheel_RPM.Value, wheel_RPM_B = _wheel_RPM_B.Value;
 
                 // Self-induction step: sample final steady-state currents
-                Task<bool> simulation_run = _circuit.simulate(permit_commutation: true);
+                Task simulation_run = _circuit.simulate(permit_commutation: true);
                 do
                 { 
                     yield return null; 

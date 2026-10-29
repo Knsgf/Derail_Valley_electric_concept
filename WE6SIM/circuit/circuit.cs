@@ -19,9 +19,10 @@ public partial class circuit
     
     private static readonly Dictionary<branch_builder,     branch> __built_branches      = [];
     private static readonly Dictionary<branch        , connection> __connected_terminals = [];
+    private static List<branch> __inductive_branches = [];
 
     private readonly   node[] _nodes;
-    private readonly branch[] _branches;
+    private readonly branch[] _branches, _inductive_branches;
 
     private readonly sparse_matrix _incidence, _transposed_incidence, _negative_incidence;
     private readonly sparse_matrix _conductance, _EMFs, _conductance_staged, _EMFs_staged;
@@ -30,7 +31,7 @@ public partial class circuit
     private readonly int           _last_active_node;
 
     private sparse_matrix.linear_solver _solver, _background_solver;
-    private sparse_matrix _right, _background_right;
+    private sparse_matrix               _right,  _background_right;
     private HashSet<branch> _branch_conductances_changed, _branch_conductances_staged = [], _branch_EMFs_changed = [], _branch_EMFs_staged = [];
     
     private Task? _matrices_recalculation;
@@ -74,6 +75,8 @@ public partial class circuit
 
         assert.test(!branch_definition.reversed_EMF);
         current_branch = new(branch_definition.resistances, branch_definition.contactors);
+        if (current_branch.inductance > 0.0f)
+            __inductive_branches.Add(current_branch);
         if (!string.IsNullOrWhiteSpace(branch_definition.branch_name))
         {
             if (named_branches.ContainsKey(branch_definition.branch_name!))  //  Someone forgot to tag that IsNullOrWhiteSpace() always returns true if argument is null
@@ -107,6 +110,8 @@ public partial class circuit
             if (branch_connection.Value != connection.at_both)
                 throw new MalformedCircuitException($"Disconnected branch found ({branch_connection.Key.id})");
         }
+        _inductive_branches = [.. __inductive_branches];
+        __inductive_branches.Clear();
         __built_branches.Clear();
         __connected_terminals.Clear();
         Array.Sort(   _nodes, (node   left, node   right) => left.id - right.id);
@@ -176,17 +181,17 @@ public partial class circuit
 
     public void establish_self_induction(float delta_time)
     {
-        foreach (branch current_branch in _branches)
+        foreach (branch current_branch in _inductive_branches)
             current_branch.establish_self_inductance(delta_time);
     }
 
     public void establish_currents()
     {
-        foreach (branch current_branch in _branches)
+        foreach (branch current_branch in _inductive_branches)
             current_branch.establish_current();
     }
 
-    public async Task<bool> simulate(bool permit_commutation)
+    public async Task simulate(bool permit_commutation)
     {
         if (_simulation_in_progress)
             throw new Exception("Re-entrant call");
@@ -210,12 +215,14 @@ public partial class circuit
         assert.test(_branch_EMFs_staged.Count == 0);
         (_branch_EMFs_staged, _branch_EMFs_changed) = (_branch_EMFs_changed, _branch_EMFs_staged);
         sparse_matrix EMFs_staged = _EMFs_staged, EMFs = _EMFs;
+        /*
         foreach (branch current_branch in _branch_EMFs_staged)
         { 
             int row             = current_branch.id;
             EMFs_staged[row, 0] = EMFs[row, 0];
         }
-        //EMFs_staged.copy_from(EMFs);
+        */
+        EMFs_staged.copy_from(EMFs);
         if (commutation_occured && _matrices_recalculation == null && _branch_conductances_staged.Count == 0)
         {
             (_branch_conductances_staged, _branch_conductances_changed) = (_branch_conductances_changed, _branch_conductances_staged);
@@ -226,22 +233,12 @@ public partial class circuit
         await Task.Run(run_solver);
         node [] nodes           = _nodes;
         float[] node_potentials = _potentials;
-        /*
-        if (matrices_redone)
-        {
-            sparse_matrix conductances = _conductance_staged;
-            foreach (branch current_branch in _branch_conductances_staged)
-                current_branch.conductance = conductances[current_branch.id, current_branch.id];
-            _branch_conductances_staged.Clear();
-        }
-        */
-
         for (int node_index = _last_active_node; node_index >= 0; --node_index)
             nodes[node_index].set_potential(node_potentials[node_index]);
         foreach (branch current_branch in _branch_EMFs_staged)
             current_branch.set_current_EMF_from_matrix(EMFs_staged[current_branch.id, 0]);
         _branch_EMFs_staged.Clear();
         _simulation_in_progress = false;
-        return commutation_finished;
+        //return commutation_finished;
     }
 }

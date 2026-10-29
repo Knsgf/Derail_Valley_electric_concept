@@ -32,10 +32,10 @@ public partial class circuit
 
         private int _contactors_off = int.MaxValue;
 
-        private float _closed_conductance     = 0.0f, _current_conductance = 0.0f;
-        private float _start_ptential         = 0.0f, _end_potential       = 0.0f;
-        private float _accumulated_difference = 0.0f, _future_EMF          = 0.0f, _EMF = 0.0f;
-        private float _inductance             = 0.0f, _self_inductance_EMF = 0.0f, _last_current = 0.0f;
+        private float _closed_conductance = 0.0f, _current_conductance = 0.0f;
+        private float _start_ptential     = 0.0f, _end_potential       = 0.0f;
+        private float _future_EMF         = 0.0f, _EMF = 0.0f;
+        private float _inductance         = 0.0f, _self_inductance_EMF = 0.0f, _last_current = 0.0f, _time_constant;
 
         public float future_conductance => (_contactors_off != 0) ? 0.0f : _closed_conductance;
         public float closed_conductance 
@@ -56,7 +56,11 @@ public partial class circuit
         public float conductance 
         { 
             get => _current_conductance;
-            set => _current_conductance = value;
+            set
+            { 
+                _current_conductance = value;
+                _time_constant       = _closed_conductance * _inductance;
+            }
         }
         public float future_EMF => _future_EMF + _self_inductance_EMF;
         public float EMF
@@ -64,17 +68,13 @@ public partial class circuit
             get => _EMF;
             set
             {
-                _accumulated_difference += value - _EMF;
-                //if (_accumulated_difference is <= -max_accumulated_difference or >= max_accumulated_difference)
-                {
-                    _future_EMF             = _EMF + _accumulated_difference;
-                    _accumulated_difference = 0.0f;
-                    EMF_changed?.Invoke(this);
-                }
+                _future_EMF             = value;
+                EMF_changed?.Invoke(this);
             }
         }
         public float current      => (voltage_drop + _EMF) * _current_conductance;
-        public float voltage_drop =>  _start_ptential - _end_potential;
+        public float voltage_drop => _start_ptential - _end_potential;
+        public float inductance   => _inductance;
 
         public int id { get; private set; }
 
@@ -102,7 +102,10 @@ public partial class circuit
             if (total_resistance <= min_branch_resistance)
                 total_resistance = min_branch_resistance;
             else if (total_resistance >= 2.0f * min_branch_resistance)
-                _inductance = Math.Min(maximum_inductance, total_resistance * inductance_ratio);
+            { 
+                _inductance    = Math.Min(maximum_inductance, total_resistance * inductance_ratio); 
+                _time_constant = total_resistance / _inductance;
+            }
             _closed_conductance = 1.0f / total_resistance;
 
             copy_dict(contactors, _contactors);
@@ -112,20 +115,20 @@ public partial class circuit
 
         public void establish_self_inductance(float delta_time)
         {
-            if (_current_conductance == 0.0f || _inductance == 0.0f)
+            assert.test(_inductance != 0.0f);
+            if (_current_conductance == 0.0f)
                 _self_inductance_EMF = 0.0f;
             else
             {
                 _self_inductance_EMF = (_last_current /  _current_conductance - (voltage_drop + _future_EMF))
-                                     / (delta_time    / (_current_conductance * _inductance ) + 1.0f);
+                                     / (delta_time    / _time_constant + 1.0f);
             }
-            //_last_current = current;
             EMF_changed?.Invoke(this);
         }
 
         public void establish_current()
         {
-            _last_current = current;
+            _last_current        = current;
             _self_inductance_EMF = 0.0f;
             EMF_changed?.Invoke(this);
         }
