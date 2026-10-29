@@ -24,6 +24,7 @@ public partial class circuit
     private class branch: branch_user
     {
         const float min_branch_resistance = 1.0E-4f, max_accumulated_difference = 1.0f;
+        const float inductance_ratio = 0.5f, maximum_inductance = 0.1f;
 
         private static int __next_available_id = 0;
 
@@ -34,7 +35,7 @@ public partial class circuit
         private float _closed_conductance     = 0.0f, _current_conductance = 0.0f;
         private float _start_ptential         = 0.0f, _end_potential       = 0.0f;
         private float _accumulated_difference = 0.0f, _future_EMF          = 0.0f, _EMF = 0.0f;
-
+        private float _inductance             = 0.0f, _self_inductance_EMF = 0.0f, _last_current = 0.0f;
 
         public float future_conductance => (_contactors_off != 0) ? 0.0f : _closed_conductance;
         public float closed_conductance 
@@ -57,14 +58,14 @@ public partial class circuit
             get => _current_conductance;
             set => _current_conductance = value;
         }
-        public float future_EMF => _future_EMF;
+        public float future_EMF => _future_EMF + _self_inductance_EMF;
         public float EMF
         {
             get => _EMF;
             set
             {
                 _accumulated_difference += value - _EMF;
-                if (_accumulated_difference is <= -max_accumulated_difference or >= max_accumulated_difference)
+                //if (_accumulated_difference is <= -max_accumulated_difference or >= max_accumulated_difference)
                 {
                     _future_EMF             = _EMF + _accumulated_difference;
                     _accumulated_difference = 0.0f;
@@ -98,13 +99,35 @@ public partial class circuit
             float total_resistance = 0.0f;
             foreach (float resistance in resistances.Values)
                 total_resistance += resistance;
-            if (total_resistance < min_branch_resistance)
+            if (total_resistance <= min_branch_resistance)
                 total_resistance = min_branch_resistance;
+            else if (total_resistance >= 2.0f * min_branch_resistance)
+                _inductance = Math.Min(maximum_inductance, total_resistance * inductance_ratio);
             _closed_conductance = 1.0f / total_resistance;
 
             copy_dict(contactors, _contactors);
             assert.test(_contactors.Count <= 30);
             _contactors_off = (1 << _contactors.Count) - 1;
+        }
+
+        public void establish_self_inductance(float delta_time)
+        {
+            if (_current_conductance == 0.0f || _inductance == 0.0f)
+                _self_inductance_EMF = 0.0f;
+            else
+            {
+                _self_inductance_EMF = (_last_current /  _current_conductance - (voltage_drop + _future_EMF))
+                                     / (delta_time    / (_current_conductance * _inductance ) + 1.0f);
+            }
+            //_last_current = current;
+            EMF_changed?.Invoke(this);
+        }
+
+        public void establish_current()
+        {
+            _last_current = current;
+            _self_inductance_EMF = 0.0f;
+            EMF_changed?.Invoke(this);
         }
 
         public void set_node_potential(bool at_start_node, float new_potential)

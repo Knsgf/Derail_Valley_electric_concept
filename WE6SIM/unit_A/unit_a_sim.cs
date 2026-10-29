@@ -664,7 +664,9 @@ internal partial class unit_A_sim: electric_device
                 }
                 //Main.log($"ID = {_idling_arc_damage}");
         
-                _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, _total_draw);
+                //_main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, _total_draw);
+                Main.diagnostics?.Value = Mathf.Max(motors_volts, maximum_EMF);
+                Main.diagnostics2?.Value = maximum_load;
                 _compressor_on.ChangeState(voltmeter_reading >= 1000.0f && _main_breaker_closed.State);
                 blowers.active                = /*rheostatic_brake_on || _throttle >= 1*/ Mathf.Abs(_reverser_position - 0.5f) > 0.1f;
                 blowers.rheostatic_braking_on = rheostatic_brake_on;
@@ -685,16 +687,30 @@ internal partial class unit_A_sim: electric_device
                     yield return null; 
                 }
                 while (!simulation_run.IsCompleted);
-                bool kickstarters_on = rheostatic_brake_on && _throttle >= 1;
+
+                _circuit.establish_self_induction(Time.deltaTime);
+                //bool kickstarters_on = rheostatic_brake_on && _throttle >= 1;
+                /*
                 for (int motor_index = motors / 2 - 1; motor_index >= 0; --motor_index)
                     traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_A); 
                 for (int motor_index = motors / 2; motor_index < motors; ++motor_index)
                     traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_B); 
+                */
                 simulation_run = _circuit.simulate(permit_commutation: false);
                 while (!simulation_run.IsCompleted)
                     yield return null; 
-                for (int motor_index = motors - 1; motor_index >= 0; --motor_index)
+                _circuit.establish_currents();
+                bool kickstarters_on = rheostatic_brake_on && _throttle >= 1;
+                for (int motor_index = motors / 2 - 1; motor_index >= 0; --motor_index)
+                { 
+                    traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_A); 
                     traction_motors[motor_index].establish_currents(); 
+                }
+                for (int motor_index = motors / 2; motor_index < motors; ++motor_index)
+                { 
+                    traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_B); 
+                    traction_motors[motor_index].establish_currents(); 
+                }
             }
         }
     }

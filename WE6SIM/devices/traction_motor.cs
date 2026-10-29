@@ -22,7 +22,7 @@ public class traction_motor
     private readonly bool        _has_kickstarter;
 
     private bool  _dynamic_brake_kickstarter_winding_on = false;
-    private float _armature_current = 0.0f, _field1_current = 0.0f, _field2_current = 0.0f, _magnetic_flux;
+    private float _armature_current = 0.0f, _field1_current = 0.0f, _field2_current = 0.0f, _magnetic_flux, _back_EMF;
 
     public const float gear_ratio = 5.36f, internal_resistance = 0.21f, armature_part = 0.65f, field_partitioning = 0.75f;
     public const float base_armature_resistance = internal_resistance * (       armature_part);   // Includes both rotor and compensating winding
@@ -35,6 +35,7 @@ public class traction_motor
     public float heat_emission { get; private set; }
     public float load_current  => _armature_current;
     public float field_current => _field2_current;
+    public float voltage_drop  => _armature_branch.voltage_drop + _field1_branch.voltage_drop + _field2_branch.voltage_drop;
 
 #if DEBUG
     private readonly int _motor_number;
@@ -68,24 +69,34 @@ public class traction_motor
     private static float self_induction_EMF(float voltage_drop, float resistance, float current)
     {
         float new_current = (fixed_delta_time * voltage_drop + inductance * current) 
-                          / (fixed_delta_time *   resistance + inductance);
-        return inductance / fixed_delta_time * (current - new_current);
+                          / (fixed_delta_time *   resistance + inductance          );
+        return inductance /  fixed_delta_time * (current - new_current);
+    }
+    
+    private static float self_induction_EMF(float voltage_drop, float resistance, float external_voltage_drop, 
+        float current, float instant_current)
+    {
+        if (Mathf.Abs(instant_current) < 1.0f)
+            return self_induction_EMF(voltage_drop, resistance, current);
+        float new_current = (fixed_delta_time * (voltage_drop + external_voltage_drop                  ) + inductance * current) 
+                          / (fixed_delta_time * (  resistance + external_voltage_drop / instant_current) + inductance          );
+        return inductance /  fixed_delta_time * (current - new_current);
     }
     
     public void estalblish_EMFs(bool rheostatic_braking, float wheel_RPM)
     {
         float       motor_RPM       = RPM = wheel_RPM * gear_ratio;
         branch_user armature_branch = _armature_branch, field1_branch = _field1_branch, field2_branch = _field2_branch;
-        field1_branch.EMF = self_induction_EMF(field1_branch.voltage_drop, _field1_resistance, _field1_current);
-        field2_branch.EMF = self_induction_EMF(field2_branch.voltage_drop, _field2_resistance, _field2_current);
+        //field1_branch.EMF = self_induction_EMF(field1_branch.voltage_drop, _field1_resistance, _field1_current);
+        //field2_branch.EMF = self_induction_EMF(field2_branch.voltage_drop, _field2_resistance, _field2_current);
 
         float field1_current = field1_branch.current, field2_current = field2_branch.current;
         float magnetic_flux1 = (min_flux + Mathf.Clamp(Mathf.Abs(field1_current), 0.0f, max_flux - min_flux)) * (1.0f - field_partitioning);
         float magnetic_flux2 = (min_flux + Mathf.Clamp(Mathf.Abs(field2_current), 0.0f, max_flux - min_flux)) *         field_partitioning;
-        if (field1_current < 0.0f)
-            magnetic_flux1 = -magnetic_flux1;
-        if (field2_current < 0.0f)
-            magnetic_flux2 = -magnetic_flux2;
+        //if (field1_current < 0.0f)
+        //    magnetic_flux1 = -magnetic_flux1;
+        //if (field2_current < 0.0f)
+        //    magnetic_flux2 = -magnetic_flux2;
         float magnetic_flux = magnetic_flux1 + magnetic_flux2;
 
         float absolute_current = Mathf.Abs(_armature_current);
@@ -97,8 +108,8 @@ public class traction_motor
             magnetic_flux += kickstarter_winding_flux;
 
         float back_EMF      = _EMF_factor * magnetic_flux * motor_RPM;
-        float core_EMF      = self_induction_EMF(armature_branch.voltage_drop + back_EMF, _armature_resistance, _armature_current);
-        armature_branch.EMF = EMF = core_EMF + back_EMF;
+        //float core_EMF      = self_induction_EMF(armature_branch.voltage_drop + back_EMF, _armature_resistance, external_voltage_drop, _armature_current, armature_branch.current);
+        armature_branch.EMF = EMF = /*core_EMF +*/ back_EMF;
         _magnetic_flux      = magnetic_flux;
     }
 
@@ -111,8 +122,6 @@ public class traction_motor
         heat_emission          = armature_current  * armature_current * _armature_resistance 
                                +   field1_current  *   field1_current *   _field1_resistance
                                +   field2_current  *   field2_current *   _field2_resistance;
-#if DEBUG
-        print?.Invoke($"M{_motor_number} IA={_armature_current} IF1={_field1_current} IF2={_field2_current} E={_armature_branch.EMF} E1={_field1_branch.EMF} E2={_field2_branch.EMF}");
-#endif
+        //_armature_branch.EMF = _EMF_factor * _magnetic_flux * RPM;
     }
 }

@@ -17,7 +17,7 @@ namespace Tests
         const int    motors         = 2;
         const float  wheel_diameter = 1.12f;
         const string TM_test_rig    = "\n"
-            +  "*---@EPS>----------------------------------------------------------*     \n"
+            +  "*---@EPS>--------------------------------------------------*--@R>--*     \n"
             +  "|                                                                  |     \n"
             +  "|                                             *-------#RR1a#-------*     \n"
             +  "|                                             |                    |     \n"
@@ -46,7 +46,8 @@ namespace Tests
 
         readonly Dictionary<string, float> _resistances = new Dictionary<string, float>()
         {
-            ["EPS"] = 0.0f
+            ["EPS"] = 0.0f,
+            ["R"  ] = 1.0f
         };
         readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
 
@@ -109,7 +110,7 @@ namespace Tests
             set_field_crossover(fields_crossed);
             _contactor_locations["M2"].toggle_contactor("M2", M2_on);
             _named_branches["EPS"].EMF               = _supply_voltage;
-            _named_branches["EPS"].closed_resistance = _supply_resistance;
+            _named_branches["R"  ].closed_resistance = _supply_resistance;
             _simulation_step = simulation_cycle().GetEnumerator();
         }
 
@@ -138,16 +139,23 @@ namespace Tests
         {
             while (true)
             {
-                _simulation_progress = _TM_rig.simulate(permit_topology_changes: true);
+                _named_branches["EPS"].EMF = _supply_voltage;
+                _simulation_progress = _TM_rig.simulate(permit_commutation: true);
                 while (!_simulation_progress.IsCompleted)
                     yield return null;
-                _motor1.estalblish_EMFs(_fields_crossed, wheel_RPM(_speed));
-                _motor2.estalblish_EMFs(_fields_crossed, wheel_RPM(_speed));
-                _simulation_progress = _TM_rig.simulate(permit_topology_changes: false);
+                float RPM = wheel_RPM(_speed);
+                //_motor1.estalblish_EMFs(_fields_crossed, RPM, _supply_voltage - _motor1.voltage_drop);
+                //_motor2.estalblish_EMFs(_fields_crossed, RPM, _supply_voltage - _motor2.voltage_drop);
+                _TM_rig.establish_self_induction(1.0f / 60.0f);
+                _simulation_progress = _TM_rig.simulate(permit_commutation: false);
                 while (!_simulation_progress.IsCompleted)
                     yield return null;
+                _motor1.estalblish_EMFs(_fields_crossed, RPM);
+                _motor2.estalblish_EMFs(_fields_crossed, RPM);
+                _TM_rig.establish_currents();
                 _motor1.establish_currents();
                 _motor2.establish_currents();
+                circuit.telemetry.log_sorted_voltages(_TM_rig); 
                 yield return null;
             }
         }
@@ -174,22 +182,22 @@ namespace Tests
 
                     case '8':
                         _supply_voltage = Mathf.Min(_supply_voltage + 50.0f, 1500.0f);
-                        _named_branches["EPS"].EMF = _supply_voltage;
+                        //_named_branches["EPS"].EMF = _supply_voltage;
                         continue;
                 
                     case '2':
                         _supply_voltage = Mathf.Max(_supply_voltage - 50.0f, 0.0f);
-                        _named_branches["EPS"].EMF = _supply_voltage;
+                        //_named_branches["EPS"].EMF = _supply_voltage;
                         continue;
 
                     case '9':
                         _supply_resistance += 0.1f;
-                        _named_branches["EPS"].closed_resistance = _supply_resistance;
+                        _named_branches["R"].closed_resistance = _supply_resistance;
                         continue;
                 
                     case '3':
                         _supply_resistance = Mathf.Max(_supply_resistance - 0.1f, 0.0f);
-                        _named_branches["EPS"].closed_resistance = _supply_resistance;
+                        _named_branches["R"].closed_resistance = _supply_resistance;
                         continue;
 
                     case '/':
@@ -227,7 +235,6 @@ namespace Tests
                 }
 #endif
                 _simulation_step.MoveNext();
-                circuit.telemetry.log_sorted_voltages(_TM_rig); 
             }
         }
     }
