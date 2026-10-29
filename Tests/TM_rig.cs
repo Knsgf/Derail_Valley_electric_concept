@@ -150,11 +150,9 @@ namespace Tests
                 _simulation_progress = _TM_rig.simulate(permit_commutation: false);
                 while (!_simulation_progress.IsCompleted)
                     yield return null;
-                _motor1.estalblish_EMFs(_fields_crossed, RPM);
-                _motor2.estalblish_EMFs(_fields_crossed, RPM);
+                _motor1.simulate(_fields_crossed, RPM);
+                _motor2.simulate(_fields_crossed, RPM);
                 _TM_rig.establish_currents();
-                _motor1.establish_currents();
-                _motor2.establish_currents();
                 circuit.telemetry.log_sorted_voltages(_TM_rig); 
                 yield return null;
             }

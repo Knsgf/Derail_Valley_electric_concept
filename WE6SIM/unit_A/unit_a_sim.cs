@@ -681,36 +681,26 @@ internal partial class unit_A_sim: electric_device
                     field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
                 
                 float wheel_RPM_A = _wheel_RPM.Value, wheel_RPM_B = _wheel_RPM_B.Value;
+
+                // Self-induction step: sample final steady-state currents
                 Task<bool> simulation_run = _circuit.simulate(permit_commutation: true);
                 do
                 { 
                     yield return null; 
                 }
                 while (!simulation_run.IsCompleted);
-
                 _circuit.establish_self_induction(Time.deltaTime);
-                //bool kickstarters_on = rheostatic_brake_on && _throttle >= 1;
-                /*
-                for (int motor_index = motors / 2 - 1; motor_index >= 0; --motor_index)
-                    traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_A); 
-                for (int motor_index = motors / 2; motor_index < motors; ++motor_index)
-                    traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_B); 
-                */
+
+                // Motor back EMF and actual currents step
                 simulation_run = _circuit.simulate(permit_commutation: false);
                 while (!simulation_run.IsCompleted)
                     yield return null; 
                 _circuit.establish_currents();
                 bool kickstarters_on = rheostatic_brake_on && _throttle >= 1;
                 for (int motor_index = motors / 2 - 1; motor_index >= 0; --motor_index)
-                { 
-                    traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_A); 
-                    traction_motors[motor_index].establish_currents(); 
-                }
+                    traction_motors[motor_index].simulate(kickstarters_on, wheel_RPM_A); 
                 for (int motor_index = motors / 2; motor_index < motors; ++motor_index)
-                { 
-                    traction_motors[motor_index].estalblish_EMFs(kickstarters_on, wheel_RPM_B); 
-                    traction_motors[motor_index].establish_currents(); 
-                }
+                    traction_motors[motor_index].simulate(kickstarters_on, wheel_RPM_B); 
             }
         }
     }
