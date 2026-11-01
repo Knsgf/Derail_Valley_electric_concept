@@ -51,8 +51,8 @@ public class circuit_compiler
         }
     }
     
-    private static int trace_element(Dictionary<string, float> elements, string[] diagram, int row, int column, int direction, 
-        branch_builder branch_definition)
+    private static int trace_element(Dictionary<string, float> elements, Dictionary<string, float> inductances, string[] diagram, 
+        int row, int column, int direction, branch_builder branch_definition)
     {
         element_type element = element_type.unknown;
         char element_symbol = diagram[row][column], termination_symbol = '\0';
@@ -126,10 +126,11 @@ public class circuit_compiler
 
         if (element != element_type.contactor & !elements.TryGetValue(name, out float resistance))
             throw new ArgumentException($"Element {name}'s resistance not specified");
+        inductances.TryGetValue(name, out float inductance);
         switch (element)
         {
             case element_type.untracked_resistor:
-                branch_definition.add_resistance(name, resistance);
+                branch_definition.add_resistance(name, resistance, inductance);
                 break;
 
             case element_type.named_branch:
@@ -137,7 +138,7 @@ public class circuit_compiler
                     throw new MalformedCircuitException($"Branch with multiple names at {row}, {column}");
                 branch_definition.branch_name  = name;
                 branch_definition.reversed_EMF = false;
-                branch_definition.add_resistance(name, resistance);
+                branch_definition.add_resistance(name, resistance, inductance);
                 break;
 
             case element_type.named_branch_reversed:
@@ -145,7 +146,7 @@ public class circuit_compiler
                     throw new MalformedCircuitException($"Branch with multiple names at {row}, {column}");
                 branch_definition.branch_name  = name;
                 branch_definition.reversed_EMF = true;
-                branch_definition.add_resistance(name, resistance);
+                branch_definition.add_resistance(name, resistance, inductance);
                 break;
 
             case element_type.contactor:
@@ -156,8 +157,8 @@ public class circuit_compiler
         return name.Length;
     }
     
-    private static branch_builder trace_branch(Dictionary<string, float> elements, string[] diagram, int row, int column, 
-        int node_row_offset, int node_column_offset)
+    private static branch_builder trace_branch(Dictionary<string, float> elements, Dictionary<string, float> inductances, 
+        string[] diagram, int row, int column, int node_row_offset, int node_column_offset)
     {
         int start_row = row, start_column = column;
         char branch_symbol = diagram[row][column];
@@ -195,13 +196,13 @@ public class circuit_compiler
                 case '#':
                     if (row_dir != 0)
                         throw new MalformedCircuitException($"Circuit element on non-horizontal line at {row}, {column}");
-                    column += (trace_element(elements, diagram, test_row, test_column, column_dir, new_branch) + 2) * column_dir;
+                    column += (trace_element(elements, inductances, diagram, test_row, test_column, column_dir, new_branch) + 2) * column_dir;
                     break;
 
                 case '*':
                     assert.condition(row == start_row && column == start_column || !_visited.Contains((row, column)));
                     _visited.Add((row, column));
-                    trace_node(elements, diagram, test_row, test_column, new_branch);
+                    trace_node(elements, inductances, diagram, test_row, test_column, new_branch);
                     return new_branch;
 
                 default:
@@ -214,7 +215,7 @@ public class circuit_compiler
         }
     }
     
-    private static void trace_node(Dictionary<string, float> elements, string[] diagram, int row, int column, 
+    private static void trace_node(Dictionary<string, float> elements, Dictionary<string, float> inductances, string[] diagram, int row, int column, 
         branch_builder? incoming_branch = null)
     {
         assert.condition(diagram[row][column] == '*');
@@ -240,13 +241,14 @@ public class circuit_compiler
                     && !_visited.Contains((test_row, test_column))
                     && diagram[test_row][test_column] == __node_extents[row_offset + 1][column_offset + 1])
                 {
-                    node!.add_branch(trace_branch(elements, diagram, test_row, test_column, row_offset, column_offset), true);
+                    node!.add_branch(trace_branch(elements, inductances, diagram, test_row, test_column, row_offset, column_offset), true);
                 }
             }
         }
     }
 
-    public static circuit_builder trace(Dictionary<string, float> elements, string diagram)
+    public static circuit_builder trace(Dictionary<string, float> elements, Dictionary<string, float> inductances, 
+        string diagram)
     {
         string[] delineated_diagram = diagram.Split('\n');
         int row, column = -1;
@@ -259,7 +261,7 @@ public class circuit_compiler
         if (column < 0)
             throw new ArgumentException("No nodes in diagram");
         circuit_builder new_circuit = new();
-        trace_node(elements, delineated_diagram, row, column);
+        trace_node(elements, inductances, delineated_diagram, row, column);
         _visited.Clear();
         _nodes.Clear();
         return new_circuit;

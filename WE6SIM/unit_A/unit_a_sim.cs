@@ -127,7 +127,7 @@ internal partial class unit_A_sim: electric_device
             motor_torque_variations[motor_index] = UnityEngine.Random.Range(1.0f - variation, 1.0f + variation);
         }
         UnityEngine.Random.state = old_state;
-        _circuit = circuit_compiler.trace(_element_resistances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations);
+        _circuit = circuit_compiler.trace(_element_resistances, _inductances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations);
         _resistor_grid = new(ports, _named_branches);
         _named_branches["BAT"].EMF = battery_panel.battery_EMF;
 

@@ -122,6 +122,8 @@ internal partial class unit_A_sim
         ["BAT"] = battery_panel.battery_internal_resistance,
         ["VM34"] = 1.0E+4f,
     };
+    const float resistor_inductance = traction_motor.inductance / 6;
+    private static readonly Dictionary<string, float> _inductances = [];
 
     static unit_A_sim()
     {
@@ -134,6 +136,10 @@ internal partial class unit_A_sim
             _base_element_resistances[$"SR{resistor_branch}.4"] = 0.05f;
             _base_element_resistances[$"SR{resistor_branch}.5"] = 0.07f;
             _base_element_resistances[$"SR{resistor_branch}.6"] = 0.11f;
+
+            _inductances[$"SR{resistor_branch}S"] = resistor_inductance;
+            for (int element = 1; element <= 6; ++element)
+                _inductances[$"SR{resistor_branch}.{element}"] = resistor_inductance;
         }
         for (int motor_branch = 1; motor_branch <= motors; ++motor_branch)
         {
@@ -147,6 +153,13 @@ internal partial class unit_A_sim
             _base_element_resistances[$"FR{motor_branch}.4"] = 0.015f;
             _base_element_resistances[$"FR{motor_branch}.5"] = 0.0115f;
             _base_element_resistances[$"FR{motor_branch}.6"] = 0.0368f;
+
+            _inductances[$"RT{motor_branch}" ] = resistor_inductance;
+            _inductances[$"MA{motor_branch}" ] = traction_motor.armature_inductance;
+            _inductances[$"MF{motor_branch}a"] = traction_motor.field1_inductance;
+            _inductances[$"MF{motor_branch}b"] = traction_motor.field2_inductance;
+            _inductances[$"FR{motor_branch}.1"] = _inductances[$"FR{motor_branch}.2"] = traction_motor.field1_inductance / 2.0f;
+            _inductances[$"FR{motor_branch}.4"] = _inductances[$"FR{motor_branch}.5"] = _inductances[$"FR{motor_branch}.6"] = traction_motor.field2_inductance / 3.0f;
         }
     }
 

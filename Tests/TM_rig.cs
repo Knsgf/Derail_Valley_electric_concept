@@ -43,6 +43,18 @@ namespace Tests
             (0.0f, 0.40f)
         };
         static readonly float[] _WF_a_resistances = new float[_field_ratios.Length], _WF_b_resistances = new float[_field_ratios.Length];
+        static readonly Dictionary<string, float> _inductances = new Dictionary<string, float>()
+        {
+            ["MA1" ] = traction_motor.armature_inductance,
+            ["MF1a"] = traction_motor.field1_inductance,
+            ["MF1b"] = traction_motor.field2_inductance,
+            ["WF1b"] = traction_motor.field2_inductance,
+            ["MA2" ] = traction_motor.armature_inductance,
+            ["MF2a"] = traction_motor.field1_inductance,
+            ["MF2b"] = traction_motor.field2_inductance,
+            ["WF2b"] = traction_motor.field2_inductance,
+            ["R"] = traction_motor.inductance
+        };
 
         readonly Dictionary<string, float> _resistances = new Dictionary<string, float>()
         {
@@ -92,7 +104,7 @@ namespace Tests
                 _resistances[$"WF{motor_branch}b"] = _WF_b_resistances[starting_WF];
                 multiplier += 0.003f;
             }
-            _TM_rig = circuit_compiler.trace(_resistances, TM_test_rig).set_up_simulation(out _named_branches, out _contactor_locations);
+            _TM_rig = circuit_compiler.trace(_resistances, _inductances, TM_test_rig).set_up_simulation(out _named_branches, out _contactor_locations);
             _motor1 = new traction_motor(1, 1.0f, multiplier         , _named_branches);
             _motor2 = new traction_motor(2, 1.0f, multiplier + 0.003f, _named_branches);
             circuit.telemetry.set_up(_TM_rig, _named_branches, Console.WriteLine);

@@ -15,12 +15,13 @@ public partial class circuit_builder
 
         public bool    reversed_EMF { get; set; }
         public string? branch_name  { get; set; }
+        public float   inductance   { get; set; } = 0.0f;
         public Dictionary<string, float> resistances { get; private set; } = [];
         public Dictionary<string,   int> contactors  { get; private set; } = [];
         public bool is_empty => resistances.Count + contactors.Count == 0;
 
 
-        public branch_builder(float intial_resistance = 0.0f, string? branch_name = null, bool is_EMF_reversed = false)
+        public branch_builder(float intial_resistance = 0.0f, float initial_inductance = 0.0f, string? branch_name = null, bool is_EMF_reversed = false)
         {
             if (__setup_done)
                 throw new InvalidOperationException($"Circuit set-up finished");
@@ -29,18 +30,21 @@ public partial class circuit_builder
             reversed_EMF      = is_EMF_reversed;
             ++__branch_count;
             if (intial_resistance > 0.0f)
-                add_resistance(branch_name ?? "", intial_resistance);
+                add_resistance(branch_name ?? "", intial_resistance, initial_inductance);
         }
 
-        public void add_resistance(string name, float ohms)
+        public void add_resistance(string name, float ohms, float henrys)
         {
             if (__setup_done)
                 throw new InvalidOperationException($"Circuit set-up finished");
             if (ohms < 0.0f)
                 throw new ArgumentOutOfRangeException("Negative resistance");
+            if (henrys < 0.0f)
+                throw new ArgumentOutOfRangeException("Negative inductance");
             if (resistances.ContainsKey(name))
                 throw new InvalidOperationException($"{name} is already present");
             resistances[name] = ohms;
+            inductance       += henrys;
         }
 
         public void add_contactor(string name)

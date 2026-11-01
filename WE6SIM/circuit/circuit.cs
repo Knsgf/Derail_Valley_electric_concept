@@ -74,8 +74,8 @@ public partial class circuit
         }
 
         assert.condition(!branch_definition.reversed_EMF);
-        current_branch = new(branch_definition.resistances, branch_definition.contactors);
-        if (current_branch.inductance > 0.0f)
+        current_branch = new(branch_definition.resistances, branch_definition.contactors, branch_definition.inductance);
+        if (branch_definition.inductance > 0.0f)
             __inductive_branches.Add(current_branch);
         if (!string.IsNullOrWhiteSpace(branch_definition.branch_name))
         {

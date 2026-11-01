@@ -23,10 +23,15 @@ public class traction_motor
 
     private bool  _dynamic_brake_kickstarter_winding_on = false;
 
-    public const float gear_ratio = 5.36f, internal_resistance = 0.21f, armature_part = 0.65f, field_partitioning = 0.75f;
+    public const float gear_ratio = 5.36f, armature_part = 0.65f, field_partitioning = 0.75f;
+    public const float internal_resistance      = 0.21f;
     public const float base_armature_resistance = internal_resistance * (       armature_part);   // Includes both rotor and compensating winding
     public const float base_field1_resistance   = internal_resistance * (1.0f - armature_part) * (1.0f - field_partitioning);
     public const float base_field2_resistance   = internal_resistance * (1.0f - armature_part) * (       field_partitioning);
+    public const float inductance          = 0.15f;
+    public const float armature_inductance = inductance * (       armature_part);
+    public const float field1_inductance   = inductance * (1.0f - armature_part) * (1.0f - field_partitioning);
+    public const float field2_inductance   = inductance * (1.0f - armature_part) * (       field_partitioning);
 
     public float RPM           { get; private set; }
     public float wheel_torque  { get; private set; }

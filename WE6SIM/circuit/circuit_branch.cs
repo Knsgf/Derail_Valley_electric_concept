@@ -24,7 +24,6 @@ public partial class circuit
     private class branch: branch_user
     {
         const float min_branch_resistance = 1.0E-4f;
-        const float inductance_ratio = 0.5f * 2.0f, maximum_inductance = 0.1f * 1.5f;
 
         private static int __next_available_id = 0;
 
@@ -92,7 +91,7 @@ public partial class circuit
                 destination[item.Key] = item.Value;
         }
 
-        public branch(Dictionary<string, float> resistances, Dictionary<string, int> contactors)
+        public branch(Dictionary<string, float> resistances, Dictionary<string, int> contactors, float inductance)
         {
             id = __next_available_id++;
 
@@ -101,10 +100,10 @@ public partial class circuit
                 total_resistance += resistance;
             if (total_resistance <= min_branch_resistance)
                 total_resistance = min_branch_resistance;
-            else if (total_resistance >= 2.0f * min_branch_resistance)
-            { 
-                _inductance    = Math.Min(maximum_inductance, total_resistance * inductance_ratio); 
-                _time_constant = total_resistance / _inductance;
+            if (inductance > 0.0f)
+            {
+                _inductance    = inductance;
+                _time_constant = total_resistance / inductance;
             }
             _closed_conductance = 1.0f / total_resistance;
 
@@ -115,7 +114,7 @@ public partial class circuit
 
         public void establish_self_inductance(float delta_time)
         {
-            assert.condition(_inductance != 0.0f);
+            assert.condition(_time_constant != 0.0f);
             if (_current_conductance == 0.0f)
                 _self_inductance_EMF = 0.0f;
             else
