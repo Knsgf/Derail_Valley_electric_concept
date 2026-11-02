@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 using electric_sim.utilities;
 
+using UnityEngine;
+
 namespace electric_sim.circuit_sim;
 
 public partial class circuit
@@ -19,6 +21,7 @@ public partial class circuit
         float EMF                { get; set; }
         void toggle_contactor(string designation, bool switch_on);
         bool is_contactor_on(string designation);
+        void set_time_constant(float supply_voltage);
     }
 
     private class branch: branch_user
@@ -35,6 +38,7 @@ public partial class circuit
         private float _start_ptential     = 0.0f, _end_potential       = 0.0f;
         private float _future_EMF         = 0.0f, _EMF = 0.0f;
         private float _inductance         = 0.0f, _self_inductance_EMF = 0.0f, _last_current = 0.0f, _time_constant;
+        private float _external_voltage_drop = 0.0f, _external_conductance = 0.0f;
 
         public float future_conductance => (_contactors_off != 0) ? 0.0f : _closed_conductance;
         public float closed_conductance 
@@ -58,7 +62,8 @@ public partial class circuit
             set
             { 
                 _current_conductance = value;
-                _time_constant       = _closed_conductance * _inductance;
+                if (_inductance != 0.0f)
+                    _time_constant = 1.0f / (_closed_conductance * _inductance);
             }
         }
         public float future_EMF => _future_EMF + _self_inductance_EMF;
@@ -119,8 +124,19 @@ public partial class circuit
                 _self_inductance_EMF = 0.0f;
             else
             {
-                _self_inductance_EMF = (_last_current /  _current_conductance - (voltage_drop + _future_EMF))
-                                     / (delta_time    / _time_constant + 1.0f);
+                float voltage, conductance;
+                if (_external_conductance == 0.0f)
+                {
+                    voltage     = voltage_drop;
+                    conductance = _closed_conductance;
+                }
+                else
+                {
+                    voltage     = _external_voltage_drop;
+                    conductance = _external_conductance;
+                }
+                _self_inductance_EMF = (_last_current /  conductance - (voltage + _future_EMF))
+                                     / (delta_time    * _time_constant + 1.0f);
             }
             EMF_changed?.Invoke(this);
         }
@@ -130,6 +146,25 @@ public partial class circuit
             _last_current        = current;
             _self_inductance_EMF = 0.0f;
             EMF_changed?.Invoke(this);
+        }
+
+        public void set_time_constant(float external_voltage)
+        {
+            assert.condition(_inductance != 0.0f);
+            _external_voltage_drop = external_voltage;
+            float branch_current   = current;
+            if (external_voltage is > -1.0f and < 1.0f || branch_current is > -1.0f and < 1.0f)
+            {
+                _time_constant        = 1.0f / (_closed_conductance * _inductance);
+                _external_conductance = _external_voltage_drop = 0.0f;
+            }
+            else
+            { 
+                assert.condition(branch_current * external_voltage >= 0.0f);
+                _external_voltage_drop = external_voltage;
+                _external_conductance  = branch_current / external_voltage;
+                _time_constant         = 1.0f / (_external_conductance * _inductance); 
+            }
         }
 
         public void set_node_potential(bool at_start_node, float new_potential)
