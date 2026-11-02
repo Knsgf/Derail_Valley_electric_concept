@@ -17,7 +17,7 @@ namespace Tests
         const int    motors         = 2;
         const float  wheel_diameter = 1.12f;
         const string TM_test_rig    = "\n"
-            +  "*---@EPS>--------------------------------------------------*--@R>--*     \n"
+            +  "*---@EPS>------------------------------------------*--@R>--*--@L>--*     \n"
             +  "|                                                                  |     \n"
             +  "|                                             *-------#RR1a#-------*     \n"
             +  "|                                             |                    |     \n"
@@ -53,13 +53,14 @@ namespace Tests
             ["MF2a"] = traction_motor.field1_inductance,
             ["MF2b"] = traction_motor.field2_inductance,
             ["WF2b"] = traction_motor.field2_inductance,
-            ["R"] = traction_motor.inductance
+            ["L"   ] = 0.1f
         };
 
         readonly Dictionary<string, float> _resistances = new Dictionary<string, float>()
         {
             ["EPS"] = 0.0f,
-            ["R"  ] = 1.0f
+            ["L"  ] = 0.0f,
+            ["R"  ] = 0.0f
         };
         readonly Dictionary<string, circuit.branch_user> _named_branches, _contactor_locations;
 
@@ -104,7 +105,7 @@ namespace Tests
                 _resistances[$"WF{motor_branch}b"] = _WF_b_resistances[starting_WF];
                 multiplier += 0.003f;
             }
-            _TM_rig = circuit_compiler.trace(_resistances, _inductances, TM_test_rig).set_up_simulation(out _named_branches, out _contactor_locations);
+            _TM_rig = circuit_compiler.trace(_resistances, /*new Dictionary<string, float>()*/ _inductances, TM_test_rig).set_up_simulation(out _named_branches, out _contactor_locations);
             _motor1 = new traction_motor(1, 1.0f, multiplier         , _named_branches);
             _motor2 = new traction_motor(2, 1.0f, multiplier + 0.003f, _named_branches);
             circuit.telemetry.set_up(_TM_rig, _named_branches, Console.WriteLine);
@@ -158,12 +159,13 @@ namespace Tests
                 float RPM = wheel_RPM(_speed);
                 //_motor1.estalblish_EMFs(_fields_crossed, RPM, _supply_voltage - _motor1.voltage_drop);
                 //_motor2.estalblish_EMFs(_fields_crossed, RPM, _supply_voltage - _motor2.voltage_drop);
+                _named_branches["L"].set_time_constant(_named_branches["R"].voltage_drop);
                 _TM_rig.establish_self_induction(1.0f / 60.0f);
                 _simulation_progress = _TM_rig.simulate(permit_commutation: false);
                 while (!_simulation_progress.IsCompleted)
                     yield return null;
-                _motor1.simulate(_fields_crossed, RPM);
-                _motor2.simulate(_fields_crossed, RPM);
+                _motor1.simulate(_fields_crossed, false, RPM);
+                _motor2.simulate(_fields_crossed, false, RPM);
                 _TM_rig.establish_currents();
                 circuit.telemetry.log_sorted_voltages(_TM_rig); 
                 yield return null;
