@@ -533,9 +533,9 @@ internal partial class unit_A_sim: electric_device
         }
     }
 
-    private void set_powertrain_damage_resistance()
+    private void set_powertrain_damage_resistance(float delta_time)
     {
-        _resistance_update_time -= Time.deltaTime;
+        _resistance_update_time -= delta_time;
         float current_integrity  = Mathf.Min(_integrity.Value, _unit_B_integrity), integrity_change = _last_integrity - current_integrity;
         if (integrity_change > 0.001f && _resistance_update_time <= 0.0f || integrity_change <= -0.01f)
         {
@@ -559,6 +559,14 @@ internal partial class unit_A_sim: electric_device
             while (!_simulation_go)
                 yield return null;
             
+        while (!_simulation_go)
+            yield return null;
+        int current_cycle = 0, last_recorded_cycle = -1;
+        while (true)
+        {
+            float delta_time    = (current_cycle - last_recorded_cycle) * Time.deltaTime;
+            last_recorded_cycle =  current_cycle;
+
             float current_draw;
             bool  jog = _jogging_mode_on && !is_powered;
             if (jog)
@@ -570,7 +578,7 @@ internal partial class unit_A_sim: electric_device
                 }
                 current_draw = 0.0f;
                 _jog_voltage = battery_panel.battery_EMF - battery.current * battery_panel.battery_internal_resistance;
-                _pantograph.simulate(0.0f);
+                _pantograph.simulate(delta_time, 0.0f);
             }
             else
             {
@@ -583,7 +591,7 @@ internal partial class unit_A_sim: electric_device
                 current_draw = supply.current + blowers.current_draw + field_generator.current_draw;
                 if (supply.EMF > 1.0f)
                     current_draw += _compressor_power.Value / supply.EMF;
-                _pantograph.simulate(current_draw);
+                _pantograph.simulate(delta_time, current_draw);
             }
             _total_draw = current_draw;
         
@@ -591,7 +599,8 @@ internal partial class unit_A_sim: electric_device
                 && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && field_generator.relative_speed < 0.01f)
             {
                 _total_torque_A = _total_torque_B = _resistance_update_time = 0.0f; 
-                _meter.count_energy(0.0f, 0.0f);    // Required to properly track ownership changes
+                _meter.count_energy(delta_time, 0.0f, 0.0f);    // Required to properly track ownership changes
+                ++current_cycle;
                 yield return null;
             }
             else
@@ -599,14 +608,7 @@ internal partial class unit_A_sim: electric_device
                 int             selector = _selector;
                 bool rheostatic_brake_on = selector is (int) selector_modes.rheostatic_brake;
 
-    #if CURRENT_TELEMETRY
-                circuit.telemetry.log_sorted_currents(_circuit, -1.0f, 500.0f);
-    #endif
-    #if VOLTAGE_TELEMETRY
-                circuit.telemetry.log_sorted_voltages(_circuit);
-    #endif
-
-                float motors_volts      = Mathf.Abs(motor_voltmeter.current * _motor_voltmeter_resistance);
+                int   selector_notch    = all_contactors._selector_motor.current_notch;
                 _motors_volts           = motors_volts;
                 supply.EMF              = Mathf.LerpUnclamped(supply.EMF, rheostatic_brake_on ? 0.0f : _roof_bus.voltage, 0.1f);
                 float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : Mathf.Max(supply.EMF - supply.current / supply.conductance, 0.0f);
@@ -672,13 +674,15 @@ internal partial class unit_A_sim: electric_device
                 blowers.rheostatic_braking_on = rheostatic_brake_on;
                 blowers.motor_current         = maximum_load;
                 blowers.line_voltage          = rheostatic_brake_on ? motors_volts : voltmeter_reading;
-                blowers.simulate();
                 _meter.count_energy(voltmeter_reading, rheostatic_brake_on ? 0.0f : _total_draw);
+                blowers.simulate(delta_time);
+                _meter.count_energy(delta_time, voltmeter_reading, rheostatic_brake_on ? 0.0f : _total_draw);
                 _resistor_grid.simulate();
-                resistor_heat.simulate_overheat_damage(_resistor_grid);
                 set_powertrain_damage_resistance();
+                resistor_heat.simulate_overheat_damage(delta_time, _resistor_grid);
+                set_powertrain_damage_resistance(delta_time);
                 if (regenerative_on || field_generator.relative_speed >= 0.01f)
-                    field_generator.simulate(regenerative_on, _field_position, voltmeter_reading, motors_volts);
+                    field_generator.simulate(delta_time, regenerative_on, _field_position, voltmeter_reading, motors_volts);
                 
                 float wheel_RPM_A = _wheel_RPM.Value, wheel_RPM_B = _wheel_RPM_B.Value;
 
@@ -686,15 +690,36 @@ internal partial class unit_A_sim: electric_device
                 Task simulation_run = _circuit.simulate(permit_commutation: true);
                 do
                 { 
-                    yield return null; 
+                    ++current_cycle;
+                    yield return null;
                 }
                 while (!simulation_run.IsCompleted);
-                _circuit.establish_self_induction(Time.deltaTime);
+#if CURRENT_TELEMETRY || VOLTAGE_TELEMETRY
+                Main.log("Final state");
+#endif
+#if CURRENT_TELEMETRY
+                circuit.telemetry.log_sorted_currents(_circuit, -1.0f, 50.0f);
+#endif
+#if VOLTAGE_TELEMETRY
+                circuit.telemetry.log_sorted_voltages(_circuit);
+#endif
 
                 // Motor back EMF and actual currents step
                 simulation_run = _circuit.simulate(permit_commutation: false);
                 while (!simulation_run.IsCompleted)
+                { 
+                    ++current_cycle;
                     yield return null; 
+                }
+#if CURRENT_TELEMETRY || VOLTAGE_TELEMETRY
+                Main.log("Current state");
+#endif
+#if CURRENT_TELEMETRY
+                circuit.telemetry.log_sorted_currents(_circuit, -1.0f, 50.0f);
+#endif
+#if VOLTAGE_TELEMETRY
+                circuit.telemetry.log_sorted_voltages(_circuit);
+#endif
                 _circuit.establish_currents();
                 bool kickstarters_on = rheostatic_brake_on && _throttle >= 1;
                 for (int motor_index = motors / 2 - 1; motor_index >= 0; --motor_index)

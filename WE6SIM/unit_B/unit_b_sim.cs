@@ -316,8 +316,8 @@ internal class unit_B_sim: electric_device
 
         _motor_cooling.Value = _blower_speed.Value * (blower_controller.ambient_temperature_C 
             - _motor_current_temperature.Value) * blower_controller.full_motor_cooling_power_at_1C;
-        resistor_heat.simulate_overheat_damage(damage_per_frame: _resistor_damage, resistor_temperature: _resistor_temperature.Value);
-        _pantograph.simulate(_total_load.Value);
+        resistor_heat.simulate_overheat_damage(Time.deltaTime, damage_per_frame: _resistor_damage, resistor_temperature: _resistor_temperature.Value);
+        _pantograph.simulate(Time.deltaTime, _total_load.Value);
 
         _integrity_refresh_time -= Time.deltaTime;
         if (_integrity_refresh_time <= 0.0f)

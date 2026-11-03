@@ -198,18 +198,18 @@ internal class pantograph: electric_device
         _main_breaker       = main_breaker;
     }
 
-    private void move()
+    private void move(float delta_time)
     {
         float height_difference = _target_height - _current_height;
         float movement_speed    = Mathf.Min(head_movement_speed, Mathf.Abs(height_difference) / 0.2f);
         if (height_difference > 0.006f)
         {
-            _current_height   = Mathf.Min(_current_height + movement_speed * Time.deltaTime, maximum_head_height);
+            _current_height   = Mathf.Min(_current_height + movement_speed * delta_time, maximum_head_height);
             _interations_left = max_iterations_before_sleep;
         }
         else if (height_difference < -0.006f)
         {
-            _current_height   = Mathf.Max(_current_height - movement_speed * Time.deltaTime, _initial_head_height);
+            _current_height   = Mathf.Max(_current_height - movement_speed * delta_time, _initial_head_height);
             _interations_left = max_iterations_before_sleep;
         }
         else if (_interations_left <= 0)
@@ -252,7 +252,7 @@ internal class pantograph: electric_device
         _back_piston.localPosition  = new Vector3(0.0f, _piston_height, -piston_extension);
     }
 
-    private void sidepan_move()
+    private void sidepan_move(float delta_time)
     {
         if (!is_powered && !_sidepan_stowed)
             sidepan_toggle(stowed: true);
@@ -262,12 +262,12 @@ internal class pantograph: electric_device
                 return;
             if (_side_arm_relative_position > 0.0f)
             {
-                _side_arm_relative_position -= sidepan_relative_movement_speed * Time.deltaTime;
+                _side_arm_relative_position -= sidepan_relative_movement_speed * delta_time;
                 _at_either_end               = false;
             }
             else if (_side_pivot_relative_position > 0.0f)
             {
-                _side_pivot_relative_position -= sidepan_relative_movement_speed * Time.deltaTime;
+                _side_pivot_relative_position -= sidepan_relative_movement_speed * delta_time;
                 _at_either_end                 = false;
             }
             else if (_at_either_end)
@@ -278,12 +278,12 @@ internal class pantograph: electric_device
         {
             if (_side_pivot_relative_position < 1.0f)
             {
-                _side_pivot_relative_position += sidepan_relative_movement_speed * Time.deltaTime;
+                _side_pivot_relative_position += sidepan_relative_movement_speed * delta_time;
                 _at_either_end                 = false;
             }
             else if (_side_arm_relative_position < 1.0f)
             {
-                _side_arm_relative_position += sidepan_relative_movement_speed * Time.deltaTime;
+                _side_arm_relative_position += sidepan_relative_movement_speed * delta_time;
                 _at_either_end               = false;
             }
             else if (_at_either_end)
@@ -311,7 +311,7 @@ internal class pantograph: electric_device
         }
     }
     
-    public void simulate(float load_current)
+    public void simulate(float delta_time, float load_current)
     {
         check_if_disposed();
 
@@ -337,7 +337,7 @@ internal class pantograph: electric_device
         else
         {
             if (stow)
-                _remaining_time_till_drop -= Time.deltaTime;
+                _remaining_time_till_drop -= delta_time;
             else
                 _remaining_time_till_drop = drop_delay;
             (float? wire_height, float supply_voltage) 
@@ -359,14 +359,14 @@ internal class pantograph: electric_device
                 }
             }
         }
-        move();
+        move(delta_time);
 
         if (_side_pivot_relative_position < 1.0f || _side_arm_relative_position < 1.0f)
             roof_bus.sidepan_voltage = 0.0f;
         else
         {
             if (_sidepan_stowed)
-                _remaining_time_till_retract -= Time.deltaTime;
+                _remaining_time_till_retract -= delta_time;
             else
                 _remaining_time_till_retract = drop_delay;
             (float? rail_height, float supply_voltage) 
@@ -379,7 +379,7 @@ internal class pantograph: electric_device
                 roof_bus.sidepan_voltage = supply_voltage;
             }
         }
-        sidepan_move();
+        sidepan_move(delta_time);
 
         float bus_voltage = roof_bus.voltage;
         if (bus_voltage < _last_pantograph_voltage && load_current >= 200.0f 
@@ -408,7 +408,7 @@ internal class pantograph: electric_device
         else
         {
             float current_ratio    = load_current / nominal_current;
-            float regular_damage   = wear_per_second_at_full_current * current_ratio * current_ratio * Time.deltaTime;
+            float regular_damage   = wear_per_second_at_full_current * current_ratio * current_ratio * delta_time;
             float distance_squared = world_position.get_distance_squared(x, z, _last_x, _last_z);
             if (distance_squared >= 1.0f)
             {

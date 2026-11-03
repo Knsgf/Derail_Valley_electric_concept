@@ -101,7 +101,7 @@ internal class blower_controller: electric_device
         _reconfiguration               = false;
     }
     
-    public void simulate()
+    public void simulate(float delta_time)
     {
         check_if_disposed();
         float fan_motor_voltage;
@@ -130,7 +130,7 @@ internal class blower_controller: electric_device
         }
         fan_voltage = Mathf.LerpUnclamped(fan_voltage, fan_motor_voltage, 0.1f);
 
-        _fan_motors.run(fan_motor_voltage);
+        _fan_motors.run(delta_time, fan_motor_voltage);
         current_draw         = rheostatic_braking_on ? 0.0f : (_fan_motors.current_draw * (6 * _line_voltage_multiplier));
         float relative_speed = _fan_motors.relative_speed;
         this.relative_speed  = relative_speed;

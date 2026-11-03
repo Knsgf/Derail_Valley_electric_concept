@@ -72,7 +72,7 @@ internal class resistor_heat
         _heat_emission.Value = maximum_heat_emission;
     }
 
-    public static void simulate_overheat_damage(resistor_heat? simulation = null, Port? damage_per_frame = null, float resistor_temperature = 0.0f)
+    public static void simulate_overheat_damage(float delta_time, resistor_heat? simulation = null, Port? damage_per_frame = null, float resistor_temperature = 0.0f)
     {
         if (simulation != null)
         {
@@ -82,6 +82,6 @@ internal class resistor_heat
         else if (damage_per_frame == null)
             throw new ArgumentNullException("Damage port not specified");
         damage_per_frame.Value = (resistor_temperature <= maximum_resistor_temperature)
-			? 0.0f : ((resistor_temperature - maximum_resistor_temperature) * overheat_damage_per_degree_second * Time.deltaTime);
+			? 0.0f : ((resistor_temperature - maximum_resistor_temperature) * overheat_damage_per_degree_second * delta_time);
 	}
 }

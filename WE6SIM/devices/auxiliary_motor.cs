@@ -28,7 +28,7 @@ internal class auxiliary_motor
         _idle_slowdown   = (idle_slowdown > 0.0f) ? idle_slowdown : slowdown;
     }
 
-    public void run(float current_voltage)
+    public void run(float delta_time, float current_voltage)
     {
         bool  is_running;
         float final_relative_speed, current_relative_speed = relative_speed;
@@ -49,7 +49,7 @@ internal class auxiliary_motor
             relative_acceleration = _idle_slowdown;
         else
             relative_acceleration = (current_relative_speed <= final_relative_speed) ? _speedup : _slowdown;
-        float acceleration_ratio = Mathf.Pow(relative_acceleration, Time.deltaTime);
+        float acceleration_ratio = Mathf.Pow(relative_acceleration, delta_time);
         current_relative_speed   = Mathf.LerpUnclamped(final_relative_speed, current_relative_speed, acceleration_ratio);
         relative_speed           = current_relative_speed;
 

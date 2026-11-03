@@ -33,19 +33,19 @@ internal partial class unit_A_sim
             _exciter_branch = unit._named_branches["EXT"];
         }
 
-		public void simulate(bool regenerative_on, int field_handle_postion, float line_voltage, float motors_volts)
+		public void simulate(float delta_time, bool regenerative_on, int field_handle_postion, float line_voltage, float motors_volts)
         {
             unit_A_sim unit = _unit;
             float exciter_EMF;
             if (!regenerative_on || !unit._main_breaker_closed.State || !unit._contactors._voltmeter.engaged)
             {
-                _drive.run(0.0f);
+                _drive.run(delta_time, 0.0f);
                 exciter_EMF    = 0.0f;
                 relative_speed = _drive.relative_speed;
             }
             else
             {
-                _drive.run(line_voltage);
+                _drive.run(delta_time, line_voltage);
                 float raw_field_position = field_handle_postion / control_stand.field_handle_last_notch;
                 float voltage_adjust     = (motors_volts <= line_voltage) 
                                          ? 0.0f 

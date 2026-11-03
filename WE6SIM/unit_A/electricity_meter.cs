@@ -206,7 +206,7 @@ internal class electricity_meter
         try_set_up_fee_tracker(unit);
     }
 
-    public void count_energy(float voltage, float current)
+    public void count_energy(float delta_time, float voltage, float current)
     {
         if (_scheduled_tracker != null)
         {
@@ -228,7 +228,7 @@ internal class electricity_meter
         }
         if (Mathf.Abs(current) >= minimum_current)
         {
-            _energy_used           += voltage * current * _usage_factor * Time.deltaTime;
+            _energy_used           += voltage * current * _usage_factor * delta_time;
             _game_save_energy.Value = (float) _energy_used;
         }
     }
