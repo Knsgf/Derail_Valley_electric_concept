@@ -12,7 +12,7 @@ namespace electric_sim.unit_A;
 internal partial class unit_A_sim
 {
     private class exciter
-	{
+    {
         const float max_exciter_voltage = 75.0f, min_exciter_voltage = 25.0f, max_exciter_current = 2000.0f, exciter_efficiency = 0.8f;
         const float max_exciter_power = max_exciter_voltage * max_exciter_current;
         const float min_exciter_power = min_exciter_voltage * max_exciter_current / 2.0f;
@@ -33,11 +33,11 @@ internal partial class unit_A_sim
             _exciter_branch = unit._named_branches["EXT"];
         }
 
-		public void simulate(float delta_time, bool regenerative_on, int field_handle_postion, float line_voltage, float motors_volts)
+        public void simulate(float delta_time, bool regenerative_on, int field_handle_postion, float line_voltage, float motors_volts)
         {
             unit_A_sim unit = _unit;
             float exciter_EMF;
-            if (!regenerative_on || !unit._main_breaker_closed.State || !unit._contactors._voltmeter.engaged)
+            if (!regenerative_on || !unit._main_breaker_closed.State)
             {
                 _drive.run(delta_time, 0.0f);
                 exciter_EMF    = 0.0f;
@@ -62,7 +62,7 @@ internal partial class unit_A_sim
                 this.relative_speed = relative_speed;
             }
             _exciter_branch.EMF = exciter_EMF;
-            current_draw                    = _drive.current_draw;
+            current_draw        = _drive.current_draw;
         }
 
         public void update_external_ports()

@@ -35,12 +35,10 @@ internal partial class unit_A_sim
             contactors all_contactors = unit._contactors;
             while (unit.is_powered && (all_contactors._line_contactor.engaged 
                                     || all_contactors._line_contactor2.engaged
-                                    || all_contactors._voltmeter.engaged
                                     || all_contactors._shunting_contactors.engaged))
             {
                 all_contactors._line_contactor.toggle     (false);
                 all_contactors._line_contactor2.toggle    (false);
-                all_contactors._voltmeter.toggle          (false);
                 all_contactors._shunting_contactors.toggle(false);
                 await Task.Delay(300);
             }

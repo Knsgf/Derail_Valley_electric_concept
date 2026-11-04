@@ -10,6 +10,7 @@ using electric_sim.utilities;
 
 using static electric_sim.devices.control_stand;
 using static electric_sim.utilities.signal_cable;
+using System;
 
 namespace electric_sim.unit_A;
 
@@ -17,11 +18,14 @@ internal partial class unit_A_sim
 {
     private class main_circuit_breaker: electric_device
     {
+        const int trip_time = 5;
+        
         private readonly unit_A_sim _unit;
         
         private readonly Port _arm_sound, _engage_sound, _trip_sound;
 
         private bool _engaging = false, _switched_on = false;
+        private int  _trip_countdown = trip_time;
 
         public main_circuit_breaker(Fuse electric_supply, Fuse air_supply, Dictionary<string, Port> ports,
             unit_A_sim unit)
@@ -95,7 +99,7 @@ internal partial class unit_A_sim
 
         public async void trip()
         {
-            Main.release_log($"Trip T={_trip_sound.Value} E={_engaging} S={_switched_on}");
+            Main.log($"Trip T={_trip_sound.Value} E={_engaging} S={_switched_on}");
             if (!_engaging && !_switched_on)
                 return;
             _engaging       = _switched_on = false;
@@ -113,10 +117,15 @@ internal partial class unit_A_sim
 
         public async void trip_if_operating_parameters_exceeded(float supply_voltage, float motor_voltage, float motor_load, float total_draw)
         {
-            if (_switched_on && (motor_load >= 850.0f || total_draw >= 4800.0f || motor_voltage >= 2000.0f || supply_voltage >= 2000.0f) 
-                && _trip_sound.Value < 1.0f)
+            if (_trip_sound.Value >= 0.5f)
+                return;
+            if (_switched_on && (motor_load >= 850.0f || total_draw >= 4800.0f || motor_voltage >= 2000.0f || supply_voltage >= 2000.0f))
+                _trip_countdown = Math.Max(0, _trip_countdown - 1);
+            else
+                _trip_countdown = trip_time;
+            if (_trip_countdown <= 0)
             {
-                Main.release_log($"Trip S={supply_voltage} M={motor_voltage} I={motor_load} i={total_draw}");
+                Main.log($"Trip S={supply_voltage} M={motor_voltage} I={motor_load} i={total_draw}");
                 //trip();
                 _trip_sound.Value = 1.0f;   // Trigger instant fuse blow in vanilla TractionMotorSet via "water" detection
                 await Task.Delay(200);
@@ -144,7 +153,7 @@ internal partial class unit_A_sim
         {
             if (!remain_on)
             {
-                Main.release_log("Trip ext.");
+                Main.log("Trip ext.");
                 log_stack.print();
                 trip();
             }

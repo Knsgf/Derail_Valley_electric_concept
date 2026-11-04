@@ -70,8 +70,6 @@ internal partial class unit_A_sim: electric_device
 
     private readonly contactors _contactors;
 
-    private readonly float _motor_voltmeter_resistance;
-
     private bool  _fast_notching_enabled = false, _jogging_mode_on = false, _jog_active = false, _cab_active = false;
     private bool  _line_contactors_on = false, _simulation_go = false;
     private int   _throttle = -1, _secondary_camshaft_notch = 1, _selector = -1, _field_position = -1;
@@ -119,7 +117,6 @@ internal partial class unit_A_sim: electric_device
         UnityEngine.Random.InitState(random_seed);
         foreach (KeyValuePair<string, float> element in _base_element_resistances)
             _element_resistances[element.Key] = element.Value * UnityEngine.Random.Range(1.0f - variation, 1.0f + variation);
-        _motor_voltmeter_resistance = _element_resistances["VM34"];
         float[] motor_EMF_variations = new float[motors], motor_torque_variations = new float[6];
         for (int motor_index = 0; motor_index < motors; ++motor_index)
         {
@@ -336,12 +333,6 @@ internal partial class unit_A_sim: electric_device
         reverser_handler(raw_reverser, selector_switched: false);
     }
 
-    private void toggle_traction_motors(bool turn_on)
-    {
-        _contactors.toggle_traction_motors(turn_on);
-        _contactors._voltmeter.toggle(turn_on && _selector is not (int) selector_modes.yard_power);
-    }
-    
     private void throttle_handler(float raw_throttle)
     {
         if (!is_powered)
@@ -360,29 +351,29 @@ internal partial class unit_A_sim: electric_device
                 break;
 
             case 1:
-                toggle_traction_motors(turn_on: _main_breaker_closed.State);
+                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 _throttle_controller.run_down();
                 break;
 
             case 2:
-                toggle_traction_motors(turn_on: _main_breaker_closed.State);
+                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 if (_single_notch_movement == null || _single_notch_movement.IsCompleted)
                     _single_notch_movement = _throttle_controller.notch_down();
                 break;
 
             case 3:
-                toggle_traction_motors(turn_on: _main_breaker_closed.State);
+                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 _ = _throttle_controller.unlock_camshafts(continuous_run: false);
                 break;
 
             case 4:
-                toggle_traction_motors(turn_on: _main_breaker_closed.State);
+                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 if (_single_notch_movement == null || _single_notch_movement.IsCompleted)
                     _single_notch_movement = _throttle_controller.notch_up();
                 break;
 
             case 5:
-                toggle_traction_motors(turn_on: _main_breaker_closed.State);
+                _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
                 _throttle_controller.run_up();
                 break;
         }
@@ -509,7 +500,7 @@ internal partial class unit_A_sim: electric_device
         _unit_B_integrity = extract_signal_from_port_value(_BA2, (int) BA2_signals.motor_integrity, (int) BA2_shift.motor_integrity)
             / 4095.0f;
         if (_throttle > 0)
-            toggle_traction_motors(turn_on: _main_breaker_closed.State);
+            _contactors.toggle_traction_motors(turn_on: _main_breaker_closed.State);
     }
 
     private void calculate_combined_unit_motor_performance(bool is_unit_A, traction_motor[] traction_motors, 
@@ -550,21 +541,23 @@ internal partial class unit_A_sim: electric_device
     {
         check_if_disposed();
         
-        contactors        all_contactors  = _contactors;
-        blower_controller blowers         = _blowers;
-        exciter           field_generator = _regenerative_field;
-        branch_user       motor_voltmeter = _named_branches["VM34"], supply = _named_branches["EPS"], battery = _named_branches["BAT"];
-        while (true)
+        contactors        all_contactors   = _contactors;
+        blower_controller blowers          = _blowers;
+        exciter           field_generator  = _regenerative_field;
+        branch_user       motor_voltmeter  = _named_branches["VM34"], supply = _named_branches["EPS"], battery = _named_branches["BAT"];
+        branch_user[]     resistor_measure = new branch_user[motors / 2], resistor_shunts = new branch_user[motors / 2];
+        for (int resistor_group_index = 1; resistor_group_index <= motors / 2; ++resistor_group_index)
         {
-            while (!_simulation_go)
-                yield return null;
+            resistor_measure[resistor_group_index - 1] = _named_branches[$"VR{resistor_group_index}"];
+            resistor_shunts [resistor_group_index - 1] = _named_branches[ $"L{resistor_group_index}"];
+        }
             
         while (!_simulation_go)
             yield return null;
         int current_cycle = 0, last_recorded_cycle = -1;
         while (true)
         {
-            float delta_time    = (current_cycle - last_recorded_cycle) * Time.deltaTime;
+            float delta_time    = (current_cycle - last_recorded_cycle) * Time.fixedDeltaTime;
             last_recorded_cycle =  current_cycle;
 
             float current_draw;
@@ -609,6 +602,7 @@ internal partial class unit_A_sim: electric_device
                 bool rheostatic_brake_on = selector is (int) selector_modes.rheostatic_brake;
 
                 int   selector_notch    = all_contactors._selector_motor.current_notch;
+                float motors_volts      = (selector_notch == 4) ? 0.0f : Mathf.Abs(motor_voltmeter.voltage_drop);
                 _motors_volts           = motors_volts;
                 supply.EMF              = Mathf.LerpUnclamped(supply.EMF, rheostatic_brake_on ? 0.0f : _roof_bus.voltage, 0.1f);
                 float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : Mathf.Max(supply.EMF - supply.current / supply.conductance, 0.0f);
@@ -625,21 +619,22 @@ internal partial class unit_A_sim: electric_device
                     out _total_torque_B, out _total_heat_emission_B);
                 bool line_contactor1_on = all_contactors._line_contactor.engaged, line_contactor2_on = all_contactors._line_contactor2.engaged;
                 float maximum_EMF;
+                int   motor_index;
                 if (!line_contactor1_on && !line_contactor2_on)
                     maximum_EMF = 0.0f;
                 else
                 {
-                    switch (all_contactors._selector_motor.current_notch)
+                    switch (selector_notch)
                     {
                         case 3:
                             maximum_EMF = 0.0f;
-                            for (int motor_index = 5; motor_index >= 0; --motor_index)
+                            for (motor_index = 5; motor_index >= 0; --motor_index)
                                 maximum_EMF = Mathf.Max(maximum_EMF, Mathf.Abs(traction_motors[motor_index].EMF));
                             break;
 
                         case 4:
                             maximum_EMF = 0.0f;
-                            for (int motor_index = 5; motor_index >= 0; --motor_index)
+                            for (motor_index = 5; motor_index >= 0; --motor_index)
                                 maximum_EMF += Mathf.Abs(traction_motors[motor_index].EMF);
                             break;
 
@@ -666,23 +661,19 @@ internal partial class unit_A_sim: electric_device
                 }
                 //Main.log($"ID = {_idling_arc_damage}");
         
-                //_main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, _total_draw);
-                Main.diagnostics?.Value = Mathf.Max(motors_volts, maximum_EMF);
-                Main.diagnostics2?.Value = maximum_load;
+                _main_breaker.trip_if_operating_parameters_exceeded(voltmeter_reading, Mathf.Max(motors_volts, maximum_EMF), maximum_load, _total_draw);
                 _compressor_on.ChangeState(voltmeter_reading >= 1000.0f && _main_breaker_closed.State);
-                blowers.active                = /*rheostatic_brake_on || _throttle >= 1*/ Mathf.Abs(_reverser_position - 0.5f) > 0.1f;
+                blowers.active                = Mathf.Abs(_reverser_position - 0.5f) > 0.1f;
                 blowers.rheostatic_braking_on = rheostatic_brake_on;
                 blowers.motor_current         = maximum_load;
                 blowers.line_voltage          = rheostatic_brake_on ? motors_volts : voltmeter_reading;
-                _meter.count_energy(voltmeter_reading, rheostatic_brake_on ? 0.0f : _total_draw);
                 blowers.simulate(delta_time);
                 _meter.count_energy(delta_time, voltmeter_reading, rheostatic_brake_on ? 0.0f : _total_draw);
                 _resistor_grid.simulate();
-                set_powertrain_damage_resistance();
                 resistor_heat.simulate_overheat_damage(delta_time, _resistor_grid);
                 set_powertrain_damage_resistance(delta_time);
                 if (regenerative_on || field_generator.relative_speed >= 0.01f)
-                    field_generator.simulate(delta_time, regenerative_on, _field_position, voltmeter_reading, motors_volts);
+                    field_generator.simulate(delta_time, regenerative_on && _throttle >= 1, _field_position, voltmeter_reading, motors_volts);
                 
                 float wheel_RPM_A = _wheel_RPM.Value, wheel_RPM_B = _wheel_RPM_B.Value;
 
@@ -703,6 +694,9 @@ internal partial class unit_A_sim: electric_device
 #if VOLTAGE_TELEMETRY
                 circuit.telemetry.log_sorted_voltages(_circuit);
 #endif
+                for (int resistor_group_index = 2; resistor_group_index >= 0; --resistor_group_index)
+                    resistor_shunts[resistor_group_index].set_time_constant(resistor_measure[resistor_group_index].voltage_drop);
+                _circuit.establish_self_induction(delta_time);
 
                 // Motor back EMF and actual currents step
                 simulation_run = _circuit.simulate(permit_commutation: false);
@@ -722,9 +716,9 @@ internal partial class unit_A_sim: electric_device
 #endif
                 _circuit.establish_currents();
                 bool kickstarters_on = rheostatic_brake_on && _throttle >= 1;
-                for (int motor_index = motors / 2 - 1; motor_index >= 0; --motor_index)
+                for (motor_index = motors / 2 - 1; motor_index >= 0; --motor_index)
                     traction_motors[motor_index].simulate(kickstarters_on, wheel_RPM_A); 
-                for (int motor_index = motors / 2; motor_index < motors; ++motor_index)
+                for (motor_index = motors / 2; motor_index < motors; ++motor_index)
                     traction_motors[motor_index].simulate(kickstarters_on, wheel_RPM_B); 
             }
         }

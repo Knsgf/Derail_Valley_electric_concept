@@ -1,4 +1,5 @@
-#define CIRCUIT_TEST_OFF
+//#define CIRCUIT_TEST_OFF
+//#define MOTOR_TEST_OFF
 
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,7 @@ namespace Tests
         static void Main(string[] args)
         {
 #if !CIRCUIT_TEST_OFF
-            _test_circuit = circuit_compiler.trace(_resistances, test_diagram).set_up_simulation(out _named_branches, out _contactor_locations);
+            _test_circuit = circuit_compiler.trace(_resistances, new Dictionary<string, float>(), test_diagram).set_up_simulation(out _named_branches, out _contactor_locations);
             _named_branches["B"].EMF = 6.0f;
             _contactor_locations["C"].toggle_contactor("C", false);
             print_currents();
@@ -70,10 +71,13 @@ namespace Tests
 
 #if !MOTOR_TEST_OFF
             //var test_rig = new TM_rig(0.0f, 0.0f, 0.0f, 0, false, false, false);
-            var test_rig = new TM_rig(750.0f, 0.5f, 50.0f, 0, false, false, false);
+            //var test_rig = new TM_rig(750.0f, 0.034375f, 50.0f, 0, false, false, false);
             //var test_rig = new TM_rig(1500.0f, 0.0f, 50.0f, 0, false, false, false);
+            //var test_rig = new TM_rig(250.0f, 0.0f, -120.0f, 0, true, false, false);
             //var test_rig = new TM_rig(250.0f, 0.0f, 120.0f, 0, false, false, false);
-            //var test_rig = new TM_rig(250.0f, 0.0f, 180.0f, 0, false, false, false);
+            //var test_rig = new TM_rig(750.0f, 3.0f, 15.0f, 0, false, false, false);
+            //var test_rig = new TM_rig(750.0f, 3.0f, 150.0f, 0, false, false, false);
+            var test_rig = new TM_rig(0.0f, 2.0f, 50.0f, 0, true, true, true);
             test_rig.run();
 #endif
         }

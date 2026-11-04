@@ -33,7 +33,7 @@ internal partial class unit_A_sim
         public readonly camshaft_contactor_set   _selector_traction_shaft, _selector_regenerative_shaft;
         public readonly camshaft_contactor_set   _jogging_switch;
         public readonly camshaft_contactor_set[] _motor_cutouts;
-        public readonly binary_contactor         _line_contactor, _line_contactor2,_shunting_contactors, _voltmeter;
+        public readonly binary_contactor         _line_contactor, _line_contactor2,_shunting_contactors;
         public readonly contactor[]              _field_shunt_contactors;
         public readonly tri_state_contactor      _dynamic_brake_contactor;
 
@@ -95,7 +95,6 @@ internal partial class unit_A_sim
             _line_contactor      = new(["LC1"                 ], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
             _line_contactor2     = new([ "LC2", "LC3"         ], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
             _shunting_contactors = new(["CR1S", "CR2S", "CR3S"], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
-            _voltmeter           = new(["VMC34"               ], null, contactor_locations, contactor_click_on_both, main_breaker, air_supply);
             _line_contactor.on_toggle  += motor_breaker_enable;
             _line_contactor2.on_toggle += motor_breaker_enable;
             
@@ -272,7 +271,6 @@ internal partial class unit_A_sim
             _shunting_contactors.Dispose();
             _dynamic_brake_contactor.Dispose();
             _jogging_switch.Dispose();
-            _voltmeter.Dispose();
             for (int motor = 0; motor < 6; ++motor)
                 _motor_cutouts[motor].Dispose();
             for (int field_contactor = 0; field_contactor < 6; ++field_contactor)
