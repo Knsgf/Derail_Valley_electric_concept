@@ -591,7 +591,9 @@ internal partial class unit_A_sim: electric_device
             if (!jog && !_main_breaker_closed.State && _roof_bus.voltage < 10.0f && supply.EMF < 10.0f && _wheel_RPM.Value < 20.0f 
                 && blowers.motor_current < 10.0f && blowers.relative_speed < 0.01f && field_generator.relative_speed < 0.01f)
             {
-                _total_torque_A = _total_torque_B = _resistance_update_time = 0.0f; 
+                _total_torque_A = _total_torque_B = _resistance_update_time = _voltmeter_reading     = _motors_volts    = 0.0f; 
+                _maximum_load   = _average_load_A = _average_field_A        = _average_load_B        = _average_field_B = 0.0f;
+                _average_RPM    = _average_EMF    = _total_heat_emission_A  = _total_heat_emission_B = 0.0f;
                 _meter.count_energy(delta_time, 0.0f, 0.0f);    // Required to properly track ownership changes
                 ++current_cycle;
                 yield return null;
