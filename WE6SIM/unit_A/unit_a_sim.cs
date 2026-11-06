@@ -604,7 +604,7 @@ internal partial class unit_A_sim: electric_device
                 int   selector_notch    = all_contactors._selector_motor.current_notch;
                 float motors_volts      = (selector_notch == 4) ? 0.0f : Mathf.Abs(motor_voltmeter.voltage_drop);
                 _motors_volts           = motors_volts;
-                supply.EMF              = Mathf.LerpUnclamped(supply.EMF, rheostatic_brake_on ? 0.0f : _roof_bus.voltage, 0.1f);
+                supply.EMF              = rheostatic_brake_on ? 0.0f : _roof_bus.voltage;
                 float voltmeter_reading = rheostatic_brake_on ? blowers.fan_voltage : Mathf.Max(supply.EMF - supply.current / supply.conductance, 0.0f);
                 _voltmeter_reading      = voltmeter_reading;
                 bool  regenerative_on   = selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative;
