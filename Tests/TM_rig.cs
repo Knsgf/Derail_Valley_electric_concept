@@ -110,7 +110,9 @@ namespace Tests
             _motor1 = new traction_motor(1, 1.0f, multiplier         , _named_branches);
             _motor2 = new traction_motor(2, 1.0f, multiplier + 0.003f, _named_branches);
             circuit.telemetry.set_up(_TM_rig, _named_branches, Console.WriteLine);
+#if DEBUG
             traction_motor.print = Console.WriteLine;
+#endif
 
             _supply_voltage    = Mathf.Clamp(starting_voltage, 0.0f, 2000.0f);
             _supply_resistance = Mathf.Max(starting_resistance, 0.0f);
