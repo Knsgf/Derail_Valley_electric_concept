@@ -186,35 +186,35 @@ public partial class overhead_equipment
     {
         if (_system != null)
             throw new InvalidOperationException("Attempt to create a duplicate catenary in the world");
-        if (Type.GetType("DoubleTrack.TrackPlacerEntry, DoubleTrack", throwOnError: false) != null)
-        {
-            Main.release_log("Double track mod is active, catenary removed");
-            return;
-        }
 
         _system = new overhead_equipment(mod);
-        // "catenary_object" and its derivaties require "system" property to be initialised,
-        // which precludes doing loading inside constructor
-        AssetBundle catenary = AssetBundle.LoadFromFile(Path.Combine(system._file_path, "catenary"))
-            ?? throw new FileNotFoundException("Not found " + Path.Combine(system._file_path, "catenary"));
-        _system._loaded_bundles.Add(catenary);
-        foreach (string asset_name in catenary.GetAllAssetNames())
+        if (Type.GetType("DoubleTrack.TrackPlacerEntry, DoubleTrack", throwOnError: false) != null)
+            Main.release_log("Double track mod is active, catenary removed");
+        else
         {
-            string lowercase_name = asset_name.ToLower();
-            if (lowercase_name.EndsWith(".json"))
+            // "catenary_object" and its derivaties require "system" property to be initialised,
+            // which precludes doing loading inside constructor
+            AssetBundle catenary = AssetBundle.LoadFromFile(Path.Combine(system._file_path, "catenary"))
+                ?? throw new FileNotFoundException("Not found " + Path.Combine(system._file_path, "catenary"));
+            _system._loaded_bundles.Add(catenary);
+            foreach (string asset_name in catenary.GetAllAssetNames())
             {
-                int location_index = lowercase_name.IndexOf("scenery_");
-                if (location_index < 0)
-                    continue;
-                location_index        += "scenery_".Length;
-                int location_end_index = asset_name.Length - ".json".Length;
-                if (location_index < location_end_index)
-                    _system.load_scenery_from_bundle(catenary, asset_name.Substring(location_index, location_end_index - location_index));
+                string lowercase_name = asset_name.ToLower();
+                if (lowercase_name.EndsWith(".json"))
+                {
+                    int location_index = lowercase_name.IndexOf("scenery_");
+                    if (location_index < 0)
+                        continue;
+                    location_index        += "scenery_".Length;
+                    int location_end_index = asset_name.Length - ".json".Length;
+                    if (location_index < location_end_index)
+                        _system.load_scenery_from_bundle(catenary, asset_name.Substring(location_index, location_end_index - location_index));
+                }
             }
-        }
 #if DEBUG        
-        _system.load_scenery_from_file();   
+            _system.load_scenery_from_file();   
 #endif
+        }
         if (_system._scenery_changed)
             _system.reconstruct_tree();
 
