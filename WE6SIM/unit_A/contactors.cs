@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using UnityEngine;
 
 using LocoSim.Implementations;
@@ -21,6 +22,70 @@ internal partial class unit_A_sim
 {
     private class contactors: IDisposable
     {
+        private static class contactor_names
+        {
+            public static readonly string[]  line_contactors  = [ "LC1"                ];
+            public static readonly string[]  line_contactors2 = [ "LC2",  "LC3"        ];
+            public static readonly string[] shunt_contactors  = ["CR1S", "CR2S", "CR3S"];
+            public static readonly string[]   jog_contactors  = ["JOG1", "JOG2"        ];
+            
+            public static readonly string[][] motor_cutouts;
+            public static readonly string[][] field_shunts;
+            public static readonly string[] field1_cutouts_closed, field1_cutouts_open, field1_cutouts_itermediate;
+            public static readonly string[] dynamic_brake_closed_contacts, dynamic_brake_open_contacts;
+
+            static contactor_names()
+            {
+                field_shunts                     = new string[6][];
+                string[] field_contactor_numbers = new string[6];
+                for (int field_shunt_index = 0; field_shunt_index < field_shunts.Length; ++field_shunt_index)
+                { 
+                    if (field_shunt_index != 3 - 1)
+                    { 
+                        field_shunts           [field_shunt_index] = new string[motors];
+                        field_contactor_numbers[field_shunt_index] = (field_shunt_index + 1).ToString();
+                    }
+                }
+                field1_cutouts_open        = new string[motors    ];
+                field1_cutouts_itermediate = new string[motors * 3];
+                field1_cutouts_closed      = new string[motors * 2];
+
+                motor_cutouts                 = new string[motors    ][];
+                dynamic_brake_closed_contacts = new string[motors + 5];
+                dynamic_brake_open_contacts   = new string[motors + 3];
+                dynamic_brake_closed_contacts[0] = "DB16c";
+                dynamic_brake_closed_contacts[1] = "DB34c";
+                dynamic_brake_closed_contacts[2] = "DB56c";
+                dynamic_brake_closed_contacts[3] = "DB12Gc";
+                dynamic_brake_closed_contacts[4] = "DB34Gc";
+                dynamic_brake_open_contacts[0] = "DB12o";
+                dynamic_brake_open_contacts[1] = "DB34o";
+                dynamic_brake_open_contacts[2] = "DB56o";
+                for (int motor = 1; motor <= motors; ++motor)
+                {
+                    int motor_index   = motor - 1;
+                    int doubled_index = motor_index << 1;
+                    int tripled_index = motor_index + doubled_index;
+                    motor_cutouts[motor_index] = [$"CO{motor}"];
+
+                    string dynamic_brake_prefix = $"DB{motor}";
+                    dynamic_brake_closed_contacts[motor + 4] = dynamic_brake_prefix + "c";
+                    dynamic_brake_open_contacts  [motor + 2] = dynamic_brake_prefix + "o";
+                    
+                    string field_prefix = $"FS{motor}.";
+                    for (int field_contactor = 1; field_contactor <= 6; ++field_contactor)
+                    {
+                        if (field_contactor != 3)
+                            field_shunts[field_contactor - 1][motor_index] = field_prefix + field_contactor_numbers[field_contactor - 1];
+                    }
+                    string shunt_prefix = field_prefix + "3";
+                    field1_cutouts_open  [motor_index++    ] = field1_cutouts_itermediate[tripled_index    ] = shunt_prefix + "o";
+                    field1_cutouts_closed[doubled_index    ] = field1_cutouts_itermediate[tripled_index + 1] = shunt_prefix + "c";
+                    field1_cutouts_closed[doubled_index + 1] = field1_cutouts_itermediate[tripled_index + 2] = shunt_prefix + "c2";
+                }
+            }
+        }
+        
         private readonly unit_A_sim           _unit;
         private readonly PoweredWheelsManager _driving_axles;
         private readonly object               _selector_interlock = new();
@@ -88,20 +153,22 @@ internal partial class unit_A_sim
             _selector_motor              = new(8, appliances, drop_to_1_on_power_loss: false);
             _selector_traction_shaft     = new(_selector_traction_toggles, contactor_locations, _selector_motor, contactor_click_on_both);
             _selector_regenerative_shaft = new(_selector_regenerative_toggles, contactor_locations, _selector_motor, contactor_click_on_both);
-            _jogging_switch              = camshaft_contactor_set.on_off(["JOG1", "JOG2"], null, contactor_locations, null, null);
+            _jogging_switch              = camshaft_contactor_set.on_off(contactor_names.jog_contactors, null, contactor_locations, null, null);
             _selector_motor.notch_changed     += extinguish_transition_lamp;
             _primary_controller.notch_changed += switch_primary_contactors;
             
-            _line_contactor      = new(["LC1"                 ], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
-            _line_contactor2     = new([ "LC2", "LC3"         ], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
-            _shunting_contactors = new(["CR1S", "CR2S", "CR3S"], null, contactor_locations, contactor_click_on_A   , main_breaker, air_supply);
+            _line_contactor      = new(contactor_names.line_contactors , null, contactor_locations, contactor_click_on_A, main_breaker, air_supply);
+            _line_contactor2     = new(contactor_names.line_contactors2, null, contactor_locations, contactor_click_on_A, main_breaker, air_supply);
+            _shunting_contactors = new(contactor_names.shunt_contactors, null, contactor_locations, contactor_click_on_A, main_breaker, air_supply);
             _line_contactor.on_toggle  += motor_breaker_enable;
             _line_contactor2.on_toggle += motor_breaker_enable;
             
-            _motor_cutouts = new camshaft_contactor_set[motors];
-            for (int motor = 1; motor <= motors; ++motor)
-                _motor_cutouts[motor - 1] = camshaft_contactor_set.on_off([$"CO{motor}"], null, contactor_locations, null, null);
+            camshaft_contactor_set[] motor_cutouts = _motor_cutouts = new camshaft_contactor_set[motors];
+            string[][]               cutout_names  = contactor_names.motor_cutouts;
+            for (int motor = 0; motor < motors; ++motor)
+                motor_cutouts[motor] = camshaft_contactor_set.on_off(cutout_names[motor], null, contactor_locations, null, null);
 
+            /*
             string[] dynamic_brake_closed_contacts = new string[motors + 5], dynamic_brake_open_contacts = new string[motors + 3];
             dynamic_brake_closed_contacts[0] = "DB16c";
             dynamic_brake_closed_contacts[1] = "DB34c";
@@ -116,29 +183,36 @@ internal partial class unit_A_sim
                 dynamic_brake_closed_contacts[motor + 4] = $"DB{motor}c";
                 dynamic_brake_open_contacts  [motor + 2] = $"DB{motor}o";
             }
-            _dynamic_brake_contactor = new(dynamic_brake_closed_contacts, null, dynamic_brake_open_contacts,
+            */
+            _dynamic_brake_contactor = new(contactor_names.dynamic_brake_closed_contacts, null, contactor_names.dynamic_brake_open_contacts,
                 contactor_locations, contactor_click_on_both, appliances);
 
-            _field_shunt_contactors = new contactor[6];
-            for (int field_contactor = 1; field_contactor <= 6; ++field_contactor)
+            contactor[] field_shunt_contactors = _field_shunt_contactors = new contactor[6];
+            string[][]  field_shunt_names      = contactor_names.field_shunts;
+            for (int field_contactor = 0; field_contactor < 6; ++field_contactor)
             {
-                if (field_contactor == 3)
-                    continue;
-                string[] contacts = new string[motors];
-                for (int motor = 1; motor <= motors; ++motor)
-                    contacts[motor - 1] = $"FS{motor}.{field_contactor}";
-                _field_shunt_contactors[field_contactor - 1] = new binary_contactor(contacts, null, contactor_locations, 
-                    contactor_click_on_both, appliances, air_supply);
+                if (field_contactor != 3 - 1)
+                {
+                    field_shunt_contactors[field_contactor] = new binary_contactor(field_shunt_names[field_contactor],
+                        null, contactor_locations, contactor_click_on_both, appliances, air_supply);
+                }
             }
-            string[] open_contacts   = new string[motors], intermediate_contacts = new string[motors * 2], 
-                     closed_contacts = new string[motors];
+            /*
+            string[] open_contacts   = new string[motors    ], intermediate_contacts = new string[motors * 3], 
+                     closed_contacts = new string[motors * 2];
+            int motor_index = 0, doubled_index = 0, tripled_index = 0;
             for (int motor = 1; motor <= motors; ++motor)
             {
-                int motor_index = motor - 1;
-                open_contacts  [motor_index] = intermediate_contacts[motor_index * 2    ] = $"FS{motor}.3o";
-                closed_contacts[motor_index] = intermediate_contacts[motor_index * 2 + 1] = $"FS{motor}.3c";
+                string shunt_prefix = $"FS{motor}.3";
+                open_contacts  [motor_index++    ] = intermediate_contacts[tripled_index    ] = shunt_prefix + "o";
+                closed_contacts[doubled_index    ] = intermediate_contacts[tripled_index + 1] = shunt_prefix + "c";
+                closed_contacts[doubled_index + 1] = intermediate_contacts[tripled_index + 2] = shunt_prefix + "c2";
+                doubled_index += 2;
+                tripled_index += 3;
             }
-            _field_shunt_contactors[3 - 1] = new tri_state_contactor(closed_contacts, intermediate_contacts, open_contacts, 
+            */
+            field_shunt_contactors[3 - 1] = new tri_state_contactor(
+                contactor_names.field1_cutouts_closed, contactor_names.field1_cutouts_itermediate, contactor_names.field1_cutouts_open, 
                 contactor_locations, contactor_click_on_both, appliances, air_supply);
         }
 
@@ -194,12 +268,13 @@ internal partial class unit_A_sim
                 selector = _new_selector;
                 if (selector is (int) selector_modes.series_regenerative or (int) selector_modes.parallel_regenerative)
                 {
-                    _field_shunt_contactors[0].toggle(turn_on: true);
-                    _field_shunt_contactors[1].toggle(turn_on: true);
-                    _field_shunt_contactors[2].toggle(turn_on: false);
-                    _field_shunt_contactors[3].toggle(turn_on: true);
-                    _field_shunt_contactors[4].toggle(turn_on: true);
-                    _field_shunt_contactors[5].toggle(turn_on: true);
+                    contactor[] field_shunt_contactors = _field_shunt_contactors;
+                    field_shunt_contactors[0].toggle(turn_on:  true);
+                    field_shunt_contactors[1].toggle(turn_on:  true);
+                    field_shunt_contactors[2].toggle(turn_on: false);
+                    field_shunt_contactors[3].toggle(turn_on:  true);
+                    field_shunt_contactors[4].toggle(turn_on:  true);
+                    field_shunt_contactors[5].toggle(turn_on:  true);
                 }
                 _dynamic_brake_contactor.toggle(selector is (int) selector_modes.rheostatic_brake);
                 _selector_motor.target_notch = (selector is (int) selector_modes.parallel_power  ) ? 8 : (selector + 1);
