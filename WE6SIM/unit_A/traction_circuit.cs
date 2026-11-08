@@ -153,26 +153,30 @@ internal partial class unit_A_sim
             string shunt_prefix     = $"FR{motor_branch}.";
             string inductive_prefix = $"LS{motor_branch}";
             string transition_name  = $"RT{motor_branch}";
-            string field1_name = field_prefix + "a", field2_name = field_prefix + "b";
+            string field1_name =     field_prefix + "a", field2_name =     field_prefix + "b";
+            string shunt1_name = inductive_prefix + "a", shunt2_name = inductive_prefix + "b";
             _base_element_resistances[  armature_name] = traction_motor.base_armature_resistance;
             _base_element_resistances[    field1_name] = traction_motor.base_field1_resistance;
             _base_element_resistances[    field2_name] = traction_motor.base_field2_resistance;
             _base_element_resistances[transition_name] = 3.0f;
+            _base_element_resistances[    shunt1_name] =
+            _base_element_resistances[    shunt2_name] = 0.0f;
 
-            _base_element_resistances[    shunt_prefix + "1"] = 0.00766f;
-            _base_element_resistances[    shunt_prefix + "2"] = 0.00459f;
-            _base_element_resistances[    shunt_prefix + "4"] = 0.015f;
-            _base_element_resistances[    shunt_prefix + "5"] = 0.0115f;
-            _base_element_resistances[    shunt_prefix + "6"] = 0.0368f;
-            _base_element_resistances[inductive_prefix + "a"] =
-            _base_element_resistances[inductive_prefix + "b"] = 0.0f;
+            _base_element_resistances[shunt_prefix + "1"] = 0.00766f;
+            _base_element_resistances[shunt_prefix + "2"] = 0.00459f;
+            _base_element_resistances[shunt_prefix + "4"] = 0.015f;
+            _base_element_resistances[shunt_prefix + "5"] = 0.0115f;
+            _base_element_resistances[shunt_prefix + "6"] = 0.0368f;
 
             _inductances[transition_name] = resistor_inductance;
             _inductances[  armature_name] = traction_motor.armature_inductance;
-            _inductances[    field1_name] = traction_motor.field1_inductance;
-            _inductances[    field2_name] = traction_motor.field2_inductance;
-            _inductances[$"FR{motor_branch}.1"] = _inductances[$"FR{motor_branch}.2"] = traction_motor.field1_inductance / 2.0f;
-            _inductances[$"FR{motor_branch}.4"] = _inductances[$"FR{motor_branch}.5"] = _inductances[$"FR{motor_branch}.6"] = traction_motor.field2_inductance / 3.0f;
+            _inductances[    field1_name] =
+            _inductances[    shunt1_name] = traction_motor.field1_inductance;
+            _inductances[    field2_name] =
+            _inductances[    shunt2_name] = traction_motor.field2_inductance;
+            
+            //_inductances[$"FR{motor_branch}.1"] = _inductances[$"FR{motor_branch}.2"] = traction_motor.field1_inductance / 2.0f;
+            //_inductances[$"FR{motor_branch}.4"] = _inductances[$"FR{motor_branch}.5"] = _inductances[$"FR{motor_branch}.6"] = traction_motor.field2_inductance / 3.0f;
         }
     }
 

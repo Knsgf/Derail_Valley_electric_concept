@@ -28,7 +28,7 @@ namespace electric_sim.unit_A;
 
 internal partial class unit_A_sim: electric_device
 {
-    const int motors = 6;
+    public const int motors = 6;
 
     public const float motor_hitpoints        = 2000.0f, maximum_idling_damage  = 0.1f * motor_hitpoints;
     public const float maximum_idling_current =  800.0f, minimum_idling_current = 250.0f;
@@ -43,9 +43,10 @@ internal partial class unit_A_sim: electric_device
 
     private readonly Port _control_AB1, _control_BA1, _control_BA2, _torque_B, _wheel_RPM_B, _traction_motor_load_B;
 
-    private readonly SimController _simulation;
-    private readonly circuit       _circuit;
-    private readonly resistor_heat _resistor_grid;
+    private readonly SimController         _simulation;
+    private readonly circuit               _circuit;
+    private readonly resistor_heat         _resistor_grid;
+    private readonly field_inductor_shunts _inductor_shunts;
 
     private readonly pantograph                 _pantograph;
     private readonly roof_busbar                _roof_bus;
@@ -125,7 +126,8 @@ internal partial class unit_A_sim: electric_device
         }
         UnityEngine.Random.state = old_state;
         _circuit = circuit_compiler.trace(_element_resistances, _inductances, circuit_diagram).set_up_simulation(out _named_branches, out _contactor_locations);
-        _resistor_grid = new(ports, _named_branches);
+        _resistor_grid   = new(ports, _named_branches);
+        _inductor_shunts = new(       _named_branches);
         _named_branches["BAT"].EMF = battery_panel.battery_EMF;
 
         _torque_B              = grab_port(ports, "[internal_MU].TM4-6"            );
@@ -698,6 +700,7 @@ internal partial class unit_A_sim: electric_device
 #endif
                 for (int resistor_group_index = 2; resistor_group_index >= 0; --resistor_group_index)
                     resistor_shunts[resistor_group_index].set_time_constant(resistor_measure[resistor_group_index].voltage_drop);
+                _inductor_shunts.set_time_constants();
                 _circuit.establish_self_induction(delta_time);
 
                 // Motor back EMF and actual currents step

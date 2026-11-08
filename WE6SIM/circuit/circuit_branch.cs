@@ -153,7 +153,7 @@ public partial class circuit
             assert.condition(_inductance != 0.0f);
             _external_voltage_drop = external_voltage;
             float branch_current   = current;
-            if (external_voltage is > -1.0f and < 1.0f || branch_current is > -1.0f and < 1.0f || branch_current * external_voltage < 0.0f)
+            if (external_voltage is > -0.001f and < 0.001f || branch_current * external_voltage < 0.0f)
             {
                 _time_constant        = 1.0f / (_closed_conductance * _inductance);
                 _external_conductance = _external_voltage_drop = 0.0f;

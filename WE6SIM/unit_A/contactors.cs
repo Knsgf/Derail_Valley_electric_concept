@@ -167,23 +167,6 @@ internal partial class unit_A_sim
             string[][]               cutout_names  = contactor_names.motor_cutouts;
             for (int motor = 0; motor < motors; ++motor)
                 motor_cutouts[motor] = camshaft_contactor_set.on_off(cutout_names[motor], null, contactor_locations, null, null);
-
-            /*
-            string[] dynamic_brake_closed_contacts = new string[motors + 5], dynamic_brake_open_contacts = new string[motors + 3];
-            dynamic_brake_closed_contacts[0] = "DB16c";
-            dynamic_brake_closed_contacts[1] = "DB34c";
-            dynamic_brake_closed_contacts[2] = "DB56c";
-            dynamic_brake_closed_contacts[3] = "DB12Gc";
-            dynamic_brake_closed_contacts[4] = "DB34Gc";
-            dynamic_brake_open_contacts[0] = "DB12o";
-            dynamic_brake_open_contacts[1] = "DB34o";
-            dynamic_brake_open_contacts[2] = "DB56o";
-            for (int motor = 1; motor <= motors; ++motor)
-            {
-                dynamic_brake_closed_contacts[motor + 4] = $"DB{motor}c";
-                dynamic_brake_open_contacts  [motor + 2] = $"DB{motor}o";
-            }
-            */
             _dynamic_brake_contactor = new(contactor_names.dynamic_brake_closed_contacts, null, contactor_names.dynamic_brake_open_contacts,
                 contactor_locations, contactor_click_on_both, appliances);
 
@@ -197,20 +180,6 @@ internal partial class unit_A_sim
                         null, contactor_locations, contactor_click_on_both, appliances, air_supply);
                 }
             }
-            /*
-            string[] open_contacts   = new string[motors    ], intermediate_contacts = new string[motors * 3], 
-                     closed_contacts = new string[motors * 2];
-            int motor_index = 0, doubled_index = 0, tripled_index = 0;
-            for (int motor = 1; motor <= motors; ++motor)
-            {
-                string shunt_prefix = $"FS{motor}.3";
-                open_contacts  [motor_index++    ] = intermediate_contacts[tripled_index    ] = shunt_prefix + "o";
-                closed_contacts[doubled_index    ] = intermediate_contacts[tripled_index + 1] = shunt_prefix + "c";
-                closed_contacts[doubled_index + 1] = intermediate_contacts[tripled_index + 2] = shunt_prefix + "c2";
-                doubled_index += 2;
-                tripled_index += 3;
-            }
-            */
             field_shunt_contactors[3 - 1] = new tri_state_contactor(
                 contactor_names.field1_cutouts_closed, contactor_names.field1_cutouts_itermediate, contactor_names.field1_cutouts_open, 
                 contactor_locations, contactor_click_on_both, appliances, air_supply);
