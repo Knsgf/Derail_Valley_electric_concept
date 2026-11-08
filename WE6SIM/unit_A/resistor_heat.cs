@@ -29,9 +29,10 @@ internal class resistor_heat
         for (int current_group = 1; current_group <= groups; ++current_group)
         {
             _resistor_groups_names[current_group - 1] = new string[resistors_in_group];
+            string group_prefix = $"SR{current_group}";
             for (int current_resitor = 1; current_resitor < resistors_in_group; ++current_resitor)
-                _resistor_groups_names[current_group - 1][current_resitor - 1] = $"SR{current_group}.{current_resitor}";
-            _resistor_groups_names[current_group - 1][resistors_in_group - 1] = $"SR{current_group}S";
+                _resistor_groups_names[current_group - 1][current_resitor - 1] = group_prefix + $".{current_resitor}";
+            _resistor_groups_names[current_group - 1][resistors_in_group - 1] = group_prefix + "S";
         }
     }
 
