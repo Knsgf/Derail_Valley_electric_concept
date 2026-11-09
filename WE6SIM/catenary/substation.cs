@@ -52,7 +52,7 @@ public partial class overhead_equipment
         {
             int   x_offset = x - wire_x, z_offset = z - wire_z;
             float y_offset = y - wire_y;
-            float distance = Mathf.Sqrt(((long) x_offset * x_offset + (long) z_offset + z_offset) 
+            float distance = Mathf.Sqrt(((long) x_offset * x_offset + (long) z_offset * z_offset) 
                 / (world_position.fixed_multiplier * world_position.fixed_multiplier) + y_offset * y_offset);
             _new_load            += load_current;
             float contact_voltage = _current_voltage - _current_load * wire_1m_resistance * distance;
