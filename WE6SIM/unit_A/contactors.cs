@@ -31,7 +31,6 @@ internal partial class unit_A_sim
             
             public static readonly string[][] motor_cutouts;
             public static readonly string[][] field_shunts;
-            public static readonly string[] field1_cutouts_closed, field1_cutouts_open, field1_cutouts_itermediate;
             public static readonly string[] dynamic_brake_closed_contacts, dynamic_brake_open_contacts;
 
             static contactor_names()
@@ -46,9 +45,6 @@ internal partial class unit_A_sim
                         field_contactor_numbers[field_shunt_index] = (field_shunt_index + 1).ToString();
                     }
                 }
-                field1_cutouts_open        = new string[motors    ];
-                field1_cutouts_itermediate = new string[motors * 3];
-                field1_cutouts_closed      = new string[motors * 2];
 
                 motor_cutouts                 = new string[motors    ][];
                 dynamic_brake_closed_contacts = new string[motors + 5];
@@ -78,10 +74,6 @@ internal partial class unit_A_sim
                         if (field_contactor != 3)
                             field_shunts[field_contactor - 1][motor_index] = field_prefix + field_contactor_numbers[field_contactor - 1];
                     }
-                    string shunt_prefix = field_prefix + "3";
-                    field1_cutouts_open  [motor_index++    ] = field1_cutouts_itermediate[tripled_index    ] = shunt_prefix + "o";
-                    field1_cutouts_closed[doubled_index    ] = field1_cutouts_itermediate[tripled_index + 1] = shunt_prefix + "c";
-                    field1_cutouts_closed[doubled_index + 1] = field1_cutouts_itermediate[tripled_index + 2] = shunt_prefix + "c2";
                 }
             }
         }
@@ -146,12 +138,12 @@ internal partial class unit_A_sim
             };
             
             _primary_controller          = new(camshaft_notches, appliances, drop_to_1_on_power_loss: false);
-            _primary_camshaft            = new(_primary_contactor_toggles, contactor_locations, null, contactor_click_on_A);
+            _primary_camshaft            = new(  _primary_contactor_toggles, contactor_locations, null, contactor_click_on_A);
             _secondary_camshaft          = new(_secondary_contactor_toggles, contactor_locations, null, contactor_click_on_B);
             _reverser                    = new(2, appliances, drop_to_1_on_power_loss: false);
             _reverser_shaft              = new(_reverser_toggles, contactor_locations, _reverser, contactor_click_on_both);
             _selector_motor              = new(8, appliances, drop_to_1_on_power_loss: false);
-            _selector_traction_shaft     = new(_selector_traction_toggles, contactor_locations, _selector_motor, contactor_click_on_both);
+            _selector_traction_shaft     = new(    _selector_traction_toggles, contactor_locations, _selector_motor, contactor_click_on_both);
             _selector_regenerative_shaft = new(_selector_regenerative_toggles, contactor_locations, _selector_motor, contactor_click_on_both);
             _jogging_switch              = camshaft_contactor_set.on_off(contactor_names.jog_contactors, null, contactor_locations, null, null);
             _selector_motor.notch_changed     += extinguish_transition_lamp;
@@ -180,9 +172,8 @@ internal partial class unit_A_sim
                         null, contactor_locations, contactor_click_on_both, appliances, air_supply);
                 }
             }
-            field_shunt_contactors[3 - 1] = new tri_state_contactor(
-                contactor_names.field1_cutouts_closed, contactor_names.field1_cutouts_itermediate, contactor_names.field1_cutouts_open, 
-                contactor_locations, contactor_click_on_both, appliances, air_supply);
+            field_shunt_contactors[3 - 1] = new multistep_contactor(_field1_cutout_toggles, 4, contactor_locations, 
+                contactor_click_on_both, appliances, air_supply);
         }
 
         private void motor_breaker_enable(bool turned_on)
