@@ -15,7 +15,11 @@ internal class camshaft_contactor_set: electric_device
     private readonly Dictionary<string,                 int> _contactor_notch_patterns = [];
     private readonly Dictionary<string, circuit.branch_user> _contactor_locations;
     private readonly camshaft_motor? _drive;
-    private readonly Action<bool>?   _contactor_toggle_sound = null;
+    private readonly Action<bool>?   contactor_toggle_sound = null;
+
+    private readonly int _total_notches;
+
+    public int total_notches => _total_notches;
 
     public int current_notch { get; private set; } = -1;
 
@@ -45,6 +49,7 @@ internal class camshaft_contactor_set: electric_device
             switch_contactors(1);
         else
         {
+            assert.condition(_drive.total_notches == _total_notches);
             _drive.notch_changed += switch_contactors;
             switch_contactors(_drive.current_notch);
         }
@@ -100,10 +105,11 @@ internal class camshaft_contactor_set: electric_device
                     _contactor_notch_patterns[contactor_name] |= closed_mask;
             }
         }
+        _total_notches = lines.Length - 1;
 
         _contactor_locations    = contactor_locations;
         _drive                  = drive;
-        _contactor_toggle_sound = contactor_toggle_sound;
+        this.contactor_toggle_sound = contactor_toggle_sound;
         attach_shaft();
     }
 
@@ -135,9 +141,10 @@ internal class camshaft_contactor_set: electric_device
         set_up_closed_contacts_at_notch(1, normally_closed_contacts, contactor_locations, two_state: true);
         set_up_closed_contacts_at_notch(2, normally_open_contacts  , contactor_locations, two_state: true);
 
-        _contactor_locations    = contactor_locations;
-        _drive                  = drive;
-        _contactor_toggle_sound = contactor_toggle_sound;
+        _total_notches              = 2;
+        _contactor_locations        = contactor_locations;
+        _drive                      = drive;
+        this.contactor_toggle_sound = contactor_toggle_sound;
         attach_shaft();
     }
 
@@ -149,9 +156,10 @@ internal class camshaft_contactor_set: electric_device
         set_up_closed_contacts_at_notch(2, closed_contacts_intermediate, contactor_locations, two_state: false);
         set_up_closed_contacts_at_notch(3, closed_contacts_on          , contactor_locations, two_state: false);
 
-        _contactor_locations    = contactor_locations;
-        _drive                  = drive;
-        _contactor_toggle_sound = contactor_toggle_sound;
+        _total_notches              = 3;
+        _contactor_locations        = contactor_locations;
+        _drive                      = drive;
+        this.contactor_toggle_sound = contactor_toggle_sound;
         attach_shaft();
     }
 
@@ -173,22 +181,28 @@ internal class camshaft_contactor_set: electric_device
     public void switch_contactors(int notch)
     {
         check_if_disposed();
+        if (notch < 1)
+            notch = _total_notches;
+        else if (notch > _total_notches)
+            notch = 1;
         Main.log($"N={notch}");
         if (current_notch == notch)
             return;
-        current_notch = notch;
+        current_notch   = notch;
         int closed_mask = 1 << (notch - 1);
+        Dictionary<string, circuit.branch_user> contactor_locations = _contactor_locations;
+        Action<bool>? contactor_toggle_sound = this.contactor_toggle_sound;
         foreach (KeyValuePair<string, int> contactor_close_pattern in _contactor_notch_patterns)
         {
             string contactor_name = contactor_close_pattern.Key;
             bool   toggle_on      = (contactor_close_pattern.Value & closed_mask) != 0;
-            bool   is_on          = _contactor_locations[contactor_name].is_contactor_on(contactor_name);
+            bool   is_on          = contactor_locations[contactor_name].is_contactor_on(contactor_name);
             if (toggle_on && !is_on)
-                _contactor_toggle_sound?.Invoke(true);
+                contactor_toggle_sound?.Invoke(true);
             else if (!toggle_on && is_on)
-                _contactor_toggle_sound?.Invoke(false);
+                contactor_toggle_sound?.Invoke(false);
             Main.log($"{contactor_name} {(toggle_on ? "on" : "off")}");
-            _contactor_locations[contactor_name].toggle_contactor(contactor_name, toggle_on);
+            contactor_locations[contactor_name].toggle_contactor(contactor_name, toggle_on);
         }
     }
 

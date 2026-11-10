@@ -13,7 +13,7 @@ internal class camshaft_motor: electric_device
     const int   notch_change_time_ms = 500, notch_change_stages = 3;
     const float notch_lock_threshold = 1.0f / (notch_change_stages * 5.0f);
 
-    private readonly int    _num_notches;
+    private readonly int    _total_notches;
     private readonly object _blocker = new();
     private readonly bool   _drop_to_1_on_power_loss;
 
@@ -22,6 +22,8 @@ internal class camshaft_motor: electric_device
     private bool  _camshaft_in_motion = false, _finish_movement_at_next_notch = false;
     private bool  _roll_over          = false;
 
+    public int total_notches => _total_notches;
+    
     public int target_notch
     {
         get
@@ -40,7 +42,7 @@ internal class camshaft_motor: electric_device
                 {
                     lock (_blocker)
                     {
-                        _target_notch = Math.Max(1, Math.Min(_num_notches, value));
+                        _target_notch = Math.Max(1, Math.Min(_total_notches, value));
                         if (!_camshaft_in_motion && _target_notch != current_notch)
                             _regular_movement = regular_move();
                     }
@@ -49,14 +51,14 @@ internal class camshaft_motor: electric_device
         }
     }
     public float current_position { get; private set; } = 1.0f;
-    public int current_notch => Mathf.RoundToInt(Mathf.Clamp(current_position, 1.0f, _num_notches));
+    public int current_notch => Mathf.RoundToInt(Mathf.Clamp(current_position, 1.0f, _total_notches));
 
     public event Action<int>? notch_changed;
 
     public camshaft_motor(int notches, Fuse power_supply, bool drop_to_1_on_power_loss, Fuse? air_supply = null)
         : base("camshaft_motor", power_supply, air_supply)
     {
-        _num_notches             = notches;
+        _total_notches             = notches;
         _drop_to_1_on_power_loss = drop_to_1_on_power_loss;
         power_supply_toggled    += power_supply_changed;
 
@@ -71,7 +73,7 @@ internal class camshaft_motor: electric_device
             if (_drop_to_1_on_power_loss && !_roll_over)
                 roll_over_move(to_1: true);
             else
-                target_notch = Math.Max(1, Math.Min(_num_notches, Mathf.RoundToInt(current_position)));
+                target_notch = Math.Max(1, Math.Min(_total_notches, Mathf.RoundToInt(current_position)));
         }
     }
 
@@ -95,7 +97,7 @@ internal class camshaft_motor: electric_device
         if (!disposed && Mathf.Abs(current_position - next_target_notch) <= 0.5f / notch_change_stages)
         {
             current_position = next_target_notch;   // Eliminate round-off errors
-            if (next_target_notch >= 1 && next_target_notch <= _num_notches)
+            if (next_target_notch >= 1 && next_target_notch <= _total_notches)
                 notch_changed?.Invoke(next_target_notch);
         }
     }
@@ -107,7 +109,7 @@ internal class camshaft_motor: electric_device
         _camshaft_in_motion = true;
         while (true)
         {
-            _target_notch = Math.Max(1, Math.Min(_num_notches, _target_notch));
+            _target_notch = Math.Max(1, Math.Min(_total_notches, _target_notch));
             await single_notch_motion(_target_notch, power_loss_drop: false);
             lock (_blocker)
             {
@@ -154,14 +156,14 @@ internal class camshaft_motor: electric_device
 
         bool signal_on_completion = false;
         if (    to_1 && Mathf.Abs(current_position -         1.0f) > notch_lock_threshold 
-            || !to_1 && Mathf.Abs(current_position - _num_notches) > notch_lock_threshold)
+            || !to_1 && Mathf.Abs(current_position - _total_notches) > notch_lock_threshold)
         {
             _camshaft_in_motion = true;
             int target_notch;
             if (to_1)
-                target_notch = ((current_notch << 1) <= _num_notches + 2) ? 1 : (_num_notches + 1);
+                target_notch = ((current_notch << 1) <= _total_notches + 2) ? 1 : (_total_notches + 1);
             else
-                target_notch = ((current_notch << 1) <= _num_notches    ) ? 0 : (_num_notches    );
+                target_notch = ((current_notch << 1) <= _total_notches    ) ? 0 : (_total_notches    );
             do
             {
                 await single_notch_motion(target_notch, _drop_to_1_on_power_loss);
@@ -177,8 +179,8 @@ internal class camshaft_motor: electric_device
                 }
             }
             while (Mathf.Abs(current_position - target_notch) > notch_lock_threshold);
-            current_position = _target_notch = to_1 ? 1 : _num_notches;
-            if (target_notch != 1 && target_notch != _num_notches)
+            current_position = _target_notch = to_1 ? 1 : _total_notches;
+            if (target_notch != 1 && target_notch != _total_notches)
                 signal_on_completion = true;
         }
         _roll_over = _camshaft_in_motion = false;
