@@ -72,7 +72,6 @@ namespace Tests
         float _supply_voltage, _supply_resistance, _speed;
         int   _WF;
         bool  _reversed, _fields_crossed, _M2_on;
-        Task  _simulation_progress;
 
         static float shunt_resistance(float field_resistance, float ratio)
         {
@@ -156,18 +155,16 @@ namespace Tests
             while (true)
             {
                 _named_branches["EPS"].EMF = _supply_voltage;
-                _simulation_progress = _TM_rig.simulate(permit_commutation: true);
-                while (!_simulation_progress.IsCompleted)
-                    yield return null;
+                _TM_rig.simulate(permit_commutation: true);
+                yield return null;
                 float RPM = wheel_RPM(_speed);
                 //_motor1.estalblish_EMFs(_fields_crossed, RPM, _supply_voltage - _motor1.voltage_drop);
                 //_motor2.estalblish_EMFs(_fields_crossed, RPM, _supply_voltage - _motor2.voltage_drop);
                 if (self_inductance_on)
                     _named_branches["L"].set_time_constant(_named_branches["R"].voltage_drop);
                 _TM_rig.establish_self_induction(1.0f / 60.0f);
-                _simulation_progress = _TM_rig.simulate(permit_commutation: false);
-                while (!_simulation_progress.IsCompleted)
-                    yield return null;
+                _TM_rig.simulate(permit_commutation: false);
+                yield return null;
                 _motor1.simulate(_fields_crossed, RPM);
                 _motor2.simulate(_fields_crossed, RPM);
                 _TM_rig.establish_currents();

@@ -28,6 +28,10 @@ namespace electric_sim.unit_A;
 
 internal partial class unit_A_sim: electric_device
 {
+#if CURRENT_TELEMETRY
+    const float minimum_current = -1.0f, minimum_log_current = 100.0f;
+#endif
+    
     public const int motors = 6;
 
     public const float motor_hitpoints        = 2000.0f, maximum_idling_damage  = 0.1f * motor_hitpoints;
@@ -682,18 +686,14 @@ internal partial class unit_A_sim: electric_device
                 float wheel_RPM_A = _wheel_RPM.Value, wheel_RPM_B = _wheel_RPM_B.Value;
 
                 // Self-induction step: sample final steady-state currents
-                Task simulation_run = _circuit.simulate(permit_commutation: true);
-                do
-                { 
-                    ++current_cycle;
-                    yield return null;
-                }
-                while (!simulation_run.IsCompleted);
+                _circuit.simulate(permit_commutation: true);
+                ++current_cycle;
+                yield return null;
 #if CURRENT_TELEMETRY || VOLTAGE_TELEMETRY
                 Main.log("Final state");
 #endif
 #if CURRENT_TELEMETRY
-                circuit.telemetry.log_sorted_currents(_circuit, -1.0f, 50.0f);
+                circuit.telemetry.log_sorted_currents(_circuit, minimum_current, minimum_log_current);
 #endif
 #if VOLTAGE_TELEMETRY
                 circuit.telemetry.log_sorted_voltages(_circuit);
@@ -704,17 +704,14 @@ internal partial class unit_A_sim: electric_device
                 _circuit.establish_self_induction(delta_time);
 
                 // Motor back EMF and actual currents step
-                simulation_run = _circuit.simulate(permit_commutation: false);
-                while (!simulation_run.IsCompleted)
-                { 
-                    ++current_cycle;
-                    yield return null; 
-                }
+                _circuit.simulate(permit_commutation: false);
+                ++current_cycle;
+                yield return null; 
 #if CURRENT_TELEMETRY || VOLTAGE_TELEMETRY
                 Main.log("Current state");
 #endif
 #if CURRENT_TELEMETRY
-                circuit.telemetry.log_sorted_currents(_circuit, -1.0f, 50.0f);
+                circuit.telemetry.log_sorted_currents(_circuit, minimum_current, minimum_log_current);
 #endif
 #if VOLTAGE_TELEMETRY
                 circuit.telemetry.log_sorted_voltages(_circuit);

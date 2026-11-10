@@ -48,9 +48,8 @@ namespace Tests
         {
             for (int runs = 5; runs > 0; --runs)
             {
-                _simulation_progress =_test_circuit.simulate(permit_commutation: true);
-                while (!_simulation_progress.IsCompleted)
-                    Thread.Sleep(200);
+                _test_circuit.simulate(permit_commutation: true);
+                Thread.Sleep(200);
             }
             foreach (KeyValuePair<string, branch_user> current_branch in _named_branches)
                 Console.WriteLine($"{current_branch.Key}={current_branch.Value.current}");

@@ -1,5 +1,7 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
+//#define SYNCHRONOUS
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,8 +37,7 @@ public partial class circuit
     private HashSet<branch> _branch_conductances_changed, _branch_conductances_staged = [], _branch_EMFs_changed = [], _branch_EMFs_staged = [];
     
     private Task? _matrices_recalculation;
-    private bool  _simulation_in_progress = false;
-    private int   _last_branch            = 0;
+    private int   _last_branch = 0;
 
     private void set_up_nodes(circuit_builder circuit_info, Dictionary<string, branch_user> named_branches,
         Dictionary<string, branch_user> contactor_locations)
@@ -191,16 +192,34 @@ public partial class circuit
             current_branch.establish_current();
     }
 
-    public async Task simulate(bool permit_commutation)
+    public void simulate(bool permit_commutation)
     {
-        if (_simulation_in_progress)
-            throw new Exception("Re-entrant call");
-        bool commutation_occured  = _branch_conductances_changed.Count > 0;
-        bool commutation_finished = permit_commutation && _matrices_recalculation != null && _matrices_recalculation.IsCompleted;
-        //if (!commutation_occured && !commutation_finished && _branch_EMFs_changed.Count == 0)
-        //    return false;
-        _simulation_in_progress = true;
+        assert.condition(_branch_EMFs_staged.Count == 0);
+        (_branch_EMFs_staged, _branch_EMFs_changed) = (_branch_EMFs_changed, _branch_EMFs_staged);
+        sparse_matrix EMFs_staged = _EMFs_staged, EMFs = _EMFs;
+        foreach (branch current_branch in _branch_EMFs_staged)
+        { 
+            int row             = current_branch.id;
+            EMFs_staged[row, 0] = EMFs[row, 0];
+        }
+        //EMFs_staged.copy_from(EMFs);
 
+        //bool commutation_occured  = _branch_conductances_changed.Count > 0;
+        if (_branch_conductances_changed.Count > 0 && _matrices_recalculation == null && _branch_conductances_staged.Count == 0)
+        {
+            (_branch_conductances_staged, _branch_conductances_changed) = (_branch_conductances_changed, _branch_conductances_staged);
+            _conductance_staged.copy_from(_conductance);
+#if SYNCHRONOUS
+            _matrices_recalculation = new Task(update_conductances);
+            _matrices_recalculation.RunSynchronously();
+#else
+            _matrices_recalculation = Task.Run(update_conductances);
+#endif
+        }
+#if SYNCHRONOUS
+        assert.condition(_matrices_recalculation == null || _matrices_recalculation.IsCompleted);
+#endif
+        bool commutation_finished = permit_commutation && _matrices_recalculation != null && _matrices_recalculation.IsCompleted;
         if (commutation_finished)
         {
             sparse_matrix conductances = _conductance_staged;
@@ -211,26 +230,8 @@ public partial class circuit
             (_solver, _background_solver) = (_background_solver, _solver);
             _matrices_recalculation       = null;
         }
-
-        assert.condition(_branch_EMFs_staged.Count == 0);
-        (_branch_EMFs_staged, _branch_EMFs_changed) = (_branch_EMFs_changed, _branch_EMFs_staged);
-        sparse_matrix EMFs_staged = _EMFs_staged, EMFs = _EMFs;
-        /*
-        foreach (branch current_branch in _branch_EMFs_staged)
-        { 
-            int row             = current_branch.id;
-            EMFs_staged[row, 0] = EMFs[row, 0];
-        }
-        */
-        EMFs_staged.copy_from(EMFs);
-        if (commutation_occured && _matrices_recalculation == null && _branch_conductances_staged.Count == 0)
-        {
-            (_branch_conductances_staged, _branch_conductances_changed) = (_branch_conductances_changed, _branch_conductances_staged);
-            _conductance_staged.copy_from(_conductance);
-            _matrices_recalculation = Task.Run(update_conductances);
-        }
         
-        await Task.Run(run_solver);
+        run_solver();
         node [] nodes           = _nodes;
         float[] node_potentials = _potentials;
         for (int node_index = _last_active_node; node_index >= 0; --node_index)
@@ -238,7 +239,5 @@ public partial class circuit
         foreach (branch current_branch in _branch_EMFs_staged)
             current_branch.set_current_EMF_from_matrix(EMFs_staged[current_branch.id, 0]);
         _branch_EMFs_staged.Clear();
-        _simulation_in_progress = false;
-        //return commutation_finished;
     }
 }
