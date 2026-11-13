@@ -232,6 +232,21 @@ internal class control_stand: electric_device
         return new_setter;
     }
 
+    public Action<float> create_delayed_setter(string device, float delay)
+    {
+        if (delay == 0.0f)
+            return create_setter(device);
+        
+        float current_readout = 0.0f, readout_change = 0.0f;
+        Action<float> instant_setter = create_setter(device);
+        return delegate (float final_value)
+        {
+            float instant_readout = Mathf.SmoothDamp(current_readout, final_value, ref readout_change, delay);
+            current_readout       = instant_readout;
+            instant_setter(instant_readout);
+        };
+    }
+
     public override void Dispose()
     {
         if (!disposed)

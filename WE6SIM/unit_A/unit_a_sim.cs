@@ -36,6 +36,7 @@ internal partial class unit_A_sim: electric_device
 
     public const float motor_hitpoints        = 2000.0f, maximum_idling_damage  = 0.1f * motor_hitpoints;
     public const float maximum_idling_current =  800.0f, minimum_idling_current = 250.0f;
+    public const float gauge_delay            = 0.5f;
 
     private readonly Dictionary<string, branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string,       float> _element_resistances = [];
@@ -173,45 +174,45 @@ internal partial class unit_A_sim: electric_device
         );
         _meter = new(unit, this, ports);
 
-        _control_stand = new(_appliances, ports);
-        _control_stand.register_handler(     "brake_cutout",                cab_activation, needs_power: false);
-        _control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);
-        _control_stand.register_handler(           "sander",            synchronise_sander, needs_power: false);
-        set_independent_brake = _control_stand.create_setter("independent_brake");
-        toggle_sander         = _control_stand.create_setter(           "sander");
+        control_stand new_control_stand = _control_stand = new(_appliances, ports);
+        new_control_stand.register_handler(     "brake_cutout",                cab_activation, needs_power: false);
+        new_control_stand.register_handler("independent_brake", synchronise_independent_brake, needs_power: false, default_setting: 1.0f);
+        new_control_stand.register_handler(           "sander",            synchronise_sander, needs_power: false);
+        set_independent_brake = new_control_stand.create_setter("independent_brake");
+        toggle_sander         = new_control_stand.create_setter(           "sander");
         _red_light_controller = new(_appliances, ports);
 
         _throttle_controller = new(this);
-        _control_stand.register_handler("reverser_handle",      reverser_handler, default_setting: 0.5f);
-        _control_stand.register_handler("throttle_handle",      throttle_handler);
-        _control_stand.register_handler(   "field_handle", field_control_handler);
-        _control_stand.register_handler("selector_handle",      selector_handler, default_setting: (float) selector_modes.yard_power / selector_last_notch);
+        new_control_stand.register_handler("reverser_handle",      reverser_handler, default_setting: 0.5f);
+        new_control_stand.register_handler("throttle_handle",      throttle_handler);
+        new_control_stand.register_handler(   "field_handle", field_control_handler);
+        new_control_stand.register_handler("selector_handle",      selector_handler, default_setting: (float) selector_modes.yard_power / selector_last_notch);
 
-        _control_stand.register_handler("front_pantograph_switch", toggle_front_pantograph );
-        _control_stand.register_handler( "back_pantograph_switch", toggle_back_pantograph  );
-        _control_stand.register_handler(    "left_sidepan_switch", toggle_left_sidepan     );
-        _control_stand.register_handler(   "right_sidepan_switch", toggle_right_sidepan    );
-        _control_stand.register_handler( "main_breaker_on_button", _main_breaker.toggle_on );
-        _control_stand.register_handler("main_breaker_off_button", _main_breaker.toggle_off, needs_power: false);
-        _control_stand.register_handler(   "fast_notching_switch", fast_notching_toggle    );
-        _control_stand.register_handler(    "blower_speed_switch", blower_speed_toggle     );
+        new_control_stand.register_handler("front_pantograph_switch", toggle_front_pantograph );
+        new_control_stand.register_handler( "back_pantograph_switch", toggle_back_pantograph  );
+        new_control_stand.register_handler(    "left_sidepan_switch", toggle_left_sidepan     );
+        new_control_stand.register_handler(   "right_sidepan_switch", toggle_right_sidepan    );
+        new_control_stand.register_handler( "main_breaker_on_button", _main_breaker.toggle_on );
+        new_control_stand.register_handler("main_breaker_off_button", _main_breaker.toggle_off, needs_power: false);
+        new_control_stand.register_handler(   "fast_notching_switch", fast_notching_toggle    );
+        new_control_stand.register_handler(    "blower_speed_switch", blower_speed_toggle     );
 
-        set_supply_volts   = _control_stand.create_setter(        "supply_volts");
-        set_motors_volts   = _control_stand.create_setter(        "motors_volts");
-        set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
-        set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
-        _HUD_notch_readout = new(_control_stand.create_setter("throttle_HUD_readout"));
+        set_supply_volts   = new_control_stand.create_delayed_setter(        "supply_volts", gauge_delay);
+        set_motors_volts   = new_control_stand.create_delayed_setter(        "motors_volts", gauge_delay);
+        set_primary_notch  = new_control_stand.create_delayed_setter(  "primary_notch_hand", gauge_delay);
+        set_seconday_notch = new_control_stand.create_delayed_setter("secondary_notch_hand", gauge_delay);
+        _HUD_notch_readout = new(new_control_stand.create_setter("throttle_HUD_readout"));
         set_motor_group_load  = new Action<float>[3];
         set_motor_group_field = new Action<float>[3];
         for (int group = 1; group <= 3; ++group)
         {
-            set_motor_group_load [group - 1] = _control_stand.create_setter( $"load_meter_{group}");
-            set_motor_group_field[group - 1] = _control_stand.create_setter($"field_meter_{group}");
+            set_motor_group_load [group - 1] = new_control_stand.create_delayed_setter( $"load_meter_{group}", gauge_delay);
+            set_motor_group_field[group - 1] = new_control_stand.create_delayed_setter($"field_meter_{group}", gauge_delay);
         }
         _contactors._primary_controller.notch_changed += signal_primary_camshaft_notch;
 
-        set_reverse_current_lamp        = _control_stand.create_setter("reverse_current_lamp");
-        _contactors.set_transition_lamp = _control_stand.create_setter(     "transition_lamp");
+        set_reverse_current_lamp        = new_control_stand.create_setter("reverse_current_lamp");
+        _contactors.set_transition_lamp = new_control_stand.create_setter(     "transition_lamp");
 
         _unit       = unit;
         _simulation = simulation;
