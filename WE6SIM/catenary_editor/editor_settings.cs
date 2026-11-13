@@ -104,6 +104,9 @@ public class editor_settings: ModSettings, IDrawable
 
     [Draw("Eraser reach (mm)")]
     private int _eraser_radius = 2500;
+
+    public static bool infinite_power { get; private set; }
+    public static event Action<bool>? power_cheat_toggle;
 #endif
 
     public editor_settings()
@@ -162,6 +165,11 @@ public class editor_settings: ModSettings, IDrawable
         editor.designated_substation            = (_substation.Length >= 2) ? _substation : null;
 
         pantograph.infinite_power = _infinite_power;
+        if (infinite_power != _infinite_power)
+        {
+            infinite_power = _infinite_power;
+            power_cheat_toggle?.Invoke(_infinite_power);
+        }
 #endif
     }
 
