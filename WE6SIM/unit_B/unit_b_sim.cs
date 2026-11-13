@@ -149,8 +149,8 @@ internal class unit_B_sim: electric_device
         set_sander            = _control_stand.create_setter(           "sander");
 
         _control_stand.register_handler("supply_volts", (float voltage) => _relative_voltage.Value = voltage / 1500.0f, needs_power: false);
-        set_primary_notch  = _control_stand.create_setter(  "primary_notch_hand");
-        set_seconday_notch = _control_stand.create_setter("secondary_notch_hand");
+        set_primary_notch  = _control_stand.create_wraparound_setter(  "primary_notch_hand", 1, unit_A_sim.camshaft_notches, 10.0f, 350.0f, unit_A_sim.gauge_delay);
+        set_seconday_notch = _control_stand.create_wraparound_setter("secondary_notch_hand", 1, unit_A_sim.camshaft_notches, 10.0f, 350.0f, unit_A_sim.gauge_delay);
         _HUD_notch_readout = new(_control_stand.create_setter("throttle_HUD_readout"));
         _secondary_controller.notch_changed += signal_secondary_camshaft_notch;
 

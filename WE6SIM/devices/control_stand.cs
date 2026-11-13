@@ -247,6 +247,38 @@ internal class control_stand: electric_device
         };
     }
 
+    public Action<float> create_wraparound_setter(string device, float minimum, float maximum, 
+        float minimum_anlge, float maximum_angle, float delay)
+    {
+        float gauge_mark_angle  = (maximum_angle - minimum_anlge) / (maximum - minimum);
+        float end_marks_angle   = 360.0f - maximum_angle + minimum_anlge;
+        float crossover_margin  = (end_marks_angle / 2.0f) / gauge_mark_angle;
+        float wrap_from_minimum = minimum - 1.0f, wrap_from_maximum = maximum + 1.0f;
+        float crossover_to_min  = maximum + crossover_margin, crossover_to_max = minimum - crossover_margin;
+        float half_range        = (maximum - minimum) / 2.0f;
+        float current_readout   = minimum, readout_change = 0.0f;
+
+        Action<float> instant_setter = create_setter(device);
+        return delegate (float final_value)
+        {
+            if (current_readout > crossover_to_min)
+                current_readout = crossover_to_max;
+            else if (current_readout < crossover_to_max)
+                current_readout = crossover_to_min;
+
+            float target;
+            if (current_readout - final_value > half_range)
+                target = wrap_from_maximum;
+            else if (final_value - current_readout > half_range)
+                target = wrap_from_minimum;
+            else
+                target = Mathf.Clamp(final_value, minimum, maximum);
+            float instant_readout = Mathf.SmoothDamp(current_readout, target, ref readout_change, delay);
+            current_readout       = instant_readout;
+            instant_setter(instant_readout);
+        };
+    }
+
     public override void Dispose()
     {
         if (!disposed)

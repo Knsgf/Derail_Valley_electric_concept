@@ -3553,7 +3553,7 @@ MonoBehaviour:
   needle: {fileID: 1786651819887657595}
   minAngle: 10
   maxAngle: 350
-  unclamped: 0
+  unclamped: 1
   rotationAxis: {x: 0, y: 0, z: 1}
   gizmoRadius: 0.09
   angleOffset: 180
@@ -5838,7 +5838,7 @@ MonoBehaviour:
   needle: {fileID: 5314695930427895144}
   minAngle: 10
   maxAngle: 350
-  unclamped: 0
+  unclamped: 1
   rotationAxis: {x: 0, y: 0, z: 1}
   gizmoRadius: 0.06
   angleOffset: 180

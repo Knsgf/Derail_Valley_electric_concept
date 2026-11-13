@@ -36,7 +36,7 @@ internal partial class unit_A_sim: electric_device
 
     public const float motor_hitpoints        = 2000.0f, maximum_idling_damage  = 0.1f * motor_hitpoints;
     public const float maximum_idling_current =  800.0f, minimum_idling_current = 250.0f;
-    public const float gauge_delay            = 0.5f;
+    public const float gauge_delay            = 0.2f;
 
     private readonly Dictionary<string, branch_user> _named_branches, _contactor_locations;
     private readonly Dictionary<string,       float> _element_resistances = [];
@@ -197,10 +197,10 @@ internal partial class unit_A_sim: electric_device
         new_control_stand.register_handler(   "fast_notching_switch", fast_notching_toggle    );
         new_control_stand.register_handler(    "blower_speed_switch", blower_speed_toggle     );
 
-        set_supply_volts   = new_control_stand.create_delayed_setter(        "supply_volts", gauge_delay);
-        set_motors_volts   = new_control_stand.create_delayed_setter(        "motors_volts", gauge_delay);
-        set_primary_notch  = new_control_stand.create_delayed_setter(  "primary_notch_hand", gauge_delay);
-        set_seconday_notch = new_control_stand.create_delayed_setter("secondary_notch_hand", gauge_delay);
+        set_supply_volts   = new_control_stand.create_delayed_setter("supply_volts", gauge_delay);
+        set_motors_volts   = new_control_stand.create_delayed_setter("motors_volts", gauge_delay);
+        set_primary_notch  = new_control_stand.create_wraparound_setter(  "primary_notch_hand", 1, camshaft_notches, 10.0f, 350.0f, gauge_delay);
+        set_seconday_notch = new_control_stand.create_wraparound_setter("secondary_notch_hand", 1, camshaft_notches, 10.0f, 350.0f, gauge_delay);
         _HUD_notch_readout = new(new_control_stand.create_setter("throttle_HUD_readout"));
         set_motor_group_load  = new Action<float>[3];
         set_motor_group_field = new Action<float>[3];
