@@ -45,7 +45,7 @@ internal class control_stand: electric_device
         ["throttle_HUD_readout"] = "[CustomGauges].HUD_THROTTLE",
         ["supply_volts"        ] = "[CustomGauges].SUPPLY",
         ["motors_volts"        ] = "[CustomGauges].ALL_MOTOR_TERMINAL",
-        //["total_load"          ] = "[CustomGauges].CURRENT_DRAW",
+        ["total_load"          ] = "[CustomGauges].CURRENT_DRAW",
 
         ["reverse_current_lamp" ] = "[CustomGauges].REVERSE_CURRENT",
         ["transition_lamp"      ] = "[CustomGauges].TRANSITION",
@@ -125,7 +125,7 @@ internal class control_stand: electric_device
                     _raw_throttle   = raw_throttle;
                     _throttle_moved = true;
                     _selector_interlock?.interlocked_handler(_raw_selector, raw_throttle, 
-                        Mathf.CeilToInt(_primary_notch), Mathf.CeilToInt(_secondary_notch), _transition_lamp);
+                        Mathf.RoundToInt(_primary_notch), Mathf.RoundToInt(_secondary_notch), _transition_lamp);
                     handler(raw_throttle);
                 }
             };
@@ -142,7 +142,7 @@ internal class control_stand: electric_device
                     raw_selector  = _stand_active ? (1.0f - raw_selector) : ((float) selector_modes.yard_power / selector_last_notch);
                     _raw_selector = raw_selector;
                     _selector_interlock.interlocked_handler(raw_selector, _raw_throttle, 
-                        Mathf.CeilToInt(_primary_notch), Mathf.CeilToInt(_secondary_notch), _transition_lamp);
+                        Mathf.RoundToInt(_primary_notch), Mathf.RoundToInt(_secondary_notch), _transition_lamp);
                 }
             };
         }
@@ -200,7 +200,8 @@ internal class control_stand: electric_device
                     _throttle_moved   = false;
                     hooked_port.Value = _primary_notch = primary_notch;
                     resistance_light?.Value = (_raw_throttle >= 0.5f / throttle_last_notch
-                            && (_primary_notch < unit_A_sim.camshaft_notches || _secondary_notch < unit_A_sim.camshaft_notches)) ? 1.0f : 0.0f;
+                            && (   Mathf.RoundToInt(  _primary_notch) < unit_A_sim.camshaft_notches 
+                                || Mathf.RoundToInt(_secondary_notch) < unit_A_sim.camshaft_notches)) ? 1.0f : 0.0f;
                 }
             };
         }
@@ -214,7 +215,8 @@ internal class control_stand: electric_device
                     _throttle_moved   = false;
                     hooked_port.Value = _secondary_notch = secondary_notch;
                     resistance_light?.Value = (_raw_throttle >= 0.5f / throttle_last_notch
-                            && (_primary_notch < unit_A_sim.camshaft_notches || _secondary_notch < unit_A_sim.camshaft_notches)) ? 1.0f : 0.0f;
+                            && (   Mathf.RoundToInt(  _primary_notch) < unit_A_sim.camshaft_notches 
+                                || Mathf.RoundToInt(_secondary_notch) < unit_A_sim.camshaft_notches)) ? 1.0f : 0.0f;
                 }
             };
         }
@@ -234,7 +236,7 @@ internal class control_stand: electric_device
 
     public Action<float> create_delayed_setter(string device, float delay)
     {
-        if (delay == 0.0f)
+        if (delay <= 0.0f)
             return create_setter(device);
         
         float current_readout = 0.0f, readout_change = 0.0f;
@@ -248,13 +250,17 @@ internal class control_stand: electric_device
     }
 
     public Action<float> create_wraparound_setter(string device, float minimum, float maximum, 
-        float minimum_anlge, float maximum_angle, float delay)
+        float minimum_angle, float maximum_angle, float delay)
     {
-        float gauge_mark_angle  = (maximum_angle - minimum_anlge) / (maximum - minimum);
-        float end_marks_angle   = 360.0f - maximum_angle + minimum_anlge;
+        if (delay <= 0.0f)
+            return create_setter(device);
+
+        assert.condition(maximum_angle > minimum_angle && maximum > minimum);
+        float gauge_mark_angle  = (maximum_angle - minimum_angle) / (maximum - minimum);
+        float end_marks_angle   = 360.0f - maximum_angle + minimum_angle;
         float crossover_margin  = (end_marks_angle / 2.0f) / gauge_mark_angle;
-        float wrap_from_minimum = minimum - 1.0f, wrap_from_maximum = maximum + 1.0f;
-        float crossover_to_min  = maximum + crossover_margin, crossover_to_max = minimum - crossover_margin;
+        float wrap_from_minimum = minimum -             1.0f, wrap_from_maximum = maximum + 1.0f;
+        float crossover_to_min  = maximum + crossover_margin, crossover_to_max  = minimum - crossover_margin;
         float half_range        = (maximum - minimum) / 2.0f;
         float current_readout   = minimum, readout_change = 0.0f;
 

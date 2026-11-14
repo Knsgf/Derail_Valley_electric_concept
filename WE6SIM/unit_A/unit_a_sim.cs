@@ -44,7 +44,7 @@ internal partial class unit_A_sim: electric_device
     private readonly Fuse _appliances, _control_air, _main_breaker_closed, _compressor_on, _motor_breaker;
     private readonly Port _torque_A, _wheel_RPM, _traction_motor_load, _traction_motor_RPM, _traction_motor_EMF, _jog_volts;
     private readonly Port _contactor_on_sound, _contactor_off_sound;
-    private readonly Port _total_load, _relative_voltage, _compressor_power, _traction_motor_heat_B, _integrity, _idling_damage;
+    private readonly Port _relative_voltage, _compressor_power, _traction_motor_heat_B, _integrity, _idling_damage;
 
     private readonly Port _control_AB1, _control_BA1, _control_BA2, _torque_B, _wheel_RPM_B, _traction_motor_load_B;
 
@@ -69,7 +69,7 @@ internal partial class unit_A_sim: electric_device
     
     private readonly TrainCar _unit;
 
-    private readonly Action<float>   set_primary_notch, set_seconday_notch, set_supply_volts, set_motors_volts;
+    private readonly Action<float>   set_primary_notch, set_seconday_notch, set_supply_volts, set_motors_volts, set_total_load;
     private readonly Action<float>[] set_motor_group_load, set_motor_group_field;
     private readonly Action<float>   set_reverse_current_lamp;
     private readonly Action<float>   set_independent_brake, toggle_sander;
@@ -112,7 +112,6 @@ internal partial class unit_A_sim: electric_device
         _traction_motor_load = grab_port(ports, "[CustomSimulation].MOTOR_LOAD"             );
         _traction_motor_RPM  = grab_port(ports, "[CustomSimulation].MOTOR_RPM"              );
         _traction_motor_EMF  = grab_port(ports, "[CustomSimulation].MOTOR_EMF"              );
-        _total_load          = grab_port(ports, "[CustomGauges].CURRENT_DRAW"               );
         _idling_damage       = grab_port(ports, "[CustomSimulation].IDLING_DAMAGE"          );
         _jog_volts           = grab_port(ports, "[CustomSimulation].JOG_VOLTS"              );
         _relative_voltage    = grab_port(ports, "[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE");
@@ -199,6 +198,7 @@ internal partial class unit_A_sim: electric_device
 
         set_supply_volts   = new_control_stand.create_delayed_setter("supply_volts", gauge_delay);
         set_motors_volts   = new_control_stand.create_delayed_setter("motors_volts", gauge_delay);
+        set_total_load     = new_control_stand.create_delayed_setter(  "total_load", gauge_delay);
         set_primary_notch  = new_control_stand.create_wraparound_setter(  "primary_notch_hand", 1, camshaft_notches, 10.0f, 350.0f, gauge_delay);
         set_seconday_notch = new_control_stand.create_wraparound_setter("secondary_notch_hand", 1, camshaft_notches, 10.0f, 350.0f, gauge_delay);
         _HUD_notch_readout = new(new_control_stand.create_setter("throttle_HUD_readout"));
@@ -736,7 +736,7 @@ internal partial class unit_A_sim: electric_device
     {
         _simulation_go = true;
         float primary_current_position = _contactors._primary_controller.current_position;
-        set_primary_notch(primary_current_position);
+        set_primary_notch ( primary_current_position);
         set_seconday_notch(_secondary_camshaft_notch);
         _HUD_notch_readout.update(Mathf.RoundToInt(primary_current_position), _secondary_camshaft_notch);
         _contactor_on_sound.Value  =  contactor_on_click ? 1.0f : 0.0f;
@@ -745,11 +745,11 @@ internal partial class unit_A_sim: electric_device
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_on , false);
         toggle_port_signal(_control_AB1, (int) AB1_signals.contactor_off, false);
 
-        _jog_volts.Value  = _jog_voltage;
-        _total_load.Value = _total_draw;
+        _jog_volts.Value        = _jog_voltage;
         _relative_voltage.Value = _voltmeter_reading / 1500.0f;
+        set_total_load  (       _total_draw);
         set_supply_volts(_voltmeter_reading);
-        set_motors_volts(_motors_volts);
+        set_motors_volts(     _motors_volts);
         if (_maximum_load < 10.0f)
         {
             set_reverse_current_lamp(0.0f);
