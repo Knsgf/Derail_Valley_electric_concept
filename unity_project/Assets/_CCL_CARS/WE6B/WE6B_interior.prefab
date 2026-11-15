@@ -6942,7 +6942,7 @@ MonoBehaviour:
     grabPose: -1
   nonVrStaticInteractionArea: {fileID: 4581816900246517742}
   rigidbodyMass: 30
-  rigidbodyDrag: 15
+  rigidbodyDrag: 0
   rigidbodyAngularDrag: 0
   blockDrag: 0
   blockAngularDrag: 0
@@ -6952,16 +6952,16 @@ MonoBehaviour:
   pullingForceMultiplier: 1
   scrollWheelHoverScroll: 10
   scrollWheelSpring: 0
-  useSteppedJoint: 1
-  steppedValueUpdate: 0
-  notches: 10
-  useInnerLimitSpring: 1
+  useSteppedJoint: 0
+  steppedValueUpdate: 1
+  notches: 0
+  useInnerLimitSpring: 0
   innerLimitMinNotch: 0
   innerLimitMaxNotch: 0
   jointAxis: {x: 0, y: 0, z: -1}
   useSpring: 1
-  jointSpring: 400
-  jointDamper: 0
+  jointSpring: 20
+  jointDamper: 3
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 5

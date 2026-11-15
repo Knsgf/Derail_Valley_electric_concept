@@ -952,8 +952,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6022291, y: 1.7096509, z: 0.11015503}
-  m_Center: {x: 0.30111456, y: 0.001237452, z: -0.015076503}
+  m_Size: {x: 0.6022291, y: 1.709651, z: 0.11015503}
+  m_Center: {x: 0.30111456, y: 0.0012375, z: -0.015076503}
 --- !u!1 &1023173561006135996
 GameObject:
   m_ObjectHideFlags: 0
@@ -2561,7 +2561,8 @@ GameObject:
   - component: {fileID: 1594610205336615399}
   - component: {fileID: 1226796202232098130}
   - component: {fileID: 6579281428426657886}
-  - component: {fileID: 3026801036602134394}
+  - component: {fileID: 5086311289557094778}
+  - component: {fileID: 1790100525047461187}
   m_Layer: 0
   m_Name: CabWindowFrame
   m_TagString: Untagged
@@ -2631,7 +2632,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &3026801036602134394
+--- !u!65 &5086311289557094778
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2644,6 +2645,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.03261373, y: 0.11463359, z: 0.06427294}
   m_Center: {x: 0.5073991, y: -0.0008355741, z: 0.012037248}
+--- !u!65 &1790100525047461187
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4384711484211926327}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.5273563, y: 0.504541, z: 0.06927905}
+  m_Center: {x: 0.26406017, y: 0.004805498, z: 0.014540511}
 --- !u!1 &4710475832094682135
 GameObject:
   m_ObjectHideFlags: 0
@@ -3532,18 +3546,18 @@ MonoBehaviour:
   interactionPoint: {fileID: 1412853867332973855}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
-  scrollWheelHoverScroll: 10
+  scrollWheelHoverScroll: 1
   scrollWheelSpring: 0
   useSteppedJoint: 1
   steppedValueUpdate: 1
-  notches: 20
+  notches: 5
   useInnerLimitSpring: 0
   innerLimitMinNotch: 0
   innerLimitMaxNotch: 0
   jointAxis: {x: 0, y: -1, z: 0}
   useSpring: 1
   jointSpring: 500
-  jointDamper: 20
+  jointDamper: 300
   useLimits: 1
   jointLimitMin: 0
   jointLimitMax: 90
