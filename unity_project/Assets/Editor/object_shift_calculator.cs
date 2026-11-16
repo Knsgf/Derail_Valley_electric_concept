@@ -13,7 +13,7 @@ public class ObjectShiftCalculator: EditorWindow
         [4] = 17.56f
     };
     
-    float   _quaternion_y, _preset_multiplier = 1.0f;
+    float   _quaternion_y, _rotation_angle, _preset_multiplier = 1.0f;
     int     _x, _z, _preset;
     Vector3 _shift;
     
@@ -28,8 +28,8 @@ public class ObjectShiftCalculator: EditorWindow
         _quaternion_y = Mathf.Clamp(EditorGUILayout.FloatField("Quaternion Y", _quaternion_y), -1.0f, 1.0f);
         EditorGUILayout.HelpBox("The calculator assumes quaternion W to be positive.\n" 
                               + "If W is negative, flip the sign of Y.", MessageType.Info);
-        _x      = EditorGUILayout.IntField("Initial x", _x);
-        _z      = EditorGUILayout.IntField("Initial z", _z);
+        _x = EditorGUILayout.IntField("Initial x", _x);
+        _z = EditorGUILayout.IntField("Initial z", _z);
         _preset            = EditorGUILayout.IntField  ("Offset preset (1-4, 0 off)", _preset           );
         _preset_multiplier = EditorGUILayout.FloatField(         "Preset multiplier", _preset_multiplier);
         if (_preset_offsets.TryGetValue(_preset, out float preset_offset))
@@ -46,5 +46,11 @@ public class ObjectShiftCalculator: EditorWindow
         EditorGUILayout.LabelField("New position");
         EditorGUILayout.SelectableLabel($"x: {Mathf.RoundToInt(_x + absolute_shift.x * 1000.0f)}");
         EditorGUILayout.SelectableLabel($"z: {Mathf.RoundToInt(_z + absolute_shift.z * 1000.0f)}");
+
+        _rotation_angle = EditorGUILayout.FloatField("Rotation Y", _rotation_angle);
+        Quaternion new_orientation = orientation * Quaternion.Euler(0.0f, _rotation_angle, 0.0f);
+        EditorGUILayout.LabelField("New orientation");
+        EditorGUILayout.SelectableLabel($"y: {new_orientation.y}");
+        EditorGUILayout.SelectableLabel($"w: {new_orientation.w}");
     }
 }
