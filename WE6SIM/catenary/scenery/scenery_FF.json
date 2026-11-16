@@ -4848,8 +4848,8 @@
       "z": 0.0,
       "w": -0.182494089
     },
-    "x": 9371130,
-    "z": 13224882,
+    "x": 9372857,
+    "z": 13224219,
     "y": 122.619507
   },
   {
@@ -4861,8 +4861,8 @@
       "z": 0.0,
       "w": -0.182494089
     },
-    "x": 9371130,
-    "z": 13224882,
+    "x": 9372857,
+    "z": 13224219,
     "y": 122.619507
   },
   {
@@ -7740,5 +7740,62 @@
     "x": 9404711,
     "z": 13253890,
     "y": 119.364449
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.8240113,
+      "z": 0.0,
+      "w": 0.5665734
+    },
+    "x": 9482327,
+    "z": 13393327,
+    "y": 119.358673,
+    "kind": "default",
+    "pole_type": "BridgeInsulators",
+    "cantilever_on_near_side": true,
+    "cantilever_on_far_side": true,
+    "anchored": true,
+    "siding_anchor": true
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographsWarningOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.9747428,
+      "z": 0.0,
+      "w": -0.223330438
+    },
+    "x": 9422706,
+    "z": 13277541,
+    "y": 119.367134
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographsWarningOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.180143937,
+      "z": 0.0,
+      "w": -0.9836403
+    },
+    "x": 9515464,
+    "z": 13565666,
+    "y": 119.37072
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "Signs/DropPantographsWarningOtherSide",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.180143937,
+      "z": 0.0,
+      "w": -0.9836403
+    },
+    "x": 9531884,
+    "z": 13559443,
+    "y": 119.37072
   }
 ]
