@@ -118,7 +118,7 @@ public partial class overhead_equipment
 
         [JsonConstructor]
         public wire(string wire_type, string substation, float length, float previous_pole_vertical_offset, 
-            int x, int z, float y, Quaternion orientation): base(/*_wire_sections[wire_type].template*/ get_template(wire_type, length), x, z, y, orientation)
+            int x, int z, float y, Quaternion orientation): base(_wire_sections[wire_type].template /*get_template(wire_type, length)*/, x, z, y, orientation)
         {
             assert.condition(length > 0.0f);
             wire_template wire_info            = _wire_sections[wire_type];
