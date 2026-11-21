@@ -10,6 +10,7 @@
     "x": 11085820,
     "z": 5246621,
     "y": 152.687042,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -43,6 +44,7 @@
     "x": 11062634,
     "z": 5262228,
     "y": 152.8517,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -76,6 +78,7 @@
     "x": 10929855,
     "z": 5300925,
     "y": 154.149887,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -109,6 +112,7 @@
     "x": 10900316,
     "z": 5305672,
     "y": 154.373322,
+    "kind": "default",
     "pole_type": "Ground",
     "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
@@ -400,12 +404,12 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
-    "template_name": "Signs/NeutralWarning",
+    "template_name": "Signs/NeutralWarningOtherSide",
     "orientation": {
       "x": 0.0,
-      "y": -0.99903506,
+      "y": 0.04392137,
       "z": 0.0,
-      "w": 0.04392137
+      "w": 0.99903506
     },
     "x": 11142723,
     "z": 5118061,
