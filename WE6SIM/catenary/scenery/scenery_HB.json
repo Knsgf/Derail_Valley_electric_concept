@@ -18235,7 +18235,7 @@
     "y": 113.287247,
     "kind": "default",
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -18253,7 +18253,7 @@
     "y": 113.270042,
     "kind": "default",
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -18271,7 +18271,7 @@
     "y": 113.2815,
     "kind": "default",
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -18289,25 +18289,7 @@
     "y": 113.294044,
     "kind": "default",
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
-    "cantilever_on_far_side": false,
-    "anchored": false,
-    "siding_anchor": false
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.6877296,
-      "z": 0.0,
-      "w": 0.725967
-    },
-    "x": 13291019,
-    "z": 3576679,
-    "y": 113.290184,
-    "kind": "default",
-    "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -18343,7 +18325,7 @@
     "y": 113.298859,
     "kind": "default",
     "pole_type": "Ground",
-    "cantilever_on_near_side": false,
+    "cantilever_on_near_side": true,
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
@@ -18365,5 +18347,167 @@
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
+    "cantilever_type": "Outer",
+    "steady_arm_type": "cantilever",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.6875977,
+      "z": 0.0,
+      "w": 0.7260919
+    },
+    "x": 13562575,
+    "z": 3562014,
+    "y": 113.298859,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
+    "cantilever_type": "Outer",
+    "steady_arm_type": "cantilever",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.6894143,
+      "z": 0.0,
+      "w": 0.7243672
+    },
+    "x": 13450852,
+    "z": 3567561,
+    "y": 113.287247,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
+    "cantilever_type": "Inner",
+    "steady_arm_type": "cantilever",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.686810553,
+      "z": 0.0,
+      "w": 0.7268365
+    },
+    "x": 13410851,
+    "z": 3569651,
+    "y": 113.270042,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
+    "cantilever_type": "Outer",
+    "steady_arm_type": "cantilever",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.684304535,
+      "z": 0.0,
+      "w": 0.7291963
+    },
+    "x": 13370911,
+    "z": 3572062,
+    "y": 113.2815,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
+    "kind": "slim",
+    "tracks": 2,
+    "orientation": {
+      "x": 0.0,
+      "y": -0.685241342,
+      "z": 0.0,
+      "w": 0.7283161
+    },
+    "x": 13330965,
+    "z": 3574472,
+    "y": 113.294044,
+    "stretch": 1.0
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+gantry, electric_sim",
+    "kind": "slim",
+    "tracks": 1,
+    "orientation": {
+      "x": 0.0,
+      "y": 0.725967,
+      "z": 0.0,
+      "w": 0.6877296
+    },
+    "x": 13290778,
+    "z": 3572226,
+    "y": 113.290184,
+    "stretch": 1.0
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.685241342,
+      "z": 0.0,
+      "w": 0.7283161
+    },
+    "x": 13330965,
+    "z": 3574476,
+    "y": 113.294044,
+    "kind": "default",
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": true,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.687729537,
+      "z": 0.0,
+      "w": -0.72596705
+    },
+    "x": 13291019,
+    "z": 3576673,
+    "y": 113.290184,
+    "kind": "default",
+    "pole_type": "Bracket",
+    "cantilever_on_near_side": true,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
+    "cantilever_type": "Middle",
+    "steady_arm_type": "gantry",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.687729537,
+      "z": 0.0,
+      "w": -0.72596705
+    },
+    "x": 13291019,
+    "z": 3576673,
+    "y": 113.290184,
+    "dual_wire": false,
+    "wire_attached": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
+    "cantilever_type": "Outer",
+    "steady_arm_type": "gantry",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.685241342,
+      "z": 0.0,
+      "w": 0.7283161
+    },
+    "x": 13330965,
+    "z": 3574476,
+    "y": 113.294044,
+    "dual_wire": false,
+    "wire_attached": false
   }
 ]
