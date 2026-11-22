@@ -18309,7 +18309,7 @@
     "pole_type": "Ground",
     "cantilever_on_near_side": false,
     "cantilever_on_far_side": false,
-    "anchored": true,
+    "anchored": false,
     "siding_anchor": false
   },
   {
@@ -18512,35 +18512,6 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
-    "length": 22.9312363,
-    "previous_pole_vertical_offset": 0.0005950928,
-    "substation": "HB1500",
-    "orientation": {
-      "x": 0.0,
-      "y": -0.6841944,
-      "z": 0.0,
-      "w": 0.729299664
-    },
-    "x": 13291003,
-    "z": 3576373,
-    "y": 113.290184,
-    "wire_type": "end_anchor_single"
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
-    "template_name": "PoleAnchor",
-    "orientation": {
-      "x": 0.0,
-      "y": 0.6208857,
-      "z": 0.0,
-      "w": -0.7839011
-    },
-    "x": 13267614,
-    "z": 3575694,
-    "y": 113.290779
-  },
-  {
-    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
     "length": 40.0124054,
     "previous_pole_vertical_offset": -0.00386047363,
     "substation": "HB1500",
@@ -18666,5 +18637,124 @@
     "z": 3561714,
     "y": 113.298859,
     "wire_type": "end_anchor_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.7242634,
+      "z": 0.0,
+      "w": 0.6895234
+    },
+    "x": 13553897,
+    "z": 3549633,
+    "y": 113.374687,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.722052932,
+      "z": 0.0,
+      "w": 0.6918378
+    },
+    "x": 13450341,
+    "z": 3554409,
+    "y": 113.286133,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.7420688,
+      "z": 0.0,
+      "w": 0.67032367
+    },
+    "x": 13410424,
+    "z": 3556990,
+    "y": 113.269035,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.764307,
+      "z": 0.0,
+      "w": 0.644852459
+    },
+    "x": 13370792,
+    "z": 3562632,
+    "y": 113.2796,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": false,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+pole, electric_sim",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.7839011,
+      "z": 0.0,
+      "w": 0.6208858
+    },
+    "x": 13268507,
+    "z": 3579490,
+    "y": 113.290779,
+    "kind": "default",
+    "pole_type": "Ground",
+    "cantilever_on_near_side": false,
+    "cantilever_on_far_side": false,
+    "anchored": true,
+    "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
+    "length": 23.020237,
+    "previous_pole_vertical_offset": 0.0005950928,
+    "substation": "HB1500",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.6919702,
+      "z": 0.0,
+      "w": 0.721926
+    },
+    "x": 13291003,
+    "z": 3576373,
+    "y": 113.290184,
+    "wire_type": "end_anchor_single"
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
+    "template_name": "PoleAnchor",
+    "orientation": {
+      "x": 0.0,
+      "y": 0.6208857,
+      "z": 0.0,
+      "w": -0.7839011
+    },
+    "x": 13267499,
+    "z": 3575207,
+    "y": 113.290779
   }
 ]
