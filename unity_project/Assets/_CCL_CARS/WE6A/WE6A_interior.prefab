@@ -1054,7 +1054,7 @@ MonoBehaviour:
   m_Script: {fileID: -544725653, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  portId: '[DitchLightsSwitch].EXT_IN'
+  portId: headlightsEncoder.DITCHLIGHTS_EXT_IN
 --- !u!114 &5921943789641027155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2833,7 +2833,7 @@ MonoBehaviour:
   interactionPoint: {fileID: 5308168456385098940}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
-  scrollWheelHoverScroll: 0.5
+  scrollWheelHoverScroll: 1
   scrollWheelSpring: 0
   useSteppedJoint: 1
   steppedValueUpdate: 1
@@ -3433,7 +3433,7 @@ MonoBehaviour:
   m_Script: {fileID: -544725653, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  portId: '[HeadlightSwitch].EXT_IN'
+  portId: headlightsEncoder.HEADLIGHTS_EXT_IN
 --- !u!114 &1877288891458454063
 MonoBehaviour:
   m_ObjectHideFlags: 0
