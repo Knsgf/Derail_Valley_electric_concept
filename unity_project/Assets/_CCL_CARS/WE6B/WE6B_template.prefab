@@ -6496,8 +6496,8 @@ MonoBehaviour:
   - '[CustomSimulation].BLOWERS_RELATIVE_SPEED'
   - compressor.PRODUCTION_RATE_NORMALIZED
   - '[CustomSimulation].RELATIVE_SUPPLY_VOLTAGE'
-  - headlightsEncoder.FRONT_HEADLIGHTS_IN
-  - headlightsControlRear.EXT_IN
+  - headlightsEncoder.REAR_HEADLIGHTS_IN
+  - headlightsControlFront.EXT_IN
   PortReferenceIds: []
   UseColours: 1
   AddDummyForcePort: 1

@@ -474,7 +474,7 @@ internal partial class unit_A_sim: electric_device
             if (!breaker_trip && port_value_signal_active(_BA1, (int) BA1_signals.breaker_engage))
                 _main_breaker.toggle_on(1.0f);
             
-            float unit_B_reverser = 1.0f - extract_signal_from_port_value(_BA1, (int) BA1_signals.reverser, (int) BA1_shift.reverser) / 2.0f;
+            float unit_B_reverser = extract_signal_from_port_value(_BA1, (int) BA1_signals.reverser, (int) BA1_shift.reverser) / 2.0f;
             Main.log($"Rev {unit_B_reverser}");
             reverser_handler(unit_B_reverser, selector_switched: false);
             handle_relay(_BA1, BA1_signals.throttle, BA1_shift.throttle, throttle_last_notch    ,      throttle_handler);

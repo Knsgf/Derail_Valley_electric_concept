@@ -1875,7 +1875,7 @@ MonoBehaviour:
   interactionPoint: {fileID: 9114443754005637197}
   maxForceAppliedMagnitude: Infinity
   pullingForceMultiplier: 1
-  scrollWheelHoverScroll: 1
+  scrollWheelHoverScroll: -1
   scrollWheelSpring: 0
   useSteppedJoint: 1
   steppedValueUpdate: 1
@@ -1883,7 +1883,7 @@ MonoBehaviour:
   useInnerLimitSpring: 0
   innerLimitMinNotch: 0
   innerLimitMaxNotch: 0
-  jointAxis: {x: 0, y: -1, z: 0}
+  jointAxis: {x: 0, y: 1, z: 0}
   useSpring: 1
   jointSpring: 400
   jointDamper: 20
@@ -1956,9 +1956,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customNames:
-  - R
-  - N
   - F
+  - N
+  - R
 --- !u!114 &629260639421026287
 MonoBehaviour:
   m_ObjectHideFlags: 0
