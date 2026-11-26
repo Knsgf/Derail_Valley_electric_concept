@@ -1,21 +1,5 @@
 [
   {
-    "$type": "electric_sim.catenary.overhead_equipment+substation, electric_sim",
-    "map_location": "IME1000",
-    "supply_voltage": 1100.0,
-    "maximum_load": 2000.0,
-    "has_inverter": false,
-    "orientation": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": -0.707106769,
-      "w": 0.707106769
-    },
-    "x": 14971501,
-    "z": 15327436,
-    "y": 249.062012
-  },
-  {
     "$type": "electric_sim.catenary.overhead_equipment+wire, electric_sim",
     "length": 10.1985531,
     "previous_pole_vertical_offset": 0.02166748,
