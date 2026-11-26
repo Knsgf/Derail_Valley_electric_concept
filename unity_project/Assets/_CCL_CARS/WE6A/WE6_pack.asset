@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 711031822, guid: b247489fc36790c41b197410cd8386d9, type: 3}
   m_Name: WE6_pack
   m_EditorClassIdentifier: 
-  PackId: 2WE3-licence
+  PackId: 2WE3-license
   PackName: 2WE3-981
   Author: '-'
   Version: 2.4.1
@@ -23,7 +23,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0d7987ac5712aba43af71e46926130a7, type: 2}
   ExtraModels: []
   PaintSubstitutions: []
-  ProceduralMaterials: {fileID: 0}
+  ProceduralMaterials: {fileID: 11400000, guid: 3877d3cea95beb24e8bf49b379eb321b,
+    type: 2}
   ExtraTranslations: {fileID: 11400000, guid: b020bcb1f52a08044b573032f1128d78, type: 2}
   AdditionalDependencies:
   - Catenary-DC
