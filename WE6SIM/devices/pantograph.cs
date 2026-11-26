@@ -100,7 +100,8 @@ internal class pantograph: electric_device
     private float _last_pantograph_voltage = 0.0f, _remaining_time_till_drop = 0.0f, _remaining_time_till_retract = 0.0f;
     private float _accumulated_wear = 0.0f;
 
-    public static bool infinite_power { get; set; }
+    public static bool infinite_power   { get; set; }
+    public static bool voltage_override { get; set; }
     
     public bool stowed         => _stowed;
     public bool sidepan_stowed => _sidepan_stowed;
@@ -342,6 +343,8 @@ internal class pantograph: electric_device
                 _remaining_time_till_drop = drop_delay;
             (float? wire_height, float supply_voltage) 
                 = overhead_equipment.system.relative_wire_height_and_voltage(_unit.transform, _base, _contact_strip_end1, _contact_strip_end2, load_current);
+            if (voltage_override)
+                supply_voltage = 1500.0f;
             if (wire_height == null)
             {
                 _target_height              = maximum_head_height;
@@ -371,6 +374,8 @@ internal class pantograph: electric_device
                 _remaining_time_till_retract = drop_delay;
             (float? rail_height, float supply_voltage) 
                 = overhead_equipment.system.relative_wire_height_and_voltage(_unit.transform, _sidepan_base, _sidepan_inner_contact, _sidepan_outer_contact, load_current);
+            if (voltage_override)
+                supply_voltage = 1000.0f;
             if (rail_height == null || (float) rail_height is <= 4.2f or >= 4.8f)
                 roof_bus.sidepan_voltage = 0.0f;
             else

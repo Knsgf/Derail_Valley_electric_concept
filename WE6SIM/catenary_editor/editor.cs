@@ -308,7 +308,7 @@ internal static class editor
         }
         else
         {
-            system.add_cantilever(pole, cantilever_type, dual_wire, pole.get_relative_position() + registration_arm_direction 
+            system.add_cantilever(pole, cantilever_type, dual_wire, pole.get_relative_position() - registration_arm_direction 
                 * (pole.offset * 2.0f), pole_orientation * flip_around_vertical);
             pole.cantilever_on_far_side = true;
             //Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");

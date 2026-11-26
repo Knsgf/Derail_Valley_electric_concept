@@ -337,7 +337,8 @@ internal partial class unit_A_sim: electric_device
 
     private void reverser_handler(float raw_reverser)
     {
-        reverser_handler(raw_reverser, selector_switched: false);
+        if (_cab_active)
+            reverser_handler(raw_reverser, selector_switched: false);
     }
 
     private void throttle_handler(float raw_throttle)

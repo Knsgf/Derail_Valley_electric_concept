@@ -1,5 +1,7 @@
 // Distributed under terms and conditions of CC0 licence. See LICENCE_CC0.txt for details.
 
+#define SHOW_SHORT_MARKERS
+
 using System.Collections.Generic;
 
 using Newtonsoft.Json;
@@ -107,18 +109,24 @@ public partial class overhead_equipment
             return (primary_vertical_orientation, primary_vertical_scale, secondary_vertical_scale);
         }
         
-#if DEBUG
         private static string get_template(string wire_type, float length)
         {
+#if !SHOW_SHORT_MARKERS
+            return _wire_sections[wire_type].template;
+#else
+    #if !DEBUG
+        #error Disable markers before publishing
+    #else
             return (length < 25.0f && _wire_sections[wire_type].kind.Contains("plain_") && !_wire_sections[wire_type].kind.Contains("plain_half")) 
                 ? "ShortWireMarker" 
                 : _wire_sections[wire_type].template;
-        }
+    #endif
 #endif
+        }
 
         [JsonConstructor]
         public wire(string wire_type, string substation, float length, float previous_pole_vertical_offset, 
-            int x, int z, float y, Quaternion orientation): base(_wire_sections[wire_type].template /*get_template(wire_type, length)*/, x, z, y, orientation)
+            int x, int z, float y, Quaternion orientation): base(get_template(wire_type, length), x, z, y, orientation)
         {
             assert.condition(length > 0.0f);
             wire_template wire_info            = _wire_sections[wire_type];

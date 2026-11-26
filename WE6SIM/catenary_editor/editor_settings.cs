@@ -36,18 +36,24 @@ public class editor_settings: ModSettings, IDrawable
     private float _kWh_price = default_kWh_price;
     [Draw("Catenary drawing distance, m")]
     private int   _OCS_rendering_distance = 500;
+    [Draw("Omnipresent electricity cheat")]
+    private bool _omni_power = false;
+    [Draw("Supply voltage override cheat")]
+    private bool _nominal_voltage_cheat = false;
+
 
     public static editor_settings? instance { get; private set; }
     public static float load_limit_factor   { get; private set; } = 1.0f;
     public static float voltage_drop_factor { get; private set; } = 1.0f;
     public static float kWh_price           { get; private set; } = default_kWh_price;
+    public static bool  omnipresent_power   { get; private set; }
+    public static bool  voltage_cheat       { get; private set; }
+    
+    public static event Action<bool>? omni_cheat_toggle, voltage_cheat_toggle;
 
 #if DEBUG
     private bool _side_rail_placement_enabled = false;
     
-    [Draw("Infinite power cheat")]
-    private bool _infinite_power = false;
-
     [Draw("Part placement")]
     private editor.placement _part_placement = editor.placement.Disabled;
 
@@ -104,9 +110,6 @@ public class editor_settings: ModSettings, IDrawable
 
     [Draw("Eraser reach (mm)")]
     private int _eraser_radius = 2500;
-
-    public static bool infinite_power { get; private set; }
-    public static event Action<bool>? power_cheat_toggle;
 #endif
 
     public editor_settings()
@@ -121,6 +124,18 @@ public class editor_settings: ModSettings, IDrawable
             if (_OCS_rendering_distance < overhead_equipment.minimum_redering_distance)
                 _OCS_rendering_distance = overhead_equipment.minimum_redering_distance;
             _last_redering_distance = overhead_equipment.rendering_distance = _OCS_rendering_distance;
+        }
+        pantograph.infinite_power   = _omni_power;
+        pantograph.voltage_override = _nominal_voltage_cheat;
+        if (omnipresent_power != _omni_power)
+        {
+            omnipresent_power = _omni_power;
+            omni_cheat_toggle?.Invoke(_omni_power);
+        }
+        if (voltage_cheat != _nominal_voltage_cheat)
+        {
+            voltage_cheat = _nominal_voltage_cheat;
+            voltage_cheat_toggle?.Invoke(_nominal_voltage_cheat);
         }
 
 #if DEBUG
@@ -144,32 +159,25 @@ public class editor_settings: ModSettings, IDrawable
             _pole_distance               = 40;
         }
 
-        editor.pole_height_offset				= _height_offset     / 1000.0f;
-        editor.pole_horizontal_offset			= _horizontal_offset / 1000.0f;
-        editor.pole_type						= _pole_type;
-        editor.part_placement					= _part_placement;
-        editor.cantilever_type					= _cantilever_type;
-        editor.skip_first						= _skip_first;
-        editor.distance_between_poles			= _pole_distance;
-        editor.maximum_sweep					= _sweep / 1000.0f;
-        editor.erase_scenery					= _erase_scenery;
+        editor.pole_height_offset               = _height_offset     / 1000.0f;
+        editor.pole_horizontal_offset           = _horizontal_offset / 1000.0f;
+        editor.pole_type                        = _pole_type;
+        editor.part_placement                   = _part_placement;
+        editor.cantilever_type                  = _cantilever_type;
+        editor.skip_first                       = _skip_first;
+        editor.distance_between_poles           = _pole_distance;
+        editor.maximum_sweep                    = _sweep / 1000.0f;
+        editor.erase_scenery                    = _erase_scenery;
         editor.eraser_area_half                 = _eraser_radius / 1000.0f;
-        editor.gantry_stretch					= _gantry_stretch / 100.0f;
-        editor.zigzag							= _zigzag_arms;
-        editor.dual_wire						= _dual_arm;
+        editor.gantry_stretch                   = _gantry_stretch / 100.0f;
+        editor.zigzag                           = _zigzag_arms;
+        editor.dual_wire                        = _dual_arm;
         editor.automatic_cantilever_termination = _stop_cantilever_placement_after_distance;
         editor.cantilever_termination_distance  = _stop_cantilever_placement_distance;
         editor.suspend_cantilever_distance      = _suspend_cantilever_distance_measurement;
-        editor.suspend_wire_placement			= _suspend_wire_placement;
+        editor.suspend_wire_placement           = _suspend_wire_placement;
         editor.terminate_wire_at_next_pole      = _terminate_wire_placement;
         editor.designated_substation            = (_substation.Length >= 2) ? _substation : null;
-
-        pantograph.infinite_power = _infinite_power;
-        if (infinite_power != _infinite_power)
-        {
-            infinite_power = _infinite_power;
-            power_cheat_toggle?.Invoke(_infinite_power);
-        }
 #endif
     }
 
@@ -215,18 +223,18 @@ public class editor_settings: ModSettings, IDrawable
             {
                 current_settings = new stored_settings { load_limit_factor = 1.0f, voltage_drop_factor = 1.0f, kWh_price = default_kWh_price };
             }
-			instance = new()
-			{
-				_load_limit_factor      = (current_settings.load_limit_factor   > 0.0f) ? current_settings.load_limit_factor   : 1.0f,
-				_voltage_drop_factor    = (current_settings.voltage_drop_factor > 0.0f) ? current_settings.voltage_drop_factor : 1.0f,
+            instance = new()
+            {
+                _load_limit_factor      = (current_settings.load_limit_factor   > 0.0f) ? current_settings.load_limit_factor   : 1.0f,
+                _voltage_drop_factor    = (current_settings.voltage_drop_factor > 0.0f) ? current_settings.voltage_drop_factor : 1.0f,
                 _kWh_price              = (current_settings.kWh_price           > 0.0f) ? current_settings.kWh_price           : default_kWh_price,
                 _OCS_rendering_distance = (current_settings.rendering_distance  >= overhead_equipment.minimum_redering_distance) 
                                         ?  current_settings.rendering_distance : 500
-			};
+            };
             load_limit_factor   = instance._load_limit_factor;
             voltage_drop_factor = instance._voltage_drop_factor;
             kWh_price           = instance._kWh_price;
-			mod.OnGUI           = instance.Draw;
+            mod.OnGUI           = instance.Draw;
             mod.OnSaveGUI       = instance.Save;
             instance.OnChange();
         }

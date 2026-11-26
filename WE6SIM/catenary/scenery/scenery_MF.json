@@ -1156,7 +1156,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Outer",
-    "steady_arm_type": "trolley",
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": -0.99996,
@@ -1172,7 +1172,7 @@
   {
     "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
     "cantilever_type": "Middle",
-    "steady_arm_type": "trolley",
+    "steady_arm_type": "cantilever",
     "orientation": {
       "x": 0.0,
       "y": 0.9999993,
@@ -2837,7 +2837,7 @@
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
-    "template_name": "Signs/DropPantographs",
+    "template_name": "Signs/NeutralBegin",
     "orientation": {
       "x": 0.0,
       "y": 0.9999993,
@@ -2853,17 +2853,17 @@
     "template_name": "Signs/NeutralEndLowVoltageOtherSide",
     "orientation": {
       "x": 0.0,
-      "y": 0.9999993,
+      "y": 0.999996543,
       "z": 0.0,
-      "w": 0.00121982465
+      "w": 0.00262148469
     },
     "x": 2316312,
-    "z": 11371477,
-    "y": 159.413513
+    "z": 11372844,
+    "y": 159.413742
   },
   {
     "$type": "electric_sim.catenary.overhead_equipment+miscellaneous_object, electric_sim",
-    "template_name": "Signs/DropPantographsWarningOtherSide",
+    "template_name": "Signs/NeutralWarningOtherSide",
     "orientation": {
       "x": 0.0,
       "y": 0.0166077521,
