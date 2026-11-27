@@ -3,6 +3,8 @@
 #if DEBUG
 //#define CURRENT_TELEMETRY
 //#define VOLTAGE_TELEMETRY
+#else
+#error Not for public release
 #endif
 
 using System;
