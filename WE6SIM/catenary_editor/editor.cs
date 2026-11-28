@@ -235,7 +235,7 @@ internal static class editor
     {
         pole_user? closest_pole;
         closest_pole = get_closest(nearby_objects, relative_position, 
-            (pole_user pole) => look_for_gantry_brackets == pole.is_bracket);
+            (pole_user pole) => (!pole.cantilever_on_near_side || !pole.cantilever_on_far_side) && look_for_gantry_brackets == pole.is_bracket);
         if (closest_pole == null)
             return (null, Vector3.zero);
         return (closest_pole, closest_pole.get_pole_true_position());
@@ -302,14 +302,16 @@ internal static class editor
 
         if (place_on_near_side)
         {
-            system.add_cantilever(pole, cantilever_type, dual_wire, pole.get_relative_position(), pole_orientation);
+            system.add_cantilever(pole, cantilever_type, dual_wire, pole.get_relative_position() 
+                + pole_orientation * Vector3.right * pole_horizontal_offset, pole_orientation);
             pole.cantilever_on_near_side = true;
             //Main.log($"Near {pole_position} {pole.get_relative_position()} {relative_position}");
         }
         else
         {
-            system.add_cantilever(pole, cantilever_type, dual_wire, pole.get_relative_position() - registration_arm_direction 
-                * (pole.offset * 2.0f), pole_orientation * flip_around_vertical);
+            system.add_cantilever(pole, cantilever_type, dual_wire, pole.get_relative_position() 
+                - pole_orientation * Vector3.right * pole_horizontal_offset
+                - registration_arm_direction * (pole.offset * 2.0f), pole_orientation * flip_around_vertical);
             pole.cantilever_on_far_side = true;
             //Main.log($"Far {pole_position} {pole.get_relative_position()} {relative_position}");
         }
