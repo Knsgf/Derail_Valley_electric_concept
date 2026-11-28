@@ -3788,5 +3788,21 @@
     "cantilever_on_far_side": false,
     "anchored": false,
     "siding_anchor": false
+  },
+  {
+    "$type": "electric_sim.catenary.overhead_equipment+cantilever, electric_sim",
+    "cantilever_type": "Outer",
+    "steady_arm_type": "gantry",
+    "orientation": {
+      "x": 0.0,
+      "y": -0.481429577,
+      "z": 0.0,
+      "w": 0.8764848
+    },
+    "x": 13391348,
+    "z": 15417958,
+    "y": 249.976288,
+    "dual_wire": false,
+    "wire_attached": false
   }
 ]
